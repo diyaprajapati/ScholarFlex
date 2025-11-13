@@ -25,26 +25,26 @@ export default function RevenueTrendChart({ data }) {
   const targetPoints = buildPolyline(data, 'target', height)
 
   return (
-    <div className="bg-gradient-to-br from-white via-emerald-50/30 to-sky-50 border border-emerald-100 rounded-3xl p-6 shadow-sm">
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600">Revenue Performance</p>
-          <h3 className="text-lg font-semibold text-gray-900 mt-1">ARR Growth</h3>
-          <p className="text-sm text-emerald-600/70 mt-1">Comparing actual revenue vs quarterly target</p>
+    <div className="bg-gradient-to-br from-white via-emerald-50/30 to-sky-50 border border-emerald-100 rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-5 lg:p-6 shadow-sm">
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+        <div className="flex-1">
+          <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-emerald-600">Revenue Performance</p>
+          <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mt-0.5 sm:mt-1">ARR Growth</h3>
+          <p className="text-xs sm:text-sm text-emerald-600/70 mt-0.5 sm:mt-1">Comparing actual revenue vs quarterly target</p>
         </div>
-        <div className="flex items-center gap-4 text-xs font-semibold text-emerald-700">
-          <span className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.15)]" />
+        <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-semibold text-emerald-700 flex-shrink-0">
+          <span className="flex items-center gap-1.5 sm:gap-2">
+            <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.15)] sm:shadow-[0_0_0_4px_rgba(16,185,129,0.15)]" />
             Actual
           </span>
-          <span className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-sky-300 shadow-[0_0_0_4px_rgba(125,211,252,0.25)]" />
+          <span className="flex items-center gap-1.5 sm:gap-2">
+            <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-sky-300 shadow-[0_0_0_3px_rgba(125,211,252,0.25)] sm:shadow-[0_0_0_4px_rgba(125,211,252,0.25)]" />
             Target
           </span>
         </div>
       </header>
 
-      <div className="mt-6 h-64">
+      <div className="mt-4 sm:mt-5 lg:mt-6 h-48 sm:h-56 lg:h-64">
         <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
           <defs>
             <linearGradient id="revenue-fill" x1="0" y1="0" x2="0" y2="1">

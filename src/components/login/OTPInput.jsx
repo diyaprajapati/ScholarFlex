@@ -59,10 +59,10 @@ export default function OTPInput({ length = 6, onComplete, error }) {
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium mb-3 text-gray-300 text-center">
+      <label className="block text-xs sm:text-sm lg:text-base font-medium mb-2 sm:mb-3 text-gray-300 text-center">
         Enter OTP Code
       </label>
-      <div className="flex justify-center gap-3 mb-2">
+      <div className="flex justify-center gap-2 sm:gap-2.5 lg:gap-3 mb-1.5 sm:mb-2">
         {otp.map((digit, index) => (
           <input
             key={index}
@@ -74,7 +74,7 @@ export default function OTPInput({ length = 6, onComplete, error }) {
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
-            className={`w-12 h-12 text-center text-lg font-semibold rounded-lg focus:outline-none focus:ring-2 transition-all bg-gray-800/50 text-gray-100 border ${
+            className={`w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 text-center text-base sm:text-lg lg:text-xl font-semibold rounded-lg focus:outline-none focus:ring-2 transition-all bg-gray-800/50 text-gray-100 border ${
               error
                 ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500'
                 : 'border-gray-700/50 focus:border-emerald-500/50 focus:ring-emerald-500/30'
@@ -82,7 +82,7 @@ export default function OTPInput({ length = 6, onComplete, error }) {
           />
         ))}
       </div>
-      {error && <p className="mt-2 text-sm text-red-400 text-center">{error}</p>}
+      {error && <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-red-400 text-center">{error}</p>}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../utils/auth'
+import { ROUTES } from '../../config/paths'
 import OTPInput from './OTPInput'
 
 const emailSchema = z.object({
@@ -51,7 +52,7 @@ export default function LoginForm() {
         loginTime: new Date().toISOString(),
       }
       authService.login(userData)
-      navigate('/dashboard', { replace: true })
+      navigate(ROUTES.DASHBOARD, { replace: true })
     }
   }
 
@@ -64,23 +65,23 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="bg-gray-900/98 backdrop-blur-md rounded-xl shadow-2xl p-8 w-full border border-emerald-500/20">
+    <div className="bg-gray-900/98 backdrop-blur-md rounded-lg sm:rounded-xl lg:rounded-2xl shadow-2xl p-5 sm:p-6 lg:p-8 w-full border border-emerald-500/20">
       {/* Logo Section */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-semibold mb-1 text-emerald-400">SCHOLARFLEX</h1>
+      <div className="text-center mb-6 sm:mb-7 lg:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-0.5 sm:mb-1 text-emerald-400">SCHOLARFLEX</h1>
       </div>
 
       {/* Login Title */}
-      <h2 className="text-2xl font-semibold text-center mb-8 text-gray-100">Login</h2>
+      <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-center mb-6 sm:mb-7 lg:mb-8 text-gray-100">Login</h2>
 
-      <form onSubmit={handleSubmit(onEmailSubmit)} className="space-y-5">
+      <form onSubmit={handleSubmit(onEmailSubmit)} className="space-y-4 sm:space-y-5">
         {/* Email Field */}
         <div
           className={`transition-all duration-500 ease-in-out ${
             showOTP ? 'opacity-0 max-h-0 overflow-hidden -mt-5' : 'opacity-100 max-h-96'
           }`}
         >
-          <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-300">
+          <label htmlFor="email" className="block text-xs sm:text-sm lg:text-base font-medium mb-1.5 sm:mb-2 text-gray-300">
             Email Address
           </label>
           <input
@@ -88,12 +89,12 @@ export default function LoginForm() {
             type="email"
             {...register('email')}
             disabled={showOTP}
-            className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition bg-gray-800/50 text-gray-100 placeholder-gray-500 border ${
+            className={`w-full px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base rounded-lg focus:outline-none focus:ring-2 transition bg-gray-800/50 text-gray-100 placeholder-gray-500 border ${
               errors.email ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' : 'border-gray-700/50 focus:border-emerald-500/50 focus:ring-emerald-500/30'
             }`}
             placeholder="Enter email address*"
           />
-          {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
+          {errors.email && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.email.message}</p>}
         </div>
 
         {/* OTP Input */}
@@ -115,12 +116,12 @@ export default function LoginForm() {
         </div>
 
         {/* Button */}
-        <div className="pt-2">
+        <div className="pt-1.5 sm:pt-2">
           <button
             type={showOTP ? 'button' : 'submit'}
             onClick={showOTP ? handleVerify : undefined}
             disabled={isSubmitting || isVerifying}
-            className="w-full py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 text-gray-900 hover:bg-emerald-400 transform hover:scale-[1.02]"
+            className="w-full py-2.5 sm:py-3 lg:py-3.5 px-3 sm:px-4 lg:px-5 text-xs sm:text-sm lg:text-base rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 text-gray-900 hover:bg-emerald-400 transform hover:scale-[1.02]"
           >
             {isSubmitting
               ? 'Sending OTP...'

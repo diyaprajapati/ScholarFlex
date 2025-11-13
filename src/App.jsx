@@ -1,31 +1,13 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import './index.css'
-import { LoginPage, DashboardPage } from './pages'
-import { ProtectedRoute, PublicRoute } from './components'
+import AppRoutes from './config/routes'
 
 const App = () => {
   return (
     <div>
       <BrowserRouter>
-        <Routes>
-          <Route
-            path='/'
-            element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path='/dashboard'
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <AppRoutes />
       </BrowserRouter>
     </div>
   )

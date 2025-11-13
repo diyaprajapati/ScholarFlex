@@ -42,11 +42,11 @@ export default function LeftPanel() {
       ></div>
 
       {/* Content Container - Left Aligned, Vertically Centered */}
-      <div className="relative z-10 h-full flex items-center pl-8 md:pl-12 lg:pl-16 pr-8">
-        <div className="space-y-6 md:space-y-8">
+      <div className="relative z-10 h-full flex items-center pl-4 sm:pl-6 md:pl-8 lg:pl-12 xl:pl-16 pr-4 sm:pr-6 md:pr-8">
+        <div className="space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8">
           {/* Company Name */}
           <h1 
-            className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight text-left animate-fade-in-up"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight text-left animate-fade-in-up"
             style={{ 
               animationDelay: '0.2s',
               animationFillMode: 'both'
@@ -57,7 +57,7 @@ export default function LeftPanel() {
           
           {/* Tagline */}
           <p 
-            className="text-lg md:text-xl lg:text-2xl text-gray-300 font-medium text-left animate-fade-in-up"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 font-medium text-left animate-fade-in-up"
             style={{ 
               animationDelay: '0.4s',
               animationFillMode: 'both'
@@ -74,7 +74,7 @@ export default function LeftPanel() {
               animationFillMode: 'both'
             }}
           >
-            <p className="text-gray-400 text-sm md:text-base lg:text-lg leading-relaxed text-left max-w-xl">
+            <p className="text-gray-400 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed text-left max-w-xl">
               Welcome to ScholarFlex, your comprehensive platform for academic excellence. 
               Streamline your learning journey with powerful tools designed to enhance productivity, 
               collaboration, and success in your educational pursuits.

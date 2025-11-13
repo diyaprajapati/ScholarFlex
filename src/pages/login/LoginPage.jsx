@@ -4,13 +4,14 @@ import SplitLayout from '../../components/layouts/SplitLayout'
 import LeftPanel from '../../components/login/LeftPanel'
 import LoginForm from '../../components/login/LoginForm'
 import { authService } from '../../utils/auth'
+import { ROUTES } from '../../config/paths'
 
 export default function LoginPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
     if (authService.isAuthenticated()) {
-      navigate('/dashboard', { replace: true })
+      navigate(ROUTES.DASHBOARD, { replace: true })
     }
   }, [navigate])
 
