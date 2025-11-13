@@ -26,5 +26,27 @@ export const authService = {
     const userData = localStorage.getItem(USER_KEY)
     return userData ? JSON.parse(userData) : null
   },
+
+  // Get user role
+  getUserRole: () => {
+    const userData = authService.getUser()
+    return userData?.role || null
+  },
+
+  // Check if user is admin or super admin
+  isAdmin: () => {
+    const role = authService.getUserRole()
+    return role === 'admin' || role === 'superadmin'
+  },
+
+  // Check if user is super admin
+  isSuperAdmin: () => {
+    return authService.getUserRole() === 'superadmin'
+  },
+
+  // Check if user is student
+  isStudent: () => {
+    return authService.getUserRole() === 'student'
+  },
 }
 

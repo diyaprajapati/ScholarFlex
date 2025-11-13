@@ -5,5 +5,8 @@ export { default as AddQuestionPaperFormPage } from './question-papers/AddQuesti
 export { default as ViewQuestionPaperPage } from './question-papers/ViewQuestionPaperPage'
 export { default as AllInternsPage } from './interns/AllInternsPage'
 export { default as AddInternPage } from './interns/AddInternPage'
+export { default as StudentTestInstructionsPage } from './student/StudentTestInstructionsPage'
+export { default as StudentTestPage } from './student/StudentTestPage'
+export { default as TestSubmissionPage } from './student/TestSubmissionPage'
 export { default as NotFoundPage } from './errors/NotFoundPage'
 

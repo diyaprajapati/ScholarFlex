@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { authService } from '../../utils/auth'
 
 const STATUS_COLORS = {
   Active: {
@@ -42,6 +43,11 @@ export default function InternsTable({ interns = [], isLoading = false, onEdit, 
   const [openMenuId, setOpenMenuId] = useState(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const menuRefs = useRef({})
+  
+  // Check user role to determine if marks should be shown
+  const userRole = authService.getUserRole()
+  const isSuperAdmin = userRole === 'superadmin'
+  const showMarks = isSuperAdmin // Only Super Admin can see marks
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -144,9 +150,11 @@ export default function InternsTable({ interns = [], isLoading = false, onEdit, 
               <th className="px-3 sm:px-4 lg:px-6 py-3 sm:py-3.5 lg:py-4 text-left text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
                 Status
               </th>
-              <th className="px-3 sm:px-4 lg:px-6 py-3 sm:py-3.5 lg:py-4 text-left text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                Aptitude Score
-              </th>
+              {showMarks && (
+                <th className="px-3 sm:px-4 lg:px-6 py-3 sm:py-3.5 lg:py-4 text-left text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                  Aptitude Score
+                </th>
+              )}
               <th className="px-3 sm:px-4 lg:px-6 py-3 sm:py-3.5 lg:py-4 text-left text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
                 Aptitude Status
               </th>
@@ -190,11 +198,13 @@ export default function InternsTable({ interns = [], isLoading = false, onEdit, 
                     {intern.status}
                   </span>
                 </td>
-                <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-3.5 lg:py-4 whitespace-nowrap">
-                  <div className="text-xs sm:text-sm lg:text-base text-gray-700">
-                    {intern.aptitudeScore !== null ? `${intern.aptitudeScore}` : 'N/A'}
-                  </div>
-                </td>
+                {showMarks && (
+                  <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-3.5 lg:py-4 whitespace-nowrap">
+                    <div className="text-xs sm:text-sm lg:text-base text-gray-700">
+                      {intern.aptitudeScore !== null ? `${intern.aptitudeScore}` : 'N/A'}
+                    </div>
+                  </td>
+                )}
                 <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-3.5 lg:py-4 whitespace-nowrap">
                   <span
                     className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold ${APTITUDE_STATUS_COLORS[intern.aptitudeStatus]?.text || 'text-gray-600'}`}

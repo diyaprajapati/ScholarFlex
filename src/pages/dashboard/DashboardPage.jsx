@@ -32,6 +32,13 @@ export default function DashboardPage() {
     }
     const userData = authService.getUser()
     setUser(userData)
+    
+    // Check if user has access to dashboard (Admin or Super Admin only)
+    const userRole = authService.getUserRole()
+    if (userRole !== 'admin' && userRole !== 'superadmin') {
+      // Student should be redirected (to be implemented)
+      navigate(ROUTES.LOGIN, { replace: true })
+    }
   }, [navigate])
 
   const handleCardClick = (cardId) => {

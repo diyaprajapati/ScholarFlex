@@ -19,11 +19,19 @@ export const ROUTES = {
     VIEW: (id) => `/question-papers/view/${id}`,
   },
   
-  // Interns Routes (for future use)
+  // Interns Routes
   INTERNS: {
     BASE: '/interns',
     ADD: '/interns/add',
     VIEW: '/interns/view',
+  },
+  
+  // Student Routes
+  STUDENT: {
+    BASE: '/student',
+    INSTRUCTIONS: '/student/instructions',
+    TEST: '/student/test',
+    SUBMISSION: '/student/submission',
   },
 }
 

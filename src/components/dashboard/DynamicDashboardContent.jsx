@@ -1,8 +1,13 @@
 import React from 'react'
 import PieChart from './charts/PieChart'
 import DetailTable from './tables/DetailTable'
+import { authService } from '../../utils/auth'
 
 export default function DynamicDashboardContent({ selectedCard }) {
+  // Check user role to determine if marks should be shown
+  const userRole = authService.getUserRole()
+  const isSuperAdmin = userRole === 'superadmin'
+  const showMarks = isSuperAdmin // Only Super Admin can see marks
   // Get data based on selected card
   const getCardData = () => {
     switch (selectedCard) {
@@ -42,7 +47,7 @@ export default function DynamicDashboardContent({ selectedCard }) {
                 { key: 'name', label: 'Name' },
                 { key: 'email', label: 'Email' },
                 { key: 'domain', label: 'Domain' },
-                { key: 'score', label: 'Score' },
+                ...(showMarks ? [{ key: 'score', label: 'Score' }] : []),
                 { key: 'status', label: 'Status' },
               ],
             },
@@ -95,7 +100,7 @@ export default function DynamicDashboardContent({ selectedCard }) {
               columns: [
                 { key: 'name', label: 'Name' },
                 { key: 'email', label: 'Email' },
-                { key: 'score', label: 'Score' },
+                ...(showMarks ? [{ key: 'score', label: 'Score' }] : []),
                 { key: 'grade', label: 'Grade' },
                 { key: 'completedDate', label: 'Completed Date' },
               ],

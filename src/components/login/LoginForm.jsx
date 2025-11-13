@@ -43,21 +43,50 @@ export default function LoginForm() {
       setIsVerifying(true)
       setOtpError('')
       
+      // Verify OTP (static OTP: 000000)
+      if (otp !== '000000') {
+        setOtpError('Invalid OTP. Please enter 000000')
+        setIsVerifying(false)
+        return
+      }
+      
       // Simulate OTP verification
       await new Promise((resolve) => setTimeout(resolve, 1500))
       
-      // For demo purposes, accept any 6-digit OTP
+      // Determine role based on email
+      let role = 'student' // default
+      if (email.toLowerCase() === 'admin@gmail.com') {
+        role = 'admin'
+      } else if (email.toLowerCase() === 'superadmin@gmail.com') {
+        role = 'superadmin'
+      } else if (email.toLowerCase() === 'student@gmail.com') {
+        role = 'student'
+      }
+      
       const userData = {
         email: email,
+        role: role,
         loginTime: new Date().toISOString(),
       }
       authService.login(userData)
-      navigate(ROUTES.DASHBOARD, { replace: true })
+      
+      // Navigate based on role
+      if (role === 'student') {
+        // Student goes to test instructions page
+        navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+      } else {
+        // Admin and Super Admin go to dashboard
+        navigate(ROUTES.DASHBOARD, { replace: true })
+      }
     }
   }
 
   const handleVerify = async () => {
     if (otpValue.length === 6) {
+      if (otpValue !== '000000') {
+        setOtpError('Invalid OTP. Please enter 000000')
+        return
+      }
       await onOTPComplete(otpValue)
     } else {
       setOtpError('Please enter complete OTP code')

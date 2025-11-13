@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, NotFoundPage } from '../pages'
+import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage } from '../pages'
 import { ROUTES } from './paths'
 
 /**
@@ -21,21 +21,21 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Protected Routes */}
+      {/* Protected Routes - Admin and Super Admin only */}
       <Route
         path={ROUTES.DASHBOARD}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <DashboardPage />
           </ProtectedRoute>
         }
       />
 
-      {/* Question Papers Routes */}
+      {/* Question Papers Routes - Admin and Super Admin only */}
       <Route
         path={ROUTES.QUESTION_PAPERS.LIST}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <QuestionPapersListPage />
           </ProtectedRoute>
         }
@@ -43,7 +43,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.QUESTION_PAPERS.ADD}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <AddQuestionPaperFormPage />
           </ProtectedRoute>
         }
@@ -51,7 +51,7 @@ export default function AppRoutes() {
       <Route
         path="/question-papers/edit/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <AddQuestionPaperFormPage />
           </ProtectedRoute>
         }
@@ -59,17 +59,17 @@ export default function AppRoutes() {
       <Route
         path="/question-papers/view/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ViewQuestionPaperPage />
           </ProtectedRoute>
         }
       />
 
-      {/* Interns Routes */}
+      {/* Interns Routes - Admin and Super Admin only */}
       <Route
         path={ROUTES.INTERNS.VIEW}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <AllInternsPage />
           </ProtectedRoute>
         }
@@ -77,7 +77,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.INTERNS.ADD}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <AddInternPage />
           </ProtectedRoute>
         }
@@ -85,8 +85,34 @@ export default function AppRoutes() {
       <Route
         path="/interns/edit/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <AddInternPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Student Routes */}
+      <Route
+        path={ROUTES.STUDENT.INSTRUCTIONS}
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <StudentTestInstructionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.STUDENT.TEST}
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <StudentTestPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.STUDENT.SUBMISSION}
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <TestSubmissionPage />
           </ProtectedRoute>
         }
       />

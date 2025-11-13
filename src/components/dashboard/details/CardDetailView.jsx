@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import PieChart from '../charts/PieChart'
 import DetailTable from '../tables/DetailTable'
+import { authService } from '../../../utils/auth'
 
 export default function CardDetailView({ cardId, onBack }) {
   // Debug: Log the cardId to see what's being passed
@@ -51,6 +52,10 @@ export default function CardDetailView({ cardId, onBack }) {
 
 // Total Register Interns Detail
 function TotalInternsDetail() {
+  const userRole = authService.getUserRole()
+  const isSuperAdmin = userRole === 'superadmin'
+  const showMarks = isSuperAdmin
+  
   const pieData = [
     { label: 'Active', value: 180, color: '#4C763B' },
     { label: 'Inactive', value: 45, color: '#B0CE88' },
@@ -104,7 +109,7 @@ function TotalInternsDetail() {
             { key: 'name', label: 'Name' },
             { key: 'email', label: 'Email' },
             { key: 'domain', label: 'Domain' },
-            { key: 'score', label: 'Score' },
+            ...(showMarks ? [{ key: 'score', label: 'Score' }] : []),
             { key: 'status', label: 'Status' },
           ]}
         />
@@ -158,6 +163,10 @@ function AllDomainsDetail() {
 
 // Completed Aptitude Detail
 function CompletedAptitudeDetail() {
+  const userRole = authService.getUserRole()
+  const isSuperAdmin = userRole === 'superadmin'
+  const showMarks = isSuperAdmin
+  
   const pieData = [
     { label: 'Excellent (90-100)', value: 45, color: '#4C763B' },
     { label: 'Good (75-89)', value: 78, color: '#B0CE88' },
@@ -190,7 +199,7 @@ function CompletedAptitudeDetail() {
         columns={[
           { key: 'name', label: 'Name' },
           { key: 'email', label: 'Email' },
-          { key: 'score', label: 'Score' },
+          ...(showMarks ? [{ key: 'score', label: 'Score' }] : []),
           { key: 'grade', label: 'Grade' },
           { key: 'completedDate', label: 'Completed Date' },
         ]}
