@@ -6,6 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const logRoutes = require('./routes/logRoutes');
+const internRoutes = require('./routes/internRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const pool = require('./config/database');
 
@@ -34,6 +35,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/logs', logRoutes);
+app.use('/api/interns', internRoutes);
 
 // 404 handler
 app.use((req, res) => {

@@ -15,10 +15,13 @@ const getToken = () => {
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
   
+  // Don't set Content-Type for FormData (let browser set it with boundary)
+  const isFormData = options.body instanceof FormData;
+  
   const config = {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...(!isFormData && { 'Content-Type': 'application/json' }),
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
@@ -76,6 +79,53 @@ export const api = {
     logout: async () => {
       return apiRequest('/auth/logout', {
         method: 'POST',
+      });
+    },
+  },
+
+  // Intern endpoints
+  interns: {
+    uploadSpreadsheet: async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      return apiRequest('/interns/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+
+    getAll: async (filters = {}) => {
+      const queryParams = new URLSearchParams();
+      if (filters.domain_id) queryParams.append('domain_id', filters.domain_id);
+      if (filters.status_id) queryParams.append('status_id', filters.status_id);
+      if (filters.limit) queryParams.append('limit', filters.limit);
+      if (filters.offset) queryParams.append('offset', filters.offset);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/interns?${queryString}` : '/interns';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+
+    getById: async (id) => {
+      return apiRequest(`/interns/${id}`, {
+        method: 'GET',
+      });
+    },
+
+    update: async (id, data) => {
+      return apiRequest(`/interns/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete: async (id) => {
+      return apiRequest(`/interns/${id}`, {
+        method: 'DELETE',
       });
     },
   },

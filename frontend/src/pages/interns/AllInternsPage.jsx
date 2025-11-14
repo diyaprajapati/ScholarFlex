@@ -7,7 +7,8 @@ import TopNavbar from '../../components/layout/TopNavbar'
 import InternsHeader from '../../components/interns/InternsHeader'
 import FilterPanel from '../../components/interns/FilterPanel'
 import InternsTable from '../../components/interns/InternsTable'
-import { mockInterns } from '../../utils/internsData'
+import DeleteConfirmModal from '../../components/interns/DeleteConfirmModal'
+import { api } from '../../services/api'
 
 export default function AllInternsPage() {
   const navigate = useNavigate()
@@ -22,6 +23,8 @@ export default function AllInternsPage() {
     aptitudeStatus: [],
     selectionStatus: [],
   })
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, intern: null })
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -31,12 +34,37 @@ export default function AllInternsPage() {
     const userData = authService.getUser()
     setUser(userData)
     
-    // Simulate loading
-    setTimeout(() => {
-      setInterns(mockInterns)
-      setIsLoading(false)
-    }, 500)
+    // Fetch interns from API
+    fetchInterns()
   }, [navigate])
+
+  const fetchInterns = async () => {
+    try {
+      setIsLoading(true)
+      const response = await api.interns.getAll()
+      
+      if (response.success) {
+        // Map API response to frontend format
+        const mappedInterns = response.data.map(intern => ({
+          id: intern.id,
+          name: intern.name,
+          email: intern.email,
+          domain: intern.domain,
+          status: intern.status || 'Pending',
+          registration_date: intern.registration_date,
+          // Default values for fields not yet in API
+          aptitudeStatus: 'Pending',
+          selectionStatus: 'Not Selected',
+        }))
+        setInterns(mappedInterns)
+      }
+    } catch (error) {
+      console.error('Error fetching interns:', error)
+      alert('Failed to load interns. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   // Filter and search logic
   const filteredInterns = useMemo(() => {
@@ -113,14 +141,39 @@ export default function AllInternsPage() {
   }
 
   const handleEdit = (intern) => {
-    console.log('Edit intern:', intern)
-    // Navigate to edit page or open edit modal
+    // Navigate to edit page
+    navigate(`${ROUTES.INTERNS.ADD}?edit=${intern.id}`)
   }
 
   const handleDelete = (intern) => {
-    if (window.confirm(`Are you sure you want to delete ${intern.name}?`)) {
-      setInterns((prev) => prev.filter((i) => i.id !== intern.id))
+    setDeleteModal({ isOpen: true, intern })
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.intern) return
+
+    try {
+      setIsDeleting(true)
+      await api.interns.delete(deleteModal.intern.id)
+      
+      // Remove from local state
+      setInterns((prev) => prev.filter((i) => i.id !== deleteModal.intern.id))
+      
+      // Close modal
+      setDeleteModal({ isOpen: false, intern: null })
+      
+      // Optionally refresh the list to ensure consistency
+      // fetchInterns()
+    } catch (error) {
+      console.error('Error deleting intern:', error)
+      alert(error.message || 'Failed to delete intern. Please try again.')
+    } finally {
+      setIsDeleting(false)
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false, intern: null })
   }
 
   const handleView = (intern) => {
@@ -167,6 +220,15 @@ export default function AllInternsPage() {
           />
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteModal.isOpen}
+        intern={deleteModal.intern}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        isDeleting={isDeleting}
+      />
     </div>
   )
 }
