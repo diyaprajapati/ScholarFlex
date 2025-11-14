@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const pool = require('../config/database');
 const User = require('../models/User');
 const { logActivitySimple } = require('../middleware/activityLogger');
 
