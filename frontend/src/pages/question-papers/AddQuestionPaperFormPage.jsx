@@ -8,7 +8,6 @@ import QuestionPaperForm from '../../components/question-papers/forms/QuestionPa
 import QuestionPaperChoice from '../../components/question-papers/forms/QuestionPaperChoice'
 import JSONUploadArea from '../../components/question-papers/forms/JSONUploadArea'
 import { NoDataFound } from '../../components/common/errors'
-import { mockPaperSets } from '../../utils/questionPaperData'
 import api from '../../services/api'
 
 export default function AddQuestionPaperFormPage() {
@@ -32,30 +31,42 @@ export default function AddQuestionPaperFormPage() {
 
     // Load paper set data if in edit mode
     if (isEditMode) {
-      setIsLoading(true)
-      // Simulate API call to fetch paper set
-      setTimeout(() => {
-        const paperSet = mockPaperSets.find(p => p.id === parseInt(id))
-        if (paperSet) {
-          // TODO: Replace with actual API call
-          // For now, we'll use mock data structure
-          // In real app, you'd fetch the full paper set with questions
+      const fetchQuestionPaper = async () => {
+        setIsLoading(true)
+        try {
+          const response = await api.questionPapers.getById(id)
+          const paper = response.data
+          
+          // Transform backend data to frontend format
           setPaperSetData({
-            name: paperSet.name,
-            subject: paperSet.subject,
-            year: paperSet.year,
-            semester: paperSet.semester,
-            duration: paperSet.duration,
-            totalMarks: paperSet.maxMarks,
-            questions: paperSet.questions || [], // This would come from API
+            name: paper.paper_name,
+            subject: paper.subject || '',
+            year: paper.year || '',
+            semester: paper.semester || '',
+            duration: paper.duration_minutes || 180,
+            totalMarks: paper.total_weightage || 0,
+            status: paper.status || 'draft',
+            description: paper.description || '',
+            questions: (paper.questions || []).map(q => ({
+              id: q.id, // Keep ID for update
+              text: q.text || q.question_text,
+              type: q.type,
+              weightage: q.weightage,
+              options: q.options || [],
+              correctOptions: q.correctOptions || [],
+              correctAnswer: q.correctAnswer || q.correct_answer || '',
+            })),
           })
           setMode('manual') // Skip choice screen in edit mode
-          setIsLoading(false)
-        } else {
-          setIsLoading(false)
+        } catch (error) {
+          console.error('Error fetching question paper:', error)
           // Will show NoDataFound component
+        } finally {
+          setIsLoading(false)
         }
-      }, 500)
+      }
+      
+      fetchQuestionPaper()
     }
   }, [navigate, id, isEditMode])
 

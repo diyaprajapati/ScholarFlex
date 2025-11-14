@@ -23,6 +23,12 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
 
   const handleQuestionChange = (index, updatedQuestion) => {
     const newQuestions = [...formData.questions]
+    const existingQuestion = newQuestions[index]
+    
+    // Preserve question ID if it exists (for edit mode)
+    if (existingQuestion && existingQuestion.id) {
+      updatedQuestion.id = existingQuestion.id
+    }
     
     // Auto-set True/False options if type changed to true-false
     if (updatedQuestion.type === 'true-false' && (!updatedQuestion.options || updatedQuestion.options.length === 0)) {

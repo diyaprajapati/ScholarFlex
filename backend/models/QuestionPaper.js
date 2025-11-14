@@ -281,6 +281,262 @@ class QuestionPaper {
       throw error;
     }
   }
+
+  /**
+   * Update question paper and its questions
+   */
+  static async update(id, paperData, questionsData, userId) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Check if paper exists
+      const existingPaper = await client.query(
+        'SELECT id FROM question_papers WHERE id = $1 AND is_active = TRUE',
+        [id]
+      );
+
+      if (existingPaper.rows.length === 0) {
+        throw new Error('Question paper not found');
+      }
+
+      // Update question paper
+      const updateFields = [];
+      const updateValues = [];
+      let paramCount = 1;
+
+      if (paperData.paper_name !== undefined) {
+        updateFields.push(`paper_name = $${paramCount++}`);
+        updateValues.push(paperData.paper_name);
+      }
+      if (paperData.description !== undefined) {
+        updateFields.push(`description = $${paramCount++}`);
+        updateValues.push(paperData.description);
+      }
+      if (paperData.subject !== undefined) {
+        updateFields.push(`subject = $${paramCount++}`);
+        updateValues.push(paperData.subject);
+      }
+      if (paperData.year !== undefined) {
+        updateFields.push(`year = $${paramCount++}`);
+        updateValues.push(paperData.year);
+      }
+      if (paperData.semester !== undefined) {
+        updateFields.push(`semester = $${paramCount++}`);
+        updateValues.push(paperData.semester);
+      }
+      if (paperData.duration_minutes !== undefined) {
+        updateFields.push(`duration_minutes = $${paramCount++}`);
+        updateValues.push(paperData.duration_minutes);
+      }
+      if (paperData.status !== undefined) {
+        updateFields.push(`status = $${paramCount++}`);
+        updateValues.push(paperData.status);
+      }
+      if (paperData.total_questions !== undefined) {
+        updateFields.push(`total_questions = $${paramCount++}`);
+        updateValues.push(paperData.total_questions);
+      }
+      if (paperData.total_weightage !== undefined) {
+        updateFields.push(`total_weightage = $${paramCount++}`);
+        updateValues.push(paperData.total_weightage);
+      }
+
+      updateFields.push(`updated_by = $${paramCount++}`);
+      updateValues.push(userId);
+      updateFields.push(`updated_at = NOW()`);
+      updateValues.push(id);
+
+      if (updateFields.length > 2) { // More than just updated_by and updated_at
+        await client.query(
+          `UPDATE question_papers SET ${updateFields.join(', ')} WHERE id = $${paramCount}`,
+          updateValues
+        );
+      }
+
+      // If questions are provided, update them
+      if (questionsData && Array.isArray(questionsData)) {
+        // Get existing question IDs
+        const existingQuestions = await client.query(
+          'SELECT id FROM questions WHERE question_paper_id = $1 AND is_active = TRUE',
+          [id]
+        );
+        const existingQuestionIds = existingQuestions.rows.map(row => row.id);
+
+        // Get question IDs from the update data (questions with IDs are existing, without IDs are new)
+        const providedQuestionIds = questionsData
+          .filter(q => q.id)
+          .map(q => q.id);
+
+        // Questions to delete (exist in DB but not in provided data)
+        const questionsToDelete = existingQuestionIds.filter(
+          id => !providedQuestionIds.includes(id)
+        );
+
+        // Soft delete removed questions
+        if (questionsToDelete.length > 0) {
+          await client.query(
+            `UPDATE questions SET is_active = FALSE WHERE id = ANY($1::int[])`,
+            [questionsToDelete]
+          );
+          // Delete their options (question_options doesn't have is_active, so we delete them)
+          await client.query(
+            `DELETE FROM question_options 
+             WHERE question_id = ANY($1::int[])`,
+            [questionsToDelete]
+          );
+        }
+
+        // Update or insert questions
+        let displayOrder = 0;
+        for (const questionData of questionsData) {
+          const questionType = this.mapQuestionType(questionData.type);
+
+          if (questionData.id && existingQuestionIds.includes(questionData.id)) {
+            // Update existing question
+            await client.query(
+              `UPDATE questions 
+               SET question_text = $1, question_type = $2, weightage = $3, 
+                   correct_answer = $4, display_order = $5, updated_at = NOW()
+               WHERE id = $6`,
+              [
+                questionData.text,
+                questionType,
+                questionData.weightage || 1,
+                questionData.correctAnswer || null,
+                displayOrder++,
+                questionData.id,
+              ]
+            );
+
+            const questionId = questionData.id;
+
+            // Delete existing options (question_options doesn't have is_active, so we delete them)
+            await client.query(
+              'DELETE FROM question_options WHERE question_id = $1',
+              [questionId]
+            );
+
+            // Insert new options
+            if (questionData.options && questionData.options.length > 0) {
+              const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+              const correctOptions = questionData.correctOptions || [];
+
+              for (let i = 0; i < questionData.options.length; i++) {
+                const isCorrect = correctOptions.includes(i);
+                const optionLabel = optionLabels[i] || String.fromCharCode(65 + i);
+
+                await client.query(
+                  `INSERT INTO question_options (
+                    question_id, option_text, option_label, is_correct, display_order
+                  ) VALUES ($1, $2, $3, $4, $5)`,
+                  [questionId, questionData.options[i], optionLabel, isCorrect, i]
+                );
+              }
+            }
+          } else {
+            // Insert new question
+            const questionResult = await client.query(
+              `INSERT INTO questions (
+                question_paper_id, question_text, question_type, weightage,
+                correct_answer, display_order, created_by
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+              [
+                id,
+                questionData.text,
+                questionType,
+                questionData.weightage || 1,
+                questionData.correctAnswer || null,
+                displayOrder++,
+                userId,
+              ]
+            );
+
+            const questionId = questionResult.rows[0].id;
+
+            // Insert options
+            if (questionData.options && questionData.options.length > 0) {
+              const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+              const correctOptions = questionData.correctOptions || [];
+
+              for (let i = 0; i < questionData.options.length; i++) {
+                const isCorrect = correctOptions.includes(i);
+                const optionLabel = optionLabels[i] || String.fromCharCode(65 + i);
+
+                await client.query(
+                  `INSERT INTO question_options (
+                    question_id, option_text, option_label, is_correct, display_order
+                  ) VALUES ($1, $2, $3, $4, $5)`,
+                  [questionId, questionData.options[i], optionLabel, isCorrect, i]
+                );
+              }
+            }
+          }
+        }
+
+        // Update total_questions and total_weightage
+        const activeQuestions = await client.query(
+          'SELECT COUNT(*) as count, COALESCE(SUM(weightage), 0) as total FROM questions WHERE question_paper_id = $1 AND is_active = TRUE',
+          [id]
+        );
+        const totalQuestions = parseInt(activeQuestions.rows[0].count);
+        const totalWeightage = parseInt(activeQuestions.rows[0].total);
+
+        await client.query(
+          `UPDATE question_papers 
+           SET total_questions = $1, total_weightage = $2, updated_at = NOW()
+           WHERE id = $3`,
+          [totalQuestions, totalWeightage, id]
+        );
+      }
+
+      await client.query('COMMIT');
+
+      // Fetch and return updated question paper
+      const updatedPaper = await this.findById(id);
+      return updatedPaper;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('Error updating question paper:', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Delete question paper (soft delete)
+   */
+  static async delete(id) {
+    try {
+      const result = await pool.query(
+        'UPDATE question_papers SET is_active = FALSE, updated_at = NOW() WHERE id = $1 RETURNING id',
+        [id]
+      );
+
+      if (result.rows.length === 0) {
+        return false;
+      }
+
+      // Also soft delete all questions
+      await pool.query(
+        'UPDATE questions SET is_active = FALSE WHERE question_paper_id = $1',
+        [id]
+      );
+
+      // Delete all options (question_options doesn't have is_active, so we delete them)
+      await pool.query(
+        `DELETE FROM question_options 
+         WHERE question_id IN (SELECT id FROM questions WHERE question_paper_id = $1)`,
+        [id]
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting question paper:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = QuestionPaper;

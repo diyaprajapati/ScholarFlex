@@ -30,6 +30,28 @@ router.get(
 );
 
 /**
+ * @route   PUT /api/question-papers/:id
+ * @desc    Update a question paper and its questions
+ * @access  Private (Admin, Super Admin)
+ */
+router.put(
+  '/:id',
+  authorize('ADMIN', 'SUPER_ADMIN'),
+  questionPaperController.updateQuestionPaper
+);
+
+/**
+ * @route   DELETE /api/question-papers/:id
+ * @desc    Delete a question paper (soft delete)
+ * @access  Private (Admin, Super Admin)
+ */
+router.delete(
+  '/:id',
+  authorize('ADMIN', 'SUPER_ADMIN'),
+  questionPaperController.deleteQuestionPaper
+);
+
+/**
  * @route   POST /api/question-papers
  * @desc    Create a new question paper with questions from JSON format
  * @access  Private (Admin, Super Admin)

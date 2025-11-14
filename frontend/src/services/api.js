@@ -228,6 +228,11 @@ export const api = {
             weightage: q.weightage || 1,
           };
 
+          // Preserve question ID if it exists (for updates)
+          if (q.id) {
+            question.id = q.id;
+          }
+
           // Add options and correctOptions for choice-based questions
           if (['multiple-choice', 'single-choice', 'true-false'].includes(q.type)) {
             // Filter out empty options and adjust correctOptions indices
