@@ -6,7 +6,7 @@ import Sidebar from '../../components/dashboard/Sidebar'
 import TopNavbar from '../../components/layout/TopNavbar'
 import QuestionPaperView from '../../components/question-papers/view/QuestionPaperView'
 import { NoDataFound } from '../../components/common/errors'
-import { mockPaperSets } from '../../utils/questionPaperData'
+import api from '../../services/api'
 
 export default function ViewQuestionPaperPage() {
   const navigate = useNavigate()
@@ -23,21 +23,46 @@ export default function ViewQuestionPaperPage() {
     const userData = authService.getUser()
     setUser(userData)
 
-    // Load paper set data
-    setIsLoading(true)
-    // Simulate API call to fetch paper set
-    setTimeout(() => {
-      const foundPaperSet = mockPaperSets.find(p => p.id === parseInt(id))
-      if (foundPaperSet) {
-        // TODO: Replace with actual API call
-        // In real app, you'd fetch the full paper set with questions
-        setPaperSet({
-          ...foundPaperSet,
-          questions: foundPaperSet.questions || [], // This would come from API
-        })
+    // Load paper set data from API
+    const fetchQuestionPaper = async () => {
+      setIsLoading(true)
+      try {
+        const response = await api.questionPapers.getById(id)
+        const paper = response.data
+        
+        // Transform backend data to frontend format
+        const transformedPaper = {
+          id: paper.id,
+          name: paper.paper_name,
+          subject: paper.subject || '',
+          year: paper.year || '',
+          semester: paper.semester || '',
+          totalQuestions: paper.total_questions || 0,
+          duration: paper.duration_minutes || 0,
+          maxMarks: paper.total_weightage || 0,
+          createdAt: paper.created_at ? new Date(paper.created_at).toISOString().split('T')[0] : '',
+          status: paper.status || 'draft',
+          questions: (paper.questions || []).map(q => ({
+            id: q.id,
+            text: q.text || q.question_text,
+            type: q.type,
+            weightage: q.weightage,
+            options: q.options || [],
+            correctOptions: q.correctOptions || [],
+            correctAnswer: q.correctAnswer || q.correct_answer || '',
+          })),
+        }
+        
+        setPaperSet(transformedPaper)
+      } catch (error) {
+        console.error('Error fetching question paper:', error)
+        setPaperSet(null) // Will show NoDataFound component
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
-    }, 500)
+    }
+
+    fetchQuestionPaper()
   }, [navigate, id])
 
   if (isLoading) {

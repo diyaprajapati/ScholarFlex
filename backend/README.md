@@ -356,6 +356,132 @@ Headers: { "Authorization": "Bearer <token>" }
 - This action cannot be undone
 - Related test attempts and student answers are also deleted automatically
 
+### Question Papers Management (Admin and Super Admin)
+
+#### Create Question Paper from JSON
+
+```
+POST /api/question-papers
+Headers: {
+  "Authorization": "Bearer <token>",
+  "Content-Type": "application/json"
+}
+Body: {
+  "paper_name": "JavaScript Fundamentals Test",
+  "description": "Basic JavaScript concepts test",
+  "subject": "JavaScript",
+  "year": "2024",
+  "semester": "Spring",
+  "duration_minutes": 60,
+  "status": "draft",
+  "questions": [
+    {
+      "text": "What is the capital of France?",
+      "type": "multiple-choice",
+      "weightage": 2,
+      "options": ["London", "Paris", "Berlin", "Madrid"],
+      "correctOptions": [1]
+    },
+    {
+      "text": "JavaScript is a programming language.",
+      "type": "true-false",
+      "weightage": 1,
+      "options": ["True", "False"],
+      "correctOptions": [0]
+    },
+    {
+      "text": "Explain the concept of closures in JavaScript.",
+      "type": "short-answer",
+      "weightage": 5,
+      "correctAnswer": "A closure is a function that has access to variables in its outer scope even after the outer function has returned."
+    }
+  ]
+}
+```
+
+**Required Fields:**
+
+- `paper_name` - Name of the question paper
+- `questions` - Array of question objects (must not be empty)
+
+**Question Object Required Fields:**
+
+- `text` - Question text
+- `type` - Question type: `"multiple-choice"`, `"single-choice"`, `"true-false"`, or `"short-answer"`
+- `weightage` - Points/weightage for the question (optional, defaults to 1)
+
+**Question Type Specific Fields:**
+
+- For `multiple-choice`, `single-choice`, and `true-false`:
+  - `options` - Array of option strings (required)
+  - `correctOptions` - Array of indices indicating correct options (required, 0-based)
+- For `short-answer`:
+  - `correctAnswer` - The correct answer text (required)
+
+**Optional Fields:**
+
+- `description` - Description of the question paper
+- `subject` - Subject name
+- `year` - Year (e.g., "2024")
+- `semester` - Semester (e.g., "Spring", "Fall")
+- `duration_minutes` - Duration in minutes (defaults to 60)
+- `status` - Status: `"draft"` or `"published"` (defaults to "draft")
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Question paper created successfully",
+  "data": {
+    "id": 1,
+    "paper_name": "JavaScript Fundamentals Test",
+    "description": "Basic JavaScript concepts test",
+    "subject": "JavaScript",
+    "year": "2024",
+    "semester": "Spring",
+    "total_questions": 3,
+    "total_weightage": 8,
+    "duration_minutes": 60,
+    "status": "draft",
+    "created_at": "2024-01-15T10:30:00Z",
+    "questions": [
+      {
+        "id": 1,
+        "question_text": "What is the capital of France?",
+        "question_type": "MULTIPLE_SELECT",
+        "weightage": 2,
+        "options": [
+          {
+            "id": 1,
+            "option_text": "London",
+            "option_label": "A",
+            "is_correct": false
+          },
+          {
+            "id": 2,
+            "option_text": "Paris",
+            "option_label": "B",
+            "is_correct": true
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Notes:**
+
+- Question types are mapped as follows:
+  - `"multiple-choice"` → `MULTIPLE_SELECT` (allows multiple correct answers)
+  - `"single-choice"` → `SINGLE_CHOICE` (single correct answer)
+  - `"true-false"` → `TRUE_FALSE`
+  - `"short-answer"` → `SHORT_ANSWER`
+- Options are automatically labeled as A, B, C, D, etc.
+- `total_questions` and `total_weightage` are automatically calculated from the questions array
+- All operations are logged in the activity logs
+
 ## Project Structure
 
 ```

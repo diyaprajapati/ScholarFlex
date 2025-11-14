@@ -1,0 +1,202 @@
+const QuestionPaper = require('../models/QuestionPaper');
+const { logActivitySimple } = require('../middleware/activityLogger');
+
+/**
+ * Create question paper from JSON format
+ */
+exports.createQuestionPaper = async (req, res) => {
+  try {
+    const {
+      paper_name,
+      description,
+      subject,
+      year,
+      semester,
+      duration_minutes,
+      status,
+      questions,
+    } = req.body;
+
+    // Validate required fields
+    if (!paper_name) {
+      return res.status(400).json({
+        success: false,
+        message: 'paper_name is required',
+      });
+    }
+
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'questions array is required and must not be empty',
+      });
+    }
+
+    // Validate each question
+    const validationErrors = [];
+    for (let i = 0; i < questions.length; i++) {
+      const question = questions[i];
+      const questionNum = i + 1;
+
+      if (!question.text) {
+        validationErrors.push(`Question ${questionNum}: text is required`);
+      }
+
+      if (!question.type) {
+        validationErrors.push(`Question ${questionNum}: type is required`);
+      } else {
+        const validTypes = ['multiple-choice', 'single-choice', 'true-false', 'short-answer'];
+        if (!validTypes.includes(question.type)) {
+          validationErrors.push(
+            `Question ${questionNum}: type must be one of: ${validTypes.join(', ')}`
+          );
+        }
+      }
+
+      if (question.weightage && (isNaN(question.weightage) || question.weightage < 0)) {
+        validationErrors.push(`Question ${questionNum}: weightage must be a positive number`);
+      }
+
+      // Validate options for multiple-choice, single-choice, and true-false
+      if (['multiple-choice', 'single-choice', 'true-false'].includes(question.type)) {
+        if (!question.options || !Array.isArray(question.options) || question.options.length === 0) {
+          validationErrors.push(`Question ${questionNum}: options array is required for ${question.type} questions`);
+        }
+
+        if (!question.correctOptions || !Array.isArray(question.correctOptions) || question.correctOptions.length === 0) {
+          validationErrors.push(`Question ${questionNum}: correctOptions array is required for ${question.type} questions`);
+        } else {
+          // Validate correctOptions indices
+          for (const correctIndex of question.correctOptions) {
+            if (correctIndex < 0 || correctIndex >= question.options.length) {
+              validationErrors.push(
+                `Question ${questionNum}: correctOptions index ${correctIndex} is out of range (options length: ${question.options.length})`
+              );
+            }
+          }
+        }
+      }
+
+      // Validate correctAnswer for short-answer
+      if (question.type === 'short-answer') {
+        if (!question.correctAnswer || question.correctAnswer.trim() === '') {
+          validationErrors.push(`Question ${questionNum}: correctAnswer is required for short-answer questions`);
+        }
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation errors',
+        errors: validationErrors,
+      });
+    }
+
+    // Prepare paper data
+    const paperData = {
+      paper_name,
+      description,
+      subject,
+      year,
+      semester,
+      duration_minutes: duration_minutes || 60,
+      status: status || 'draft',
+      total_questions: questions.length,
+    };
+
+    // Create question paper with questions
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+      });
+    }
+
+    const createdPaper = await QuestionPaper.create(paperData, questions, userId);
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'CREATE',
+      'QUESTION_PAPER',
+      createdPaper.id,
+      `Created question paper: ${paper_name} with ${questions.length} questions`
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Question paper created successfully',
+      data: createdPaper,
+    });
+  } catch (error) {
+    console.error('Error creating question paper:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Get all question papers
+ */
+exports.getAllQuestionPapers = async (req, res) => {
+  try {
+    const filters = {
+      status: req.query.status,
+      subject: req.query.subject,
+      year: req.query.year,
+      semester: req.query.semester,
+      limit: req.query.limit ? parseInt(req.query.limit) : undefined,
+      offset: req.query.offset ? parseInt(req.query.offset) : undefined,
+    };
+
+    const papers = await QuestionPaper.findAll(filters);
+
+    res.status(200).json({
+      success: true,
+      message: 'Question papers retrieved successfully',
+      data: papers,
+      count: papers.length,
+    });
+  } catch (error) {
+    console.error('Error getting question papers:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Get question paper by ID
+ */
+exports.getQuestionPaperById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const paper = await QuestionPaper.findById(id);
+
+    if (!paper) {
+      return res.status(404).json({
+        success: false,
+        message: 'Question paper not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Question paper retrieved successfully',
+      data: paper,
+    });
+  } catch (error) {
+    console.error('Error getting question paper:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+

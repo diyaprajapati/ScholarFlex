@@ -9,6 +9,7 @@ import QuestionPaperChoice from '../../components/question-papers/forms/Question
 import JSONUploadArea from '../../components/question-papers/forms/JSONUploadArea'
 import { NoDataFound } from '../../components/common/errors'
 import { mockPaperSets } from '../../utils/questionPaperData'
+import api from '../../services/api'
 
 export default function AddQuestionPaperFormPage() {
   const navigate = useNavigate()
@@ -61,18 +62,18 @@ export default function AddQuestionPaperFormPage() {
   const handleSubmit = async (formData) => {
     setIsSubmitting(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      
-      console.log('Question Paper Data:', formData)
+      // Ensure status is set (default to 'draft' if not provided)
+      const dataToSubmit = {
+        ...formData,
+        status: formData.status || 'draft',
+        description: formData.description || '',
+      }
       
       if (isEditMode) {
-        // TODO: Replace with actual API call
-        // await questionPaperService.update(id, formData)
+        await api.questionPapers.update(id, dataToSubmit)
         alert('Question paper updated successfully!')
       } else {
-        // TODO: Replace with actual API call
-        // await questionPaperService.create(formData)
+        await api.questionPapers.create(dataToSubmit)
         alert('Question paper created successfully!')
       }
       
@@ -80,7 +81,8 @@ export default function AddQuestionPaperFormPage() {
       navigate(ROUTES.QUESTION_PAPERS.LIST)
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} question paper:`, error)
-      alert(`Failed to ${isEditMode ? 'update' : 'create'} question paper. Please try again.`)
+      const errorMessage = error.message || `Failed to ${isEditMode ? 'update' : 'create'} question paper. Please try again.`
+      alert(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

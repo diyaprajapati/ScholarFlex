@@ -129,6 +129,150 @@ export const api = {
       });
     },
   },
+
+  // Question Paper endpoints
+  questionPapers: {
+    create: async (data) => {
+      // Transform frontend format to backend format
+      const payload = {
+        paper_name: data.name,
+        description: data.description || '',
+        subject: data.subject,
+        year: data.year,
+        semester: data.semester,
+        duration_minutes: data.duration,
+        status: data.status || 'draft',
+        questions: data.questions.map(q => {
+          const question = {
+            text: q.text,
+            type: q.type,
+            weightage: q.weightage || 1,
+          };
+
+          // Add options and correctOptions for choice-based questions
+          if (['multiple-choice', 'single-choice', 'true-false'].includes(q.type)) {
+            // Filter out empty options and adjust correctOptions indices
+            const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
+            const validOptionsMap = new Map();
+            let newIndex = 0;
+            
+            // Create mapping from old indices to new indices
+            (q.options || []).forEach((opt, oldIndex) => {
+              if (opt && opt.trim() !== '') {
+                validOptionsMap.set(oldIndex, newIndex);
+                newIndex++;
+              }
+            });
+            
+            // Map correctOptions to new indices
+            const validCorrectOptions = (q.correctOptions || [])
+              .map(oldIndex => validOptionsMap.get(oldIndex))
+              .filter(newIndex => newIndex !== undefined);
+            
+            question.options = validOptions;
+            question.correctOptions = validCorrectOptions;
+          }
+
+          // Add correctAnswer for short-answer questions
+          if (q.type === 'short-answer') {
+            question.correctAnswer = q.correctAnswer || '';
+          }
+
+          return question;
+        }),
+      };
+
+      return apiRequest('/question-papers', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    },
+
+    getAll: async (filters = {}) => {
+      const queryParams = new URLSearchParams();
+      if (filters.status) queryParams.append('status', filters.status);
+      if (filters.subject) queryParams.append('subject', filters.subject);
+      if (filters.year) queryParams.append('year', filters.year);
+      if (filters.semester) queryParams.append('semester', filters.semester);
+      if (filters.limit) queryParams.append('limit', filters.limit);
+      if (filters.offset) queryParams.append('offset', filters.offset);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/question-papers?${queryString}` : '/question-papers';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+
+    getById: async (id) => {
+      return apiRequest(`/question-papers/${id}`, {
+        method: 'GET',
+      });
+    },
+
+    update: async (id, data) => {
+      // Transform frontend format to backend format
+      const payload = {
+        paper_name: data.name,
+        description: data.description || '',
+        subject: data.subject,
+        year: data.year,
+        semester: data.semester,
+        duration_minutes: data.duration,
+        status: data.status || 'draft',
+        questions: data.questions.map(q => {
+          const question = {
+            text: q.text,
+            type: q.type,
+            weightage: q.weightage || 1,
+          };
+
+          // Add options and correctOptions for choice-based questions
+          if (['multiple-choice', 'single-choice', 'true-false'].includes(q.type)) {
+            // Filter out empty options and adjust correctOptions indices
+            const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
+            const validOptionsMap = new Map();
+            let newIndex = 0;
+            
+            // Create mapping from old indices to new indices
+            (q.options || []).forEach((opt, oldIndex) => {
+              if (opt && opt.trim() !== '') {
+                validOptionsMap.set(oldIndex, newIndex);
+                newIndex++;
+              }
+            });
+            
+            // Map correctOptions to new indices
+            const validCorrectOptions = (q.correctOptions || [])
+              .map(oldIndex => validOptionsMap.get(oldIndex))
+              .filter(newIndex => newIndex !== undefined);
+            
+            question.options = validOptions;
+            question.correctOptions = validCorrectOptions;
+          }
+
+          // Add correctAnswer for short-answer questions
+          if (q.type === 'short-answer') {
+            question.correctAnswer = q.correctAnswer || '';
+          }
+
+          return question;
+        }),
+      };
+
+      return apiRequest(`/question-papers/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+      });
+    },
+
+    delete: async (id) => {
+      return apiRequest(`/question-papers/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
 };
 
 export default api;

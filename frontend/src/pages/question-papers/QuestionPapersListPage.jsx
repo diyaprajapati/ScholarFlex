@@ -7,7 +7,7 @@ import TopNavbar from '../../components/layout/TopNavbar'
 import QuestionPaperHeader from '../../components/question-papers/QuestionPaperHeader'
 import PaperSetGrid from '../../components/question-papers/PaperSetGrid'
 import DeleteConfirmModal from '../../components/question-papers/DeleteConfirmModal'
-import { mockPaperSets } from '../../utils/questionPaperData'
+import api from '../../services/api'
 
 export default function QuestionPapersListPage() {
   const navigate = useNavigate()
@@ -23,11 +23,36 @@ export default function QuestionPapersListPage() {
     }
     const userData = authService.getUser()
     setUser(userData)
-    // Simulate loading
-    setTimeout(() => {
-      setPaperSets(mockPaperSets)
-      setIsLoading(false)
-    }, 500)
+    
+    // Fetch question papers from API
+    const fetchQuestionPapers = async () => {
+      setIsLoading(true)
+      try {
+        const response = await api.questionPapers.getAll()
+        // Transform backend data to frontend format
+        const transformedPapers = (response.data || []).map(paper => ({
+          id: paper.id,
+          name: paper.paper_name,
+          subject: paper.subject || '',
+          year: paper.year || '',
+          semester: paper.semester || '',
+          totalQuestions: paper.total_questions || 0,
+          duration: paper.duration_minutes || 0,
+          maxMarks: paper.total_weightage || 0,
+          createdAt: paper.created_at ? new Date(paper.created_at).toISOString().split('T')[0] : '',
+          status: paper.status || 'draft',
+        }))
+        setPaperSets(transformedPapers)
+      } catch (error) {
+        console.error('Error fetching question papers:', error)
+        alert('Failed to load question papers. Please try again.')
+        setPaperSets([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchQuestionPapers()
   }, [navigate])
 
   const handleEdit = (paperSet) => {
@@ -38,10 +63,17 @@ export default function QuestionPapersListPage() {
     setDeleteModal({ isOpen: true, paperSet })
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (deleteModal.paperSet) {
-      setPaperSets((prev) => prev.filter((p) => p.id !== deleteModal.paperSet.id))
-      setDeleteModal({ isOpen: false, paperSet: null })
+      try {
+        await api.questionPapers.delete(deleteModal.paperSet.id)
+        setPaperSets((prev) => prev.filter((p) => p.id !== deleteModal.paperSet.id))
+        setDeleteModal({ isOpen: false, paperSet: null })
+        alert('Question paper deleted successfully!')
+      } catch (error) {
+        console.error('Error deleting question paper:', error)
+        alert('Failed to delete question paper. Please try again.')
+      }
     }
   }
 

@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const logRoutes = require('./routes/logRoutes');
 const internRoutes = require('./routes/internRoutes');
+const questionPaperRoutes = require('./routes/questionPaperRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const pool = require('./config/database');
 
@@ -36,6 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/interns', internRoutes);
+app.use('/api/question-papers', questionPaperRoutes);
 
 // 404 handler
 app.use((req, res) => {
