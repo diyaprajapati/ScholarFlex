@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
+import { api } from '../../services/api'
 
 export default function TopNavbar({ user }) {
   const navigate = useNavigate()
@@ -17,9 +18,18 @@ export default function TopNavbar({ user }) {
 
   const unreadCount = notifications.filter(n => !n.read).length
 
-  const handleLogout = () => {
-    authService.logout()
-    navigate(ROUTES.LOGIN, { replace: true })
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint
+      await api.auth.logout()
+    } catch (error) {
+      // Even if logout fails, clear local token
+      console.error('Logout error:', error)
+    } finally {
+      // Clear token from localStorage
+      authService.logout()
+      navigate(ROUTES.LOGIN, { replace: true })
+    }
   }
 
   return (

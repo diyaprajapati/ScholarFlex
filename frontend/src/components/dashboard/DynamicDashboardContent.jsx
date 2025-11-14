@@ -6,7 +6,7 @@ import { authService } from '../../utils/auth'
 export default function DynamicDashboardContent({ selectedCard }) {
   // Check user role to determine if marks should be shown
   const userRole = authService.getUserRole()
-  const isSuperAdmin = userRole === 'superadmin'
+  const isSuperAdmin = userRole === 'SUPER_ADMIN'
   const showMarks = isSuperAdmin // Only Super Admin can see marks
   // Get data based on selected card
   const getCardData = () => {

@@ -16,9 +16,9 @@ export default function ProtectedRoute({ children, allowedRoles = null }) {
     if (!allowedRoles.includes(userRole)) {
       // Redirect to appropriate page based on role
       const role = authService.getUserRole()
-      if (role === 'student') {
-        // Student should be redirected to student dashboard (to be created)
-        return <Navigate to={ROUTES.DASHBOARD} replace />
+      if (role === 'STUDENT') {
+        // Student should be redirected to student instructions
+        return <Navigate to={ROUTES.STUDENT.INSTRUCTIONS} replace />
       } else {
         return <Navigate to={ROUTES.DASHBOARD} replace />
       }

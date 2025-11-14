@@ -34,7 +34,7 @@ export default function StudentTestPage() {
     }
     
     const userRole = authService.getUserRole()
-    if (userRole !== 'student') {
+    if (userRole !== 'STUDENT') {
       navigate(ROUTES.DASHBOARD, { replace: true })
       return
     }

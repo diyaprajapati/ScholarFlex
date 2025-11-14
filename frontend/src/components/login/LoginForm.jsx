@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
 import OTPInput from './OTPInput'
+import { api } from '../../services/api'
 
 const emailSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
@@ -16,6 +17,7 @@ export default function LoginForm() {
   const [showOTP, setShowOTP] = useState(false)
   const [email, setEmail] = useState('')
   const [otpError, setOtpError] = useState('')
+  const [emailError, setEmailError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
   const [otpValue, setOtpValue] = useState('')
@@ -30,11 +32,24 @@ export default function LoginForm() {
 
   const onEmailSubmit = async (data) => {
     setIsSubmitting(true)
-    // Simulate API call to send OTP
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setEmail(data.email)
-    setShowOTP(true)
-    setIsSubmitting(false)
+    setEmailError('')
+    
+    try {
+      const response = await api.auth.sendOTP(data.email)
+      
+      if (response.success) {
+        setEmail(data.email)
+        setShowOTP(true)
+        // In development, if OTP is returned, log it for testing
+        if (response.otp) {
+          console.log('OTP (development only):', response.otp)
+        }
+      }
+    } catch (error) {
+      setEmailError(error.message || 'Failed to send OTP. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const onOTPComplete = async (otp) => {
@@ -43,50 +58,35 @@ export default function LoginForm() {
       setIsVerifying(true)
       setOtpError('')
       
-      // Verify OTP (static OTP: 000000)
-      if (otp !== '000000') {
-        setOtpError('Invalid OTP. Please enter 000000')
+      try {
+        const response = await api.auth.verifyOTP(email, otp)
+        
+        if (response.success && response.token) {
+          // Store JWT token in localStorage
+          authService.setToken(response.token)
+          
+          // Get user role from token
+          const user = authService.getUser()
+          const role = user?.role
+          
+          // Navigate based on role
+          if (role === 'STUDENT') {
+            // Student goes to test instructions page
+            navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+          } else {
+            // Admin and Super Admin go to dashboard
+            navigate(ROUTES.DASHBOARD, { replace: true })
+          }
+        }
+      } catch (error) {
+        setOtpError(error.message || 'Invalid OTP. Please try again.')
         setIsVerifying(false)
-        return
-      }
-      
-      // Simulate OTP verification
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      
-      // Determine role based on email
-      let role = 'student' // default
-      if (email.toLowerCase() === 'admin@gmail.com') {
-        role = 'admin'
-      } else if (email.toLowerCase() === 'superadmin@gmail.com') {
-        role = 'superadmin'
-      } else if (email.toLowerCase() === 'student@gmail.com') {
-        role = 'student'
-      }
-      
-      const userData = {
-        email: email,
-        role: role,
-        loginTime: new Date().toISOString(),
-      }
-      authService.login(userData)
-      
-      // Navigate based on role
-      if (role === 'student') {
-        // Student goes to test instructions page
-        navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
-      } else {
-        // Admin and Super Admin go to dashboard
-        navigate(ROUTES.DASHBOARD, { replace: true })
       }
     }
   }
 
   const handleVerify = async () => {
     if (otpValue.length === 6) {
-      if (otpValue !== '000000') {
-        setOtpError('Invalid OTP. Please enter 000000')
-        return
-      }
       await onOTPComplete(otpValue)
     } else {
       setOtpError('Please enter complete OTP code')
@@ -124,6 +124,7 @@ export default function LoginForm() {
             placeholder="Enter email address*"
           />
           {errors.email && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.email.message}</p>}
+          {emailError && <p className="mt-1 text-xs sm:text-sm text-red-400">{emailError}</p>}
         </div>
 
         {/* OTP Input */}

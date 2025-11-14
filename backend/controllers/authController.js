@@ -126,7 +126,7 @@ const verifyOTP = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: process.env.JWT_EXPIRE || '7d',
+        expiresIn: process.env.JWT_EXPIRE || '1h',
       }
     );
 
@@ -144,7 +144,7 @@ const verifyOTP = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 60 * 60 * 1000, // 1 hour
     });
 
     res.status(200).json({
