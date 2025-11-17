@@ -142,6 +142,7 @@ export const api = {
         semester: data.semester,
         duration_minutes: data.duration,
         status: data.status || 'draft',
+        domain_ids: data.domainIds || [],
         questions: data.questions.map(q => {
           const question = {
             text: q.text,
@@ -221,6 +222,7 @@ export const api = {
         semester: data.semester,
         duration_minutes: data.duration,
         status: data.status || 'draft',
+        domain_ids: data.domainIds || [],
         questions: data.questions.map(q => {
           const question = {
             text: q.text,
@@ -275,6 +277,49 @@ export const api = {
     delete: async (id) => {
       return apiRequest(`/question-papers/${id}`, {
         method: 'DELETE',
+      });
+    },
+  },
+
+  domains: {
+    getAll: async () => {
+      return apiRequest('/domains', {
+        method: 'GET',
+      });
+    },
+  },
+
+  studentTests: {
+    getAvailable: async () => {
+      return apiRequest('/student/tests', {
+        method: 'GET',
+      });
+    },
+
+    getDetails: async (testId) => {
+      return apiRequest(`/student/tests/${testId}/details`, {
+        method: 'GET',
+      });
+    },
+
+    start: async (testId) => {
+      return apiRequest(`/student/tests/${testId}/start`, {
+        method: 'POST',
+      });
+    },
+
+    submit: async (attemptId, data) => {
+      return apiRequest(`/student/test-attempts/${attemptId}/submit`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+  },
+
+  testAttempts: {
+    getAll: async () => {
+      return apiRequest('/test-attempts', {
+        method: 'GET',
       });
     },
   },

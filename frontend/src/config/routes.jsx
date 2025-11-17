@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage } from '../pages'
+import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage, TestAttemptsPage } from '../pages'
 import { ROUTES } from './paths'
 
 /**
@@ -27,6 +27,15 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.TEST_ATTEMPTS}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <TestAttemptsPage />
           </ProtectedRoute>
         }
       />

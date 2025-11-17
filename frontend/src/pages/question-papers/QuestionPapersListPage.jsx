@@ -41,6 +41,7 @@ export default function QuestionPapersListPage() {
           maxMarks: paper.total_weightage || 0,
           createdAt: paper.created_at ? new Date(paper.created_at).toISOString().split('T')[0] : '',
           status: paper.status || 'draft',
+          domains: paper.domains || [],
         }))
         setPaperSets(transformedPapers)
       } catch (error) {

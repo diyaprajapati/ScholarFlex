@@ -20,6 +20,7 @@ export default function AddQuestionPaperFormPage() {
   const [uploadedQuestions, setUploadedQuestions] = useState(null)
   const [paperSetData, setPaperSetData] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [domains, setDomains] = useState([])
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -28,6 +29,16 @@ export default function AddQuestionPaperFormPage() {
     }
     const userData = authService.getUser()
     setUser(userData)
+
+    const fetchDomains = async () => {
+      try {
+        const response = await api.domains.getAll()
+        setDomains(response.data || [])
+      } catch (error) {
+        console.error('Error fetching domains:', error)
+      }
+    }
+    fetchDomains()
 
     // Load paper set data if in edit mode
     if (isEditMode) {
@@ -47,6 +58,7 @@ export default function AddQuestionPaperFormPage() {
             totalMarks: paper.total_weightage || 0,
             status: paper.status || 'draft',
             description: paper.description || '',
+            domainIds: (paper.domains || []).map((domain) => domain.id),
             questions: (paper.questions || []).map(q => ({
               id: q.id, // Keep ID for update
               text: q.text || q.question_text,
@@ -78,6 +90,7 @@ export default function AddQuestionPaperFormPage() {
         ...formData,
         status: formData.status || 'draft',
         description: formData.description || '',
+        domainIds: formData.domainIds || [],
       }
       
       if (isEditMode) {
@@ -348,6 +361,7 @@ export default function AddQuestionPaperFormPage() {
                     onSubmit={handleSubmit} 
                     onCancel={handleCancel}
                     initialData={paperSetData || (uploadedQuestions ? { questions: uploadedQuestions } : null)}
+                    availableDomains={domains}
                     isEditMode={isEditMode}
                   />
                 </div>

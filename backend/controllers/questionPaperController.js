@@ -15,6 +15,7 @@ exports.createQuestionPaper = async (req, res) => {
       duration_minutes,
       status,
       questions,
+      domain_ids, // Array of domain IDs to assign this paper to
     } = req.body;
 
     // Validate required fields
@@ -103,6 +104,7 @@ exports.createQuestionPaper = async (req, res) => {
       duration_minutes: duration_minutes || 60,
       status: status || 'draft',
       total_questions: questions.length,
+      domain_ids: domain_ids || [], // Array of domain IDs
     };
 
     // Create question paper with questions

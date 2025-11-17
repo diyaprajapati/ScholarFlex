@@ -10,7 +10,14 @@ export default function LoginPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (authService.isAuthenticated()) {
+    if (!authService.isAuthenticated()) {
+      return
+    }
+
+    const role = authService.getUserRole()
+    if (role === 'STUDENT') {
+      navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+    } else {
       navigate(ROUTES.DASHBOARD, { replace: true })
     }
   }, [navigate])

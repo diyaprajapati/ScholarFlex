@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import QuestionInput from './QuestionInput'
 
 const initialQuestion = {
@@ -10,7 +10,7 @@ const initialQuestion = {
   correctAnswer: '',
 }
 
-export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isEditMode = false }) {
+export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isEditMode = false, availableDomains = [] }) {
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     subject: initialData?.subject || '',
@@ -18,8 +18,27 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
     semester: initialData?.semester || 'Spring',
     totalMarks: initialData?.totalMarks || 100,
     duration: initialData?.duration || 180,
+    status: initialData?.status || 'draft',
     questions: initialData?.questions || [initialQuestion],
+    domainIds: initialData?.domainIds || [],
   })
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData((prev) => ({
+        ...prev,
+        name: initialData.name || '',
+        subject: initialData.subject || '',
+        year: initialData.year || new Date().getFullYear().toString(),
+        semester: initialData.semester || 'Spring',
+        totalMarks: initialData.totalMarks || 100,
+        duration: initialData.duration || 180,
+        status: initialData.status || 'draft',
+        questions: initialData.questions && initialData.questions.length > 0 ? initialData.questions : [initialQuestion],
+        domainIds: initialData.domainIds || [],
+      }))
+    }
+  }, [initialData])
 
   const handleQuestionChange = (index, updatedQuestion) => {
     const newQuestions = [...formData.questions]
@@ -76,6 +95,16 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
     setFormData({ ...formData, questions: newQuestions })
   }
 
+  const handleDomainToggle = (domainId) => {
+    let updatedDomains = []
+    if (formData.domainIds.includes(domainId)) {
+      updatedDomains = formData.domainIds.filter((id) => id !== domainId)
+    } else {
+      updatedDomains = [...formData.domainIds, domainId]
+    }
+    setFormData({ ...formData, domainIds: updatedDomains })
+  }
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -83,6 +112,11 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
     // Validation
     if (!formData.name.trim()) {
       alert('Please enter the question paper set name')
+      return
+    }
+
+    if (!formData.domainIds || formData.domainIds.length === 0) {
+      alert('Please select at least one domain')
       return
     }
 
@@ -123,6 +157,7 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
     
     onSubmit({
       ...formData,
+      status: formData.status || 'draft',
       totalMarks: calculatedTotalMarks,
       totalQuestions: formData.questions.length,
     })
@@ -134,6 +169,48 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
       <div className="bg-gray-50 rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-5 space-y-3 sm:space-y-4">
         <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">Basic Information</h2>
         
+        <div>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+            Assign to Domains <span className="text-red-500">*</span>
+          </label>
+          {availableDomains.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+              {availableDomains.map((domain) => (
+                <label
+                  key={domain.id}
+                  className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-[#4C763B]"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.domainIds.includes(domain.id)}
+                    onChange={() => handleDomainToggle(domain.id)}
+                    className="h-4 w-4 text-[#4C763B] border-gray-300 rounded focus:ring-[#4C763B]"
+                  />
+                  <span className="font-medium">{domain.domain_name}</span>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <div className="text-xs sm:text-sm text-gray-500 bg-white border border-dashed border-gray-300 rounded-lg px-3 py-2">
+              No domains available. Please add domains first.
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+              Status <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C763B]/50 focus:border-[#4C763B] transition-colors"
+            >
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
             Name of Question Paper Set <span className="text-red-500">*</span>
@@ -294,7 +371,7 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
           {isEditMode ? 'Save Changes' : 'Add Paper Set'}
         </button>
       </div>
+      </div>
     </form>
   )
 }
-

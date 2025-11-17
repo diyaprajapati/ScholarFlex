@@ -95,6 +95,20 @@ export default function Sidebar({ user }) {
                   All Interns
                 </Link>
               </li>
+              <li>
+                <Link
+                  to={ROUTES.TEST_ATTEMPTS}
+                  onClick={() => handleNavClick('test-attempts')}
+                  className={navItemClasses(ROUTES.TEST_ATTEMPTS)}
+                  style={navItemStyle(ROUTES.TEST_ATTEMPTS)}
+                  {...navItemHoverStyle(ROUTES.TEST_ATTEMPTS)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 11h18M5 7h14M7 15h10m-6 4h2" />
+                  </svg>
+                  Test Results
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>

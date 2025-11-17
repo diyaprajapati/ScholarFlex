@@ -106,7 +106,9 @@ const verifyOTP = async (req, res) => {
     }
 
     // Update last login
-    await User.updateLastLogin(user.id);
+    if (user.source !== 'students') {
+      await User.updateLastLogin(user.id);
+    }
 
     // Log login activity
     await logActivitySimple(

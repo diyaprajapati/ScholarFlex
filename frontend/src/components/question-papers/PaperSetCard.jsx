@@ -44,6 +44,18 @@ export default function PaperSetCard({ paperSet, onEdit, onDelete, onView }) {
             </svg>
             <span className="font-medium truncate">{paperSet.subject}</span>
           </div>
+          {paperSet.domains && paperSet.domains.length > 0 && (
+            <div className="flex flex-wrap gap-1 sm:gap-1.5">
+              {paperSet.domains.map((domain) => (
+                <span
+                  key={domain.id}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#4C763B]/10 text-[10px] sm:text-xs text-[#4C763B] font-medium"
+                >
+                  {domain.domain_name}
+                </span>
+              ))}
+            </div>
+          )}
           <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs">
             <span className="flex items-center gap-1 sm:gap-1.5">
               <svg className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

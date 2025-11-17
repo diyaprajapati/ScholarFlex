@@ -13,7 +13,27 @@ class User {
          WHERE u.email = $1 AND u.is_active = TRUE`,
         [email]
       );
-      return result.rows[0] || null;
+      if (result.rows.length > 0) {
+        return { ...result.rows[0], source: 'users' };
+      }
+
+      const studentResult = await pool.query(
+        `SELECT 
+          s.id, 
+          s.email, 
+          s.full_name, 
+          'Student' AS role_name, 
+          'STUDENT' AS role_code
+         FROM students s
+         WHERE s.email = $1 AND s.is_active = TRUE`,
+        [email]
+      );
+
+      if (studentResult.rows.length > 0) {
+        return { ...studentResult.rows[0], source: 'students' };
+      }
+
+      return null;
     } catch (error) {
       console.error("Error finding user by email:", error);
       throw error;
@@ -32,7 +52,28 @@ class User {
          WHERE u.id = $1 AND u.is_active = TRUE`,
         [id]
       );
-      return result.rows[0] || null;
+      if (result.rows.length > 0) {
+        return { ...result.rows[0], source: 'users' };
+      }
+
+      const studentResult = await pool.query(
+        `SELECT 
+          s.id, 
+          s.email, 
+          s.full_name, 
+          'Student' AS role_name, 
+          'STUDENT' AS role_code,
+          s.is_active
+         FROM students s
+         WHERE s.id = $1 AND s.is_active = TRUE`,
+        [id]
+      );
+
+      if (studentResult.rows.length > 0) {
+        return { ...studentResult.rows[0], source: 'students' };
+      }
+
+      return null;
     } catch (error) {
       console.error("Error finding user by ID:", error);
       throw error;
@@ -81,7 +122,13 @@ class User {
         "SELECT id FROM users WHERE email = $1",
         [email]
       );
-      return result.rows.length > 0;
+      if (result.rows.length > 0) return true;
+
+      const studentResult = await pool.query(
+        "SELECT id FROM students WHERE email = $1 AND is_active = TRUE",
+        [email]
+      );
+      return studentResult.rows.length > 0;
     } catch (error) {
       console.error("Error checking user existence:", error);
       throw error;

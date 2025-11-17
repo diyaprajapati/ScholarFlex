@@ -92,6 +92,18 @@ class QuestionPaper {
         [questionsData.length, totalWeightage, questionPaperId]
       );
 
+      // Assign domains to question paper if provided
+      if (paperData.domain_ids && Array.isArray(paperData.domain_ids) && paperData.domain_ids.length > 0) {
+        for (const domainId of paperData.domain_ids) {
+          await client.query(
+            `INSERT INTO question_paper_domains (question_paper_id, domain_id)
+             VALUES ($1, $2)
+             ON CONFLICT (question_paper_id, domain_id) DO NOTHING`,
+            [questionPaperId, domainId]
+          );
+        }
+      }
+
       await client.query('COMMIT');
 
       // Fetch the created question paper with all details
@@ -197,7 +209,37 @@ class QuestionPaper {
       }
 
       const result = await pool.query(query, params);
-      return result.rows;
+      const papers = result.rows;
+
+      if (papers.length === 0) {
+        return [];
+      }
+
+      const paperIds = papers.map((paper) => paper.id);
+      const domainsResult = await pool.query(
+        `SELECT qpd.question_paper_id, d.id, d.domain_name, d.domain_code
+         FROM question_paper_domains qpd
+         JOIN domains d ON qpd.domain_id = d.id
+         WHERE qpd.question_paper_id = ANY($1::int[])`,
+        [paperIds]
+      );
+
+      const domainMap = new Map();
+      domainsResult.rows.forEach((row) => {
+        if (!domainMap.has(row.question_paper_id)) {
+          domainMap.set(row.question_paper_id, []);
+        }
+        domainMap.get(row.question_paper_id).push({
+          id: row.id,
+          domain_name: row.domain_name,
+          domain_code: row.domain_code,
+        });
+      });
+
+      return papers.map((paper) => ({
+        ...paper,
+        domains: domainMap.get(paper.id) || [],
+      }));
     } catch (error) {
       console.error('Error finding all question papers:', error);
       throw error;
@@ -226,6 +268,15 @@ class QuestionPaper {
       }
 
       const paper = result.rows[0];
+
+      // Fetch domains
+      const domainsResult = await pool.query(
+        `SELECT d.id, d.domain_name, d.domain_code
+         FROM question_paper_domains qpd
+         JOIN domains d ON qpd.domain_id = d.id
+         WHERE qpd.question_paper_id = $1`,
+        [id]
+      );
 
       // Fetch questions with options
       const questionsResult = await pool.query(
@@ -275,6 +326,7 @@ class QuestionPaper {
       return {
         ...paper,
         questions,
+        domains: domainsResult.rows || [],
       };
     } catch (error) {
       console.error('Error finding question paper:', error);
@@ -289,6 +341,11 @@ class QuestionPaper {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
+
+      const domainIds = paperData.domain_ids || null;
+      if (paperData.domain_ids !== undefined) {
+        delete paperData.domain_ids;
+      }
 
       // Check if paper exists
       const existingPaper = await client.query(
@@ -488,6 +545,24 @@ class QuestionPaper {
            WHERE id = $3`,
           [totalQuestions, totalWeightage, id]
         );
+      }
+
+      // Update domain assignments if provided
+      if (domainIds && Array.isArray(domainIds)) {
+        const uniqueDomainIds = [...new Set(domainIds)].filter((domainId) => Number.isInteger(domainId));
+        await client.query(
+          'DELETE FROM question_paper_domains WHERE question_paper_id = $1',
+          [id]
+        );
+
+        for (const domainId of uniqueDomainIds) {
+          await client.query(
+            `INSERT INTO question_paper_domains (question_paper_id, domain_id)
+             VALUES ($1, $2)
+             ON CONFLICT (question_paper_id, domain_id) DO NOTHING`,
+            [id, domainId]
+          );
+        }
       }
 
       await client.query('COMMIT');

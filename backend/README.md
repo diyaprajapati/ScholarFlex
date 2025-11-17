@@ -356,7 +356,120 @@ Headers: { "Authorization": "Bearer <token>" }
 - This action cannot be undone
 - Related test attempts and student answers are also deleted automatically
 
+### Domains
+
+#### Get All Domains
+
+```
+GET /api/domains
+Headers: { "Authorization": "Bearer <token>" }
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Domains retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "domain_name": "MERN Stack",
+      "domain_code": "MERN",
+      "description": "MongoDB, Express, React, Node"
+    }
+  ]
+}
+```
+
+**Notes:**
+
+- Accessible to Admin, Super Admin, and Student roles
+- Only returns active domains
+- Use when creating question papers or assigning students
+
 ### Question Papers Management (Admin and Super Admin)
+
+#### Get All Question Papers
+
+```
+GET /api/question-papers
+Headers: {
+  "Authorization": "Bearer <token>"
+}
+Query Parameters (optional):
+- status: Filter by status (draft, published)
+- subject: Filter by subject
+- year: Filter by year
+- semester: Filter by semester
+- limit: Limit number of results
+- offset: Offset for pagination
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Question papers retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "paper_name": "JavaScript Fundamentals Test",
+      "description": "Basic JavaScript concepts test",
+      "subject": "JavaScript",
+      "year": "2024",
+      "semester": "Spring",
+      "total_questions": 3,
+      "total_weightage": 8,
+      "duration_minutes": 60,
+      "status": "draft",
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+#### Get Question Paper by ID
+
+```
+GET /api/question-papers/:id
+Headers: {
+  "Authorization": "Bearer <token>"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Question paper retrieved successfully",
+  "data": {
+    "id": 1,
+    "paper_name": "JavaScript Fundamentals Test",
+    "description": "Basic JavaScript concepts test",
+    "subject": "JavaScript",
+    "year": "2024",
+    "semester": "Spring",
+    "total_questions": 3,
+    "total_weightage": 8,
+    "duration_minutes": 60,
+    "status": "draft",
+    "questions": [
+      {
+        "id": 1,
+        "text": "What is the capital of France?",
+        "type": "multiple-choice",
+        "weightage": 2,
+        "options": ["London", "Paris", "Berlin", "Madrid"],
+        "correctOptions": [1]
+      }
+    ]
+  }
+}
+```
 
 #### Create Question Paper from JSON
 
@@ -374,6 +487,7 @@ Body: {
   "semester": "Spring",
   "duration_minutes": 60,
   "status": "draft",
+  "domain_ids": [1, 2],
   "questions": [
     {
       "text": "What is the capital of France?",
@@ -426,6 +540,7 @@ Body: {
 - `semester` - Semester (e.g., "Spring", "Fall")
 - `duration_minutes` - Duration in minutes (defaults to 60)
 - `status` - Status: `"draft"` or `"published"` (defaults to "draft")
+- `domain_ids` - Array of domain IDs to assign this paper to (e.g., [1, 2] for MERN and React domains)
 
 **Response:**
 
@@ -480,7 +595,340 @@ Body: {
   - `"short-answer"` → `SHORT_ANSWER`
 - Options are automatically labeled as A, B, C, D, etc.
 - `total_questions` and `total_weightage` are automatically calculated from the questions array
+- `domain_ids` allows assigning the same question paper to multiple domains (e.g., MERN and React can share the same paper)
 - All operations are logged in the activity logs
+
+#### Update Question Paper
+
+```
+PUT /api/question-papers/:id
+Headers: {
+  "Authorization": "Bearer <token>",
+  "Content-Type": "application/json"
+}
+Body: {
+  "paper_name": "Updated JavaScript Fundamentals Test",
+  "description": "Updated description",
+  "subject": "JavaScript",
+  "year": "2024",
+  "semester": "Spring",
+  "duration_minutes": 90,
+  "status": "published",
+  "domain_ids": [1, 2],
+  "questions": [
+    {
+      "id": 1,
+      "text": "Updated question text",
+      "type": "multiple-choice",
+      "weightage": 3,
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctOptions": [1]
+    },
+    {
+      "text": "New question",
+      "type": "true-false",
+      "weightage": 1,
+      "options": ["True", "False"],
+      "correctOptions": [0]
+    }
+  ]
+}
+```
+
+**Notes:**
+
+- Questions with `id` field will be updated
+- Questions without `id` field will be added as new questions
+- Questions not included in the array will be soft-deleted
+- All fields except `id` are optional
+- `domain_ids` can be updated to change domain assignments
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Question paper updated successfully",
+  "data": {
+    "id": 1,
+    "paper_name": "Updated JavaScript Fundamentals Test",
+    "questions": [...]
+  }
+}
+```
+
+#### Delete Question Paper
+
+```
+DELETE /api/question-papers/:id
+Headers: {
+  "Authorization": "Bearer <token>"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Question paper deleted successfully"
+}
+```
+
+**Notes:**
+
+- This is a **soft delete** - the question paper is marked as inactive
+- Related questions and options are also soft-deleted
+- The action is logged in activity logs
+
+### Student Test Management
+
+#### Get Available Tests for Student
+
+```
+GET /api/student/tests
+Headers: {
+  "Authorization": "Bearer <student_token>"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Tests retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "paper_name": "JavaScript Fundamentals Test",
+      "description": "Basic JavaScript concepts test",
+      "subject": "JavaScript",
+      "year": "2024",
+      "semester": "Spring",
+      "total_questions": 3,
+      "total_weightage": 8,
+      "duration_minutes": 60,
+      "status": "published",
+      "is_attempted": false,
+      "attempt_id": null,
+      "attempt_status": null,
+      "attempt_score": null,
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  ]
+}
+```
+
+**Notes:**
+
+- Returns tests assigned to the student's domain
+- Also includes manually assigned tests
+- Shows attempt status if student has already taken the test
+- Only returns published tests
+
+#### Start Test Attempt (Student)
+
+```
+POST /api/student/tests/:testId/start
+Headers: {
+  "Authorization": "Bearer <student_token>"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Test attempt started successfully",
+  "data": {
+    "attempt_id": 15,
+    "duration_minutes": 60
+  }
+}
+```
+
+**Notes:**
+
+- Creates (or resumes) an `IN_PROGRESS` attempt for the student
+- Validates that the test is published and assigned to the student's domain or manually
+- Returns the attempt ID used for submitting answers
+
+#### Get Test Details (Student)
+
+```
+GET /api/student/tests/:testId/details
+Headers: {
+  "Authorization": "Bearer <student_token>"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "paper_name": "JavaScript Fundamentals Test",
+    "duration_minutes": 60,
+    "total_questions": 3,
+    "questions": [
+      {
+        "id": 10,
+        "text": "What is the capital of France?",
+        "type": "multiple-choice",
+        "weightage": 2,
+        "options": ["London", "Paris", "Berlin", "Madrid"]
+      }
+    ]
+  }
+}
+```
+
+**Notes:**
+
+- Returns sanitized questions (no correct answers)
+- Used by the student test page to render the actual question paper
+
+#### Get Next Question for Adaptive Testing
+
+```
+GET /api/student/test-attempts/:testAttemptId/next-question
+Headers: {
+  "Authorization": "Bearer <student_token>"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "question": {
+      "id": 1,
+      "text": "What is the capital of France?",
+      "type": "multiple-choice",
+      "weightage": 2,
+      "options": [
+        {
+          "id": 1,
+          "text": "London",
+          "label": "A",
+          "is_correct": false
+        },
+        {
+          "id": 2,
+          "text": "Paris",
+          "label": "B",
+          "is_correct": true
+        }
+      ]
+    },
+    "progress": {
+      "current_marks": 2,
+      "total_marks": 8,
+      "questions_answered": 1,
+      "total_questions": 3
+    }
+  }
+}
+```
+
+**Adaptive Testing Logic:**
+
+- **First question**: Always starts with the lowest marks (easiest question)
+- **After correct answer**: Moves to a harder question (higher marks)
+- **After wrong answer**: Goes back to an easier question (lower marks)
+- **Test completion**: When all questions are answered or total marks reached, returns `test_complete: true`
+
+**Notes:**
+
+- Questions are sorted by weightage (marks) - lower marks = easier, higher marks = harder
+- The system adapts based on student's performance
+- Test continues until student completes total marks of the test paper
+
+#### Submit Test
+
+```
+POST /api/student/test-attempts/:attemptId/submit
+Headers: {
+  "Authorization": "Bearer <student_token>",
+  "Content-Type": "application/json"
+}
+Body: {
+  "answers": [
+    { "question_id": 10, "selected_option_index": 1 },
+    { "question_id": 11, "selected_option_indexes": [0, 2] },
+    { "question_id": 12, "answer_text": "Closures capture outer scope variables." }
+  ]
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Test submitted successfully",
+  "data": {
+    "id": 15,
+    "status": "COMPLETED",
+    "total_score": 24,
+    "max_possible_score": 30,
+    "percentage_score": 80,
+    "submitted_at": "2024-01-15T11:45:00Z",
+    "paper_name": "JavaScript Fundamentals Test"
+  }
+}
+```
+
+**Notes:**
+
+- Stores each answer in `student_answers`, calculates score per question, and finalizes the attempt
+- Invokes the scoring procedure to update totals and status
+- Returns a summary used by the student submission page
+
+### Test Attempts (Admin and Super Admin)
+
+#### Get All Test Attempts
+
+```
+GET /api/test-attempts
+Headers: {
+  "Authorization": "Bearer <token>"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 15,
+      "student_name": "Jane Doe",
+      "student_email": "jane@example.com",
+      "domain_name": "MERN Stack",
+      "paper_name": "JavaScript Fundamentals Test",
+      "status": "COMPLETED",
+      "total_score": 24,
+      "max_possible_score": 30,
+      "percentage_score": 80,
+      "submitted_at": "2024-01-15T11:45:00Z"
+    }
+  ]
+}
+```
+
+**Notes:**
+
+- Available to Admin and Super Admin roles
+- Shows all attempts, including auto-submitted ones
+- Can be filtered client-side to analyze performance by domain or paper
 
 ## Project Structure
 

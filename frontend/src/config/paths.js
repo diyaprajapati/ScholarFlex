@@ -9,6 +9,7 @@ export const ROUTES = {
   
   // Protected Routes
   DASHBOARD: '/dashboard',
+  TEST_ATTEMPTS: '/test-attempts',
   
   // Question Papers Routes
   QUESTION_PAPERS: {

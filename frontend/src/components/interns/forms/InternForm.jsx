@@ -82,11 +82,16 @@ export default function InternForm({ onSubmit, onCancel, initialData = null, isE
           }`}
         >
           <option value="">Select Domain</option>
-          <option value="Web Development">Web Development</option>
-          <option value="Mobile Development">Mobile Development</option>
+          <option value="Web Development">React JS / MERN Stack</option>
+          <option value="Mobile Development">Data Science - Python & AI/ML / Python</option>
           <option value="UI/UX Design">UI/UX Design</option>
-          <option value="Data Science">Data Science</option>
-          <option value="Cloud Computing">Cloud Computing</option>
+          <option value="Data Science">.NET MVC</option>
+          <option value="Cloud Computing">HTML, CSS, JS</option>
+          <option value="Cloud Computing">Flutter Dart</option>
+          <option value="Cloud Computing">.NET Core</option> 
+          <option value="Cloud Computing">Database Administrator</option>  
+          <option value="Cloud Computing">Cyber Security</option>  
+          <option value="Cloud Computing">Embedded Systems</option>  
         </select>
         {errors.domain && (
           <p className="mt-1.5 text-xs sm:text-sm text-red-600">{errors.domain.message}</p>
