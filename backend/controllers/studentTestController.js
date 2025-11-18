@@ -351,8 +351,8 @@ exports.startTest = async (req, res) => {
     }
 
     const attemptResult = await pool.query(
-      `INSERT INTO test_attempts (student_id, question_paper_id, status, started_at)
-       VALUES ($1, $2, 'IN_PROGRESS', NOW())
+      `INSERT INTO test_attempts (student_id, question_paper_id, status, started_at, updated_at)
+       VALUES ($1, $2, 'IN_PROGRESS', NOW(), NOW())
        RETURNING id, started_at`,
       [studentId, testId]
     );

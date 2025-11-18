@@ -19,7 +19,9 @@
     "db:seed": "node scripts/seed-database.js",
     "db:check": "node scripts/check-database.js",
     "db:fix-keys": "node scripts/fix-foreign-keys.js",
-    "db:migrate": "node scripts/run-migration.js"
+    "db:migrate": "node scripts/run-migration.js",
+    "db:create-enums": "node scripts/create-enum-types.js",
+    "db:create-function": "node scripts/create-calculate-score-function.js"
   },
   "keywords": [
     "scholarflex",
