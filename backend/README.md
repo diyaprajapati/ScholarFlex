@@ -2,40 +2,50 @@
 
 Node.js and Express backend for ScholarFlex application with OTP-based authentication.
 
-## Features
+## Prerequisites
 
-- ✅ OTP-based email authentication
-- ✅ JWT token-based session management
-- ✅ MySQL database integration
-- ✅ Email service for sending OTPs
-- ✅ Role-based access control
-- ✅ Error handling middleware
-- ✅ CORS enabled for frontend integration
+Before you begin, ensure you have the following installed on your system:
 
-## Setup Instructions
+- **Node.js** (v18 or higher) - [Download](https://nodejs.org/)
+- **npm** (comes with Node.js) or **yarn**
+- **PostgreSQL** (v12 or higher) - [Download](https://www.postgresql.org/download/)
+- **Git** - [Download](https://git-scm.com/)
 
-### 1. Install Dependencies
+## Installation & Setup
+
+### Step 1: Clone the Repository
+
+```bash
+git clone <repository-url>
+cd ScholarFlex/backend
+```
+
+### Step 2: Install Dependencies
 
 ```bash
 npm install
 ```
 
-**Note:** The following packages are required for intern spreadsheet upload functionality:
+This will install all required packages including:
 
-- `multer` - For handling file uploads
-- `xlsx` - For parsing Excel and CSV files
+- Express.js - Web framework
+- Prisma - ORM for database management
+- PostgreSQL client (pg)
+- JWT - Token-based authentication
+- Nodemailer - Email service
+- Multer - File upload handling
+- XLSX - Excel/CSV parsing
+- And other dependencies
 
-These should be installed automatically when you run `npm install`, but if you encounter issues, you can install them manually:
+### Step 3: Environment Configuration
+
+Create a `.env` file in the backend directory:
 
 ```bash
-npm install multer xlsx
-```
+# On Windows (PowerShell)
+copy .env.example .env
 
-### 2. Environment Configuration
-
-Create a `.env` file in the backend directory (copy from `.env.example`):
-
-```bash
+# On Linux/Mac
 cp .env.example .env
 ```
 
@@ -46,12 +56,17 @@ Update the `.env` file with your configuration:
 PORT=5000
 NODE_ENV=development
 
-# Database Configuration
+# Database Configuration (PostgreSQL)
+DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
+# Example for Aiven/Cloud PostgreSQL:
+# DATABASE_URL=postgresql://user:pass@host.aivencloud.com:12345/defaultdb?sslmode=require
+
+# Alternative Database Configuration (if not using DATABASE_URL)
 DB_HOST=localhost
-DB_USER=root
+DB_USER=postgres
 DB_PASSWORD=your_password
 DB_NAME=scholarflex
-DB_PORT=3306
+DB_PORT=5432
 
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
@@ -72,31 +87,168 @@ EMAIL_FROM=ScholarFlex <noreply@scholarflex.com>
 FRONTEND_URL=http://localhost:5173
 ```
 
-### 3. Database Setup
+### Step 4: Database Setup
 
-1. Create MySQL database:
+#### Option A: Using Prisma (Recommended)
 
-```sql
-CREATE DATABASE scholarflex CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+1. **Generate Prisma Client:**
 
-2. Run the schema:
+   ```bash
+   npm run prisma:generate
+   ```
+
+2. **Push database schema:**
+
+   ```bash
+   npm run prisma:db:push
+   ```
+
+3. **Seed the database with initial data:**
+
+   ```bash
+   npm run db:seed
+   ```
+
+4. **Create required database functions and enums:**
+   ```bash
+   npm run db:create-enums
+   npm run db:create-function
+   ```
+
+#### Option B: Using SQL Scripts
+
+1. **Create PostgreSQL database:**
+
+   ```sql
+   CREATE DATABASE scholarflex;
+   ```
+
+2. **Run the schema:**
+
+   ```bash
+   psql -U postgres -d scholarflex -f ../database/postgresql.sql
+   ```
+
+3. **Run migrations (if any):**
+
+   ```bash
+   npm run db:migrate
+   ```
+
+4. **Seed the database:**
+   ```bash
+   npm run db:seed
+   ```
+
+### Step 5: Email Configuration (Gmail)
+
+For Gmail SMTP, you need to:
+
+1. **Enable 2-Step Verification** on your Google account
+2. **Generate an App Password:**
+   - Go to [Google Account Settings](https://myaccount.google.com/)
+   - Security → 2-Step Verification → App passwords
+   - Generate a new app password for "Mail"
+3. **Use the App Password** in your `.env` file as `EMAIL_PASS`
+
+### Step 6: Run the Server
+
+**Development mode** (with auto-reload using nodemon):
 
 ```bash
-mysql -u root -p scholarflex < ../database/schema.sql
+npm run dev
 ```
 
-### 4. Email Configuration (Gmail)
+**Production mode:**
 
-For Gmail, you need to:
+```bash
+npm start
+```
 
-1. Enable 2-Step Verification
-2. Generate an App Password
-3. Use the App Password in `EMAIL_PASS`
+The server will start on `http://localhost:5000` (or the PORT specified in your `.env` file).
 
-### 5. Run the Server
+### Step 7: Verify Installation
 
-Development mode (with auto-reload):
+1. **Check server health:**
+
+   ```bash
+   curl http://localhost:5000/health
+   ```
+
+2. **Verify database connection:**
+
+   ```bash
+   npm run db:check
+   ```
+
+3. **Open Prisma Studio** (optional, for database GUI):
+   ```bash
+   npm run prisma:studio
+   ```
+
+## Available Scripts
+
+- `npm start` - Start the production server
+- `npm run dev` - Start development server with auto-reload
+- `npm run prisma:generate` - Generate Prisma Client
+- `npm run prisma:db:push` - Push schema changes to database
+- `npm run prisma:studio` - Open Prisma Studio (database GUI)
+- `npm run db:seed` - Seed database with initial data
+- `npm run db:check` - Check database connection
+- `npm run db:create-enums` - Create required enum types
+- `npm run db:create-function` - Create stored procedures
+
+## Troubleshooting
+
+### Database Connection Issues
+
+If you encounter SSL certificate errors:
+
+- The database configuration in `config/database.js` handles SSL certificates automatically
+- For self-signed certificates, `rejectUnauthorized: false` is set
+
+### Port Already in Use
+
+If port 5000 is already in use:
+
+- Change the `PORT` in your `.env` file
+- Or kill the process using port 5000:
+
+  ```bash
+  # Windows
+  netstat -ano | findstr :5000
+  taskkill /PID <PID> /F
+
+  # Linux/Mac
+  lsof -ti:5000 | xargs kill
+  ```
+
+### Prisma Client Generation Issues
+
+If you see Prisma client errors:
+
+```bash
+npm run prisma:generate
+```
+
+## Features
+
+- ✅ OTP-based email authentication
+- ✅ JWT token-based session management
+- ✅ PostgreSQL database integration with Prisma ORM
+- ✅ Email service for sending OTPs
+- ✅ Role-based access control (Super Admin, Admin, Student)
+- ✅ Error handling middleware
+- ✅ CORS enabled for frontend integration
+- ✅ Activity logging
+- ✅ File upload support (Excel/CSV for intern management)
+- ✅ Dashboard statistics API
+- ✅ Question paper management
+- ✅ Test attempt tracking and scoring
+
+## API Documentation
+
+For detailed API documentation, see the sections below:
 
 ```bash
 npm run dev
