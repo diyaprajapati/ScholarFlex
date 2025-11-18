@@ -21,7 +21,7 @@
     },
     {
       "text": "Explain the concept of closures in JavaScript.",
-      "type": "short-answer",
+      "type": "multiple-choice",
       "weightage": 5,
       "correctAnswer": "A closure is a function that has access to variables in its outer scope even after the outer function has returned."
     },

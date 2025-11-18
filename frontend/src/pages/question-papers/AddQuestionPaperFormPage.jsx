@@ -10,6 +10,18 @@ import JSONUploadArea from '../../components/question-papers/forms/JSONUploadAre
 import { NoDataFound } from '../../components/common/errors'
 import api from '../../services/api'
 
+const SECTION_OPTIONS = ['Theory', 'Technical']
+
+const normalizeSectionName = (section) => {
+  if (!section || typeof section !== 'string') return null
+  const normalized = section.trim().toLowerCase()
+  if (normalized === 'theory') return 'Theory'
+  if (normalized === 'technical' || normalized === 'technical/coding' || normalized === 'technical coding') {
+    return 'Technical'
+  }
+  return null
+}
+
 export default function AddQuestionPaperFormPage() {
   const navigate = useNavigate()
   const { id } = useParams()
@@ -59,6 +71,7 @@ export default function AddQuestionPaperFormPage() {
             status: paper.status || 'draft',
             description: paper.description || '',
             domainIds: (paper.domains || []).map((domain) => domain.id),
+            sections: paper.sections || [],
             questions: (paper.questions || []).map(q => ({
               id: q.id, // Keep ID for update
               text: q.text || q.question_text,
@@ -67,6 +80,7 @@ export default function AddQuestionPaperFormPage() {
               options: q.options || [],
               correctOptions: q.correctOptions || [],
               correctAnswer: q.correctAnswer || q.correct_answer || '',
+              section: q.section || '',
             })),
           })
           setMode('manual') // Skip choice screen in edit mode
@@ -135,14 +149,37 @@ export default function AddQuestionPaperFormPage() {
       try {
         const jsonData = JSON.parse(e.target.result)
         
-        // Validate JSON structure
-        if (!jsonData.questions || !Array.isArray(jsonData.questions)) {
-          alert('JSON must contain a "questions" array')
+        let questionsToProcess = [];
+        
+        // Handle new format with sections
+        if (jsonData.sections && Array.isArray(jsonData.sections)) {
+          jsonData.sections.forEach(section => {
+            if (section.questions && Array.isArray(section.questions)) {
+              section.questions.forEach(q => {
+                questionsToProcess.push({ ...q, section: section.name || '' });
+              });
+            }
+          });
+        } 
+        // Handle old format with flat questions array
+        else if (jsonData.questions && Array.isArray(jsonData.questions)) {
+          questionsToProcess = jsonData.questions;
+        } else {
+          alert('JSON must contain either a "sections" array or a "questions" array')
+          return
+        }
+
+        if (questionsToProcess.length === 0) {
+          alert('No questions found in JSON file')
           return
         }
 
         // Process questions
-        const processedQuestions = jsonData.questions.map((q) => {
+        const processedQuestions = questionsToProcess.map((q, idx) => {
+          const normalizedSection = normalizeSectionName(q.section || q.sectionName)
+          if (!normalizedSection) {
+            throw new Error(`Question ${idx + 1}: section must be either "Theory" or "Technical"`)
+          }
           const question = {
             text: q.text || '',
             type: q.type || 'multiple-choice',
@@ -150,6 +187,7 @@ export default function AddQuestionPaperFormPage() {
             options: q.options || [],
             correctOptions: q.correctOptions || [],
             correctAnswer: q.correctAnswer || '',
+            section: normalizedSection,
           }
 
           // Ensure at least one option for multiple/single choice
@@ -199,26 +237,44 @@ export default function AddQuestionPaperFormPage() {
 
   const handleDownloadTemplate = () => {
     const template = {
-      questions: [
+      paper_name: "Sample Question Paper",
+      description: "Sample question paper with sections",
+      subject: "Sample Subject",
+      year: "2024",
+      semester: "Fall",
+      duration_minutes: 80,
+      status: "draft",
+      sections: [
         {
-          text: "What is the capital of France?",
-          type: "multiple-choice",
-          weightage: 2,
-          options: ["London", "Paris", "Berlin", "Madrid"],
-          correctOptions: [1]
+          name: "Theory",
+          questions: [
+            {
+              text: "What is the capital of France?",
+              type: "multiple-choice",
+              weightage: 2,
+              options: ["London", "Paris", "Berlin", "Madrid"],
+              correctOptions: [1]
+            },
+            {
+              text: "JavaScript is a programming language.",
+              type: "true-false",
+              weightage: 1,
+              options: ["True", "False"],
+              correctOptions: [0]
+            }
+          ]
         },
         {
-          text: "JavaScript is a programming language.",
-          type: "true-false",
-          weightage: 1,
-          options: ["True", "False"],
-          correctOptions: [0]
-        },
-        {
-          text: "Explain the concept of closures in JavaScript.",
-          type: "short-answer",
-          weightage: 5,
-          correctAnswer: "A closure is a function that has access to variables in its outer scope even after the outer function has returned."
+          name: "Technical",
+          questions: [
+            {
+              text: "Which hook is used to manage component state in React functional components?",
+              type: "multiple-choice",
+              weightage: 2,
+              options: ["useEffect", "useState", "useMemo", "useRef"],
+              correctOptions: [1]
+            }
+          ]
         }
       ]
     }

@@ -173,12 +173,12 @@ export default function StudentTestInstructionsPage() {
 
                   <div className="flex items-center justify-between text-[11px] text-gray-600 mb-2">
                     <span>Duration: {test.duration_minutes || 60} mins</span>
-                    <span>Questions: {test.total_questions || 0}</span>
+                    <span>Questions: 50</span>
                   </div>
 
                   {test.is_attempted ? (
                     <div className="text-[11px] text-[#4C763B] bg-[#4C763B]/10 border border-[#4C763B]/30 rounded-lg px-2 py-1">
-                      Attempted • Score: {test.attempt_score ?? 'N/A'}%
+                      Attempted
                     </div>
                   ) : (
                     <button

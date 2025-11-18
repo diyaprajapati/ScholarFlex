@@ -1,16 +1,62 @@
 import React, { useEffect, useState } from 'react'
 import QuestionInput from './QuestionInput'
 
+const SECTION_OPTIONS = [
+  { label: 'Theory', value: 'Theory' },
+  { label: 'Technical', value: 'Technical' },
+]
+
+const normalizeSectionName = (section) => {
+  if (!section || typeof section !== 'string') return SECTION_OPTIONS[0].value
+  const normalized = section.trim().toLowerCase()
+  if (normalized === 'theory') return 'Theory'
+  if (normalized === 'technical' || normalized === 'technical/coding' || normalized === 'technical coding') {
+    return 'Technical'
+  }
+  return null
+}
+
 const initialQuestion = {
   text: '',
   type: 'multiple-choice',
   weightage: 1,
   options: [''], // Always start with at least one option
   correctOptions: [],
-  correctAnswer: '',
+  section: SECTION_OPTIONS[0].value,
 }
 
 export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isEditMode = false, availableDomains = [] }) {
+  // Convert sections to flat questions if sections exist
+  const getInitialQuestions = () => {
+    if (initialData?.sections && Array.isArray(initialData.sections)) {
+      // Convert sections format to flat questions with section field
+      const questions = [];
+      initialData.sections.forEach(section => {
+        if (section.questions && Array.isArray(section.questions)) {
+          const normalizedSection = normalizeSectionName(section.name);
+          section.questions.forEach(q => {
+            questions.push({
+              ...initialQuestion,
+              ...q,
+              section: normalizedSection || SECTION_OPTIONS[0].value,
+            });
+          });
+        }
+      });
+      return questions.length > 0 ? questions : [initialQuestion];
+    }
+
+    if (initialData?.questions) {
+      return initialData.questions.map((question) => ({
+        ...initialQuestion,
+        ...question,
+        section: normalizeSectionName(question.section || question.sectionName) || SECTION_OPTIONS[0].value,
+      }));
+    }
+
+    return [initialQuestion];
+  };
+
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     subject: initialData?.subject || '',
@@ -19,7 +65,7 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
     totalMarks: initialData?.totalMarks || 100,
     duration: initialData?.duration || 180,
     status: initialData?.status || 'draft',
-    questions: initialData?.questions || [initialQuestion],
+    questions: getInitialQuestions(),
     domainIds: initialData?.domainIds || [],
   })
 
@@ -34,7 +80,13 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
         totalMarks: initialData.totalMarks || 100,
         duration: initialData.duration || 180,
         status: initialData.status || 'draft',
-        questions: initialData.questions && initialData.questions.length > 0 ? initialData.questions : [initialQuestion],
+        questions: initialData.questions && initialData.questions.length > 0
+          ? initialData.questions.map((question) => ({
+              ...initialQuestion,
+              ...question,
+              section: normalizeSectionName(question.section || question.sectionName) || SECTION_OPTIONS[0].value,
+            }))
+          : [initialQuestion],
         domainIds: initialData.domainIds || [],
       }))
     }
@@ -62,11 +114,8 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
       updatedQuestion.correctOptions = []
     }
     
-    // Clear options if type changed away from multiple/single choice
-    if (updatedQuestion.type === 'short-answer') {
-      updatedQuestion.options = []
-      updatedQuestion.correctOptions = []
-    }
+    updatedQuestion.section = normalizeSectionName(updatedQuestion.section) || SECTION_OPTIONS[0].value
+    
     
     newQuestions[index] = updatedQuestion
     setFormData({ ...formData, questions: newQuestions })
@@ -120,6 +169,11 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
       return
     }
 
+    if (!formData.duration || formData.duration < 1) {
+      alert('Please enter a valid duration in minutes')
+      return
+    }
+
     if (formData.questions.length === 0) {
       alert('Please add at least one question')
       return
@@ -146,8 +200,8 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
           return
         }
       }
-      if (q.type === 'short-answer' && !q.correctAnswer?.trim()) {
-        alert(`Please enter correct answer for Question ${i + 1}`)
+      if (!q.section || !normalizeSectionName(q.section)) {
+        alert(`Question ${i + 1} must be assigned to either Theory or Technical section`)
         return
       }
     }
@@ -155,16 +209,61 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
     // Calculate total marks
     const calculatedTotalMarks = formData.questions.reduce((sum, q) => sum + (q.weightage || 0), 0)
     
+    // Group questions by section for new format
+    const questionsBySection = {};
+    formData.questions.forEach(q => {
+      const normalizedSection = normalizeSectionName(q.section);
+      if (!normalizedSection) return;
+      if (!questionsBySection[normalizedSection]) {
+        questionsBySection[normalizedSection] = [];
+      }
+      questionsBySection[normalizedSection].push({
+        ...q,
+        section: normalizedSection,
+      });
+    });
+
+    // Convert to sections format
+    const sections = Object.keys(questionsBySection).map(sectionName => ({
+      name: sectionName,
+      questions: questionsBySection[sectionName],
+    }));
+    
     onSubmit({
       ...formData,
       status: formData.status || 'draft',
       totalMarks: calculatedTotalMarks,
       totalQuestions: formData.questions.length,
+      sections, // New format with sections
     })
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 lg:space-y-6">
+      {/* Form Actions - Moved to Top */}
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm -mx-4 px-4 py-3 sm:py-4 mb-4 sm:mb-5 lg:mb-6">
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            type="submit"
+            className="px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white rounded-lg transition-colors"
+            style={{ backgroundColor: '#4C763B' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#043915'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4C763B'}
+          >
+            {isEditMode ? 'Save Changes' : 'Add Paper Set'}
+          </button>
+        </div>
+      </div>
+
       {/* Basic Information Section */}
       <div className="bg-gray-50 rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-5 space-y-3 sm:space-y-4">
         <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">Basic Information</h2>
@@ -278,7 +377,13 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
             <input
               type="number"
               value={formData.duration}
-              onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 0 })}
+              onChange={(e) => {
+                const value = Number(e.target.value)
+                setFormData({
+                  ...formData,
+                  duration: Number.isFinite(value) && value > 0 ? Math.round(value) : 0,
+                })
+              }}
               placeholder="e.g., 180"
               min="1"
               className="w-full px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C763B]/50 focus:border-[#4C763B] transition-colors"
@@ -303,6 +408,7 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
             <p className="text-[10px] sm:text-xs text-gray-500">Total marks calculated from question weightages</p>
           </div>
         </div>
+      </div>
       </div>
 
       {/* Questions Section */}
@@ -348,29 +454,6 @@ export default function QuestionPaperForm({ onSubmit, initialData, onCancel, isE
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Form Actions */}
-      <div className="flex items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            Cancel
-          </button>
-        )}
-        <button
-          type="submit"
-          className="px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white rounded-lg transition-colors"
-          style={{ backgroundColor: '#4C763B' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#043915'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4C763B'}
-        >
-          {isEditMode ? 'Save Changes' : 'Add Paper Set'}
-        </button>
-      </div>
       </div>
     </form>
   )

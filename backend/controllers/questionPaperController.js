@@ -1,6 +1,25 @@
 const QuestionPaper = require('../models/QuestionPaper');
 const { logActivitySimple } = require('../middleware/activityLogger');
 
+const ALLOWED_SECTIONS = ['Theory', 'Technical'];
+
+const normalizeSectionName = (section) => {
+  if (!section) return null;
+  const normalized = section.trim().toLowerCase();
+  if (normalized === 'theory' || normalized === 'aptitude') return 'Theory';
+  if (
+    normalized === 'technical' ||
+    normalized === 'technical/coding' ||
+    normalized === 'technical coding' ||
+    normalized === 'tech based' ||
+    normalized === 'tech-based' ||
+    normalized === 'technical mcqs'
+  ) {
+    return 'Technical';
+  }
+  return null;
+};
+
 /**
  * Create question paper from JSON format
  */
@@ -14,9 +33,39 @@ exports.createQuestionPaper = async (req, res) => {
       semester,
       duration_minutes,
       status,
-      questions,
+      questions, // Old format: array of questions
+      sections, // New format: array of sections with questions
       domain_ids, // Array of domain IDs to assign this paper to
     } = req.body;
+
+    // Handle both old format (questions) and new format (sections)
+    let allQuestions = [];
+    if (sections && Array.isArray(sections)) {
+      // New format: sections with questions
+      for (const section of sections) {
+        if (section.questions && Array.isArray(section.questions)) {
+          const normalizedSection = normalizeSectionName(section.name || section.sectionName);
+          if (!normalizedSection) {
+            return res.status(400).json({
+              success: false,
+              message: `Invalid section name "${section?.name}". Allowed sections: ${ALLOWED_SECTIONS.join(', ')}`,
+            });
+          }
+
+          const sectionQuestions = section.questions.map(q => ({
+            ...q,
+            section: normalizedSection,
+          }));
+          allQuestions = allQuestions.concat(sectionQuestions);
+        }
+      }
+    } else if (questions && Array.isArray(questions)) {
+      // Old format: flat array of questions
+      allQuestions = questions.map((q) => ({
+        ...q,
+        section: normalizeSectionName(q.section || q.sectionName),
+      }));
+    }
 
     // Validate required fields
     if (!paper_name) {
@@ -26,17 +75,17 @@ exports.createQuestionPaper = async (req, res) => {
       });
     }
 
-    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+    if (allQuestions.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'questions array is required and must not be empty',
+        message: 'questions or sections with questions are required and must not be empty',
       });
     }
 
     // Validate each question
     const validationErrors = [];
-    for (let i = 0; i < questions.length; i++) {
-      const question = questions[i];
+    for (let i = 0; i < allQuestions.length; i++) {
+      const question = allQuestions[i];
       const questionNum = i + 1;
 
       if (!question.text) {
@@ -46,7 +95,7 @@ exports.createQuestionPaper = async (req, res) => {
       if (!question.type) {
         validationErrors.push(`Question ${questionNum}: type is required`);
       } else {
-        const validTypes = ['multiple-choice', 'single-choice', 'true-false', 'short-answer'];
+        const validTypes = ['multiple-choice', 'single-choice', 'true-false'];
         if (!validTypes.includes(question.type)) {
           validationErrors.push(
             `Question ${questionNum}: type must be one of: ${validTypes.join(', ')}`
@@ -77,12 +126,11 @@ exports.createQuestionPaper = async (req, res) => {
           }
         }
       }
-
-      // Validate correctAnswer for short-answer
-      if (question.type === 'short-answer') {
-        if (!question.correctAnswer || question.correctAnswer.trim() === '') {
-          validationErrors.push(`Question ${questionNum}: correctAnswer is required for short-answer questions`);
-        }
+      const normalizedSection = normalizeSectionName(question.section);
+      if (!normalizedSection) {
+        validationErrors.push(`Question ${questionNum}: section must be one of: ${ALLOWED_SECTIONS.join(', ')}`);
+      } else {
+        question.section = normalizedSection;
       }
     }
 
@@ -101,9 +149,11 @@ exports.createQuestionPaper = async (req, res) => {
       subject,
       year,
       semester,
-      duration_minutes: duration_minutes || 60,
+      duration_minutes: Number.isFinite(Number(duration_minutes)) && Number(duration_minutes) > 0
+        ? Math.round(Number(duration_minutes))
+        : 60,
       status: status || 'draft',
-      total_questions: questions.length,
+      total_questions: allQuestions.length,
       domain_ids: domain_ids || [], // Array of domain IDs
     };
 
@@ -116,7 +166,7 @@ exports.createQuestionPaper = async (req, res) => {
       });
     }
 
-    const createdPaper = await QuestionPaper.create(paperData, questions, userId);
+    const createdPaper = await QuestionPaper.create(paperData, allQuestions, userId);
 
     // Log activity
     await logActivitySimple(
@@ -124,7 +174,7 @@ exports.createQuestionPaper = async (req, res) => {
       'CREATE',
       'QUESTION_PAPER',
       createdPaper.id,
-      `Created question paper: ${paper_name} with ${questions.length} questions`
+      `Created question paper: ${paper_name} with ${allQuestions.length} questions`
     );
 
     res.status(201).json({
@@ -241,7 +291,7 @@ exports.updateQuestionPaper = async (req, res) => {
         if (!question.type) {
           validationErrors.push(`Question ${questionNum}: type is required`);
         } else {
-          const validTypes = ['multiple-choice', 'single-choice', 'true-false', 'short-answer'];
+          const validTypes = ['multiple-choice', 'single-choice', 'true-false'];
           if (!validTypes.includes(question.type)) {
             validationErrors.push(
               `Question ${questionNum}: type must be one of: ${validTypes.join(', ')}`
@@ -273,11 +323,11 @@ exports.updateQuestionPaper = async (req, res) => {
           }
         }
 
-        // Validate correctAnswer for short-answer
-        if (question.type === 'short-answer') {
-          if (!question.correctAnswer || question.correctAnswer.trim() === '') {
-            validationErrors.push(`Question ${questionNum}: correctAnswer is required for short-answer questions`);
-          }
+        const normalizedSection = normalizeSectionName(question.section);
+        if (!normalizedSection) {
+          validationErrors.push(`Question ${questionNum}: section must be one of: ${ALLOWED_SECTIONS.join(', ')}`);
+        } else {
+          question.section = normalizedSection;
         }
       }
 
@@ -297,7 +347,9 @@ exports.updateQuestionPaper = async (req, res) => {
       subject,
       year,
       semester,
-      duration_minutes: duration_minutes || undefined,
+      duration_minutes: Number.isFinite(Number(duration_minutes)) && Number(duration_minutes) > 0
+        ? Math.round(Number(duration_minutes))
+        : undefined,
       status: status || undefined,
     };
 

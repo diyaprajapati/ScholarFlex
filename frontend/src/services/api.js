@@ -174,14 +174,57 @@ export const api = {
             question.correctOptions = validCorrectOptions;
           }
 
-          // Add correctAnswer for short-answer questions
-          if (q.type === 'short-answer') {
-            question.correctAnswer = q.correctAnswer || '';
+          // Add section if provided
+          if (q.section) {
+            question.section = q.section;
           }
 
           return question;
         }),
       };
+
+      // If sections are provided, use new format
+      if (data.sections && Array.isArray(data.sections)) {
+        payload.sections = data.sections.map(section => ({
+          name: section.name,
+          questions: section.questions.map(q => {
+            const question = {
+              text: q.text,
+              type: q.type,
+              weightage: q.weightage || 1,
+            };
+
+            // Preserve question ID if it exists (for updates)
+            if (q.id) {
+              question.id = q.id;
+            }
+
+            // Add options and correctOptions for choice-based questions
+            if (['multiple-choice', 'single-choice', 'true-false'].includes(q.type)) {
+              const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
+              const validOptionsMap = new Map();
+              let newIndex = 0;
+              
+              (q.options || []).forEach((opt, oldIndex) => {
+                if (opt && opt.trim() !== '') {
+                  validOptionsMap.set(oldIndex, newIndex);
+                  newIndex++;
+                }
+              });
+              
+              const validCorrectOptions = (q.correctOptions || [])
+                .map(oldIndex => validOptionsMap.get(oldIndex))
+                .filter(newIndex => newIndex !== undefined);
+              
+              question.options = validOptions;
+              question.correctOptions = validCorrectOptions;
+            }
+
+            return question;
+          }),
+        }));
+        delete payload.questions; // Remove old format
+      }
 
       return apiRequest('/question-papers', {
         method: 'POST',
@@ -259,14 +302,57 @@ export const api = {
             question.correctOptions = validCorrectOptions;
           }
 
-          // Add correctAnswer for short-answer questions
-          if (q.type === 'short-answer') {
-            question.correctAnswer = q.correctAnswer || '';
+          // Add section if provided
+          if (q.section) {
+            question.section = q.section;
           }
 
           return question;
         }),
       };
+
+      // If sections are provided, use new format
+      if (data.sections && Array.isArray(data.sections)) {
+        payload.sections = data.sections.map(section => ({
+          name: section.name,
+          questions: section.questions.map(q => {
+            const question = {
+              text: q.text,
+              type: q.type,
+              weightage: q.weightage || 1,
+            };
+
+            // Preserve question ID if it exists (for updates)
+            if (q.id) {
+              question.id = q.id;
+            }
+
+            // Add options and correctOptions for choice-based questions
+            if (['multiple-choice', 'single-choice', 'true-false'].includes(q.type)) {
+              const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
+              const validOptionsMap = new Map();
+              let newIndex = 0;
+              
+              (q.options || []).forEach((opt, oldIndex) => {
+                if (opt && opt.trim() !== '') {
+                  validOptionsMap.set(oldIndex, newIndex);
+                  newIndex++;
+                }
+              });
+              
+              const validCorrectOptions = (q.correctOptions || [])
+                .map(oldIndex => validOptionsMap.get(oldIndex))
+                .filter(newIndex => newIndex !== undefined);
+              
+              question.options = validOptions;
+              question.correctOptions = validCorrectOptions;
+            }
+
+            return question;
+          }),
+        }));
+        delete payload.questions; // Remove old format
+      }
 
       return apiRequest(`/question-papers/${id}`, {
         method: 'PUT',
@@ -296,8 +382,9 @@ export const api = {
       });
     },
 
-    getDetails: async (testId) => {
-      return apiRequest(`/student/tests/${testId}/details`, {
+    getDetails: async (testId, attemptId) => {
+      const query = attemptId ? `?attempt_id=${attemptId}` : ''
+      return apiRequest(`/student/tests/${testId}/details${query}`, {
         method: 'GET',
       });
     },
@@ -354,6 +441,20 @@ export const api = {
     delete: async (id) => {
       return apiRequest(`/admin/${id}`, {
         method: 'DELETE',
+      });
+    },
+  },
+
+  dashboard: {
+    getStats: async () => {
+      return apiRequest('/dashboard/stats', {
+        method: 'GET',
+      });
+    },
+
+    getCardDetails: async (cardId) => {
+      return apiRequest(`/dashboard/cards/${cardId}`, {
+        method: 'GET',
       });
     },
   },

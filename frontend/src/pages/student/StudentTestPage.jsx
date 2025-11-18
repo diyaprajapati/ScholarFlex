@@ -4,6 +4,41 @@ import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
 import api from '../../services/api'
 
+const DIFFICULTY_BANDS = {
+  EASY: 'easy',
+  MEDIUM: 'medium',
+  HARD: 'hard',
+}
+
+const BASE_SECONDS_PER_MARK = 30
+
+const getDifficultyBand = (weightage = 1) => {
+  if (weightage >= 3) return DIFFICULTY_BANDS.HARD
+  if (weightage <= 1) return DIFFICULTY_BANDS.EASY
+  return DIFFICULTY_BANDS.MEDIUM
+}
+
+const getEasierBand = (band) => {
+  if (band === DIFFICULTY_BANDS.HARD) return DIFFICULTY_BANDS.MEDIUM
+  if (band === DIFFICULTY_BANDS.MEDIUM) return DIFFICULTY_BANDS.EASY
+  return DIFFICULTY_BANDS.EASY
+}
+
+const getHarderBand = (band) => {
+  if (band === DIFFICULTY_BANDS.EASY) return DIFFICULTY_BANDS.MEDIUM
+  if (band === DIFFICULTY_BANDS.MEDIUM) return DIFFICULTY_BANDS.HARD
+  return DIFFICULTY_BANDS.HARD
+}
+
+const shuffleArray = (array = []) => {
+  const items = [...array]
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[items[i], items[j]] = [items[j], items[i]]
+  }
+  return items
+}
+
 export default function StudentTestPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -16,6 +51,7 @@ export default function StudentTestPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [questions, setQuestions] = useState([])
+  const [totalQuestionTarget, setTotalQuestionTarget] = useState(0)
   const [testInfo, setTestInfo] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [fetchError, setFetchError] = useState(null)
@@ -24,6 +60,76 @@ export default function StudentTestPage() {
   const intervalRef = useRef(null)
   const warningCountRef = useRef(0)
   const violationTriggeredRef = useRef(false)
+  const questionLookupRef = useRef(new Map())
+  const bucketsRef = useRef({
+    [DIFFICULTY_BANDS.EASY]: [],
+    [DIFFICULTY_BANDS.MEDIUM]: [],
+    [DIFFICULTY_BANDS.HARD]: [],
+  })
+  const questionTimingsRef = useRef(new Map())
+  const currentQuestionStartRef = useRef(null)
+
+  const pickFromBuckets = useCallback((preferredBands = []) => {
+    const buckets = bucketsRef.current
+    const lookup = questionLookupRef.current
+    for (const band of preferredBands) {
+      if (!band) continue
+      const bucket = buckets[band]
+      if (bucket && bucket.length > 0) {
+        const nextId = bucket.pop()
+        const nextQuestion = lookup.get(nextId)
+        if (nextQuestion) {
+          return nextQuestion
+        }
+      }
+    }
+    return null
+  }, [])
+
+  const pickAdaptiveNextQuestion = useCallback((currentQuestion, timeSpentSeconds = 0) => {
+    if (!currentQuestion) return null
+    const currentBand = getDifficultyBand(currentQuestion.weightage)
+    const threshold = (currentQuestion.weightage || 1) * BASE_SECONDS_PER_MARK
+
+    let preferredBands
+    if (timeSpentSeconds > threshold * 1.2) {
+      preferredBands = [
+        getEasierBand(currentBand),
+        currentBand,
+        getHarderBand(currentBand),
+      ]
+    } else if (timeSpentSeconds < threshold * 0.8) {
+      preferredBands = [
+        getHarderBand(currentBand),
+        currentBand,
+        getEasierBand(currentBand),
+      ]
+    } else {
+      preferredBands = [
+        currentBand,
+        getHarderBand(currentBand),
+        getEasierBand(currentBand),
+      ]
+    }
+
+    const nextQuestion = pickFromBuckets(preferredBands)
+    if (nextQuestion) {
+      return nextQuestion
+    }
+
+    return pickFromBuckets([
+      DIFFICULTY_BANDS.MEDIUM,
+      DIFFICULTY_BANDS.EASY,
+      DIFFICULTY_BANDS.HARD,
+    ])
+  }, [pickFromBuckets])
+
+  const recordTimeForQuestion = useCallback((questionId) => {
+    if (!questionId || !currentQuestionStartRef.current) return 0
+    const timeSpent = (Date.now() - currentQuestionStartRef.current) / 1000
+    questionTimingsRef.current.set(questionId, timeSpent)
+    return timeSpent
+  }, [])
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -45,11 +151,71 @@ export default function StudentTestPage() {
     const fetchTestDetails = async () => {
       setIsLoading(true)
       try {
-        const response = await api.studentTests.getDetails(testId)
+        const response = await api.studentTests.getDetails(testId, attemptId)
         const data = response.data
-        const orderedQuestions = (data.questions || []).sort((a, b) => (a.weightage || 0) - (b.weightage || 0))
-        setTestInfo(data)
-        setQuestions(orderedQuestions)
+        const normalizedQuestions = (data.questions || []).map((question) => ({
+          ...question,
+          options: (question.options || []).map((option, idx) => ({
+            ...option,
+            originalIndex: typeof option.originalIndex === 'number' ? option.originalIndex : idx,
+          })),
+        }))
+
+        if (normalizedQuestions.length === 0) {
+          throw new Error('No questions available for this test')
+        }
+
+        const questionLookup = new Map()
+        const bucketData = {
+          [DIFFICULTY_BANDS.EASY]: [],
+          [DIFFICULTY_BANDS.MEDIUM]: [],
+          [DIFFICULTY_BANDS.HARD]: [],
+        }
+
+        normalizedQuestions.forEach((question) => {
+          questionLookup.set(question.id, question)
+          const band = getDifficultyBand(question.weightage)
+          bucketData[band].push(question.id)
+        })
+
+        bucketData[DIFFICULTY_BANDS.EASY] = shuffleArray(bucketData[DIFFICULTY_BANDS.EASY])
+        bucketData[DIFFICULTY_BANDS.MEDIUM] = shuffleArray(bucketData[DIFFICULTY_BANDS.MEDIUM])
+        bucketData[DIFFICULTY_BANDS.HARD] = shuffleArray(bucketData[DIFFICULTY_BANDS.HARD])
+
+        const selectInitialQuestionId = () => {
+          const preferredOrder = [
+            DIFFICULTY_BANDS.MEDIUM,
+            DIFFICULTY_BANDS.EASY,
+            DIFFICULTY_BANDS.HARD,
+          ]
+          for (const band of preferredOrder) {
+            if (bucketData[band] && bucketData[band].length > 0) {
+              const questionId = bucketData[band].pop()
+              return questionLookup.get(questionId) || null
+            }
+          }
+          return null
+        }
+
+        const initialQuestion = selectInitialQuestionId()
+        if (!initialQuestion) {
+          throw new Error('Unable to prepare the first question for this test')
+        }
+
+        questionLookupRef.current = questionLookup
+        bucketsRef.current = bucketData
+        questionTimingsRef.current = new Map()
+        currentQuestionStartRef.current = null
+
+        const totalTarget = data.total_questions || normalizedQuestions.length
+        setTotalQuestionTarget(totalTarget)
+        setTestInfo({
+          ...data,
+          total_questions: totalTarget,
+        })
+        setQuestions([initialQuestion])
+        setCurrentQuestionIndex(0)
+        setSelectedAnswers({})
         setTimeRemaining((data.duration_minutes || 60) * 60)
         setFetchError(null)
       } catch (error) {
@@ -76,7 +242,7 @@ export default function StudentTestPage() {
             }
             return null
           }
-          if (question.type === 'short-answer') {
+          if (false) { // short-answer removed
             if (typeof answer === 'string' && answer.trim() !== '') {
               return { question_id: question.id, answer_text: answer.trim() }
             }
@@ -101,11 +267,14 @@ export default function StudentTestPage() {
   }, [attemptId, isSubmitting, navigate, questions, selectedAnswers])
 
   const handleAutoSubmit = useCallback(() => {
+    if (questions[currentQuestionIndex]) {
+      recordTimeForQuestion(questions[currentQuestionIndex].id)
+    }
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
     }
     submitTestPayload({ force: true })
-  }, [submitTestPayload])
+  }, [submitTestPayload, questions, currentQuestionIndex, recordTimeForQuestion])
 
   useEffect(() => {
     if (testStarted) {
@@ -137,12 +306,14 @@ export default function StudentTestPage() {
     setWarningCount(0) // Reset warning count when test starts
     warningCountRef.current = 0 // Reset ref as well
     violationTriggeredRef.current = false // Reset violation ref as well
+    currentQuestionStartRef.current = Date.now()
   }
 
-  const handleOptionSelect = (question, optionIndex) => {
+  const handleOptionSelect = (question, optionIndex, isMultiple = question.type === 'multiple-choice') => {
+    if (typeof optionIndex !== 'number') return
     setSelectedAnswers((prev) => {
       const current = prev[question.id]
-      if (question.type === 'multiple-choice') {
+      if (isMultiple) {
         const currentArray = Array.isArray(current) ? current : []
         const exists = currentArray.includes(optionIndex)
         const updated = exists ? currentArray.filter((idx) => idx !== optionIndex) : [...currentArray, optionIndex].sort((a, b) => a - b)
@@ -152,26 +323,49 @@ export default function StudentTestPage() {
     })
   }
 
-  const handleShortAnswerChange = (questionId, value) => {
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }))
-  }
-
   const handleNext = () => {
+    const currentQuestion = questions[currentQuestionIndex]
+    if (!currentQuestion) return
+
+    const timeSpent = recordTimeForQuestion(currentQuestion.id)
+
+    if (currentQuestionIndex === questions.length - 1) {
+      const nextQuestion = pickAdaptiveNextQuestion(currentQuestion, timeSpent)
+      if (nextQuestion) {
+        setQuestions((prev) => [...prev, nextQuestion])
+        setCurrentQuestionIndex((idx) => {
+          const nextIndex = idx + 1
+          currentQuestionStartRef.current = Date.now()
+          return nextIndex
+        })
+        return
+      }
+    }
+
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((idx) => idx + 1)
+      setCurrentQuestionIndex((idx) => {
+        const nextIndex = Math.min(idx + 1, questions.length - 1)
+        currentQuestionStartRef.current = Date.now()
+        return nextIndex
+      })
     }
   }
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((idx) => idx - 1)
+      recordTimeForQuestion(questions[currentQuestionIndex]?.id)
+      setCurrentQuestionIndex((idx) => {
+        const nextIndex = Math.max(idx - 1, 0)
+        currentQuestionStartRef.current = Date.now()
+        return nextIndex
+      })
     }
   }
 
   const handleSubmitTest = () => {
+    if (questions[currentQuestionIndex]) {
+      recordTimeForQuestion(questions[currentQuestionIndex].id)
+    }
     setShowConfirmModal(true)
   }
 
@@ -201,7 +395,7 @@ export default function StudentTestPage() {
     if (currentQuestion.type === 'multiple-choice') {
       return Array.isArray(currentAnswer) && currentAnswer.length > 0
     }
-    if (currentQuestion.type === 'short-answer') {
+    if (false) { // short-answer removed
       return typeof currentAnswer === 'string' && currentAnswer.trim() !== ''
     }
     return typeof currentAnswer === 'number'
@@ -313,7 +507,7 @@ export default function StudentTestPage() {
           <div className="mb-6 text-gray-700">
             <p className="text-base sm:text-lg font-semibold">{testInfo.paper_name || testName}</p>
             <p className="text-sm sm:text-base">
-              Duration: {testInfo.duration_minutes || 60} mins • Total Questions: {testInfo.total_questions || questions.length}
+              Duration: {testInfo.duration_minutes || 60} mins • Total Questions: {totalQuestionTarget || testInfo.total_questions || questions.length}
             </p>
           </div>
           <div className="mb-8">
@@ -351,7 +545,7 @@ export default function StudentTestPage() {
             </div>
           </div>
           <div className="text-xs sm:text-sm text-gray-600">
-            Question {currentQuestionIndex + 1} of {questions.length}
+            Question {currentQuestionIndex + 1} of {totalQuestionTarget || questions.length}
           </div>
         </div>
       </div>
@@ -373,29 +567,17 @@ export default function StudentTestPage() {
               </h3>
             </div>
 
-            {currentQuestion.type === 'short-answer' ? (
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                  Enter your answer
-                </label>
-                <textarea
-                  value={typeof currentAnswer === 'string' ? currentAnswer : ''}
-                  onChange={(e) => handleShortAnswerChange(currentQuestion.id, e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C763B]/50 focus:border-[#4C763B] transition-colors"
-                  rows={4}
-                  placeholder="Type your answer here..."
-                />
-              </div>
-            ) : (
-              <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3 sm:space-y-4">
                 {currentQuestion.options.map((option, index) => {
+                  const optionOriginalIndex = typeof option.originalIndex === 'number' ? option.originalIndex : index
+                  const optionText = option.text || option.label || `Option ${index + 1}`
                   const isMulti = currentQuestion.type === 'multiple-choice'
                   const isSelected = isMulti
-                    ? Array.isArray(currentAnswer) && currentAnswer.includes(index)
-                    : currentAnswer === index
+                    ? Array.isArray(currentAnswer) && currentAnswer.includes(optionOriginalIndex)
+                    : currentAnswer === optionOriginalIndex
                   return (
                     <label
-                      key={index}
+                      key={`${currentQuestion.id}-${optionOriginalIndex}`}
                       className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                         isSelected
                           ? 'border-[#4C763B] bg-[#4C763B]/10'
@@ -406,20 +588,19 @@ export default function StudentTestPage() {
                         type={isMulti ? 'checkbox' : 'radio'}
                         name={`question-${currentQuestion.id}`}
                         checked={isSelected}
-                        onChange={() => handleOptionSelect(currentQuestion, index)}
+                        onChange={() => handleOptionSelect(currentQuestion, optionOriginalIndex, isMulti)}
                         className="mt-1 w-4 h-4 sm:w-5 sm:h-5 text-[#4C763B] focus:ring-[#4C763B] focus:ring-2"
                       />
                       <div className="flex-1">
                         <span className="text-xs sm:text-sm font-medium text-gray-700 mr-2">
                           {String.fromCharCode(65 + index)}.
                         </span>
-                        <span className="text-sm sm:text-base text-gray-900">{option}</span>
+                        <span className="text-sm sm:text-base text-gray-900">{optionText}</span>
                       </div>
                     </label>
                   )
                 })}
               </div>
-            )}
           </div>
 
           {/* Navigation Buttons */}
@@ -441,7 +622,7 @@ export default function StudentTestPage() {
               </span>
             </button>
 
-            {currentQuestionIndex === questions.length - 1 ? (
+            {!Object.values(bucketsRef.current).some((bucket) => bucket.length > 0) && currentQuestionIndex === questions.length - 1 ? (
               <button
                 onClick={handleSubmitTest}
                 disabled={isSubmitting}

@@ -1,6 +1,101 @@
 const pool = require('../config/database');
 const QuestionPaper = require('../models/QuestionPaper');
 
+const SECTION_REQUIREMENTS = {
+  Theory: 20,
+  Technical: 30,
+};
+
+const TOTAL_REQUIRED_QUESTIONS = SECTION_REQUIREMENTS.Theory + SECTION_REQUIREMENTS.Technical;
+
+const normalizeSectionName = (section) => {
+  if (!section || typeof section !== 'string') return null;
+  const normalized = section.trim().toLowerCase();
+  if (normalized === 'theory' || normalized === 'aptitude') return 'Theory';
+  if (
+    normalized === 'technical' ||
+    normalized === 'technical/coding' ||
+    normalized === 'technical coding' ||
+    normalized === 'tech based' ||
+    normalized === 'tech-based' ||
+    normalized === 'technical mcqs'
+  ) {
+    return 'Technical';
+  }
+  return null;
+};
+
+const shuffleArray = (input = []) => {
+  const array = [...input];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
+const buildQuestionPoolForPaper = async (questionPaperId) => {
+  const questionsResult = await pool.query(
+    `SELECT id, weightage, section
+     FROM questions
+     WHERE question_paper_id = $1 AND is_active = TRUE`,
+    [questionPaperId]
+  );
+
+  const sectionsMap = {
+    Theory: [],
+    Technical: [],
+  };
+
+  questionsResult.rows.forEach((row) => {
+    const normalizedSection = normalizeSectionName(row.section);
+    if (!normalizedSection) {
+      return;
+    }
+    sectionsMap[normalizedSection].push({
+      question_id: row.id,
+      weightage: row.weightage || 1,
+      section: normalizedSection,
+    });
+  });
+
+  for (const [sectionName, requiredCount] of Object.entries(SECTION_REQUIREMENTS)) {
+    if ((sectionsMap[sectionName] || []).length < requiredCount) {
+      throw new Error(`Insufficient questions in ${sectionName} section. Need at least ${requiredCount}.`);
+    }
+  }
+
+  const selected = [];
+  for (const [sectionName, requiredCount] of Object.entries(SECTION_REQUIREMENTS)) {
+    const pool = sectionsMap[sectionName];
+    const sampled = shuffleArray(pool).slice(0, requiredCount);
+    selected.push(...sampled);
+  }
+
+  const shuffledSelection = shuffleArray(selected);
+  if (shuffledSelection.length !== TOTAL_REQUIRED_QUESTIONS) {
+    throw new Error(`Question pool must contain exactly ${TOTAL_REQUIRED_QUESTIONS} questions`);
+  }
+
+  return shuffledSelection;
+};
+
+const ensureAttemptQuestionPool = async (attemptId, questionPaperId, existingPool) => {
+  let poolData = existingPool;
+  if (!poolData || !Array.isArray(poolData) || poolData.length === 0) {
+    poolData = await buildQuestionPoolForPaper(questionPaperId);
+    const maxScore = poolData.reduce((sum, item) => sum + (item.weightage || 0), 0);
+
+    await pool.query(
+      `UPDATE test_attempts 
+       SET question_pool = $1::jsonb, total_questions = $2, max_possible_score = $3
+       WHERE id = $4`,
+      [JSON.stringify(poolData), poolData.length, maxScore, attemptId]
+    );
+  }
+  return poolData;
+};
+
 /**
  * Map question type from database enum to JSON format
  */
@@ -9,7 +104,6 @@ function mapQuestionTypeFromDB(type) {
     'MULTIPLE_SELECT': 'multiple-choice',
     'SINGLE_CHOICE': 'single-choice',
     'TRUE_FALSE': 'true-false',
-    'SHORT_ANSWER': 'short-answer',
     'MCQ': 'multiple-choice',
   };
   return typeMap[type] || 'multiple-choice';
@@ -350,11 +444,25 @@ exports.startTest = async (req, res) => {
       });
     }
 
+    let questionPool;
+    try {
+      questionPool = await buildQuestionPoolForPaper(testId);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || 'Unable to create question pool for this test',
+      });
+    }
+
+    const maxScore = questionPool.reduce((sum, item) => sum + (item.weightage || 0), 0);
+
     const attemptResult = await pool.query(
-      `INSERT INTO test_attempts (student_id, question_paper_id, status, started_at, updated_at)
-       VALUES ($1, $2, 'IN_PROGRESS', NOW(), NOW())
+      `INSERT INTO test_attempts (
+         student_id, question_paper_id, status, total_questions, max_possible_score, started_at, updated_at, question_pool
+       )
+       VALUES ($1, $2, 'IN_PROGRESS', $3, $4, NOW(), NOW(), $5::jsonb)
        RETURNING id, started_at`,
-      [studentId, testId]
+      [studentId, testId, questionPool.length, maxScore, JSON.stringify(questionPool)]
     );
 
     res.status(201).json({
@@ -486,13 +594,6 @@ exports.submitTest = async (req, res) => {
               isCorrect = !!optionList[selectedIndex].is_correct;
               score = isCorrect ? question.weightage : 0;
             }
-          } else if (questionType === 'short-answer') {
-            answerText = (answer.answer_text || '').trim();
-            const correctAnswer = (question.correct_answer || '').trim();
-            if (answerText && correctAnswer) {
-              isCorrect = answerText.toLowerCase() === correctAnswer.toLowerCase();
-            }
-            score = isCorrect ? question.weightage : 0;
           }
 
           await pool.query(
@@ -568,6 +669,7 @@ exports.submitTest = async (req, res) => {
 exports.getTestDetails = async (req, res) => {
   try {
     const { testId } = req.params;
+    const attemptId = parseInt(req.query.attempt_id, 10);
     const studentId = req.user?.id;
 
     if (!studentId) {
@@ -577,56 +679,123 @@ exports.getTestDetails = async (req, res) => {
       });
     }
 
-    // Verify that the test is available to this student (domain match or manual assignment)
-    const eligibilityResult = await pool.query(
-      `SELECT qp.id
-       FROM question_papers qp
-       JOIN students s ON s.id = $2
-       LEFT JOIN question_paper_domains qpd 
-         ON qpd.question_paper_id = qp.id AND qpd.domain_id = s.domain_id
-       LEFT JOIN test_assignments ta 
-         ON ta.question_paper_id = qp.id AND ta.student_id = $2 AND ta.is_active = TRUE
-       WHERE qp.id = $1 
-         AND qp.status = 'published'
-         AND qp.is_active = TRUE
-         AND (qpd.domain_id IS NOT NULL OR ta.id IS NOT NULL)`,
-      [testId, studentId]
+    if (!attemptId || Number.isNaN(attemptId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'attempt_id query parameter is required',
+      });
+    }
+
+    const attemptResult = await pool.query(
+      `SELECT 
+         ta.id,
+         ta.student_id,
+         ta.question_paper_id,
+         ta.status,
+         ta.question_pool,
+         qp.paper_name,
+         qp.description,
+         qp.subject,
+         qp.duration_minutes,
+         qp.total_weightage
+       FROM test_attempts ta
+       JOIN question_papers qp ON ta.question_paper_id = qp.id
+       WHERE ta.id = $1 AND ta.student_id = $2`,
+      [attemptId, studentId]
     );
 
-    if (eligibilityResult.rows.length === 0) {
-      return res.status(403).json({
-        success: false,
-        message: 'You are not authorized to access this test',
-      });
-    }
-
-    const paper = await QuestionPaper.findById(testId);
-    if (!paper) {
+    if (attemptResult.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Question paper not found',
+        message: 'Test attempt not found',
       });
     }
 
-    const sanitizedQuestions = (paper.questions || []).map((question) => ({
-      id: question.id,
-      text: question.text || question.question_text,
-      type: question.type,
-      weightage: question.weightage,
-      options: question.options || [],
-    }));
+    const attempt = attemptResult.rows[0];
+    if (attempt.question_paper_id !== Number(testId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Attempt does not belong to the requested test',
+      });
+    }
+
+    const questionPool = await ensureAttemptQuestionPool(
+      attempt.id,
+      attempt.question_paper_id,
+      attempt.question_pool
+    );
+
+    if (!questionPool || questionPool.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Unable to load questions for this test attempt',
+      });
+    }
+
+    const questionIds = questionPool.map((item) => item.question_id);
+    const questionsResult = await pool.query(
+      `SELECT id, question_text, question_type, weightage, section
+       FROM questions
+       WHERE question_paper_id = $1
+         AND id = ANY($2::int[])
+         AND is_active = TRUE`,
+      [testId, questionIds]
+    );
+
+    const optionsResult = await pool.query(
+      `SELECT id, question_id, option_text, option_label
+       FROM question_options
+       WHERE question_id = ANY($1::int[])
+       ORDER BY question_id, display_order`,
+      [questionIds]
+    );
+
+    const questionMap = new Map();
+    questionsResult.rows.forEach((row) => {
+      questionMap.set(row.id, row);
+    });
+
+    const optionMap = new Map();
+    optionsResult.rows.forEach((row) => {
+      if (!optionMap.has(row.question_id)) {
+        optionMap.set(row.question_id, []);
+      }
+      optionMap.get(row.question_id).push(row);
+    });
+
+    const sanitizedQuestions = questionPool
+      .filter((poolItem) => questionMap.has(poolItem.question_id))
+      .map((poolItem) => {
+        const questionRow = questionMap.get(poolItem.question_id);
+        const baseOptions = (optionMap.get(poolItem.question_id) || []).map((opt, index) => ({
+          id: opt.id,
+          label: opt.option_label,
+          text: opt.option_text,
+          originalIndex: index,
+        }));
+        const randomizedOptions = shuffleArray(baseOptions);
+
+        return {
+          id: poolItem.question_id,
+          text: questionRow.question_text,
+          type: mapQuestionTypeFromDB(questionRow.question_type),
+          weightage: questionRow.weightage,
+          section: poolItem.section || normalizeSectionName(questionRow.section) || 'Theory',
+          options: randomizedOptions,
+        };
+      });
 
     res.status(200).json({
       success: true,
       message: 'Test details retrieved successfully',
       data: {
-        id: paper.id,
-        paper_name: paper.paper_name,
-        description: paper.description,
-        subject: paper.subject,
-        duration_minutes: paper.duration_minutes,
-        total_questions: paper.total_questions,
-        total_weightage: paper.total_weightage,
+        id: attempt.question_paper_id,
+        paper_name: attempt.paper_name,
+        description: attempt.description,
+        subject: attempt.subject,
+        duration_minutes: attempt.duration_minutes,
+        total_questions: sanitizedQuestions.length,
+        total_weightage: attempt.total_weightage,
         questions: sanitizedQuestions,
       },
     });

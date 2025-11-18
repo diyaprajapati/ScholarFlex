@@ -20,6 +20,21 @@ export default function QuestionInput({ question, index, onChange, onRemove, onA
         )}
       </div>
 
+      {/* Section Field */}
+      <div>
+        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
+          Section <span className="text-red-500">*</span>
+        </label>
+        <select
+          value={question.section || 'Theory'}
+          onChange={(e) => onChange({ ...question, section: e.target.value })}
+          className="w-full px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C763B]/50 focus:border-[#4C763B] transition-colors bg-white"
+        >
+          <option value="Theory">Theory (20 questions delivered)</option>
+          <option value="Technical">Technical (30 questions delivered)</option>
+        </select>
+      </div>
+
       {/* Question Text and Type Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2.5 sm:gap-3">
         <div className="lg:col-span-2">
@@ -49,7 +64,6 @@ export default function QuestionInput({ question, index, onChange, onRemove, onA
               <option value="multiple-choice">Multiple Choice</option>
               <option value="single-choice">Single Choice</option>
               <option value="true-false">True/False</option>
-              <option value="short-answer">Short Answer</option>
             </select>
           </div>
           <div>
@@ -182,22 +196,6 @@ export default function QuestionInput({ question, index, onChange, onRemove, onA
         </div>
       )}
 
-      {/* Short Answer - Correct Answer Field */}
-      {question.type === 'short-answer' && (
-        <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
-            Correct Answer <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={question.correctAnswer || ''}
-            onChange={(e) => onChange({ ...question, correctAnswer: e.target.value })}
-            placeholder="Enter the correct answer"
-            className="w-full px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C763B]/50 focus:border-[#4C763B] transition-colors"
-            required
-          />
-        </div>
-      )}
     </div>
   )
 }

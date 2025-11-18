@@ -43,14 +43,15 @@ class QuestionPaper {
         const questionResult = await client.query(
           `INSERT INTO questions (
             question_paper_id, question_text, question_type, weightage,
-            correct_answer, display_order, created_by, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING id`,
+            correct_answer, section, display_order, created_by, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING id`,
           [
             questionPaperId,
             questionData.text,
             questionType,
             questionData.weightage || 1,
-            questionData.correctAnswer || null, // For short-answer questions
+            null, // correct_answer is no longer used
+            questionData.section || null,
             displayOrder++,
             userId,
           ]
@@ -127,7 +128,6 @@ class QuestionPaper {
       'multiple-choice': 'MULTIPLE_SELECT',
       'single-choice': 'SINGLE_CHOICE',
       'true-false': 'TRUE_FALSE',
-      'short-answer': 'SHORT_ANSWER',
     };
 
     return typeMap[type] || 'MCQ';
@@ -141,7 +141,6 @@ class QuestionPaper {
       'MULTIPLE_SELECT': 'multiple-choice',
       'SINGLE_CHOICE': 'single-choice',
       'TRUE_FALSE': 'true-false',
-      'SHORT_ANSWER': 'short-answer',
       'MCQ': 'multiple-choice',
     };
 
@@ -282,10 +281,10 @@ class QuestionPaper {
       const questionsResult = await pool.query(
         `SELECT 
           q.id, q.question_text, q.question_type, q.weightage, q.correct_answer,
-          q.display_order
+          q.section, q.display_order
         FROM questions q
         WHERE q.question_paper_id = $1 AND q.is_active = TRUE
-        ORDER BY q.display_order`,
+        ORDER BY q.section, q.display_order`,
         [id]
       );
 
@@ -306,7 +305,7 @@ class QuestionPaper {
           text: question.question_text,
           type: this.mapQuestionTypeFromDB(question.question_type),
           weightage: question.weightage,
-          correctAnswer: question.correct_answer || null,
+          section: question.section || null,
         };
 
         // Transform options for choice-based questions
@@ -323,9 +322,26 @@ class QuestionPaper {
         questions.push(transformedQuestion);
       }
 
+      // Group questions by section for frontend
+      const questionsBySection = {};
+      questions.forEach(q => {
+        const sectionName = q.section || 'Uncategorized';
+        if (!questionsBySection[sectionName]) {
+          questionsBySection[sectionName] = [];
+        }
+        questionsBySection[sectionName].push(q);
+      });
+
+      // Convert to sections array format
+      const sections = Object.keys(questionsBySection).map(sectionName => ({
+        name: sectionName,
+        questions: questionsBySection[sectionName],
+      }));
+
       return {
         ...paper,
-        questions,
+        questions, // Keep flat array for backward compatibility
+        sections, // New format: grouped by sections
         domains: domainsResult.rows || [],
       };
     } catch (error) {
@@ -454,13 +470,13 @@ class QuestionPaper {
             await client.query(
               `UPDATE questions 
                SET question_text = $1, question_type = $2, weightage = $3, 
-                   correct_answer = $4, display_order = $5, updated_at = NOW()
+                   section = $4, display_order = $5, updated_at = NOW()
                WHERE id = $6`,
               [
                 questionData.text,
                 questionType,
                 questionData.weightage || 1,
-                questionData.correctAnswer || null,
+                questionData.section || null,
                 displayOrder++,
                 questionData.id,
               ]
@@ -496,14 +512,14 @@ class QuestionPaper {
             const questionResult = await client.query(
               `INSERT INTO questions (
                 question_paper_id, question_text, question_type, weightage,
-                correct_answer, display_order, created_by, updated_at
+                section, display_order, created_by, updated_at
               ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING id`,
               [
                 id,
                 questionData.text,
                 questionType,
                 questionData.weightage || 1,
-                questionData.correctAnswer || null,
+                questionData.section || null,
                 displayOrder++,
                 userId,
               ]

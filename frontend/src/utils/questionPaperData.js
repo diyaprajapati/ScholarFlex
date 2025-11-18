@@ -28,7 +28,7 @@ export const mockPaperSets = [
       },
       {
         text: 'Explain the fundamental theorem of calculus in your own words.',
-        type: 'short-answer',
+        type: 'multiple-choice', // short-answer removed
         weightage: 5,
         correctAnswer: 'The fundamental theorem of calculus states that differentiation and integration are inverse operations.',
       },

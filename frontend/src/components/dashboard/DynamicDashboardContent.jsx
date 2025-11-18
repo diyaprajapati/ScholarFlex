@@ -1,14 +1,59 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PieChart from './charts/PieChart'
 import DetailTable from './tables/DetailTable'
 import { authService } from '../../utils/auth'
+import api from '../../services/api'
 
 export default function DynamicDashboardContent({ selectedCard }) {
   // Check user role to determine if marks should be shown
   const userRole = authService.getUserRole()
   const isSuperAdmin = userRole === 'SUPER_ADMIN'
   const showMarks = isSuperAdmin // Only Super Admin can see marks
-  // Get data based on selected card
+  
+  const [cardData, setCardData] = useState({ pieData: [], tables: [] })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    fetchCardDetails()
+  }, [selectedCard, showMarks])
+
+  const fetchCardDetails = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.dashboard.getCardDetails(selectedCard)
+      
+      if (response.success && response.data) {
+        // Filter columns based on user role (hide score for non-super-admin)
+        const tables = response.data.tables.map(table => {
+          const filteredColumns = table.columns.filter(col => {
+            if (col.key === 'score' && !showMarks) {
+              return false
+            }
+            return true
+          })
+          return {
+            ...table,
+            columns: filteredColumns,
+          }
+        })
+        
+        setCardData({
+          pieData: response.data.pieData || [],
+          tables: tables || [],
+        })
+      }
+    } catch (err) {
+      console.error('Error fetching card details:', err)
+      setError(err.message || 'Failed to load card details')
+      setCardData({ pieData: [], tables: [] })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Get data based on selected card (fallback to empty if API fails)
   const getCardData = () => {
     switch (selectedCard) {
       case 'total-interns':
@@ -142,7 +187,33 @@ export default function DynamicDashboardContent({ selectedCard }) {
     }
   }
 
-  const { pieData, tables } = getCardData()
+  // Use API data if available, otherwise fallback to static data
+  const { pieData: fallbackPieData, tables: fallbackTables } = getCardData()
+  const pieData = cardData.pieData.length > 0 ? cardData.pieData : fallbackPieData
+  const tables = cardData.tables.length > 0 ? cardData.tables : fallbackTables
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#4C763B] border-t-transparent"></div>
+        <span className="ml-3 text-gray-600">Loading data...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800">{error}</p>
+        <button
+          onClick={fetchCardDetails}
+          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8">

@@ -44,6 +44,7 @@ app.use('/api/question-papers', questionPaperRoutes);
 app.use('/api/student', studentTestRoutes);
 app.use('/api/domains', domainRoutes);
 app.use('/api/test-attempts', testAttemptRoutes);
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // 404 handler
 app.use((req, res) => {

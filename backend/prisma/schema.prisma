@@ -26,7 +26,6 @@ enum QuestionType {
   SINGLE_CHOICE
   MULTIPLE_SELECT
   TRUE_FALSE
-  SHORT_ANSWER
 }
 
 enum TestAttemptStatus {
@@ -251,6 +250,7 @@ model Question {
   questionType    QuestionType @default(MCQ) @map("question_type")
   weightage       Int          @default(1)
   correctAnswer   String?      @map("correct_answer") @db.Text
+  section         String?      @db.VarChar(100)
   displayOrder    Int          @default(0) @map("display_order")
   isActive        Boolean      @default(true) @map("is_active")
   createdAt       DateTime     @default(now()) @map("created_at")
@@ -312,6 +312,7 @@ model TestAttempt {
   userAgent          String?           @map("user_agent") @db.Text
   createdAt          DateTime          @default(now()) @map("created_at")
   updatedAt          DateTime          @updatedAt @map("updated_at")
+  questionPool       Json?             @map("question_pool")
 
   student        Student        @relation(fields: [studentId], references: [id])
   questionPaper  QuestionPaper  @relation(fields: [questionPaperId], references: [id])

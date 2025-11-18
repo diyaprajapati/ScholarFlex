@@ -3,7 +3,7 @@ import React from 'react'
 export default function QuestionView({ question, index, showAnswers = true }) {
   const isMultipleChoice = question.type === 'multiple-choice' || question.type === 'single-choice'
   const isTrueFalse = question.type === 'true-false'
-  const isShortAnswer = question.type === 'short-answer'
+  const isShortAnswer = false // short-answer removed
 
   return (
     <div className="mb-2.5 sm:mb-3 pb-2.5 sm:pb-3 border-b border-gray-100 last:border-b-0">
