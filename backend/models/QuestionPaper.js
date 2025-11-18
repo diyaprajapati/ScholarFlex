@@ -13,8 +13,8 @@ class QuestionPaper {
       const paperResult = await client.query(
         `INSERT INTO question_papers (
           paper_name, description, subject, year, semester,
-          total_questions, total_weightage, duration_minutes, status, created_by
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+          total_questions, total_weightage, duration_minutes, status, created_by, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW()) RETURNING id`,
         [
           paperData.paper_name,
           paperData.description || null,
@@ -43,8 +43,8 @@ class QuestionPaper {
         const questionResult = await client.query(
           `INSERT INTO questions (
             question_paper_id, question_text, question_type, weightage,
-            correct_answer, display_order, created_by
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+            correct_answer, display_order, created_by, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING id`,
           [
             questionPaperId,
             questionData.text,
@@ -496,8 +496,8 @@ class QuestionPaper {
             const questionResult = await client.query(
               `INSERT INTO questions (
                 question_paper_id, question_text, question_type, weightage,
-                correct_answer, display_order, created_by
-              ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+                correct_answer, display_order, created_by, updated_at
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING id`,
               [
                 id,
                 questionData.text,

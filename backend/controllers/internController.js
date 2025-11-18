@@ -100,10 +100,19 @@ const mapSpreadsheetToStudent = (row) => {
   const areaOfInterest = getValue(row, [
     'Area of Interests',
     'Area of Interest',
+    'Area Of Interest',
+    'Area Of Interests',
     'Domain',
-    'area of interests',
-    'area of interest',
-    'domain'
+    'domain',
+    'DOMAIN',
+    'Area',
+    'area',
+    'Interest Area',
+    'Interest',
+    'Field',
+    'field',
+    'Specialization',
+    'specialization'
   ]);
 
   return {
@@ -142,6 +151,15 @@ exports.uploadSpreadsheet = async (req, res) => {
         success: false,
         message: 'Spreadsheet is empty or could not be parsed.',
       });
+    }
+
+    // Debug: Log available columns (first row only, in development)
+    if (process.env.NODE_ENV === 'development' && rows.length > 0 && rows[0] && typeof rows[0] === 'object') {
+      try {
+        console.log('📋 Available columns in spreadsheet:', Object.keys(rows[0]));
+      } catch (error) {
+        console.log('📋 Could not log spreadsheet columns:', error.message);
+      }
     }
 
     // Map rows to student data
@@ -208,10 +226,21 @@ exports.uploadSpreadsheet = async (req, res) => {
 
     // Get or create domains and prepare data for bulk insert
     const preparedData = [];
+    let domainsFound = 0;
+    let domainsMissing = 0;
+    
     for (const student of studentsData) {
-      const domainId = student.area_of_interest
-        ? await Student.getOrCreateDomain(student.area_of_interest)
+      // Check if area_of_interest exists and is not empty
+      const areaOfInterest = student.area_of_interest?.trim();
+      const domainId = areaOfInterest && areaOfInterest.length > 0
+        ? await Student.getOrCreateDomain(areaOfInterest)
         : null;
+
+      if (domainId) {
+        domainsFound++;
+      } else {
+        domainsMissing++;
+      }
 
       preparedData.push({
         email: student.email,
@@ -222,11 +251,19 @@ exports.uploadSpreadsheet = async (req, res) => {
       });
     }
 
+    // Log domain statistics
+    if (domainsMissing > 0) {
+      console.log(`⚠️  ${domainsMissing} students without domain. Make sure your spreadsheet has a "Domain" or "Area of Interest" column.`);
+    }
+    if (domainsFound > 0) {
+      console.log(`✅ ${domainsFound} students with domain assigned.`);
+    }
+
     // Bulk insert students
     const results = await Student.createBulk(preparedData);
 
     // Log activity
-    if (req.user) {
+    if (req.user && results.success.length > 0) {
       await logActivitySimple(
         req,
         'BULK_UPLOAD',
@@ -239,6 +276,28 @@ exports.uploadSpreadsheet = async (req, res) => {
     // Combine successful inserts with skipped duplicates
     const skipped = results.failed.filter(f => f.reason === 'Email already exists');
     const failed = results.failed.filter(f => f.reason !== 'Email already exists');
+
+    // If all failed and it's a database issue, return appropriate error
+    if (results.success.length === 0 && failed.length > 0) {
+      const dbError = failed.find(f => f.reason.includes('status') || f.reason.includes('constraint'));
+      if (dbError) {
+        return res.status(500).json({
+          success: false,
+          message: dbError.reason || 'Database configuration error. Please ensure the database is properly seeded.',
+          data: {
+            total: rows.length,
+            successful: 0,
+            skipped: skipped.length,
+            failed: failed.length + errors.length,
+            details: {
+              successful: [],
+              skipped: skipped,
+              failed: [...failed, ...errors],
+            },
+          },
+        });
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -257,6 +316,16 @@ exports.uploadSpreadsheet = async (req, res) => {
     });
   } catch (error) {
     console.error('Error uploading spreadsheet:', error);
+    
+    // Check if it's a database seeding issue
+    if (error.message && error.message.includes('status')) {
+      return res.status(500).json({
+        success: false,
+        message: 'Database not properly configured. Please run: npm run db:seed',
+        error: error.message,
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',

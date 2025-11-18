@@ -70,8 +70,8 @@ class Student {
       }
 
       const result = await pool.query(
-        `INSERT INTO students (email, full_name, phone, domain_id, status_id, created_by) 
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+        `INSERT INTO students (email, full_name, phone, domain_id, status_id, created_by, updated_at) 
+         VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING id`,
         [email, full_name, phone, domain_id, finalStatusId, created_by]
       );
       return await this.findById(result.rows[0].id);
@@ -93,13 +93,37 @@ class Student {
 
       // Get default status_id (REGISTERED)
       const statusResult = await pool.query(
-        "SELECT id FROM intern_status WHERE status_code = 'REGISTERED' LIMIT 1"
+        "SELECT id FROM intern_status WHERE status_code = 'REGISTERED' AND is_active = TRUE LIMIT 1"
       );
-      const defaultStatusId = statusResult.rows[0]?.id || 1;
+      
+      let defaultStatusId = statusResult.rows[0]?.id;
+      
+      // If REGISTERED status doesn't exist, try to get the first active status
+      if (!defaultStatusId) {
+        const firstStatusResult = await pool.query(
+          "SELECT id FROM intern_status WHERE is_active = TRUE ORDER BY id LIMIT 1"
+        );
+        defaultStatusId = firstStatusResult.rows[0]?.id;
+      }
+      
+      // If still no status found, throw an error
+      if (!defaultStatusId) {
+        throw new Error('No active intern status found. Please run the database seed script: npm run db:seed');
+      }
 
       for (const studentData of studentsData) {
         try {
           const { email, full_name, phone, domain_id, created_by } = studentData;
+          
+          // Validate required fields
+          if (!email || !full_name) {
+            results.failed.push({
+              email: email || 'N/A',
+              full_name: full_name || 'N/A',
+              reason: 'Email and full_name are required',
+            });
+            continue;
+          }
           
           // Check if student already exists (case-insensitive check)
           const existing = await pool.query(
@@ -117,9 +141,9 @@ class Student {
           }
 
           const result = await pool.query(
-            `INSERT INTO students (email, full_name, phone, domain_id, status_id, created_by) 
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-            [email, full_name, phone, domain_id, defaultStatusId, created_by]
+            `INSERT INTO students (email, full_name, phone, domain_id, status_id, created_by, updated_at) 
+             VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING id`,
+            [email, full_name, phone || null, domain_id || null, defaultStatusId, created_by || null]
           );
 
           results.success.push({
@@ -128,17 +152,41 @@ class Student {
             full_name,
           });
         } catch (error) {
+          console.error(`Error creating student ${studentData.email}:`, error);
+          
           // Handle duplicate email constraint violation
           if (error.code === '23505' || error.message.includes('duplicate') || error.message.includes('unique')) {
             results.failed.push({
-              email: studentData.email,
-              full_name: studentData.full_name,
+              email: studentData.email || 'N/A',
+              full_name: studentData.full_name || 'N/A',
               reason: 'Email already exists',
             });
+          } 
+          // Handle foreign key constraint violations
+          else if (error.code === '23503') {
+            if (error.message.includes('status_id')) {
+              results.failed.push({
+                email: studentData.email || 'N/A',
+                full_name: studentData.full_name || 'N/A',
+                reason: 'Invalid status. Please run: npm run db:seed',
+              });
+            } else if (error.message.includes('domain_id')) {
+              results.failed.push({
+                email: studentData.email || 'N/A',
+                full_name: studentData.full_name || 'N/A',
+                reason: 'Invalid domain',
+              });
+            } else {
+              results.failed.push({
+                email: studentData.email || 'N/A',
+                full_name: studentData.full_name || 'N/A',
+                reason: `Database constraint violation: ${error.message}`,
+              });
+            }
           } else {
             results.failed.push({
-              email: studentData.email,
-              full_name: studentData.full_name,
+              email: studentData.email || 'N/A',
+              full_name: studentData.full_name || 'N/A',
               reason: error.message || 'Failed to create student',
             });
           }
@@ -284,23 +332,41 @@ class Student {
    * Also deletes related test attempts and student answers via cascade
    */
   static async delete(id) {
+    const client = await pool.connect();
     try {
-      // First, delete related test attempts (which will cascade to student_answers)
+      await client.query('BEGIN');
+
+      // First, delete student_answers for all test attempts of this student
+      // (student_answers has ON DELETE CASCADE from test_attempts, but we'll be explicit)
+      await client.query(
+        `DELETE FROM student_answers 
+         WHERE test_attempt_id IN (
+           SELECT id FROM test_attempts WHERE student_id = $1
+         )`,
+        [id]
+      );
+
+      // Then delete related test attempts
       // This handles the foreign key constraint from test_attempts.student_id
-      await pool.query(
+      await client.query(
         "DELETE FROM test_attempts WHERE student_id = $1",
         [id]
       );
       
-      // Now delete the student record
-      const result = await pool.query(
+      // Finally, delete the student record
+      const result = await client.query(
         "DELETE FROM students WHERE id = $1",
         [id]
       );
+
+      await client.query('COMMIT');
       return result.rowCount > 0;
     } catch (error) {
+      await client.query('ROLLBACK');
       console.error("Error deleting student:", error);
       throw error;
+    } finally {
+      client.release();
     }
   }
 
@@ -315,9 +381,9 @@ class Student {
 
       const trimmedName = domainName.trim();
       
-      // Try to find existing domain
+      // Try to find existing domain (case-insensitive)
       let result = await pool.query(
-        "SELECT id FROM domains WHERE domain_name = $1 AND is_active = TRUE LIMIT 1",
+        "SELECT id FROM domains WHERE LOWER(domain_name) = LOWER($1) AND is_active = TRUE LIMIT 1",
         [trimmedName]
       );
 
@@ -325,17 +391,67 @@ class Student {
         return result.rows[0].id;
       }
 
-      // Create new domain
-      const domainCode = trimmedName.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+      // Generate domain code
+      let domainCode = trimmedName.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+      
+      // Ensure domain code is not empty
+      if (!domainCode || domainCode.length === 0) {
+        domainCode = 'DOMAIN_' + Math.random().toString(36).substring(2, 9).toUpperCase();
+      }
+
+      // Check if domain_code already exists (to avoid unique constraint violation)
+      const codeCheck = await pool.query(
+        "SELECT id FROM domains WHERE domain_code = $1 LIMIT 1",
+        [domainCode]
+      );
+
+      // If code exists, append a number
+      if (codeCheck.rows.length > 0) {
+        let counter = 1;
+        let newCode = domainCode + '_' + counter;
+        while (true) {
+          const check = await pool.query(
+            "SELECT id FROM domains WHERE domain_code = $1 LIMIT 1",
+            [newCode]
+          );
+          if (check.rows.length === 0) {
+            domainCode = newCode;
+            break;
+          }
+          counter++;
+          newCode = domainCode + '_' + counter;
+        }
+      }
+
+      // Create new domain with all required fields
       result = await pool.query(
-        `INSERT INTO domains (domain_name, domain_code) 
-         VALUES ($1, $2) RETURNING id`,
+        `INSERT INTO domains (domain_name, domain_code, updated_at) 
+         VALUES ($1, $2, NOW()) RETURNING id`,
         [trimmedName, domainCode]
       );
 
+      console.log(`✅ Created domain: ${trimmedName} (ID: ${result.rows[0].id})`);
       return result.rows[0].id;
     } catch (error) {
-      console.error("Error getting or creating domain:", error);
+      console.error("❌ Error getting or creating domain:", error.message);
+      console.error("   Domain name:", domainName);
+      console.error("   Error code:", error.code);
+      
+      // If it's a duplicate, try to find it again
+      if (error.code === '23505') {
+        try {
+          const result = await pool.query(
+            "SELECT id FROM domains WHERE LOWER(domain_name) = LOWER($1) AND is_active = TRUE LIMIT 1",
+            [domainName.trim()]
+          );
+          if (result.rows.length > 0) {
+            return result.rows[0].id;
+          }
+        } catch (retryError) {
+          console.error("   Retry also failed:", retryError.message);
+        }
+      }
+      
       // If domain creation fails, return null (domain_id can be null)
       return null;
     }
