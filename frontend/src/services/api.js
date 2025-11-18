@@ -323,6 +323,40 @@ export const api = {
       });
     },
   },
+
+  admin: {
+    create: async (data) => {
+      return apiRequest('/admin/create', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    getAll: async () => {
+      return apiRequest('/admin/all', {
+        method: 'GET',
+      });
+    },
+
+    getById: async (id) => {
+      return apiRequest(`/admin/${id}`, {
+        method: 'GET',
+      });
+    },
+
+    update: async (id, data) => {
+      return apiRequest(`/admin/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete: async (id) => {
+      return apiRequest(`/admin/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
 };
 
 export default api;

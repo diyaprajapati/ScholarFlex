@@ -10,6 +10,7 @@ export const ROUTES = {
   // Protected Routes
   DASHBOARD: '/dashboard',
   TEST_ATTEMPTS: '/test-attempts',
+  ADMIN_MANAGEMENT: '/admin-management',
   
   // Question Papers Routes
   QUESTION_PAPERS: {

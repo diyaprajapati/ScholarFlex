@@ -9,5 +9,6 @@ export { default as StudentTestInstructionsPage } from './student/StudentTestIns
 export { default as StudentTestPage } from './student/StudentTestPage'
 export { default as TestSubmissionPage } from './student/TestSubmissionPage'
 export { default as TestAttemptsPage } from './test-attempts/TestAttemptsPage'
+export { default as AdminManagementPage } from './admin/AdminManagementPage'
 export { default as NotFoundPage } from './errors/NotFoundPage'
 

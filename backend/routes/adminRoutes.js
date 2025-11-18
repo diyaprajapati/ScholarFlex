@@ -21,8 +21,8 @@ const fullNameValidation = body('full_name')
   .withMessage('Full name must be between 2 and 255 characters');
 
 const roleCodeValidation = body('role_code')
-  .isIn(['ADMIN'])
-  .withMessage('Role code must be ADMIN (Super Admin cannot be created via API)');
+  .isIn(['ADMIN', 'SUPER_ADMIN'])
+  .withMessage('Role code must be ADMIN or SUPER_ADMIN');
 
 /**
  * @route   POST /api/admin/create
@@ -66,6 +66,10 @@ router.put(
       .optional()
       .isBoolean()
       .withMessage('is_active must be a boolean'),
+    body('role_code')
+      .optional()
+      .isIn(['ADMIN', 'SUPER_ADMIN'])
+      .withMessage('Role code must be ADMIN or SUPER_ADMIN'),
   ],
   adminController.updateAdmin
 );

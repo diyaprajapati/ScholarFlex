@@ -28,10 +28,10 @@ const createAdmin = async (req, res) => {
       });
     }
 
-    // Get role_id based on role_code (ADMIN only, not SUPER_ADMIN)
+    // Get role_id based on role_code (ADMIN or SUPER_ADMIN)
     const roleResult = await pool.query(
       "SELECT id FROM roles WHERE role_code = $1",
-      [role_code === 'SUPER_ADMIN' ? 'ADMIN' : role_code]
+      [role_code]
     );
 
     if (roleResult.rows.length === 0) {
@@ -75,7 +75,7 @@ const createAdmin = async (req, res) => {
     console.error('Error in createAdmin:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: error.message || 'Internal server error',
     });
   }
 };
@@ -173,7 +173,7 @@ const updateAdmin = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { full_name, is_active } = req.body;
+    const { full_name, is_active, role_code } = req.body;
 
     // Check if admin exists
     const admin = await User.getAdminById(id);
@@ -184,16 +184,45 @@ const updateAdmin = async (req, res) => {
       });
     }
 
-    // Don't allow updating super admin
-    if (admin.role_code === 'SUPER_ADMIN' && req.user.id !== parseInt(id)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Cannot update super admin account',
-      });
+    // Allow super admin to update any admin (including other super admins)
+    // Only prevent updating yourself to avoid accidental self-deactivation or role change
+    if (parseInt(id) === req.user.id) {
+      if (is_active === false) {
+        return res.status(403).json({
+          success: false,
+          message: 'Cannot deactivate your own account',
+        });
+      }
+      if (role_code && role_code !== admin.role_code) {
+        return res.status(403).json({
+          success: false,
+          message: 'Cannot change your own role',
+        });
+      }
+    }
+
+    // Prepare update data
+    const updateData = { full_name, is_active };
+    
+    // If role_code is provided, get role_id
+    if (role_code) {
+      const roleResult = await pool.query(
+        "SELECT id FROM roles WHERE role_code = $1",
+        [role_code]
+      );
+      
+      if (roleResult.rows.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid role code',
+        });
+      }
+      
+      updateData.role_id = roleResult.rows[0].id;
     }
 
     // Update admin
-    const updatedAdmin = await User.update(id, { full_name, is_active });
+    const updatedAdmin = await User.update(id, updateData);
 
     // Log the activity
     await logActivitySimple(
@@ -241,15 +270,8 @@ const deleteAdmin = async (req, res) => {
       });
     }
 
-    // Don't allow deleting super admin
-    if (admin.role_code === 'SUPER_ADMIN') {
-      return res.status(403).json({
-        success: false,
-        message: 'Cannot delete super admin account',
-      });
-    }
-
-    // Don't allow deleting yourself
+    // Allow super admin to delete any admin (including other super admins)
+    // Only prevent deleting yourself
     if (parseInt(id) === req.user.id) {
       return res.status(403).json({
         success: false,

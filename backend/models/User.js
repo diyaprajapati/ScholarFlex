@@ -87,8 +87,8 @@ class User {
     try {
       const { email, full_name, role_id, created_by } = userData;
       const result = await pool.query(
-        `INSERT INTO users (email, full_name, role_id, created_by) 
-         VALUES ($1, $2, $3, $4) RETURNING id`,
+        `INSERT INTO users (email, full_name, role_id, created_by, updated_at) 
+         VALUES ($1, $2, $3, $4, NOW()) RETURNING id`,
         [email, full_name, role_id, created_by]
       );
       return await this.findById(result.rows[0].id);
