@@ -1,14 +1,15 @@
 const QuestionPaper = require('../models/QuestionPaper');
 const { logActivitySimple } = require('../middleware/activityLogger');
 
-const ALLOWED_SECTIONS = ['Theory', 'Technical'];
+const ALLOWED_SECTIONS = ['Technical', 'Coding', 'Theory', 'Maths & Logical Reasoning'];
 
 const normalizeSectionName = (section) => {
   if (!section) return null;
   const normalized = section.trim().toLowerCase();
-  if (normalized === 'theory' || normalized === 'aptitude') return 'Theory';
+  if (normalized === 'theory' || normalized === 'theory section' || normalized === 'aptitude') return 'Theory';
   if (
     normalized === 'technical' ||
+    normalized === 'technical section' ||
     normalized === 'technical/coding' ||
     normalized === 'technical coding' ||
     normalized === 'tech based' ||
@@ -16,6 +17,17 @@ const normalizeSectionName = (section) => {
     normalized === 'technical mcqs'
   ) {
     return 'Technical';
+  }
+  if (normalized === 'coding' || normalized === 'coding section') return 'Coding';
+  if (
+    normalized === 'maths & logical reasoning' ||
+    normalized === 'maths and logical reasoning' ||
+    normalized === 'maths & logical reasoning section' ||
+    normalized === 'maths' ||
+    normalized === 'logical reasoning' ||
+    normalized === 'mathematics & logical reasoning'
+  ) {
+    return 'Maths & Logical Reasoning';
   }
   return null;
 };

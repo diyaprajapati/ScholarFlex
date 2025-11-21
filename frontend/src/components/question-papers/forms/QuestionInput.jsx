@@ -26,12 +26,14 @@ export default function QuestionInput({ question, index, onChange, onRemove, onA
           Section <span className="text-red-500">*</span>
         </label>
         <select
-          value={question.section || 'Theory'}
+          value={question.section || 'Technical'}
           onChange={(e) => onChange({ ...question, section: e.target.value })}
           className="w-full px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C763B]/50 focus:border-[#4C763B] transition-colors bg-white"
         >
-          <option value="Theory">Theory (20 questions delivered)</option>
-          <option value="Technical">Technical (30 questions delivered)</option>
+          <option value="Technical">Technical Section</option>
+          <option value="Coding">Coding Section</option>
+          <option value="Theory">Theory Section</option>
+          <option value="Maths & Logical Reasoning">Maths & Logical Reasoning Section</option>
         </select>
       </div>
 

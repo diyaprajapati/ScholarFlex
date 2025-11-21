@@ -10,16 +10,20 @@ import JSONUploadArea from '../../components/question-papers/forms/JSONUploadAre
 import { NoDataFound } from '../../components/common/errors'
 import api from '../../services/api'
 
-const SECTION_OPTIONS = ['Theory', 'Technical']
+const SECTION_OPTIONS = ['Technical', 'Coding', 'Theory', 'Maths & Logical Reasoning']
 
 const normalizeSectionName = (section) => {
-  if (!section || typeof section !== 'string') return null
+  if (!section || typeof section !== 'string') return 'Technical'
   const normalized = section.trim().toLowerCase()
-  if (normalized === 'theory') return 'Theory'
-  if (normalized === 'technical' || normalized === 'technical/coding' || normalized === 'technical coding') {
+  if (normalized === 'theory' || normalized === 'theory section') return 'Theory'
+  if (normalized === 'technical' || normalized === 'technical section' || normalized === 'technical/coding' || normalized === 'technical coding') {
     return 'Technical'
   }
-  return null
+  if (normalized === 'coding' || normalized === 'coding section') return 'Coding'
+  if (normalized === 'maths & logical reasoning' || normalized === 'maths and logical reasoning' || normalized === 'maths & logical reasoning section' || normalized === 'maths' || normalized === 'logical reasoning') {
+    return 'Maths & Logical Reasoning'
+  }
+  return 'Technical' // Default
 }
 
 export default function AddQuestionPaperFormPage() {
@@ -31,6 +35,12 @@ export default function AddQuestionPaperFormPage() {
   const [mode, setMode] = useState(null) // null, 'manual', or 'json'
   const [uploadedQuestions, setUploadedQuestions] = useState(null)
   const [paperSetData, setPaperSetData] = useState(null)
+  const [sectionFiles, setSectionFiles] = useState({
+    Technical: null,
+    Coding: null,
+    Theory: null,
+    'Maths & Logical Reasoning': null,
+  })
   const [isLoading, setIsLoading] = useState(false)
   const [domains, setDomains] = useState([])
 
@@ -141,9 +151,15 @@ export default function AddQuestionPaperFormPage() {
   const handleBackToChoice = () => {
     setMode(null)
     setUploadedQuestions(null)
+    setSectionFiles({
+      Technical: null,
+      Coding: null,
+      Theory: null,
+      'Maths & Logical Reasoning': null,
+    })
   }
 
-  const handleJSONFileUpload = async (file) => {
+  const handleJSONFileUpload = async (file, section) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
@@ -153,33 +169,30 @@ export default function AddQuestionPaperFormPage() {
         
         // Handle new format with sections
         if (jsonData.sections && Array.isArray(jsonData.sections)) {
-          jsonData.sections.forEach(section => {
-            if (section.questions && Array.isArray(section.questions)) {
-              section.questions.forEach(q => {
-                questionsToProcess.push({ ...q, section: section.name || '' });
+          jsonData.sections.forEach(sec => {
+            if (sec.questions && Array.isArray(sec.questions)) {
+              sec.questions.forEach(q => {
+                questionsToProcess.push({ ...q, section: sec.name || section });
               });
             }
           });
         } 
-        // Handle old format with flat questions array
+        // Handle old format with flat questions array - assign to the section being uploaded
         else if (jsonData.questions && Array.isArray(jsonData.questions)) {
-          questionsToProcess = jsonData.questions;
+          questionsToProcess = jsonData.questions.map(q => ({ ...q, section: section }));
         } else {
-          alert('JSON must contain either a "sections" array or a "questions" array')
+          alert(`JSON must contain either a "sections" array or a "questions" array for ${section} section`)
           return
         }
 
         if (questionsToProcess.length === 0) {
-          alert('No questions found in JSON file')
+          alert(`No questions found in JSON file for ${section} section`)
           return
         }
 
         // Process questions
         const processedQuestions = questionsToProcess.map((q, idx) => {
-          const normalizedSection = normalizeSectionName(q.section || q.sectionName)
-          if (!normalizedSection) {
-            throw new Error(`Question ${idx + 1}: section must be either "Theory" or "Technical"`)
-          }
+          const normalizedSection = normalizeSectionName(q.section || section || q.sectionName) || section
           const question = {
             text: q.text || '',
             type: q.type || 'multiple-choice',
@@ -216,78 +229,156 @@ export default function AddQuestionPaperFormPage() {
         })
 
         if (processedQuestions.length === 0) {
-          alert('No valid questions found in JSON file')
+          alert(`No valid questions found in JSON file for ${section} section`)
           return
         }
 
-        setUploadedQuestions(processedQuestions)
-        setMode('manual') // Switch to manual form with imported questions
+        // Store questions for this section and combine all questions
+        setSectionFiles(prev => {
+          const updated = { ...prev, [section]: { file, questions: processedQuestions } }
+          
+          // Combine all section questions
+          const allQuestions = [
+            ...(updated.Technical?.questions || []),
+            ...(updated.Coding?.questions || []),
+            ...(updated.Theory?.questions || []),
+            ...(updated['Maths & Logical Reasoning']?.questions || []),
+          ]
+
+          setUploadedQuestions(allQuestions)
+          
+          // Switch to manual form if we have at least one section uploaded
+          if (allQuestions.length > 0) {
+            setMode('manual')
+          }
+          
+          return updated
+        })
       } catch (error) {
-        alert(`Error parsing JSON: ${error.message}`)
+        alert(`Error parsing JSON for ${section} section: ${error.message}`)
         console.error('JSON parsing error:', error)
       }
     }
 
     reader.onerror = () => {
-      alert('Error reading file. Please try again.')
+      alert(`Error reading file for ${section} section. Please try again.`)
     }
 
     reader.readAsText(file)
   }
 
-  const handleDownloadTemplate = () => {
-    const template = {
-      paper_name: "Sample Question Paper",
-      description: "Sample question paper with sections",
-      subject: "Sample Subject",
-      year: "2024",
-      semester: "Fall",
-      duration_minutes: 80,
-      status: "draft",
-      sections: [
-        {
-          name: "Theory",
-          questions: [
-            {
-              text: "What is the capital of France?",
-              type: "multiple-choice",
-              weightage: 2,
-              options: ["London", "Paris", "Berlin", "Madrid"],
-              correctOptions: [1]
-            },
-            {
-              text: "JavaScript is a programming language.",
-              type: "true-false",
-              weightage: 1,
-              options: ["True", "False"],
-              correctOptions: [0]
-            }
-          ]
-        },
-        {
-          name: "Technical",
-          questions: [
-            {
-              text: "Which hook is used to manage component state in React functional components?",
-              type: "multiple-choice",
-              weightage: 2,
-              options: ["useEffect", "useState", "useMemo", "useRef"],
-              correctOptions: [1]
-            }
-          ]
-        }
-      ]
+  const handleDownloadTemplate = (section = null) => {
+    // Section-specific templates
+    const sectionTemplates = {
+      Technical: {
+        questions: [
+          {
+            text: "What is the primary purpose of REST API?",
+            type: "multiple-choice",
+            weightage: 2,
+            options: ["Real-time communication", "Resource representation via HTTP", "Database queries", "File storage"],
+            correctOptions: [1]
+          },
+          {
+            text: "Which HTTP method is used to retrieve data from a server?",
+            type: "single-choice",
+            weightage: 1,
+            options: ["GET", "POST", "PUT", "DELETE"],
+            correctOptions: [0]
+          }
+        ]
+      },
+      Coding: {
+        questions: [
+          {
+            text: "What does the following code output?\n\nfunction test() {\n  console.log(a);\n  var a = 5;\n}",
+            type: "multiple-choice",
+            weightage: 2,
+            options: ["5", "undefined", "Error", "null"],
+            correctOptions: [1]
+          },
+          {
+            text: "What is the output of: console.log(typeof null);",
+            type: "single-choice",
+            weightage: 1,
+            options: ["null", "object", "undefined", "string"],
+            correctOptions: [1]
+          }
+        ]
+      },
+      Theory: {
+        questions: [
+          {
+            text: "What is the capital of France?",
+            type: "multiple-choice",
+            weightage: 2,
+            options: ["London", "Paris", "Berlin", "Madrid"],
+            correctOptions: [1]
+          },
+          {
+            text: "Which data structure follows LIFO (Last In First Out) principle?",
+            type: "single-choice",
+            weightage: 1,
+            options: ["Queue", "Stack", "Array", "Linked List"],
+            correctOptions: [1]
+          }
+        ]
+      },
+      "Maths & Logical Reasoning": {
+        questions: [
+          {
+            text: "If 2x + 5 = 15, what is the value of x?",
+            type: "multiple-choice",
+            weightage: 2,
+            options: ["5", "10", "7", "8"],
+            correctOptions: [0]
+          },
+          {
+            text: "What is the next number in the sequence: 2, 4, 8, 16, ?",
+            type: "single-choice",
+            weightage: 1,
+            options: ["24", "32", "28", "20"],
+            correctOptions: [1]
+          }
+        ]
+      }
     }
 
-    const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'question-paper-template.json'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    // If specific section is requested, download template for that section only
+    if (section && sectionTemplates[section]) {
+      const blob = new Blob([JSON.stringify(sectionTemplates[section], null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${section.toLowerCase().replace(/\s+/g, '-')}-section-template.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      return
+    }
+
+    // Download all 4 templates sequentially
+    const sections = ['Technical', 'Coding', 'Theory', 'Maths & Logical Reasoning']
+    
+    sections.forEach((sec, index) => {
+      setTimeout(() => {
+        const blob = new Blob([JSON.stringify(sectionTemplates[sec], null, 2)], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${sec.toLowerCase().replace(/\s+/g, '-')}-section-template.json`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      }, index * 300) // Stagger downloads by 300ms
+    })
+    
+    // Show message after all downloads
+    setTimeout(() => {
+      alert('All 4 section templates downloaded! Each file contains sample questions for that specific section. Upload each file to its corresponding section.')
+    }, sections.length * 300 + 100)
   }
 
   // Show loading state while fetching edit data
@@ -366,6 +457,7 @@ export default function AddQuestionPaperFormPage() {
                 onFileUpload={handleJSONFileUpload}
                 onBack={handleBackToChoice}
                 onDownloadTemplate={handleDownloadTemplate}
+                onDownloadSectionTemplate={handleDownloadTemplate}
               />
             </div>
           ) : (

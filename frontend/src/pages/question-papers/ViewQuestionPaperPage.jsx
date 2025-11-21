@@ -31,18 +31,29 @@ export default function ViewQuestionPaperPage() {
         const paper = response.data
         
         // Transform backend data to frontend format
-        const transformedPaper = {
-          id: paper.id,
-          name: paper.paper_name,
-          subject: paper.subject || '',
-          year: paper.year || '',
-          semester: paper.semester || '',
-          totalQuestions: paper.total_questions || 0,
-          duration: paper.duration_minutes || 0,
-          maxMarks: paper.total_weightage || 0,
-          createdAt: paper.created_at ? new Date(paper.created_at).toISOString().split('T')[0] : '',
-          status: paper.status || 'draft',
-          questions: (paper.questions || []).map(q => ({
+        // Handle sections format if available, otherwise use flat questions
+        let questions = []
+        if (paper.sections && Array.isArray(paper.sections)) {
+          // Flatten questions from sections
+          paper.sections.forEach(section => {
+            if (section.questions && Array.isArray(section.questions)) {
+              section.questions.forEach(q => {
+                questions.push({
+                  id: q.id,
+                  text: q.text || q.question_text,
+                  type: q.type,
+                  weightage: q.weightage,
+                  options: q.options || [],
+                  correctOptions: q.correctOptions || [],
+                  correctAnswer: q.correctAnswer || q.correct_answer || '',
+                  section: section.name || '',
+                })
+              })
+            }
+          })
+        } else {
+          // Use flat questions array
+          questions = (paper.questions || []).map(q => ({
             id: q.id,
             text: q.text || q.question_text,
             type: q.type,
@@ -50,7 +61,23 @@ export default function ViewQuestionPaperPage() {
             options: q.options || [],
             correctOptions: q.correctOptions || [],
             correctAnswer: q.correctAnswer || q.correct_answer || '',
-          })),
+            section: q.section || '',
+          }))
+        }
+        
+        const transformedPaper = {
+          id: paper.id,
+          name: paper.paper_name,
+          subject: paper.subject || '',
+          year: paper.year || '',
+          semester: paper.semester || '',
+          totalQuestions: paper.total_questions || questions.length,
+          duration: paper.duration_minutes || 0,
+          maxMarks: paper.total_weightage || 0,
+          createdAt: paper.created_at ? new Date(paper.created_at).toISOString().split('T')[0] : '',
+          status: paper.status || 'draft',
+          questions: questions,
+          sections: paper.sections || [],
         }
         
         setPaperSet(transformedPaper)

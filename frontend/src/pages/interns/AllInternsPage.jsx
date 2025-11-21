@@ -25,6 +25,10 @@ export default function AllInternsPage() {
   })
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, intern: null })
   const [isDeleting, setIsDeleting] = useState(false)
+  
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -98,6 +102,22 @@ export default function AllInternsPage() {
       )
     })
   }, [interns, searchValue, filters])
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredInterns.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedInterns = filteredInterns.slice(startIndex, endIndex)
+
+  // Reset to page 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchValue, filters])
+
+  const goToPage = (page) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const handleSearch = (value) => {
     setSearchValue(value)
@@ -213,12 +233,78 @@ export default function AllInternsPage() {
 
           {/* Interns Table */}
           <InternsTable 
-            interns={filteredInterns} 
+            interns={paginatedInterns} 
             isLoading={isLoading}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onView={handleView}
           />
+
+          {/* Pagination */}
+          {filteredInterns.length > itemsPerPage && (
+            <div className="mt-6 bg-white rounded-lg border border-gray-200 px-4 py-4 sm:px-6">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
+                  <span className="font-medium">{Math.min(endIndex, filteredInterns.length)}</span> of{' '}
+                  <span className="font-medium">{filteredInterns.length}</span> interns
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      currentPage === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  
+                  {/* Page Numbers */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => goToPage(page)}
+                            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                              currentPage === page
+                                ? 'bg-[#4C763B] text-white'
+                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        )
+                      } else if (page === currentPage - 2 || page === currentPage + 2) {
+                        return <span key={page} className="px-2 text-gray-500">...</span>
+                      }
+                      return null
+                    })}
+                  </div>
+
+                  <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
