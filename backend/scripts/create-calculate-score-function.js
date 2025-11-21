@@ -67,24 +67,30 @@ async function createFunction() {
           FROM test_attempts
           WHERE id = attempt_id_param;
           
-          -- Calculate total score and max possible score
+          -- Calculate total score from answered questions
           SELECT 
               COALESCE(SUM(sa.score_obtained), 0),
-              COALESCE(SUM(q.weightage), 0),
-              COUNT(DISTINCT q.id),
               COUNT(DISTINCT sa.id)
-          INTO total_score_val, max_score_val, questions_count_val, attempted_count_val
+          INTO total_score_val, attempted_count_val
           FROM test_attempts ta
-          JOIN questions q ON ta.question_paper_id = q.question_paper_id AND q.is_active = TRUE
-          LEFT JOIN student_answers sa ON ta.id = sa.test_attempt_id AND q.id = sa.question_id
+          JOIN student_answers sa ON ta.id = sa.test_attempt_id
           WHERE ta.id = attempt_id_param;
           
-          -- Calculate percentage
-          IF max_score_val > 0 THEN
-              percentage_val := (total_score_val / max_score_val) * 100;
-          ELSE
-              percentage_val := 0;
-          END IF;
+          -- Max possible score is always 100 for 50 questions
+          max_score_val := 100;
+          
+          -- Get total questions count from question pool
+          SELECT 
+              COUNT(DISTINCT q.id)
+          INTO questions_count_val
+          FROM test_attempts ta
+          JOIN student_answers sa ON ta.id = sa.test_attempt_id
+          JOIN questions q ON sa.question_id = q.id AND q.is_active = TRUE
+          WHERE ta.id = attempt_id_param;
+          
+          -- Calculate percentage (total_score is already out of 100, so it's the percentage)
+          -- Since max_score_val is 100, percentage = (total_score_val / 100) * 100 = total_score_val
+          percentage_val := total_score_val;
           
           -- Determine status value
           IF auto_submitted_val = TRUE THEN

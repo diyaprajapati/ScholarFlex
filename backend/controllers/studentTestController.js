@@ -68,23 +68,52 @@ const buildQuestionPoolForPaper = async (questionPaperId) => {
   const selected = [];
   for (const [sectionName, requiredCount] of Object.entries(SECTION_REQUIREMENTS)) {
     const pool = sectionsMap[sectionName];
-    const sampled = shuffleArray(pool).slice(0, requiredCount);
+    // Sort by weightage (ascending) to prioritize easier questions, then shuffle
+    const sortedPool = [...pool].sort((a, b) => (a.weightage || 1) - (b.weightage || 1));
+    const sampled = shuffleArray(sortedPool).slice(0, requiredCount);
     selected.push(...sampled);
   }
 
+  // Sort selected questions by original weightage (ascending) before scaling
+  // This ensures questions with weightage 1 are prioritized
+  selected.sort((a, b) => (a.weightage || 1) - (b.weightage || 1));
+  
   const shuffledSelection = shuffleArray(selected);
   if (shuffledSelection.length !== TOTAL_REQUIRED_QUESTIONS) {
     throw new Error(`Question pool must contain exactly ${TOTAL_REQUIRED_QUESTIONS} questions`);
   }
 
-  return shuffledSelection;
+  // Calculate total weightage of selected questions
+  const totalWeightage = shuffledSelection.reduce((sum, item) => sum + (item.weightage || 1), 0);
+  
+  // Scale weightages so they sum to 100
+  const TARGET_TOTAL_WEIGHTAGE = 100;
+  const scaleFactor = TARGET_TOTAL_WEIGHTAGE / totalWeightage;
+  
+  // Apply scaling to each question's weightage
+  const scaledSelection = shuffledSelection.map((item) => ({
+    ...item,
+    weightage: Math.round((item.weightage || 1) * scaleFactor * 100) / 100, // Round to 2 decimal places
+    original_weightage: item.weightage || 1, // Store original for reference
+  }));
+
+  // Verify the scaled total is approximately 100 (within rounding error)
+  const scaledTotal = scaledSelection.reduce((sum, item) => sum + item.weightage, 0);
+  if (Math.abs(scaledTotal - TARGET_TOTAL_WEIGHTAGE) > 0.1) {
+    // Adjust the last question to make exact 100
+    const difference = TARGET_TOTAL_WEIGHTAGE - scaledTotal;
+    scaledSelection[scaledSelection.length - 1].weightage += difference;
+  }
+
+  return scaledSelection;
 };
 
 const ensureAttemptQuestionPool = async (attemptId, questionPaperId, existingPool) => {
   let poolData = existingPool;
   if (!poolData || !Array.isArray(poolData) || poolData.length === 0) {
     poolData = await buildQuestionPoolForPaper(questionPaperId);
-    const maxScore = poolData.reduce((sum, item) => sum + (item.weightage || 0), 0);
+    // Max possible score is always 100 for 50 questions
+    const maxScore = 100;
 
     await pool.query(
       `UPDATE test_attempts 
@@ -264,29 +293,55 @@ exports.getNextQuestion = async (req, res) => {
 
     const attempt = attemptResult.rows[0];
 
-    // Get all questions for this paper, sorted by weightage (marks)
+    // Get question pool with scaled weightages
+    const questionPool = await ensureAttemptQuestionPool(
+      testAttemptId,
+      attempt.question_paper_id,
+      attempt.question_pool
+    );
+
+    if (!questionPool || questionPool.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Unable to load questions for this test attempt',
+      });
+    }
+
+    const questionIds = questionPool.map((item) => item.question_id);
+
+    // Get all questions from the pool, sorted by scaled weightage (marks)
     const questionsResult = await pool.query(
       `SELECT q.id, q.question_text, q.question_type, q.weightage, q.correct_answer
        FROM questions q
-       WHERE q.question_paper_id = $1 AND q.is_active = TRUE
+       WHERE q.id = ANY($1::int[]) AND q.is_active = TRUE
        ORDER BY q.weightage ASC, q.display_order ASC`,
-      [attempt.question_paper_id]
+      [questionIds]
     );
 
-    // Get answered questions
+    // Create a map of question_id -> scaled weightage from pool
+    const poolWeightageMap = new Map();
+    questionPool.forEach((item) => {
+      poolWeightageMap.set(item.question_id, item.weightage || 1);
+    });
+
+    // Get answered questions with timestamps - ensure we get ALL answered questions
     const answeredResult = await pool.query(
-      `SELECT question_id, is_correct, score_obtained
+      `SELECT DISTINCT question_id, is_correct, score_obtained, answered_at
        FROM student_answers
        WHERE test_attempt_id = $1
        ORDER BY answered_at DESC`,
       [testAttemptId]
     );
 
+    // Create a Set for faster lookup and a Map for details
+    const answeredQuestionIds = new Set();
     const answeredQuestions = new Map();
     answeredResult.rows.forEach(row => {
+      answeredQuestionIds.add(row.question_id);
       answeredQuestions.set(row.question_id, {
         is_correct: row.is_correct,
         score_obtained: parseFloat(row.score_obtained),
+        answered_at: new Date(row.answered_at),
       });
     });
 
@@ -294,37 +349,94 @@ exports.getNextQuestion = async (req, res) => {
     const currentMarks = Array.from(answeredQuestions.values())
       .reduce((sum, ans) => sum + ans.score_obtained, 0);
 
-    // Adaptive logic: Find next question based on last answer
+    // Adaptive logic: Find next question based on time taken
     let nextQuestion = null;
     const allQuestions = questionsResult.rows;
 
+    // Sort questions by scaled weightage (ascending - easier to harder)
+    const sortedQuestions = [...allQuestions].sort((a, b) => {
+      const weightA = poolWeightageMap.get(a.id) || a.weightage || 1;
+      const weightB = poolWeightageMap.get(b.id) || b.weightage || 1;
+      return weightA - weightB;
+    });
+
     if (answeredQuestions.size === 0) {
-      // First question: start with lowest marks
-      nextQuestion = allQuestions[0];
+      // First question: always start with lowest weightage (easiest - closest to 1)
+      // Find question with minimum scaled weightage
+      let minWeight = Infinity;
+      let minWeightQuestion = null;
+      
+      sortedQuestions.forEach(q => {
+        const weight = poolWeightageMap.get(q.id) || q.weightage || 1;
+        if (weight < minWeight) {
+          minWeight = weight;
+          minWeightQuestion = q;
+        }
+      });
+      
+      nextQuestion = minWeightQuestion || sortedQuestions[0]; // Always use easiest question first
     } else {
-      // Get last answered question
+      // Get last answered question and calculate time taken
       const lastAnsweredId = answeredResult.rows[0].question_id;
       const lastAnswered = allQuestions.find(q => q.id === lastAnsweredId);
       const lastAnswer = answeredQuestions.get(lastAnsweredId);
-
-      if (lastAnswer.is_correct) {
-        // Correct answer: move to harder question (higher marks)
-        const currentWeightage = lastAnswered.weightage;
-        const harderQuestions = allQuestions.filter(
-          q => q.weightage > currentWeightage && !answeredQuestions.has(q.id)
-        );
-        nextQuestion = harderQuestions.length > 0 
-          ? harderQuestions[0] 
-          : allQuestions.find(q => !answeredQuestions.has(q.id));
+      
+      // Calculate time taken for last question (in seconds)
+      let timeTakenSeconds = 0;
+      if (answeredResult.rows.length > 1) {
+        // Time between last two answers
+        const lastAnswerTime = new Date(answeredResult.rows[0].answered_at);
+        const previousAnswerTime = new Date(answeredResult.rows[1].answered_at);
+        timeTakenSeconds = (lastAnswerTime - previousAnswerTime) / 1000;
       } else {
-        // Wrong answer: go back to easier question (lower marks)
-        const currentWeightage = lastAnswered.weightage;
-        const easierQuestions = allQuestions.filter(
-          q => q.weightage < currentWeightage && !answeredQuestions.has(q.id)
-        );
+        // First answer - use time from test start
+        const lastAnswerTime = new Date(answeredResult.rows[0].answered_at);
+        const testStartTime = new Date(attempt.started_at);
+        timeTakenSeconds = (lastAnswerTime - testStartTime) / 1000;
+      }
+
+      const currentWeightage = poolWeightageMap.get(lastAnswered.id) || lastAnswered.weightage || 1;
+      
+      // Calculate expected time based on weightage (more weightage = more time expected)
+      // Base: 30 seconds per mark, minimum 15 seconds
+      const expectedTime = Math.max(15, currentWeightage * 30);
+      
+      // Determine if user took more or less time than expected
+      const isFast = timeTakenSeconds < expectedTime * 0.7; // 70% of expected time = fast
+      const isSlow = timeTakenSeconds > expectedTime * 1.5; // 150% of expected time = slow
+      
+      // Get available questions (not answered yet) - use Set for faster lookup
+      const availableQuestions = sortedQuestions.filter(q => !answeredQuestionIds.has(q.id));
+      
+      if (availableQuestions.length === 0) {
+        nextQuestion = null; // All questions answered
+      } else if (isFast) {
+        // Fast answer: move to harder question (higher weightage)
+        const harderQuestions = availableQuestions.filter(q => {
+          const weight = poolWeightageMap.get(q.id) || q.weightage || 1;
+          return weight > currentWeightage;
+        });
+        nextQuestion = harderQuestions.length > 0 
+          ? harderQuestions[0] // First harder question
+          : availableQuestions[availableQuestions.length - 1]; // Hardest available
+      } else if (isSlow) {
+        // Slow answer: move to easier question (lower weightage)
+        const easierQuestions = availableQuestions.filter(q => {
+          const weight = poolWeightageMap.get(q.id) || q.weightage || 1;
+          return weight < currentWeightage;
+        });
         nextQuestion = easierQuestions.length > 0 
-          ? easierQuestions[easierQuestions.length - 1] // Get easiest available
-          : allQuestions.find(q => !answeredQuestions.has(q.id));
+          ? easierQuestions[easierQuestions.length - 1] // Easiest available
+          : availableQuestions[0]; // Easiest overall
+      } else {
+        // Normal time: stay at similar difficulty
+        const similarQuestions = availableQuestions.filter(q => {
+          const weight = poolWeightageMap.get(q.id) || q.weightage || 1;
+          return Math.abs(weight - currentWeightage) <= 0.5; // Within 0.5 marks
+        });
+        nextQuestion = similarQuestions.length > 0 
+          ? similarQuestions[0]
+          : availableQuestions[Math.floor(availableQuestions.length / 2)]; // Middle difficulty
       }
     }
 
@@ -336,8 +448,39 @@ exports.getNextQuestion = async (req, res) => {
         message: 'All questions completed',
         test_complete: true,
         current_marks: currentMarks,
-        total_marks: attempt.total_weightage,
+        total_marks: 100, // Always 100 for 50 questions
       });
+    }
+
+    // Double-check: Verify this question hasn't been answered (robust check)
+    const alreadyAnsweredCheck = await pool.query(
+      `SELECT id FROM student_answers 
+       WHERE test_attempt_id = $1 AND question_id = $2 
+       LIMIT 1`,
+      [testAttemptId, nextQuestion.id]
+    );
+
+    if (alreadyAnsweredCheck.rows.length > 0) {
+      // This question was already answered - find another one
+      const availableQuestions = sortedQuestions.filter(q => !answeredQuestionIds.has(q.id));
+      
+      // Remove the duplicate question from available list
+      const remainingQuestions = availableQuestions.filter(q => q.id !== nextQuestion.id);
+      
+      if (remainingQuestions.length > 0) {
+        // Select the easiest available question as fallback
+        nextQuestion = remainingQuestions[0];
+      } else {
+        // No more questions available
+        return res.status(200).json({
+          success: true,
+          data: null,
+          message: 'All questions completed',
+          test_complete: true,
+          current_marks: currentMarks,
+          total_marks: 100,
+        });
+      }
     }
 
     // Get options for this question
@@ -349,12 +492,15 @@ exports.getNextQuestion = async (req, res) => {
       [nextQuestion.id]
     );
 
+    // Get scaled weightage from pool
+    const scaledWeightage = poolWeightageMap.get(nextQuestion.id) || nextQuestion.weightage || 1;
+
     // Transform question data
     const questionData = {
       id: nextQuestion.id,
       text: nextQuestion.question_text,
       type: mapQuestionTypeFromDB(nextQuestion.question_type),
-      weightage: nextQuestion.weightage,
+      weightage: scaledWeightage,
       correctAnswer: nextQuestion.correct_answer || null,
       options: optionsResult.rows.map(opt => ({
         id: opt.id,
@@ -454,7 +600,8 @@ exports.startTest = async (req, res) => {
       });
     }
 
-    const maxScore = questionPool.reduce((sum, item) => sum + (item.weightage || 0), 0);
+    // Max possible score is always 100 for 50 questions
+    const maxScore = 100;
 
     const attemptResult = await pool.query(
       `INSERT INTO test_attempts (
@@ -524,6 +671,21 @@ exports.submitTest = async (req, res) => {
     if (answers.length > 0) {
       const questionIds = answers.map((ans) => ans.question_id).filter(Boolean);
       if (questionIds.length > 0) {
+        // Get question pool to use scaled weightages
+        const questionPool = await ensureAttemptQuestionPool(
+          attemptId,
+          attempt.question_paper_id,
+          attempt.question_pool
+        );
+        
+        // Create a map of question_id -> scaled weightage from pool
+        const poolWeightageMap = new Map();
+        if (questionPool && Array.isArray(questionPool)) {
+          questionPool.forEach((item) => {
+            poolWeightageMap.set(item.question_id, item.weightage || 1);
+          });
+        }
+
         const questionsResult = await pool.query(
           `SELECT q.id, q.question_type, q.weightage, q.correct_answer
            FROM questions q
@@ -556,6 +718,9 @@ exports.submitTest = async (req, res) => {
           const question = questionMap.get(answer.question_id);
           if (!question) continue;
 
+          // Use scaled weightage from pool, fallback to original if not found
+          const scaledWeightage = poolWeightageMap.get(question.id) || question.weightage || 1;
+
           const questionType = QuestionPaper.mapQuestionTypeFromDB(question.question_type);
           const optionList = optionMap.get(question.id) || [];
 
@@ -585,14 +750,14 @@ exports.submitTest = async (req, res) => {
               sortedSelected.length === sortedCorrect.length &&
               sortedSelected.every((value, idx) => value === sortedCorrect[idx]);
 
-            score = isCorrect ? question.weightage : 0;
+            score = isCorrect ? scaledWeightage : 0;
           } else if (questionType === 'single-choice' || questionType === 'true-false') {
             const selectedIndex =
               typeof answer.selected_option_index === 'number' ? answer.selected_option_index : null;
             if (selectedIndex !== null && optionList[selectedIndex]) {
               selectedOptionId = optionList[selectedIndex].id;
               isCorrect = !!optionList[selectedIndex].is_correct;
-              score = isCorrect ? question.weightage : 0;
+              score = isCorrect ? scaledWeightage : 0;
             }
           }
 
@@ -779,7 +944,7 @@ exports.getTestDetails = async (req, res) => {
           id: poolItem.question_id,
           text: questionRow.question_text,
           type: mapQuestionTypeFromDB(questionRow.question_type),
-          weightage: questionRow.weightage,
+          weightage: poolItem.weightage || questionRow.weightage || 1, // Use scaled weightage from pool
           section: poolItem.section || normalizeSectionName(questionRow.section) || 'Theory',
           options: randomizedOptions,
         };
@@ -795,7 +960,7 @@ exports.getTestDetails = async (req, res) => {
         subject: attempt.subject,
         duration_minutes: attempt.duration_minutes,
         total_questions: sanitizedQuestions.length,
-        total_weightage: attempt.total_weightage,
+        total_weightage: 100, // Always 100 for 50 questions
         questions: sanitizedQuestions,
       },
     });

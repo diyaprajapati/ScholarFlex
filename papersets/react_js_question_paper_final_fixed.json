@@ -1,0 +1,5653 @@
+{
+  "paper_name": "ReactJS & JavaScript Question Paper - Final Fixed",
+  "description": "400 unique questions for ReactJS & JavaScript. Theory and Technical sections. Code snippets (when present) are written inside the 'text' key as requested.",
+  "subject": "ReactJS & JavaScript",
+  "year": "2025",
+  "semester": "Autumn",
+  "duration_minutes": 180,
+  "status": "final-draft",
+  "sections": [
+    {
+      "name": "Theory",
+      "questions": [
+        {
+          "text": "What is React primarily used for?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Building user interfaces",
+            "Database management",
+            "Styling HTML",
+            "Compiling code"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is React written in?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "JavaScript",
+            "Java",
+            "Dart",
+            "Python"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is JSX?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A syntax extension for JavaScript used with React",
+            "A CSS framework",
+            "A database query language",
+            "A testing library"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which hook is used to add state to functional components in React?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "useState",
+            "useEffect",
+            "useContext",
+            "useMemo"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'props' stand for in React?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Properties passed to components",
+            "Private methods",
+            "Process runtime data",
+            "Persistent storage"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method is used to create a component in React class components?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "render()",
+            "build()",
+            "create()",
+            "init()"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the virtual DOM in React?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "An in-memory representation of the real DOM",
+            "A physical browser element",
+            "A database",
+            "A CSS preprocessor"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is event delegation in JavaScript?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A technique of using a single event handler on a parent to manage events for children",
+            "Passing props to children",
+            "A CSS layout method",
+            "A build tool"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which keyword creates a block-scoped variable in JavaScript?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "let",
+            "var",
+            "function",
+            "constitute"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does '=== ' operator do in JavaScript?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Strict equality (value + type)",
+            "Assigns value",
+            "Loose equality",
+            "Negation"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the purpose of useEffect hook in React?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Perform side effects in functional components",
+            "Manage styling",
+            "Handle routing",
+            "Store global state"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method is used to update state in class components?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "this.setState()",
+            "setState()",
+            "updateState()",
+            "changeState()"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following is true about closures in JavaScript?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A closure gives access to an outer function's scope from an inner function",
+            "Closures are only in class-based languages",
+            "Closures are a type of array",
+            "Closures automatically persist data to disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is hoisting in JavaScript?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Variable and function declarations are moved to the top of their scope before execution",
+            "Variables are encrypted",
+            "A way to sort arrays",
+            "A CSS trick"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which React hook would you use to memoize expensive calculations?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "useMemo",
+            "useCallback",
+            "useRef",
+            "useState"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the default behavior of form submission in HTML?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Reloads the page and sends form data to server",
+            "Prevents submission",
+            "Converts to JSON automatically",
+            "Triggers useEffect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which function converts a JavaScript object to JSON string?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "JSON.stringify()",
+            "JSON.parse()",
+            "toString()",
+            "Object.toJSON()"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'componentDidMount' lifecycle method signify?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Component has been inserted into the DOM",
+            "Component will be destroyed",
+            "Component state updated",
+            "Component rendered for the first time only on server"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following is a way to lift state up in React?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Move shared state to nearest common ancestor component",
+            "Store state in localStorage always",
+            "Use multiple setState calls",
+            "Wrap components in div"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is event.preventDefault() used for?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Prevent default browser action (e.g., form submission)",
+            "Stop event propagation",
+            "Log event to console",
+            "Clone events"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command creates a new React app using create-react-app?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "npx create-react-app my-app",
+            "npm start my-app",
+            "react new app",
+            "create-react init"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a controlled component in React?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A component where form data is handled by React state",
+            "A component that controls other components",
+            "A component with no state",
+            "A CSS-only component"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which hook shares data between components without prop drilling?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "useContext",
+            "useState",
+            "useEffect",
+            "useMemo"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does JSON.parse() do?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Parse a JSON string into a JavaScript object",
+            "Convert object to JSON string",
+            "Fetch JSON from server",
+            "Encrypt JSON"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which attribute is used to set inline styles in React JSX?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "style",
+            "class",
+            "styles",
+            "css"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, which method adds an element to the end of an array?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "push()",
+            "pop()",
+            "shift()",
+            "unshift()"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which operator is used to set a default value when a variable is nullish?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "??",
+            "||",
+            "&&",
+            "?: "
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which React hook can be used to reference a DOM element?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "useRef",
+            "useState",
+            "useEffect",
+            "useCallback"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of these is true about keys in React lists?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Keys help React identify which items changed, are added, or are removed",
+            "Keys are used for styling",
+            "Keys prevent re-rendering entirely",
+            "Keys store component state"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of these is a valid way to export a component in ES6 modules?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "export default MyComponent;",
+            "module.exports = MyComponent;",
+            "export MyComponent;",
+            "export: MyComponent;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (1)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (2)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (3)",
+          "type": "multiple-choice",
+          "weightage": 4,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (4)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (5)",
+          "type": "multiple-choice",
+          "weightage": 4,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (6)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (7)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (8)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (9)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (10)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (11)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (12)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (13)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (14)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (15)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (16)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (17)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (18)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (19)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (20)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (21)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (22)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (23)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (24)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (25)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (26)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (27)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (28)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (29)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (30)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (31)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (32)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (33)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (34)",
+          "type": "multiple-choice",
+          "weightage": 7,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (35)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (36)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (37)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (38)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (39)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (40)",
+          "type": "multiple-choice",
+          "weightage": 1,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (41)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (42)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (43)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (44)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (45)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (46)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (47)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (48)",
+          "type": "multiple-choice",
+          "weightage": 4,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (49)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (50)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (51)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (52)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (53)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (54)",
+          "type": "multiple-choice",
+          "weightage": 1,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (55)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what will be the result of typeof NaN? (56)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "number",
+            "NaN",
+            "undefined",
+            "object"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (57)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (58)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (59)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (60)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (61)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (62)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (63)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (64)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use useEffect with an empty dependency array in React? (65)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To run effect only once after initial render",
+            "To run on every render",
+            "To prevent component from mounting",
+            "To update state synchronously"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (66)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following statements about React is true? (67)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "React uses a virtual DOM to optimize rendering",
+            "React requires jQuery to work",
+            "React is a backend framework",
+            "React compiles to native mobile code directly"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (68)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Select features of modern JavaScript (ES6+) (69)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Arrow functions",
+            "let/const",
+            "Modules (import/export)",
+            "XML syntax"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "What is the difference between var and let in JavaScript? (70)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "var is function-scoped; let is block-scoped",
+            "let hoists to top like var",
+            "var is block-scoped",
+            "No difference"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Technical",
+      "questions": [
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 16;\nconst b = 22;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "38",
+            "16",
+            "22",
+            "352"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In React, what is the purpose of the useEffect hook shown below?\n\nuseEffect(() => {\n  document.title = `Count: ${count}`;\n}, [count]);\n\nChoose the correct statement.",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Runs side effect when 'count' changes",
+            "Runs only on initial mount",
+            "Prevents re-render",
+            "Memoizes value"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is printed by the following code?\n\n(function(){\n  var x = 1;\n  if(true){\n    let x = 2;\n    console.log(x);\n  }\n  console.log(x);\n})();",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2 and then 1",
+            "1 and then 2",
+            "2 and then 2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 24;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "37",
+            "24",
+            "13",
+            "312"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 25;\nconst b = 16;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "41",
+            "25",
+            "16",
+            "400"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nfunction makeAdder(x) {\n  return function(y) {\n    return x + y;\n  }\n}\nconst add1 = makeAdder(1);\nconsole.log(add1(3));\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "1",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What will be printed by the following code?\n\nPromise.resolve('ok').then(v => console.log(v));\n\n(Assume no other logs)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "ok",
+            "undefined",
+            "Promise { 'ok' }",
+            "error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 11;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "39",
+            "11",
+            "28",
+            "308"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 23;\nconst b = 14;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "37",
+            "23",
+            "14",
+            "322"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(3 == '2');",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(2 == '2');",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "true",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the output of:\n\nconsole.log('javascript'.toUpperCase());",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "JAVASCRIPT",
+            "javascript",
+            "Error",
+            "tpircsavaj"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 19;\nconst b = 27;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "46",
+            "19",
+            "27",
+            "513"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 12;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "27",
+            "12",
+            "15",
+            "180"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 11;\nconst b = 6;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "17",
+            "11",
+            "6",
+            "66"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does event.preventDefault() do in the browser event handling context?\n\ne.g., inside a form submit handler",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Prevents the browser's default action",
+            "Stops other handlers from running",
+            "Deletes the element",
+            "Closes the tab"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 9;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "20",
+            "9",
+            "11",
+            "99"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 6;\nconst b = 5;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "11",
+            "6",
+            "5",
+            "30"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 26;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "35",
+            "26",
+            "9",
+            "234"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the output of:\n\nconsole.log('world'.toUpperCase());",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "WORLD",
+            "world",
+            "Error",
+            "dlrow"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 16;\nconst b = 1;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "17",
+            "16",
+            "1",
+            "16"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 4, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(4 == '4');",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "true",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nfunction makeAdder(x) {\n  return function(y) {\n    return x + y;\n  }\n}\nconst add3 = makeAdder(3);\nconsole.log(add3(3));\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 23;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "32",
+            "23",
+            "9",
+            "207"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 27;\nconst b = 2;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "29",
+            "27",
+            "2",
+            "54"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 6;\nconst b = 17;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "23",
+            "6",
+            "17",
+            "102"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nfunction makeAdder(x) {\n  return function(y) {\n    return x + y;\n  }\n}\nconst add4 = makeAdder(4);\nconsole.log(add4(3));\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "7",
+            "4",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the result of the following in JavaScript?\n\n'hello'.match(/l/g).length",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "1",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 16;\nconst b = 4;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "20",
+            "16",
+            "4",
+            "64"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nfunction makeAdder(x) {\n  return function(y) {\n    return x + y;\n  }\n}\nconst add2 = makeAdder(2);\nconsole.log(add2(3));\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "2",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(3 == '3');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "true",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 6, 8, 8, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5, 3, 7, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 5;\nconst b = 1;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "5",
+            "1",
+            "5"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [9, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nfunction makeAdder(x) {\n  return function(y) {\n    return x + y;\n  }\n}\nconst add5 = makeAdder(5);\nconsole.log(add5(3));\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "8",
+            "5",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 6;\nconst b = 2;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "8",
+            "6",
+            "2",
+            "12"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 7;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "25",
+            "18",
+            "7",
+            "126"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the output of:\n\nconsole.log('Hello'.toUpperCase());",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "HELLO",
+            "hello",
+            "Error",
+            "olleH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 16;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "16",
+            "0",
+            "16",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8, 2, 7, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 7;\nconst b = 14;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "21",
+            "7",
+            "14",
+            "98"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 3, 4, 7, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 30;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "45",
+            "30",
+            "15",
+            "450"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 12;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "23",
+            "12",
+            "11",
+            "132"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the output of:\n\nconsole.log('React'.toUpperCase());",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "REACT",
+            "react",
+            "Error",
+            "tcaeR"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 18;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "36",
+            "18",
+            "18",
+            "324"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(5 == '5');",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "true",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 13;\nconst b = 1;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "14",
+            "13",
+            "1",
+            "13"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(3 == '0');",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "11",
+            "0",
+            "11",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 21;\nconst b = 8;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "29",
+            "21",
+            "8",
+            "168"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 6, 7];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 7;\nconst b = 22;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "29",
+            "7",
+            "22",
+            "154"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(2 == '3');",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 24;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "48",
+            "24",
+            "24",
+            "576"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5, 9, 3, 8, 8, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(0 == '0');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "true",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 2;\nconst b = 6;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "8",
+            "2",
+            "6",
+            "12"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 10;\nconst b = 8;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "18",
+            "10",
+            "8",
+            "80"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 1, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 9;\nconst b = 21;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "30",
+            "9",
+            "21",
+            "189"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 4;\nconst b = 4;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "8",
+            "4",
+            "4",
+            "16"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 29;\nconst b = 22;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "51",
+            "29",
+            "22",
+            "638"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 1;\nconst b = 4;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "5",
+            "1",
+            "4",
+            "4"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 1, 3, 3, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [3];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 25;\nconst b = 27;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "52",
+            "25",
+            "27",
+            "675"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 4, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 10;\nconst b = 12;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "22",
+            "10",
+            "12",
+            "120"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 5;\nconst b = 8;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "13",
+            "5",
+            "8",
+            "40"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [3, 5, 3, 3];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 29;\nconst b = 3;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "32",
+            "29",
+            "3",
+            "87"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 21;\nconst b = 26;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "47",
+            "21",
+            "26",
+            "546"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 10;\nconst b = 21;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "31",
+            "10",
+            "21",
+            "210"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5, 4, 6, 7, 5, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 6;\nconst b = 7;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "13",
+            "6",
+            "7",
+            "42"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 30;\nconst b = 25;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "55",
+            "30",
+            "25",
+            "750"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 26;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "26",
+            "0",
+            "26",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 29;\nconst b = 30;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "59",
+            "29",
+            "30",
+            "870"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 3;\nconst b = 26;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "29",
+            "3",
+            "26",
+            "78"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 20;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "33",
+            "20",
+            "13",
+            "260"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 2;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "16",
+            "14",
+            "2",
+            "28"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 30;\nconst b = 4;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "34",
+            "30",
+            "4",
+            "120"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(3 == '1');",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(1 == '1');",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "true",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(0 == '3');",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 2;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "10",
+            "8",
+            "2",
+            "16"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 12;\nconst b = 20;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "32",
+            "12",
+            "20",
+            "240"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8, 3, 4, 5, 7];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 3;\nconst b = 5;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "8",
+            "3",
+            "5",
+            "15"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "27",
+            "14",
+            "13",
+            "182"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 1, 3];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 0;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "14",
+            "14",
+            "0",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 24;\nconst b = 16;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "40",
+            "24",
+            "16",
+            "384"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(1 == '0');",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 4;\nconst b = 14;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "18",
+            "4",
+            "14",
+            "56"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 9, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 25;\nconst b = 7;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "32",
+            "25",
+            "7",
+            "175"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(5 == '4');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 17;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "25",
+            "8",
+            "17",
+            "136"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 9, 5, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 27;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "40",
+            "27",
+            "13",
+            "351"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(3 == '4');",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 22;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "22",
+            "0",
+            "22",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8, 1, 4, 1, 3, 6];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "9",
+            "0",
+            "9",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 4, 4];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 7;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "35",
+            "7",
+            "28",
+            "196"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(1 == '5');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 16;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "30",
+            "14",
+            "16",
+            "224"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 4;\nconst b = 27;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "31",
+            "4",
+            "27",
+            "108"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 22;\nconst b = 3;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "25",
+            "22",
+            "3",
+            "66"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 9, 6, 4];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4, 8, 4, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 5;\nconst b = 17;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "22",
+            "5",
+            "17",
+            "85"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 29;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "53",
+            "29",
+            "24",
+            "696"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 11;\nconst b = 19;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "30",
+            "11",
+            "19",
+            "209"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 7;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "18",
+            "7",
+            "11",
+            "77"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 2;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "20",
+            "18",
+            "2",
+            "36"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 4];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 3, 6, 4];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(5 == '3');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 10;\nconst b = 23;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "33",
+            "10",
+            "23",
+            "230"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 22;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "33",
+            "22",
+            "11",
+            "242"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 5;\nconst b = 21;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "26",
+            "5",
+            "21",
+            "105"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 8, 2, 6, 7];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "42",
+            "18",
+            "24",
+            "432"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 1;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "29",
+            "1",
+            "28",
+            "28"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 1, 6];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "19",
+            "8",
+            "11",
+            "88"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 11;\nconst b = 29;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "40",
+            "11",
+            "29",
+            "319"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 12;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "36",
+            "12",
+            "24",
+            "288"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 30;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "41",
+            "30",
+            "11",
+            "330"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 5, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 1, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 21;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "45",
+            "21",
+            "24",
+            "504"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "24",
+            "0",
+            "24",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 17;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "32",
+            "17",
+            "15",
+            "255"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(1 == '3');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 1, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 3];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 3];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 21;\nconst b = 0;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "21",
+            "21",
+            "0",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 27;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "36",
+            "27",
+            "9",
+            "243"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [9, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 2;\nconst b = 29;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "31",
+            "2",
+            "29",
+            "58"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 27;\nconst b = 1;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "28",
+            "27",
+            "1",
+            "27"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5, 8, 7, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 13;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "37",
+            "13",
+            "24",
+            "312"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5, 2, 7, 2, 6, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 5, 3, 6, 3, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 4, 9, 9, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 12;\nconst b = 30;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "42",
+            "12",
+            "30",
+            "360"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 29;\nconst b = 29;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "58",
+            "29",
+            "29",
+            "841"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 20;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "34",
+            "14",
+            "20",
+            "280"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 28;\nconst b = 18;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "46",
+            "28",
+            "18",
+            "504"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 19;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "37",
+            "18",
+            "19",
+            "342"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 25;\nconst b = 21;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "46",
+            "25",
+            "21",
+            "525"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 3;\nconst b = 21;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "24",
+            "3",
+            "21",
+            "63"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 4, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 16;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "40",
+            "16",
+            "24",
+            "384"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 3, 1, 1, 9, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 23;\nconst b = 23;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "46",
+            "23",
+            "23",
+            "529"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 27;\nconst b = 16;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "43",
+            "27",
+            "16",
+            "432"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 23;\nconst b = 12;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "35",
+            "23",
+            "12",
+            "276"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(4 == '2');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 27;\nconst b = 8;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "35",
+            "27",
+            "8",
+            "216"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(0 == '4');",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 22;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "35",
+            "22",
+            "13",
+            "286"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 28;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "41",
+            "28",
+            "13",
+            "364"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 5;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "16",
+            "5",
+            "11",
+            "55"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 7;\nconst b = 30;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "37",
+            "7",
+            "30",
+            "210"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 20;\nconst b = 7;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "27",
+            "20",
+            "7",
+            "140"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 12;\nconst b = 18;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "30",
+            "12",
+            "18",
+            "216"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 6;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "24",
+            "18",
+            "6",
+            "108"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [3, 5, 4];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 3;\nconst b = 4;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "7",
+            "3",
+            "4",
+            "12"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4, 7];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 11;\nconst b = 5;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "16",
+            "11",
+            "5",
+            "55"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [3, 1, 2, 3];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 10;\nconst b = 4;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "14",
+            "10",
+            "4",
+            "40"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 17;\nconst b = 26;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "43",
+            "17",
+            "26",
+            "442"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 12;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "21",
+            "12",
+            "9",
+            "108"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 13;\nconst b = 19;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "32",
+            "13",
+            "19",
+            "247"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 5, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 10;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "24",
+            "14",
+            "10",
+            "140"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 15;\nconst b = 17;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "32",
+            "15",
+            "17",
+            "255"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 4, 5, 4, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 3;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "11",
+            "8",
+            "3",
+            "24"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(1 == '4');",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 1;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "10",
+            "1",
+            "9",
+            "9"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8, 9, 2, 1, 5, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 21;\nconst b = 14;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "35",
+            "21",
+            "14",
+            "294"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 11;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "24",
+            "11",
+            "13",
+            "143"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 20;\nconst b = 20;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "40",
+            "20",
+            "20",
+            "400"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 2;\nconst b = 8;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "10",
+            "2",
+            "8",
+            "16"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 15;\nconst b = 12;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "27",
+            "15",
+            "12",
+            "180"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8, 2, 8, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 22;\nconst b = 23;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "45",
+            "22",
+            "23",
+            "506"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 1, 1, 7];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 5, 3, 6, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 1;\nconst b = 18;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "19",
+            "1",
+            "18",
+            "18"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 4;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "32",
+            "4",
+            "28",
+            "112"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8, 4, 5, 3, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(4 == '1');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 17;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "35",
+            "18",
+            "17",
+            "306"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 1;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "15",
+            "14",
+            "1",
+            "14"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "32",
+            "8",
+            "24",
+            "192"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(2 == '5');",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 20;\nconst b = 14;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "34",
+            "20",
+            "14",
+            "280"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "42",
+            "14",
+            "28",
+            "392"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 7, 1, 6, 7, 7];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 2;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "17",
+            "2",
+            "15",
+            "30"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 29;\nconst b = 12;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "41",
+            "29",
+            "12",
+            "348"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 1;\nconst b = 25;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "26",
+            "1",
+            "25",
+            "25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 10;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "25",
+            "10",
+            "15",
+            "150"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 2, 3, 8, 1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 25;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "36",
+            "25",
+            "11",
+            "275"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 4;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "4",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 3;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "21",
+            "18",
+            "3",
+            "54"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 21;\nconst b = 23;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "44",
+            "21",
+            "23",
+            "483"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 23;\nconst b = 0;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "23",
+            "23",
+            "0",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [7, 1, 2, 1, 1, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [3, 4, 5, 9, 8, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 1;\nconst b = 10;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "11",
+            "1",
+            "10",
+            "10"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 2;\nconst b = 19;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "21",
+            "2",
+            "19",
+            "38"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 28;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "52",
+            "28",
+            "24",
+            "672"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 6];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 5;\nconst b = 30;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "35",
+            "5",
+            "30",
+            "150"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 2;\nconst b = 2;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "2",
+            "2",
+            "4"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 19;\nconst b = 3;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "22",
+            "19",
+            "3",
+            "57"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 7;\nconst b = 25;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "32",
+            "7",
+            "25",
+            "175"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 7;\nconst b = 0;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "7",
+            "7",
+            "0",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 25;\nconst b = 29;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "54",
+            "25",
+            "29",
+            "725"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(5 == '2');",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 22;\nconst b = 10;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "32",
+            "22",
+            "10",
+            "220"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 29;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "37",
+            "8",
+            "29",
+            "232"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 24;\nconst b = 20;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "44",
+            "24",
+            "20",
+            "480"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "25",
+            "14",
+            "11",
+            "154"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 16;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "31",
+            "16",
+            "15",
+            "240"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 21;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "29",
+            "8",
+            "21",
+            "168"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 25;\nconst b = 1;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "26",
+            "25",
+            "1",
+            "25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 11;\nconst b = 23;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "34",
+            "11",
+            "23",
+            "253"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 28;\nconst b = 7;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "35",
+            "28",
+            "7",
+            "196"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 22;\nconst b = 20;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "42",
+            "22",
+            "20",
+            "440"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 3;\nconst b = 6;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "9",
+            "3",
+            "6",
+            "18"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 8];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 30;\nconst b = 12;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "42",
+            "30",
+            "12",
+            "360"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 30;\nconst b = 22;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "52",
+            "30",
+            "22",
+            "660"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 30;\nconst b = 29;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "59",
+            "30",
+            "29",
+            "870"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 1;\nconst b = 16;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "17",
+            "1",
+            "16",
+            "16"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 9;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "18",
+            "9",
+            "9",
+            "81"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 17;\nconst b = 13;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "30",
+            "17",
+            "13",
+            "221"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "46",
+            "18",
+            "28",
+            "504"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 19;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "47",
+            "19",
+            "28",
+            "532"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [8, 8, 5, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 28;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "56",
+            "28",
+            "28",
+            "784"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 18;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "29",
+            "18",
+            "11",
+            "198"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 14;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "29",
+            "14",
+            "15",
+            "210"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 4;\nconst b = 15;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "19",
+            "4",
+            "15",
+            "60"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4, 1, 9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 17;\nconst b = 11;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "28",
+            "17",
+            "11",
+            "187"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "28",
+            "0",
+            "28",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [4, 7, 5, 8, 5, 2];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [6, 7];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 9;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "37",
+            "9",
+            "28",
+            "252"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 9;\nconst b = 24;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "33",
+            "9",
+            "24",
+            "216"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(4 == '3');",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 20;\nconst b = 17;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "37",
+            "20",
+            "17",
+            "340"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 9;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "17",
+            "8",
+            "9",
+            "72"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [2, 7, 4, 2, 4];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 17;\nconst b = 5;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "22",
+            "17",
+            "5",
+            "85"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 28;\nconst b = 6;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "34",
+            "28",
+            "6",
+            "168"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 5;\nconst b = 23;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "28",
+            "5",
+            "23",
+            "115"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [5, 1, 8, 5];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this expression evaluate to in JavaScript?\n\nconsole.log(4 == '0');",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "false",
+            "false",
+            "true",
+            "TypeError"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [9];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given:\n\nconst nums = [1, 6];\nconsole.log(nums.length);\n\nWhat is the output?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 10;\nconst b = 1;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "11",
+            "10",
+            "1",
+            "10"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 8;\nconst b = 28;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "36",
+            "8",
+            "28",
+            "224"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the following JavaScript code:\n\nconst a = 0;\nconst b = 21;\nconsole.log(a + b);\n\nWhat will be printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "21",
+            "0",
+            "21",
+            "0"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

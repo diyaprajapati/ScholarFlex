@@ -1,0 +1,5641 @@
+{
+  "paper_name": "HTML, CSS & JavaScript Question Paper - Final Fixed",
+  "description": "400 unique questions for HTML, CSS and JavaScript. Theory and Technical sections. Code snippets and markup (when present) are written inside the 'text' key as requested.",
+  "subject": "HTML, CSS & JavaScript",
+  "year": "2025",
+  "semester": "Autumn",
+  "duration_minutes": 180,
+  "status": "final-draft",
+  "sections": [
+    {
+      "name": "Theory",
+      "questions": [
+        {
+          "text": "What does HTML stand for?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "HyperText Markup Language",
+            "HighText Machine Language",
+            "Hyperlinks and Text Markup",
+            "Home Tool Markup Language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which tag is used to create a paragraph in HTML?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "<p>",
+            "<div>",
+            "<span>",
+            "<para>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which attribute specifies an image source in HTML?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "src",
+            "href",
+            "alt",
+            "srcset"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which CSS property is used to change text color?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "color",
+            "font-color",
+            "text-color",
+            "fg-color"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "How do you select an element with id 'header' in CSS?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "#header",
+            ".header",
+            "header",
+            "id.header"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does the box-model in CSS include?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "margin, border, padding, content",
+            "position, float, display",
+            "selectors, properties, values",
+            "events, handlers"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which tag is used to include JavaScript in HTML?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "<script>",
+            "<js>",
+            "<javascript>",
+            "<code>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the result of 'typeof null' in JavaScript?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "object",
+            "null",
+            "undefined",
+            "number"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which CSS property makes an element float to the right?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "float: right;",
+            "align: right;",
+            "position: right;",
+            "side: right;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTML element is used to create a clickable link?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "<a>",
+            "<link>",
+            "<href>",
+            "<button>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "How do you write a comment in CSS?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "/* comment */",
+            "// comment",
+            "<!-- comment -->",
+            "# comment"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTML5 element is used for navigation links?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "<nav>",
+            "<navigation>",
+            "<menu>",
+            "<links>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "How do you add an external CSS file in HTML?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "<link rel=\"stylesheet\" href=\"styles.css\">",
+            "<script src=\"styles.css\">",
+            "<style src=\"styles.css\">",
+            "@import 'styles.css'"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which CSS property controls the font size?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "font-size",
+            "text-size",
+            "size",
+            "font-style"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is event bubbling in JavaScript?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "When an event propagates from child to parent elements",
+            "When event stops propagation",
+            "When multiple events fire simultaneously",
+            "When event is captured only by target"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTML attribute provides alternative text for images?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "alt",
+            "title",
+            "description",
+            "longdesc"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does CSS 'display: none' do?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Removes element from layout and hides it",
+            "Makes element transparent",
+            "Disables element interaction but keeps space",
+            "Hides visually but keeps layout space"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JavaScript keyword declares a block-scoped variable?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let",
+            "var",
+            "const",
+            "function"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which property is used to change an element's background color in CSS?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "background-color",
+            "bgcolor",
+            "color",
+            "backgroundImage"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTML element is used to define an unordered list?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "<ul>",
+            "<ol>",
+            "<li>",
+            "<list>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which tag is used to create a table row in HTML?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "<tr>",
+            "<td>",
+            "<th>",
+            "<table>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "How do you make text bold in HTML?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "<strong> or <b>",
+            "<bold>",
+            "<em>",
+            "<heavy>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which CSS selector targets elements by class name 'card'?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            ".card",
+            "#card",
+            "card",
+            "element.card"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "How do you include inline CSS in an HTML element?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "<p style=\"color:red\">",
+            "<p class=\"red\">",
+            "<p css=\"color:red\">",
+            "<p data-style=\"color:red\">"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which meta tag sets the viewport for responsive design?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+            "<viewport>",
+            "<meta viewport>",
+            "<meta name=\"responsive\">"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which CSS property controls how text wraps inside an element?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "word-wrap or overflow-wrap",
+            "text-wrap",
+            "wrap",
+            "word-break"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the purpose of the alt attribute on an <img> tag?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Provide alternative text for accessibility and SEO",
+            "Set image title",
+            "Provide URL",
+            "Resize image"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which CSS unit is relative to the root element's font-size?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "rem",
+            "em",
+            "px",
+            "%"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "How can you include JavaScript code inline within HTML?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Using <script> tags",
+            "Using <js> tags",
+            "Using <code> tags",
+            "Using <link> tags"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which CSS property would you use to create a flex container?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "display: flex;",
+            "float: left;",
+            "position: flex;",
+            "layout: flex;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (1)",
+          "type": "multiple-choice",
+          "weightage": 7,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (2)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (3)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (4)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (5)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (6)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (7)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (8)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (9)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (10)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (11)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (12)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (13)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (14)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (15)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (16)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (17)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (18)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (19)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (20)",
+          "type": "multiple-choice",
+          "weightage": 1,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (21)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (22)",
+          "type": "multiple-choice",
+          "weightage": 7,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (23)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (24)",
+          "type": "multiple-choice",
+          "weightage": 7,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (25)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (26)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (27)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (28)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (29)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (30)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (31)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (32)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (33)",
+          "type": "multiple-choice",
+          "weightage": 1,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (34)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (35)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (36)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (37)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (38)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (39)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (40)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (41)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (42)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (43)",
+          "type": "multiple-choice",
+          "weightage": 4,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (44)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (45)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (46)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (47)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (48)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (49)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (50)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (51)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (52)",
+          "type": "multiple-choice",
+          "weightage": 7,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (53)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (54)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (55)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (56)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (57)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (58)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (59)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (60)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JavaScript, what does document.getElementById('id') return if element not present? (61)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "null",
+            "undefined",
+            "Error",
+            "Empty string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (62)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (63)",
+          "type": "multiple-choice",
+          "weightage": 4,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "Select CSS features introduced or common in modern CSS (64)",
+          "type": "multiple-choice",
+          "weightage": 2,
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Custom properties (variables)",
+            "Tables layout only"
+          ],
+          "correctOptions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (65)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the difference between visibility: hidden and display: none? (66)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "visibility:hidden hides but preserves layout; display:none removes from layout",
+            "Both do same",
+            "display:none hides visually only",
+            "visibility:hidden removes element from DOM"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (67)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "When should you use semantic HTML elements like <header> and <footer>? (68)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "To improve accessibility and document structure",
+            "To style elements only",
+            "To run JavaScript faster",
+            "To make elements invisible"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (69)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement about HTML5 is true? (70)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "HTML5 introduced semantic elements like <section>, <article>, <nav>",
+            "HTML5 removed the <div> element",
+            "HTML5 requires XHTML syntax always",
+            "HTML5 replaced CSS3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Technical",
+      "questions": [
+        {
+          "text": "In a submit event handler, calling event.preventDefault() will:",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Stop the form from submitting and page from reloading",
+            "Submit form twice",
+            "Clear form fields only",
+            "Throw an error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which attribute on an <input> element specifies that it must be filled out before submitting?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "required",
+            "readonly",
+            "disabled",
+            "autofocus"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What happens when you apply display: inline to a block-level element?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "It flows inline and ignores width/height",
+            "It becomes absolutely positioned",
+            "It floats left",
+            "It becomes hidden"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>4</li> <li>5</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Where should you place the <script> tag for best practice to avoid blocking rendering?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Just before closing </body> tag",
+            "In <head> always",
+            "At top of file",
+            "Inside <style> tag"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which media query targets screens with a maximum width of 600px?\n\n@media (max-width: 600px) { ... }",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "@media (max-width: 600px)",
+            "@media (min-width: 600px)",
+            "@media screen and (orientation:landscape)",
+            "@media all and (hover)"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which of the following lists the CSS box-model properties in the correct order from outer to inner?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "margin, border, padding, content",
+            "content, padding, border, margin",
+            "padding, content, border, margin",
+            "border, margin, content, padding"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "216",
+            "30",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "How do you include an external stylesheet?\n\n<link rel=\"stylesheet\" href=\"styles.css\">",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Using rel=\"stylesheet\" and href",
+            "Using src attribute",
+            "Using <script>",
+            "Using @import only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 8;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "120",
+            "23",
+            "-7",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 13;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "78",
+            "19",
+            "7",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which semantic HTML element is appropriate for page footer content?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "<footer>",
+            "<div>",
+            "<section>",
+            "<article>"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "192",
+            "28",
+            "4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which input type creates a checkbox in HTML?\n\n<input type=\"checkbox\">",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "checkbox",
+            "radio",
+            "text",
+            "submit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 8;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "48",
+            "14",
+            "2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>9</li> <li>7</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which selector matches only direct children in CSS?\n\n.parent > .child {}",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "> (child combinator)",
+            "space (descendant)",
+            "+ (adjacent sibling)",
+            "~ (general sibling)"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>3</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 19;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "209",
+            "30",
+            "-8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "224",
+            "30",
+            "2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is the purpose of the href attribute in anchor tags?\n\n<a href=\"https://example.com\">link</a>",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Specifies the URL of the link",
+            "Provides link text",
+            "Styles the link",
+            "Sets target window only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>6</li> <li>9</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "400",
+            "40",
+            "0",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "9",
+            "10",
+            "8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 19;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "266",
+            "33",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>9</li> <li>2</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "60",
+            "23",
+            "-17",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "8",
+            "6",
+            "2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "54",
+            "15",
+            "3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Examine the HTML:\n\n<img src=\"image.png\" alt=\"logo\">\n\nWhich attribute provides alternative text displayed when image cannot load?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "alt",
+            "title",
+            "src",
+            "href"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "198",
+            "29",
+            "7",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "64",
+            "20",
+            "12",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>5</li> <li>4</li> <li>1</li> <li>9</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 8;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "104",
+            "21",
+            "-5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>9</li> <li>8</li> <li>1</li> <li>3</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "0",
+            "3",
+            "3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "0",
+            "6",
+            "-6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 7;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "91",
+            "20",
+            "-6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 7;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "28",
+            "11",
+            "3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 8;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "40",
+            "13",
+            "3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 2;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "4",
+            "0",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "0",
+            "9",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>3</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "0",
+            "12",
+            "-12",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 1;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "10",
+            "11",
+            "-9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>8</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 13;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "169",
+            "26",
+            "0",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 14;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "168",
+            "26",
+            "2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "55",
+            "16",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>7</li> <li>2</li> <li>2</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "72",
+            "18",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "150",
+            "25",
+            "-5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>5</li> <li>2</li> <li>9</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>1</li> <li>3</li> <li>8</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 5;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "30",
+            "11",
+            "-1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "140",
+            "24",
+            "-4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 9;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "90",
+            "19",
+            "1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>9</li> <li>9</li> <li>2</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>3</li> <li>3</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>5</li> <li>3</li> <li>9</li> <li>7</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>6</li> <li>4</li> <li>7</li> <li>2</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 1;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "14",
+            "15",
+            "-13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 8;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "144",
+            "26",
+            "10",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "24",
+            "14",
+            "10",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "360",
+            "38",
+            "-2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "153",
+            "26",
+            "-8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "120",
+            "26",
+            "-14",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "165",
+            "26",
+            "-4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>8</li> <li>9</li> <li>2</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "36",
+            "13",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "90",
+            "21",
+            "-9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 19;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "38",
+            "21",
+            "17",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>9</li> <li>8</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "252",
+            "32",
+            "4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>8</li> <li>4</li> <li>4</li> <li>3</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>9</li> <li>4</li> <li>4</li> <li>3</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>4</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>9</li> <li>8</li> <li>7</li> <li>2</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>5</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>4</li> <li>5</li> <li>2</li> <li>5</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>9</li> <li>3</li> <li>1</li> <li>3</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 2;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "10",
+            "7",
+            "-3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "0",
+            "17",
+            "-17",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>5</li> <li>6</li> <li>8</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "289",
+            "34",
+            "0",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "220",
+            "31",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "102",
+            "23",
+            "11",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>1</li> <li>9</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>6</li> <li>5</li> <li>9</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "32",
+            "18",
+            "14",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "120",
+            "22",
+            "2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>3</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 19;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "190",
+            "29",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "0",
+            "16",
+            "16",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 13;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "52",
+            "17",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 1;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "3",
+            "-1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 1;\nconst b = 18;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "18",
+            "19",
+            "-17",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "68",
+            "21",
+            "-13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 7;\nconst b = 8;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "56",
+            "15",
+            "-1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>3</li> <li>8</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>6</li> <li>5</li> <li>7</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>7</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 18;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "0",
+            "18",
+            "-18",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "0",
+            "4",
+            "4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>5</li> <li>5</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 5;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "20",
+            "9",
+            "1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 7;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "70",
+            "17",
+            "3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "100",
+            "25",
+            "15",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "24",
+            "10",
+            "2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 13;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "26",
+            "15",
+            "11",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 14;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "140",
+            "24",
+            "4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "200",
+            "30",
+            "10",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 7;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "21",
+            "10",
+            "-4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "270",
+            "33",
+            "3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>6</li> <li>2</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>2</li> <li>4</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 1;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "1",
+            "2",
+            "0",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>1</li> <li>6</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "0",
+            "0",
+            "0",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "240",
+            "32",
+            "8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "12",
+            "7",
+            "1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "0",
+            "1",
+            "-1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 8;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "0",
+            "8",
+            "8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "36",
+            "15",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "300",
+            "35",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>5</li> <li>8</li> <li>8</li> <li>3</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 19;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "228",
+            "31",
+            "-7",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>1</li> <li>7</li> <li>5</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "40",
+            "14",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>9</li> <li>9</li> <li>2</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 15;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "60",
+            "19",
+            "11",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "12",
+            "13",
+            "11",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 19;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "19",
+            "20",
+            "18",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 9;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "54",
+            "15",
+            "-3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "50",
+            "15",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 15;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "90",
+            "21",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 5;\nconst b = 7;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "35",
+            "12",
+            "-2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 16;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "176",
+            "27",
+            "-5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 5;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "50",
+            "15",
+            "-5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "68",
+            "21",
+            "13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>3</li> <li>6</li> <li>3</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>4</li> <li>4</li> <li>5</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>2</li> <li>9</li> <li>7</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 16;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "48",
+            "19",
+            "-13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 13;\nconst b = 7;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "91",
+            "20",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 7;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "7",
+            "8",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 5;\nconst b = 9;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "45",
+            "14",
+            "-4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>6</li> <li>2</li> <li>7</li> <li>3</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>6</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>2</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>4</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>2</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>7</li> <li>1</li> <li>3</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "0",
+            "20",
+            "-20",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>8</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>3</li> <li>4</li> <li>5</li> <li>9</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "40",
+            "22",
+            "18",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 14;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "210",
+            "29",
+            "-1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>6</li> <li>5</li> <li>7</li> <li>6</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "108",
+            "21",
+            "-3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>7</li> <li>2</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>2</li> <li>3</li> <li>6</li> <li>8</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 13;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "182",
+            "27",
+            "-1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "220",
+            "31",
+            "-9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 9;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "180",
+            "29",
+            "11",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>3</li> <li>8</li> <li>4</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 15;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "165",
+            "26",
+            "4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 8;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "24",
+            "11",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>6</li> <li>6</li> <li>1</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 8;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "48",
+            "14",
+            "-2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 19;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "114",
+            "25",
+            "-13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>1</li> <li>5</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>6</li> <li>9</li> <li>4</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 19;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "57",
+            "22",
+            "16",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 9;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "153",
+            "26",
+            "8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 14;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "14",
+            "15",
+            "13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>6</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "66",
+            "17",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>3</li> <li>2</li> <li>7</li> <li>1</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>1</li> <li>9</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>2</li> <li>9</li> <li>2</li> <li>5</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "39",
+            "16",
+            "-10",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "16",
+            "17",
+            "15",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 5;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "85",
+            "22",
+            "-12",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>6</li> <li>7</li> <li>7</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>6</li> <li>1</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 19;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "380",
+            "39",
+            "1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "22",
+            "13",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 15;\nconst b = 9;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "135",
+            "24",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>5</li> <li>3</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>2</li> <li>8</li> <li>1</li> <li>3</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "0",
+            "6",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>5</li> <li>3</li> <li>5</li> <li>4</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 2;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "20",
+            "12",
+            "-8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 8;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "136",
+            "25",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 18;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "180",
+            "28",
+            "-8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 13;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "260",
+            "33",
+            "-7",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "60",
+            "23",
+            "17",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "0",
+            "18",
+            "18",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>1</li> <li>7</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>6</li> <li>8</li> <li>8</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "176",
+            "27",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "187",
+            "28",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "56",
+            "18",
+            "-10",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>4</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "117",
+            "22",
+            "-4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 18;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "216",
+            "30",
+            "-6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 4;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "16",
+            "8",
+            "0",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "44",
+            "15",
+            "-7",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>5</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>8</li> <li>2</li> <li>7</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 2;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "40",
+            "22",
+            "-18",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>2</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>1</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 6;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "60",
+            "16",
+            "4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 20;\nconst b = 18;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "360",
+            "38",
+            "2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>3</li> <li>1</li> <li>6</li> <li>3</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "221",
+            "30",
+            "4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>1</li> <li>3</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 6;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "66",
+            "17",
+            "-5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 12;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "204",
+            "29",
+            "-5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>1</li> <li>7</li> <li>4</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "45",
+            "18",
+            "-12",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 14;\nconst b = 18;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "252",
+            "32",
+            "-4",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>3</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "15",
+            "8",
+            "-2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>8</li> <li>1</li> <li>6</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 2;\nconst b = 15;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "30",
+            "17",
+            "-13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 4;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "52",
+            "17",
+            "-9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 3;\nconst b = 11;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "33",
+            "14",
+            "-8",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 7;\nconst b = 19;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "133",
+            "26",
+            "-12",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 14;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "70",
+            "19",
+            "9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 19;\nconst b = 9;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "171",
+            "28",
+            "10",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 0;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "0",
+            "3",
+            "-3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 9;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "27",
+            "12",
+            "6",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>8</li> <li>1</li> <li>6</li> <li>6</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>7</li> <li>6</li> <li>5</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "1",
+            "0",
+            "2",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>2</li> <li>3</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>6</li> <li>1</li> <li>1</li> <li>6</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "204",
+            "29",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>2</li> <li>9</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 5;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "10",
+            "7",
+            "3",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 7;\nconst b = 20;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "140",
+            "27",
+            "-13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>2</li> <li>1</li> <li>4</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 2;\nconst b = 14;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "28",
+            "16",
+            "-12",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 15;\nconst b = 10;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "150",
+            "25",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2",
+            "0",
+            "3",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 19;\nconst b = 0;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "0",
+            "19",
+            "19",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 13;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "234",
+            "31",
+            "5",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>4</li> <li>8</li> <li>4</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>1</li> <li>9</li> <li>3</li> <li>6</li> <li>1</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>4</li> <li>1</li> <li>7</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 17;\nconst b = 19;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "323",
+            "36",
+            "-2",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 15;\nconst b = 2;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "30",
+            "17",
+            "13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>2</li> <li>6</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>9</li> <li>9</li> <li>6</li> <li>5</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 3;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "54",
+            "21",
+            "15",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>1</li> <li>8</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 1;\nconst b = 12;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "12",
+            "13",
+            "-11",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>3</li> <li>6</li> <li>3</li> <li>5</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 15;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "15",
+            "16",
+            "14",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>8</li> <li>7</li> <li>2</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "4",
+            "0",
+            "5",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 10;\nconst b = 19;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "190",
+            "29",
+            "-9",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>7</li> <li>9</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>9</li> <li>3</li> <li>2</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 11;\nconst b = 1;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "11",
+            "12",
+            "10",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>3</li> <li>1</li> <li>5</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>6</li> <li>9</li> <li>4</li> <li>7</li> <li>3</li> <li>8</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "0",
+            "7",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 16;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "272",
+            "33",
+            "-1",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>6</li> <li>1</li> <li>4</li> <li>3</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "5",
+            "0",
+            "6",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given this HTML list:\n\n<ul id=\"list\">\n  <li>5</li> <li>4</li> <li>1</li>\n</ul>\n\nWhat does document.querySelectorAll('#list li').length return?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "3",
+            "0",
+            "4",
+            "undefined"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 2;\nconst b = 17;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "34",
+            "19",
+            "-15",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider the JavaScript code:\n\nconst a = 18;\nconst b = 5;\nconsole.log(a * b);\n\nWhat is printed?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "90",
+            "23",
+            "13",
+            "NaN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

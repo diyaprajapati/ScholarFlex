@@ -197,6 +197,7 @@ export default function AllInternsPage() {
             onFilterClick={handleFilterClick}
             filters={filters}
             hasActiveFilters={hasActiveFilters}
+            totalCount={interns.length}
           />
 
           {/* Filter Panel */}

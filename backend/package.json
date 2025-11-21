@@ -21,7 +21,8 @@
     "db:fix-keys": "node scripts/fix-foreign-keys.js",
     "db:migrate": "node scripts/run-migration.js",
     "db:create-enums": "node scripts/create-enum-types.js",
-    "db:create-function": "node scripts/create-calculate-score-function.js"
+    "db:create-function": "node scripts/create-calculate-score-function.js",
+    "db:recalculate-scores": "node scripts/recalculate-test-scores.js"
   },
   "keywords": [
     "scholarflex",

@@ -123,11 +123,8 @@ export default function AddInternPage() {
           data: response.data,
         })
         
-        // Show success message
-        setTimeout(() => {
-          // Navigate back to list after showing results
-          navigate(ROUTES.INTERNS.VIEW)
-        }, 3000)
+        // Don't auto-navigate - let user review the results
+        // User can manually navigate back when ready
       }
     } catch (error) {
       console.error('Upload error:', error)
@@ -240,15 +237,106 @@ export default function AddInternPage() {
                     {uploadResult.message}
                   </p>
                   {uploadResult.success && uploadResult.data && (
-                    <div className="mt-2 text-xs text-green-700">
-                      <p>Total: {uploadResult.data.total}</p>
-                      <p>Successful: {uploadResult.data.successful}</p>
-                      {uploadResult.data.skipped > 0 && (
-                        <p>Skipped (duplicates): {uploadResult.data.skipped}</p>
+                    <div className="mt-3 space-y-3">
+                      {/* Summary Counts */}
+                      <div className="text-xs space-y-1">
+                        <p className="font-semibold text-gray-800">Summary:</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          <div>
+                            <span className="text-gray-600">Total:</span>
+                            <span className="ml-1 font-medium text-gray-900">{uploadResult.data.total}</span>
+                          </div>
+                          <div>
+                            <span className="text-green-700">Successful:</span>
+                            <span className="ml-1 font-medium text-green-800">{uploadResult.data.successful}</span>
+                          </div>
+                          {uploadResult.data.skipped > 0 && (
+                            <div>
+                              <span className="text-yellow-700">Duplicates:</span>
+                              <span className="ml-1 font-medium text-yellow-800">{uploadResult.data.skipped}</span>
+                            </div>
+                          )}
+                          {uploadResult.data.failed > 0 && (
+                            <div>
+                              <span className="text-red-700">Failed:</span>
+                              <span className="ml-1 font-medium text-red-800">{uploadResult.data.failed}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Duplicate Entries List */}
+                      {uploadResult.data.details?.skipped && uploadResult.data.details.skipped.length > 0 && (
+                        <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                          <p className="text-xs font-semibold text-yellow-900 mb-2">
+                            Duplicate Entries ({uploadResult.data.details.skipped.length}):
+                          </p>
+                          <div className="max-h-40 overflow-y-auto space-y-1">
+                            {uploadResult.data.details.skipped.map((entry, index) => (
+                              <div key={index} className="text-xs text-yellow-800 bg-white p-2 rounded border border-yellow-100">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1">
+                                    <span className="font-medium">{entry.email || entry.data?.email || 'N/A'}</span>
+                                    {entry.data?.full_name && (
+                                      <span className="text-gray-600 ml-2">({entry.data.full_name})</span>
+                                    )}
+                                  </div>
+                                  <span className="text-yellow-700 text-[10px] whitespace-nowrap">
+                                    {entry.reason || 'Duplicate email'}
+                                  </span>
+                                </div>
+                                {entry.row && (
+                                  <div className="text-[10px] text-gray-500 mt-1">Row: {entry.row}</div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
-                      {uploadResult.data.failed > 0 && (
-                        <p className="text-red-600">Failed: {uploadResult.data.failed}</p>
+
+                      {/* Failed Entries List */}
+                      {uploadResult.data.details?.failed && uploadResult.data.details.failed.length > 0 && (
+                        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded">
+                          <p className="text-xs font-semibold text-red-900 mb-2">
+                            Failed Entries ({uploadResult.data.details.failed.length}):
+                          </p>
+                          <div className="max-h-40 overflow-y-auto space-y-1">
+                            {uploadResult.data.details.failed.map((entry, index) => (
+                              <div key={index} className="text-xs text-red-800 bg-white p-2 rounded border border-red-100">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1">
+                                    <span className="font-medium">{entry.email || entry.data?.email || 'N/A'}</span>
+                                    {entry.data?.full_name && (
+                                      <span className="text-gray-600 ml-2">({entry.data.full_name})</span>
+                                    )}
+                                  </div>
+                                  <span className="text-red-700 text-[10px] whitespace-nowrap">
+                                    {entry.reason || 'Validation failed'}
+                                  </span>
+                                </div>
+                                {entry.row && (
+                                  <div className="text-[10px] text-gray-500 mt-1">Row: {entry.row}</div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
+                    </div>
+                  )}
+                  
+                  {/* Navigation Button */}
+                  {uploadResult.success && (
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        onClick={() => navigate(ROUTES.INTERNS.VIEW)}
+                        className="px-4 py-2 text-sm font-semibold text-white rounded-lg transition-colors shadow-sm hover:shadow-md"
+                        style={{ backgroundColor: '#4C763B' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#043915'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4C763B'}
+                      >
+                        View All Interns
+                      </button>
                     </div>
                   )}
                 </div>

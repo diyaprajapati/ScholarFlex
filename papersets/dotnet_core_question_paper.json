@@ -1,0 +1,5621 @@
+{
+  "paper_name": ".NET Core Backend Question Paper",
+  "description": "400 unique .NET Core backend questions",
+  "subject": ".NET Core Backend",
+  "year": "2025",
+  "semester": "Autumn",
+  "duration_minutes": 180,
+  "status": "final-draft",
+  "sections": [
+    {
+      "name": "Theory",
+      "questions": [
+        {
+          "text": "What is .NET Core?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 5)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 6)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 7)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 8)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 9)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 10)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 11)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 12)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 13)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 14)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 15)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 16)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 17)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 18)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 19)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 20)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 21)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 22)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 23)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 24)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 25)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 26)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 27)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 28)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 29)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 30)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 31)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 32)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 33)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 34)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 35)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 36)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 37)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 38)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 39)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 40)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 41)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 42)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 43)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 44)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 45)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 46)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 47)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 48)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 49)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 50)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 51)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 52)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 53)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 54)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 55)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 56)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 57)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 58)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 59)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 60)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 61)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 62)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 63)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 64)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 65)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 66)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 67)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 68)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 69)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 70)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 71)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 72)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 73)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 74)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 75)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 76)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 77)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 78)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 79)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 80)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 81)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 82)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 83)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 84)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 85)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 86)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 87)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 88)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 89)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 90)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 91)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 92)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 93)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 94)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is .NET Core? (variation 95)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A cross-platform, open-source framework",
+            "A database",
+            "A front-end library",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which language is commonly used with .NET Core? (variation 96)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "C#",
+            "Java",
+            "Python",
+            "PHP"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Entity Framework Core? (variation 97)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "ORM for .NET Core",
+            "Web server",
+            "Database",
+            "Compiler"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is dependency injection? (variation 98)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Providing dependencies through constructors/services",
+            "Hardcoding dependencies",
+            "Global variables",
+            "Memory dumping"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is middleware in ASP.NET Core? (variation 99)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Pipeline components executed on each request",
+            "Frontend CSS classes",
+            "Database indexes",
+            "Docker images"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Technical",
+      "questions": [
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 20",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 21",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 22",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 23",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 24",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 25",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 26",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 27",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 28",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 29",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 30",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 31",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 32",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 33",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 34",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 35",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 36",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 37",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 38",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 39",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 40",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 41",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 42",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 43",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 44",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 45",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 46",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 47",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 48",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 49",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 50",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 51",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 52",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 53",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 54",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 55",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 56",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 57",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 58",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 59",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 60",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 61",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 62",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 63",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 64",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 65",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 66",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 67",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 68",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 69",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 70",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 71",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 72",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 73",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 74",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 75",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 76",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 77",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 78",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 79",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 80",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 81",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 82",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 83",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 84",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 85",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 86",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 87",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 88",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 89",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 90",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 91",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 92",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 93",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 94",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 95",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 96",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 97",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 98",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 99",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 100",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 101",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 102",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 103",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 104",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 105",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 106",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 107",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 108",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 109",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 110",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 111",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 112",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 113",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 114",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 115",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 116",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 117",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 118",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 119",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 120",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 121",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 122",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 123",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 124",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 125",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 126",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 127",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 128",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 129",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 130",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 131",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 132",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 133",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 134",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 135",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 136",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 137",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 138",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 139",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 140",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 141",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 142",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 143",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 144",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 145",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 146",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 147",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 148",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 149",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 150",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 151",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 152",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 153",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 154",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 155",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 156",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 157",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 158",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 159",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 160",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 161",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 162",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 163",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 164",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 165",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 166",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 167",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 168",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 169",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 170",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 171",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 172",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 173",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 174",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 175",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 176",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 177",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 178",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 179",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 180",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 181",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 182",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 183",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 184",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 185",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 186",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 187",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 188",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 189",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 190",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 191",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 192",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 193",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 194",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 195",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 196",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 197",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 198",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 199",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 200",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 201",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 202",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 203",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 204",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 205",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 206",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 207",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 208",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 209",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 210",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 211",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 212",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 213",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 214",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 215",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 216",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 217",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 218",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 219",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 220",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 221",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 222",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 223",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 224",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 225",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 226",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 227",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 228",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 229",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 230",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 231",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 232",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 233",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 234",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 235",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 236",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 237",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 238",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 239",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 240",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 241",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 242",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 243",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 244",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 245",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 246",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 247",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 248",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 249",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 250",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 251",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 252",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 253",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 254",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 255",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 256",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 257",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 258",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 259",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 260",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 261",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 262",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 263",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 264",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 265",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 266",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 267",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 268",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 269",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 270",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 271",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 272",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 273",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 274",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 275",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 276",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 277",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 278",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 279",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 280",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 281",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 282",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 283",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 284",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 285",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 286",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 287",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 288",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 289",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 290",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 291",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 292",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 293",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 294",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 295",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 296",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 297",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 298",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 299",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 300",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 301",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 302",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 303",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 304",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 305",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 306",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 307",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 308",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 309",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this controller return?\n\npublic IActionResult GetData(){ return Ok(\"Hello\"); }\n// variation 310",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns HTTP 200 with 'Hello'",
+            "Returns BadRequest",
+            "Throws error",
+            "Returns null"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this EF Core query do?\n\nvar users=db.Users.Where(u=>u.Age>30).ToList();\n// variation 311",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Gets users older than 30",
+            "Deletes users",
+            "Updates users",
+            "Returns empty"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\nvar nums=new[]{1,2,3}; Console.WriteLine(nums.Sum());\n// variation 312",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does async/await do in .NET Core?\n// variation 313",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Allows non-blocking async operations",
+            "Runs multi-thread always",
+            "Compiles slower",
+            "Stops execution"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does 'dotnet ef migrations add Init' do?\n// variation 314",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Creates new EF migration",
+            "Runs SQL server",
+            "Deletes DB",
+            "Adds controller"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

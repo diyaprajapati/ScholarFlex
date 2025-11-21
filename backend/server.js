@@ -15,7 +15,7 @@ const errorHandler = require('./middleware/errorHandler');
 const pool = require('./config/database');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001; // Changed from 5000 to avoid AirPlay conflict
 
 // Middleware - CORS configuration to allow all origins
 app.use(cors({
@@ -65,11 +65,12 @@ app.use((req, res) => {
 // Error handler (must be last)
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
+// Start server - listen on all interfaces (0.0.0.0) to allow network access
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+  console.log(`🌍 Server accessible on: http://0.0.0.0:${PORT} and http://localhost:${PORT}`);
 });
 
 // Graceful shutdown

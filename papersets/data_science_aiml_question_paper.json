@@ -1,0 +1,5621 @@
+{
+  "paper_name": "Data Science & AI ML Question Paper",
+  "description": "400 unique DS/AI/ML questions",
+  "subject": "Data Science + AIML + Python",
+  "year": "2025",
+  "semester": "Autumn",
+  "duration_minutes": 180,
+  "status": "final-draft",
+  "sections": [
+    {
+      "name": "Theory",
+      "questions": [
+        {
+          "text": "What is Machine Learning?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 5)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 6)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 7)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 8)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 9)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 10)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 11)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 12)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 13)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 14)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 15)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 16)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 17)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 18)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 19)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 20)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 21)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 22)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 23)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 24)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 25)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 26)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 27)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 28)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 29)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 30)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 31)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 32)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 33)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 34)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 35)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 36)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 37)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 38)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 39)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 40)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 41)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 42)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 43)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 44)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 45)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 46)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 47)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 48)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 49)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 50)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 51)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 52)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 53)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 54)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 55)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 56)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 57)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 58)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 59)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 60)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 61)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 62)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 63)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 64)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 65)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 66)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 67)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 68)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 69)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 70)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 71)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 72)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 73)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 74)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 75)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 76)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 77)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 78)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 79)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 80)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 81)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 82)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 83)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 84)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 85)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 86)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 87)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 88)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 89)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 90)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 91)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 92)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 93)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 94)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Machine Learning? (variation 95)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A field where systems learn from data",
+            "A database tool",
+            "A hardware device",
+            "A scripting language"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is supervised learning? (variation 96)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Learning with labeled data",
+            "Learning without labels",
+            "Learning by trial",
+            "Random guessing"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a dataset? (variation 97)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A collection of data",
+            "A model",
+            "A package",
+            "A graph"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is Python used for in AI? (variation 98)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Data analysis, ML, automation",
+            "Only gaming",
+            "Only OS development",
+            "None"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is overfitting? (variation 99)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Model fits noise instead of pattern",
+            "Model too simple",
+            "Model never trains",
+            "Model always perfect"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Technical",
+      "questions": [
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 20",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 21",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 22",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 23",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 24",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 25",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 26",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 27",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 28",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 29",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 30",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 31",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 32",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 33",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 34",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 35",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 36",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 37",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 38",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 39",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 40",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 41",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 42",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 43",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 44",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 45",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 46",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 47",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 48",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 49",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 50",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 51",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 52",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 53",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 54",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 55",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 56",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 57",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 58",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 59",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 60",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 61",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 62",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 63",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 64",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 65",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 66",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 67",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 68",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 69",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 70",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 71",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 72",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 73",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 74",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 75",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 76",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 77",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 78",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 79",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 80",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 81",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 82",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 83",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 84",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 85",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 86",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 87",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 88",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 89",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 90",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 91",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 92",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 93",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 94",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 95",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 96",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 97",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 98",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 99",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 100",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 101",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 102",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 103",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 104",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 105",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 106",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 107",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 108",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 109",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 110",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 111",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 112",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 113",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 114",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 115",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 116",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 117",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 118",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 119",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 120",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 121",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 122",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 123",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 124",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 125",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 126",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 127",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 128",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 129",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 130",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 131",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 132",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 133",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 134",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 135",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 136",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 137",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 138",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 139",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 140",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 141",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 142",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 143",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 144",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 145",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 146",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 147",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 148",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 149",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 150",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 151",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 152",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 153",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 154",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 155",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 156",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 157",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 158",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 159",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 160",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 161",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 162",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 163",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 164",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 165",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 166",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 167",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 168",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 169",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 170",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 171",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 172",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 173",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 174",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 175",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 176",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 177",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 178",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 179",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 180",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 181",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 182",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 183",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 184",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 185",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 186",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 187",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 188",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 189",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 190",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 191",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 192",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 193",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 194",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 195",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 196",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 197",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 198",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 199",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 200",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 201",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 202",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 203",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 204",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 205",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 206",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 207",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 208",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 209",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 210",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 211",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 212",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 213",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 214",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 215",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 216",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 217",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 218",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 219",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 220",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 221",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 222",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 223",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 224",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 225",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 226",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 227",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 228",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 229",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 230",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 231",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 232",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 233",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 234",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 235",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 236",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 237",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 238",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 239",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 240",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 241",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 242",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 243",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 244",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 245",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 246",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 247",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 248",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 249",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 250",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 251",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 252",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 253",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 254",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 255",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 256",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 257",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 258",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 259",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 260",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 261",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 262",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 263",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 264",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 265",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 266",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 267",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 268",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 269",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 270",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 271",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 272",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 273",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 274",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 275",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 276",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 277",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 278",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 279",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 280",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 281",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 282",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 283",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 284",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 285",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 286",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 287",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 288",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 289",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 290",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 291",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 292",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 293",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 294",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 295",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 296",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 297",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 298",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 299",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 300",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 301",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 302",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 303",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 304",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 305",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 306",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 307",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 308",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 309",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport numpy as np\na=np.array([1,2,3])\nprint(a.sum())\n# variation 310",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "6",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is output?\n\nimport pandas as pd\ndf=pd.DataFrame({'x':[1,2,3]})\nprint(df['x'].mean())\n# variation 311",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "2.0",
+            "3",
+            "1",
+            "Error"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which method trains a model?\n\nmodel.fit(X,y)\n# variation 312",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "fit",
+            "predict",
+            "transform",
+            "score"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Output?\n\ns=0\nfor i in range(4): s+=i\nprint(s)\n# variation 313",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "6",
+            "4",
+            "10",
+            "3"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which metric for classification?\n# variation 314",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "accuracy",
+            "mse",
+            "mae",
+            "silhouette"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

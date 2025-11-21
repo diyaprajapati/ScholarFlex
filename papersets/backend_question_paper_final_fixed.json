@@ -1,0 +1,5621 @@
+{
+  "paper_name": "Backend Technologies Question Paper - TypeScript/Node/MERN/SQL/Mongo/Postgres/JS",
+  "description": "400 unique backend-focused questions. Theory and Technical sections. Code and queries embedded inside the 'text' field.",
+  "subject": "Backend Technologies",
+  "year": "2025",
+  "semester": "Autumn",
+  "duration_minutes": 180,
+  "status": "final-draft",
+  "sections": [
+    {
+      "name": "Theory",
+      "questions": [
+        {
+          "text": "What is TypeScript?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 5)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js?",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 10)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (11)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (12)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (13)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (14)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 15)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (16)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (17)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (18)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (19)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 20)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (21)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (22)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (23)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (24)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 25)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (26)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (27)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (28)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (29)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 30)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (31)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (32)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (33)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (34)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 35)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (36)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (37)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (38)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (39)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 40)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (41)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (42)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (43)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (44)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 45)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (46)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (47)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (48)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (49)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 50)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (51)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (52)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (53)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (54)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 55)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (56)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (57)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (58)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (59)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 60)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (61)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (62)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (63)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (64)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 65)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (66)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (67)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (68)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (69)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 70)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (71)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (72)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (73)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (74)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 75)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (76)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (77)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (78)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (79)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 80)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (81)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (82)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (83)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (84)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 85)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (86)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (87)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (88)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (89)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 90)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is TypeScript? (91)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "A superset of JavaScript that adds static typing",
+            "A CSS framework",
+            "A database",
+            "A runtime like Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which command initializes a new Node.js project? (92)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "npm init",
+            "node init",
+            "npm start",
+            "node create"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does MERN stand for? (93)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "MongoDB, Express, React, Node.js",
+            "MySQL, Express, React, Node",
+            "MongoDB, Ember, React, .NET",
+            "Mongo, Express, Ruby, Node"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is an index in a relational database used for? (94)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Speeding up query lookups",
+            "Encrypting data",
+            "Backing up data",
+            "Changing data types"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which SQL keyword is used to remove duplicate rows from results? (variation 95)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "DISTINCT",
+            "UNIQUE",
+            "REMOVE",
+            "FILTER"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a document in MongoDB? (96)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "A JSON-like BSON object stored in a collection",
+            "A table row",
+            "A SQL view",
+            "A file on disk"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL datatype is best for storing true/false values? (97)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "boolean",
+            "int",
+            "text",
+            "bit"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a promise in Node.js? (98)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "An object representing eventual completion/failure of an async operation",
+            "A synchronous callback",
+            "A database connection",
+            "A package manager"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which TypeScript feature helps catch type errors at compile time? (99)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Static typing & interfaces",
+            "Dynamic imports",
+            "Prototypes",
+            "Hoisting"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which HTTP method is typically used to update a resource fully? (variation 100)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PUT",
+            "GET",
+            "DELETE",
+            "PATCH"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Technical",
+      "questions": [
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 1)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider Node.js code:\n\nconst http = require('http');\nhttp.createServer((req, res) => { res.statusCode = 200; res.end('ok'); }).listen(3010);\n\nWhat happens when you visit http://localhost:3010 ?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "You receive 'ok' with HTTP 200 status",
+            "Server crashes",
+            "404 page",
+            "Connection refused"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 3)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 28 } })",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given employees(id, name, salary), what does:\n\nSELECT name FROM employees WHERE salary > 54000;\n\nreturn?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Names of employees with salary greater than 50000",
+            "Ids only",
+            "All rows",
+            "Errors out"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 6)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 7)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 8)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 9)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 10)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 11)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 12)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 13)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 14)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 15)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 16)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider Node.js code:\n\nconst http = require('http');\nhttp.createServer((req, res) => { res.statusCode = 200; res.end('ok'); }).listen(3020);\n\nWhat happens when you visit http://localhost:3020 ?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "You receive 'ok' with HTTP 200 status",
+            "Server crashes",
+            "404 page",
+            "Connection refused"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 18)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 33 } })",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 20)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 21)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 22)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 23)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 24)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 25)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 26)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 27)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 28)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 29)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 30)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 31)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 26 } })",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given employees(id, name, salary), what does:\n\nSELECT name FROM employees WHERE salary > 52000;\n\nreturn?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Names of employees with salary greater than 50000",
+            "Ids only",
+            "All rows",
+            "Errors out"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 34)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 35)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 36)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 37)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 38)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 39)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 40)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 41)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 42)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 43)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 44)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 45)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 30 } })",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given employees(id, name, salary), what does:\n\nSELECT name FROM employees WHERE salary > 51000;\n\nreturn?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Names of employees with salary greater than 50000",
+            "Ids only",
+            "All rows",
+            "Errors out"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 48)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 49)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 50)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 51)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 52)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 53)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 54)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 55)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 56)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 57)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 58)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 59)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 34 } })",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given employees(id, name, salary), what does:\n\nSELECT name FROM employees WHERE salary > 50000;\n\nreturn?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Names of employees with salary greater than 50000",
+            "Ids only",
+            "All rows",
+            "Errors out"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 62)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 63)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 64)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 65)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 66)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 67)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 68)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 69)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 70)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 71)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 72)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 73)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Given employees(id, name, salary), what does:\n\nSELECT name FROM employees WHERE salary > 53000;\n\nreturn?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Names of employees with salary greater than 50000",
+            "Ids only",
+            "All rows",
+            "Errors out"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 75)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 76)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 77)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 78)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 79)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 80)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 81)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 82)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 83)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 84)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 85)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 86)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 31 } })",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 88)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 89)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 90)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 91)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 92)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 93)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 94)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 95)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 96)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 97)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 98)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider Node.js code:\n\nconst http = require('http');\nhttp.createServer((req, res) => { res.statusCode = 200; res.end('ok'); }).listen(3000);\n\nWhat happens when you visit http://localhost:3000 ?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "You receive 'ok' with HTTP 200 status",
+            "Server crashes",
+            "404 page",
+            "Connection refused"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 100)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 25 } })",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 102)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 103)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 104)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 105)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 106)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 107)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 108)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 109)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 110)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 111)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 112)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 113)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 114)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 115)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 116)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 117)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 118)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 119)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 120)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 121)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 122)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 123)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 124)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider Node.js code:\n\nconst http = require('http');\nhttp.createServer((req, res) => { res.statusCode = 200; res.end('ok'); }).listen(3050);\n\nWhat happens when you visit http://localhost:3050 ?",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "You receive 'ok' with HTTP 200 status",
+            "Server crashes",
+            "404 page",
+            "Connection refused"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 126)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 127)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 128)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 129)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 130)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 131)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 132)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 133)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 134)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 135)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 136)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 137)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider Node.js code:\n\nconst http = require('http');\nhttp.createServer((req, res) => { res.statusCode = 200; res.end('ok'); }).listen(3040);\n\nWhat happens when you visit http://localhost:3040 ?",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "You receive 'ok' with HTTP 200 status",
+            "Server crashes",
+            "404 page",
+            "Connection refused"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 139)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 140)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 141)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 142)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 143)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 144)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 145)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 146)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 147)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 148)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 149)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 150)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider Node.js code:\n\nconst http = require('http');\nhttp.createServer((req, res) => { res.statusCode = 200; res.end('ok'); }).listen(3030);\n\nWhat happens when you visit http://localhost:3030 ?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "You receive 'ok' with HTTP 200 status",
+            "Server crashes",
+            "404 page",
+            "Connection refused"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 152)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 27 } })",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 154)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 155)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 156)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 157)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 158)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 159)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 160)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 161)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 162)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 163)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 164)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 165)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 166)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 167)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 168)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 169)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 170)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 171)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 172)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 173)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 174)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 175)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 176)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 177)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 32 } })",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 179)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 180)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 181)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 182)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 183)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 184)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 185)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 186)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 187)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 188)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 189)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 190)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 191)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 192)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 193)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 194)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 195)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 196)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 197)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 198)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 199)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 200)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 201)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 202)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 203)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 204)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 205)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 206)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 207)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 208)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 209)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 210)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 211)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 212)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 213)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 214)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What does this MongoDB query do?\n\ndb.users.find({ age: { $gt: 29 } })",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Returns users with age greater than 25",
+            "Deletes users older than 25",
+            "Updates users older than 25",
+            "Counts users older than 25"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 216)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 217)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 218)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 219)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 220)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 221)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 222)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 223)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 224)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 225)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 226)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 227)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 228)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 229)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 230)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 231)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 232)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 233)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 234)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 235)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 236)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 237)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 238)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 239)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 240)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 241)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 242)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 243)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 244)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 245)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 246)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 247)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 248)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 249)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 250)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 251)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 252)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 253)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 254)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 255)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 256)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 257)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 258)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 259)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 260)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 261)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 262)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 263)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 264)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 265)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 266)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 267)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 268)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 269)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 270)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 271)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 272)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 273)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 274)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 275)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 276)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 277)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 278)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 279)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 280)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 281)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 282)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 283)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 284)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 285)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 286)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Consider Node.js code:\n\nconst http = require('http');\nhttp.createServer((req, res) => { res.statusCode = 200; res.end('ok'); }).listen(3060);\n\nWhat happens when you visit http://localhost:3060 ?",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "You receive 'ok' with HTTP 200 status",
+            "Server crashes",
+            "404 page",
+            "Connection refused"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 288)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which PostgreSQL feature allows writing functions in JS-like language? (variation 289)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "PLV8 extension",
+            "PL/pgSQL only",
+            "pgcrypto",
+            "PostGIS"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In MongoDB aggregation, what does $match do? (variation 290)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "Filters documents like WHERE",
+            "Groups documents",
+            "Sorts documents",
+            "Joins collections"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which index helps speed up text search in Postgres? (variation 291)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "GIN index with tsvector",
+            "Hash index",
+            "B-tree only",
+            "Clustered index only"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which is used to store session data on server-side securely? (variation 292)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Server-side store (Redis) with signed cookies",
+            "localStorage",
+            "Include password in JWT",
+            "Store tokens in URL"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which ORM supports TypeScript and PostgreSQL? (variation 293)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "TypeORM",
+            "Mongoose",
+            "Sequelize only",
+            "Knex"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which JOIN returns only matching rows? (variation 294)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "INNER JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+            "FULL OUTER JOIN"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "What is a common pattern for one-to-many in MongoDB? (variation 295)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "Embedding or referencing depending on access patterns",
+            "Always normalize like SQL",
+            "Use foreign keys",
+            "Use JOINs"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which reduces DB load for read-heavy APIs? (variation 296)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Caching (Redis), read replicas, indexing",
+            "Complex joins",
+            "Disable indexes",
+            "Use serializable isolation always"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which statement starts a transaction in PostgreSQL? (variation 297)",
+          "type": "single-choice",
+          "weightage": 1,
+          "options": [
+            "BEGIN",
+            "START TRANSACTION",
+            "OPEN TRANSACTION",
+            "INIT TRANSACTION"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In JS (Node), what does /\\d+/ match? (variation 298)",
+          "type": "single-choice",
+          "weightage": 2,
+          "options": [
+            "One or more digits",
+            "Whitespace",
+            "Letters only",
+            "Start of string"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "In TypeScript, how do you declare a variable 'id' that can be number or string?\n\nChoose the correct declaration. (variation 299)",
+          "type": "single-choice",
+          "weightage": 4,
+          "options": [
+            "let id: number | string;",
+            "let id: any;",
+            "let id: number,string;",
+            "let id ?: number | string;"
+          ],
+          "correctOptions": [
+            0
+          ]
+        },
+        {
+          "text": "Which Express code registers GET /users?\n\napp.get('/users', (req, res) => res.send('users')) (variation 300)",
+          "type": "single-choice",
+          "weightage": 7,
+          "options": [
+            "Registers GET /users route",
+            "Registers POST /users",
+            "Registers middleware only",
+            "Creates a database table"
+          ],
+          "correctOptions": [
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../config/paths'
 
-export default function InternsHeader({ onSearch, searchValue, onFilterClick, filters, hasActiveFilters }) {
+export default function InternsHeader({ onSearch, searchValue, onFilterClick, filters, hasActiveFilters, totalCount }) {
   const navigate = useNavigate()
 
   const handleAddClick = () => {
@@ -18,7 +18,14 @@ export default function InternsHeader({ onSearch, searchValue, onFilterClick, fi
     <div className="mb-6 sm:mb-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">All Interns</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">All Interns</h1>
+            {totalCount !== undefined && totalCount !== null && (
+              <span className="px-3 py-1 text-xs sm:text-sm font-semibold text-[#4C763B] bg-[#4C763B]/10 rounded-full border border-[#4C763B]/20">
+                Total: {totalCount}
+              </span>
+            )}
+          </div>
           <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm lg:text-base text-gray-600">
             View and manage all registered interns
           </p>
