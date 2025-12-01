@@ -2,16 +2,66 @@ const pool = require('../config/database');
 const QuestionPaper = require('../models/QuestionPaper');
 
 const SECTION_REQUIREMENTS = {
-  Theory: 20,
-  Technical: 30,
+  'Theory-1': 20,
+  'Coding': 10,
+  'Theory-2': 10,
+  'Maths & Logical Reasoning': 10,
 };
 
-const TOTAL_REQUIRED_QUESTIONS = SECTION_REQUIREMENTS.Theory + SECTION_REQUIREMENTS.Technical;
+const TOTAL_REQUIRED_QUESTIONS = Object.values(SECTION_REQUIREMENTS).reduce((sum, count) => sum + count, 0);
 
 const normalizeSectionName = (section) => {
   if (!section || typeof section !== 'string') return null;
   const normalized = section.trim().toLowerCase();
-  if (normalized === 'theory' || normalized === 'aptitude') return 'Theory';
+  
+  // Theory-1 section (20 questions)
+  if (
+    normalized === 'theory-1' ||
+    normalized === 'theory 1' ||
+    normalized === 'theory section 1' ||
+    normalized === 'theory_section_1'
+  ) {
+    return 'Theory-1';
+  }
+  
+  // Coding section (10 questions)
+  if (
+    normalized === 'coding' ||
+    normalized === 'coding section' ||
+    normalized === 'programming' ||
+    normalized === 'code'
+  ) {
+    return 'Coding';
+  }
+  
+  // Theory-2 section (10 questions)
+  if (
+    normalized === 'theory-2' ||
+    normalized === 'theory 2' ||
+    normalized === 'theory section 2' ||
+    normalized === 'theory_section_2'
+  ) {
+    return 'Theory-2';
+  }
+  
+  // Maths & Logical Reasoning section (10 questions)
+  if (
+    normalized === 'maths & logical reasoning' ||
+    normalized === 'maths and logical reasoning' ||
+    normalized === 'maths & logical reasoning section' ||
+    normalized === 'maths' ||
+    normalized === 'logical reasoning' ||
+    normalized === 'mathematics & logical reasoning' ||
+    normalized === 'aptitude' ||
+    normalized === 'maths and logical'
+  ) {
+    return 'Maths & Logical Reasoning';
+  }
+  
+  // Legacy support
+  if (normalized === 'theory' || normalized === 'theory section') {
+    return 'Theory-1';
+  }
   if (
     normalized === 'technical' ||
     normalized === 'technical/coding' ||
@@ -20,8 +70,9 @@ const normalizeSectionName = (section) => {
     normalized === 'tech-based' ||
     normalized === 'technical mcqs'
   ) {
-    return 'Technical';
+    return 'Coding';
   }
+  
   return null;
 };
 
@@ -42,56 +93,66 @@ const buildQuestionPoolForPaper = async (questionPaperId) => {
     [questionPaperId]
   );
 
+  // Initialize sections map with all 4 required sections
   const sectionsMap = {
-    Theory: [],
-    Technical: [],
+    'Theory-1': [],
+    'Coding': [],
+    'Theory-2': [],
+    'Maths & Logical Reasoning': [],
   };
 
+  // Group questions by normalized section name
   questionsResult.rows.forEach((row) => {
     const normalizedSection = normalizeSectionName(row.section);
     if (!normalizedSection) {
+      console.warn(`Question ${row.id} has invalid section: ${row.section}`);
       return;
     }
-    sectionsMap[normalizedSection].push({
-      question_id: row.id,
-      weightage: row.weightage || 1,
-      section: normalizedSection,
-    });
+    if (sectionsMap[normalizedSection]) {
+      sectionsMap[normalizedSection].push({
+        question_id: row.id,
+        weightage: row.weightage || 1,
+        section: normalizedSection,
+      });
+    }
   });
 
+  // Validate that we have enough questions in each section
   for (const [sectionName, requiredCount] of Object.entries(SECTION_REQUIREMENTS)) {
-    if ((sectionsMap[sectionName] || []).length < requiredCount) {
-      throw new Error(`Insufficient questions in ${sectionName} section. Need at least ${requiredCount}.`);
+    const availableCount = (sectionsMap[sectionName] || []).length;
+    if (availableCount < requiredCount) {
+      throw new Error(
+        `Insufficient questions in "${sectionName}" section. Need at least ${requiredCount}, but only ${availableCount} available.`
+      );
     }
   }
 
+  // Randomly select questions from each section
   const selected = [];
   for (const [sectionName, requiredCount] of Object.entries(SECTION_REQUIREMENTS)) {
-    const pool = sectionsMap[sectionName];
-    // Sort by weightage (ascending) to prioritize easier questions, then shuffle
-    const sortedPool = [...pool].sort((a, b) => (a.weightage || 1) - (b.weightage || 1));
-    const sampled = shuffleArray(sortedPool).slice(0, requiredCount);
+    const pool = sectionsMap[sectionName] || [];
+    // Shuffle the pool and randomly select the required number
+    const shuffledPool = shuffleArray(pool);
+    const sampled = shuffledPool.slice(0, requiredCount);
     selected.push(...sampled);
   }
 
-  // Sort selected questions by original weightage (ascending) before scaling
-  // This ensures questions with weightage 1 are prioritized
-  selected.sort((a, b) => (a.weightage || 1) - (b.weightage || 1));
-  
-  const shuffledSelection = shuffleArray(selected);
-  if (shuffledSelection.length !== TOTAL_REQUIRED_QUESTIONS) {
-    throw new Error(`Question pool must contain exactly ${TOTAL_REQUIRED_QUESTIONS} questions`);
+  // Verify we have the correct total
+  if (selected.length !== TOTAL_REQUIRED_QUESTIONS) {
+    throw new Error(
+      `Question pool must contain exactly ${TOTAL_REQUIRED_QUESTIONS} questions, but got ${selected.length}`
+    );
   }
 
   // Calculate total weightage of selected questions
-  const totalWeightage = shuffledSelection.reduce((sum, item) => sum + (item.weightage || 1), 0);
+  const totalWeightage = selected.reduce((sum, item) => sum + (item.weightage || 1), 0);
   
   // Scale weightages so they sum to 100
   const TARGET_TOTAL_WEIGHTAGE = 100;
   const scaleFactor = TARGET_TOTAL_WEIGHTAGE / totalWeightage;
   
   // Apply scaling to each question's weightage
-  const scaledSelection = shuffledSelection.map((item) => ({
+  const scaledSelection = selected.map((item) => ({
     ...item,
     weightage: Math.round((item.weightage || 1) * scaleFactor * 100) / 100, // Round to 2 decimal places
     original_weightage: item.weightage || 1, // Store original for reference
@@ -945,7 +1006,7 @@ exports.getTestDetails = async (req, res) => {
           text: questionRow.question_text,
           type: mapQuestionTypeFromDB(questionRow.question_type),
           weightage: poolItem.weightage || questionRow.weightage || 1, // Use scaled weightage from pool
-          section: poolItem.section || normalizeSectionName(questionRow.section) || 'Theory',
+          section: poolItem.section || normalizeSectionName(questionRow.section) || 'Theory-1',
           options: randomizedOptions,
         };
       });

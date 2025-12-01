@@ -13,6 +13,7 @@ const domainRoutes = require('./routes/domainRoutes');
 const testAttemptRoutes = require('./routes/testAttemptRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const pool = require('./config/database');
+const { prisma } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 5001; // Changed from 5000 to avoid AirPlay conflict
@@ -74,17 +75,34 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  await pool.end();
-  process.exit(0);
-});
+let isShuttingDown = false;
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT signal received: closing HTTP server');
-  await pool.end();
-  process.exit(0);
-});
+const gracefulShutdown = async (signal) => {
+  if (isShuttingDown) {
+    return; // Prevent multiple shutdown calls
+  }
+  isShuttingDown = true;
+  
+  console.log(`${signal} signal received: closing HTTP server`);
+  
+  try {
+    // Disconnect Prisma
+    await prisma.$disconnect();
+    console.log('✅ Prisma disconnected');
+    
+    // Close database pool
+    await pool.end();
+    console.log('✅ Database pool closed');
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('Error during shutdown:', error);
+    process.exit(1);
+  }
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 module.exports = app;
 

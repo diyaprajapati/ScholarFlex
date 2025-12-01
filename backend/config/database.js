@@ -128,11 +128,8 @@ prisma.$connect()
     console.error('❌ Prisma Client connection error:', err.message);
   });
 
-// Graceful shutdown
-process.on('beforeExit', async () => {
-  await prisma.$disconnect();
-  await pool.end();
-});
+// Graceful shutdown handlers are in server.js
+// Do not add shutdown handlers here to avoid calling pool.end() multiple times
 
 // Export pool as default for backward compatibility
 module.exports = pool;

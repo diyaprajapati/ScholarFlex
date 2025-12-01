@@ -1,12 +1,60 @@
 const QuestionPaper = require('../models/QuestionPaper');
 const { logActivitySimple } = require('../middleware/activityLogger');
 
-const ALLOWED_SECTIONS = ['Technical', 'Coding', 'Theory', 'Maths & Logical Reasoning'];
+const ALLOWED_SECTIONS = ['Theory-1', 'Coding', 'Theory-2', 'Maths & Logical Reasoning'];
 
 const normalizeSectionName = (section) => {
   if (!section) return null;
   const normalized = section.trim().toLowerCase();
-  if (normalized === 'theory' || normalized === 'theory section' || normalized === 'aptitude') return 'Theory';
+  
+  // Theory-1 section (20 questions)
+  if (
+    normalized === 'theory-1' ||
+    normalized === 'theory 1' ||
+    normalized === 'theory section 1' ||
+    normalized === 'theory_section_1'
+  ) {
+    return 'Theory-1';
+  }
+  
+  // Coding section (10 questions)
+  if (
+    normalized === 'coding' ||
+    normalized === 'coding section' ||
+    normalized === 'programming' ||
+    normalized === 'code'
+  ) {
+    return 'Coding';
+  }
+  
+  // Theory-2 section (10 questions)
+  if (
+    normalized === 'theory-2' ||
+    normalized === 'theory 2' ||
+    normalized === 'theory section 2' ||
+    normalized === 'theory_section_2'
+  ) {
+    return 'Theory-2';
+  }
+  
+  // Maths & Logical Reasoning section (10 questions)
+  if (
+    normalized === 'maths & logical reasoning' ||
+    normalized === 'maths and logical reasoning' ||
+    normalized === 'maths & logical reasoning section' ||
+    normalized === 'maths' ||
+    normalized === 'logical reasoning' ||
+    normalized === 'mathematics & logical reasoning' ||
+    normalized === 'aptitude' ||
+    normalized === 'maths and logical'
+  ) {
+    return 'Maths & Logical Reasoning';
+  }
+  
+  // Legacy support: map old section names to new ones
+  if (normalized === 'theory' || normalized === 'theory section') {
+    return 'Theory-1'; // Default to Theory-1 for backward compatibility
+  }
   if (
     normalized === 'technical' ||
     normalized === 'technical section' ||
@@ -16,19 +64,9 @@ const normalizeSectionName = (section) => {
     normalized === 'tech-based' ||
     normalized === 'technical mcqs'
   ) {
-    return 'Technical';
+    return 'Coding'; // Map Technical to Coding
   }
-  if (normalized === 'coding' || normalized === 'coding section') return 'Coding';
-  if (
-    normalized === 'maths & logical reasoning' ||
-    normalized === 'maths and logical reasoning' ||
-    normalized === 'maths & logical reasoning section' ||
-    normalized === 'maths' ||
-    normalized === 'logical reasoning' ||
-    normalized === 'mathematics & logical reasoning'
-  ) {
-    return 'Maths & Logical Reasoning';
-  }
+  
   return null;
 };
 
@@ -51,6 +89,7 @@ exports.createQuestionPaper = async (req, res) => {
     } = req.body;
 
     // Handle both old format (questions) and new format (sections)
+    // New format: 4 separate sections (Theory-1, Coding, Theory-2, Maths & Logical Reasoning)
     let allQuestions = [];
     if (sections && Array.isArray(sections)) {
       // New format: sections with questions
@@ -77,6 +116,28 @@ exports.createQuestionPaper = async (req, res) => {
         ...q,
         section: normalizeSectionName(q.section || q.sectionName),
       }));
+    }
+    
+    // Validate section distribution - ensure all 4 required sections are present
+    const sectionCounts = {};
+    allQuestions.forEach(q => {
+      const section = q.section;
+      if (section) {
+        sectionCounts[section] = (sectionCounts[section] || 0) + 1;
+      }
+    });
+    
+    // Check if we have questions from all 4 required sections
+    const requiredSections = ['Theory-1', 'Coding', 'Theory-2', 'Maths & Logical Reasoning'];
+    const missingSections = requiredSections.filter(section => !sectionCounts[section] || sectionCounts[section] === 0);
+    
+    if (missingSections.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing questions from required sections: ${missingSections.join(', ')}. All 4 sections (Theory-1, Coding, Theory-2, Maths & Logical Reasoning) are required when creating a question paper.`,
+        sectionCounts,
+        requiredSections,
+      });
     }
 
     // Validate required fields
