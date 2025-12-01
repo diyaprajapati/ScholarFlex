@@ -7,7 +7,7 @@ const SECTIONS = [
   { name: 'Maths & Logical Reasoning', value: 'Maths & Logical Reasoning', label: 'Maths & Logical Reasoning Section' },
 ]
 
-export default function JSONUploadArea({ onFileUpload, onBack, onDownloadTemplate, onDownloadSectionTemplate }) {
+export default function JSONUploadArea({ onFileUpload, onBack, onDownloadTemplate, onDownloadSectionTemplate, onContinueToForm, uploadedFiles: uploadedFilesProp }) {
   const fileInputRefs = {
     Technical: useRef(null),
     Coding: useRef(null),
@@ -16,7 +16,10 @@ export default function JSONUploadArea({ onFileUpload, onBack, onDownloadTemplat
   }
   const [isDragging, setIsDragging] = useState({})
   const [uploadErrors, setUploadErrors] = useState({})
-  const [uploadedFiles, setUploadedFiles] = useState({})
+  const [localUploadedFiles, setLocalUploadedFiles] = useState({})
+  
+  // Use prop if provided, otherwise use local state
+  const uploadedFiles = uploadedFilesProp !== undefined ? uploadedFilesProp : localUploadedFiles
 
   const handleFile = (file, section) => {
     if (!file) return
@@ -28,7 +31,10 @@ export default function JSONUploadArea({ onFileUpload, onBack, onDownloadTemplat
     }
 
     setUploadErrors(prev => ({ ...prev, [section]: '' }))
-    setUploadedFiles(prev => ({ ...prev, [section]: file.name }))
+    // Only update local state if prop is not provided
+    if (uploadedFilesProp === undefined) {
+      setLocalUploadedFiles(prev => ({ ...prev, [section]: file.name }))
+    }
     onFileUpload(file, section)
   }
 
@@ -190,8 +196,8 @@ export default function JSONUploadArea({ onFileUpload, onBack, onDownloadTemplat
         ))}
       </div>
 
-      {/* Download All Templates Button */}
-      <div className="flex justify-center pt-2">
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
         <button
           type="button"
           onClick={onDownloadTemplate}
@@ -205,6 +211,22 @@ export default function JSONUploadArea({ onFileUpload, onBack, onDownloadTemplat
           </svg>
           Download All 4 Templates
         </button>
+        
+        {onContinueToForm && Object.keys(uploadedFiles).some(key => uploadedFiles[key]) && (
+          <button
+            type="button"
+            onClick={onContinueToForm}
+            className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white rounded-lg transition-colors"
+            style={{ backgroundColor: '#4C763B' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#043915'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4C763B'}
+          >
+            <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 inline-block mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            Continue to Form
+          </button>
+        )}
       </div>
     </div>
   )

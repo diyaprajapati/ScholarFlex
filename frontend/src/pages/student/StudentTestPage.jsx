@@ -403,23 +403,22 @@ export default function StudentTestPage() {
 
   // Tab switching prevention - must be before early returns
   useEffect(() => {
-    if (!testStarted || violationTriggered) return
+    if (!testStarted) return
 
     const handleViolation = () => {
-      if (!testStarted || violationTriggeredRef.current) return
+      if (!testStarted) return
       
       warningCountRef.current += 1
       const newWarningCount = warningCountRef.current
       setWarningCount(newWarningCount)
 
+      // Show warnings but don't auto-submit
       if (newWarningCount >= 2) {
         violationTriggeredRef.current = true
         setViolationTriggered(true)
-        alert('Final Warning: You have violated the test rules multiple times. The test will be submitted automatically now.')
-        submitTestPayload({ force: true })
+        alert('Final Warning: You have violated the test rules multiple times. Please stay on this page and focus on the test.')
       } else {
-        const remainingWarnings = 2 - newWarningCount
-        alert(`Warning ${newWarningCount}: Switching tabs or leaving the page is not allowed. You have ${remainingWarnings} warning(s) remaining before the test is automatically submitted.`)
+        alert(`Warning ${newWarningCount}: Switching tabs or leaving the page is not allowed. Please stay on this page and focus on the test.`)
       }
     }
 
@@ -452,7 +451,7 @@ export default function StudentTestPage() {
       window.removeEventListener('blur', handleWindowBlur)
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
-  }, [testStarted, violationTriggered, submitTestPayload])
+  }, [testStarted])
 
   if (isLoading) {
     return (

@@ -16,7 +16,7 @@ const pool = require('./config/database');
 const { prisma } = require('./config/database');
 
 const app = express();
-const PORT = process.env.PORT || 5001; // Changed from 5000 to avoid AirPlay conflict
+const PORT = process.env.PORT || 5000; // Changed from 5000 to avoid AirPlay conflict
 
 // Middleware - CORS configuration to allow all origins
 app.use(cors({

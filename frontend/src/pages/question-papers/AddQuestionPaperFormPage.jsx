@@ -41,6 +41,7 @@ export default function AddQuestionPaperFormPage() {
     Theory: null,
     'Maths & Logical Reasoning': null,
   })
+  const [uploadedFileNames, setUploadedFileNames] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [domains, setDomains] = useState([])
 
@@ -157,6 +158,11 @@ export default function AddQuestionPaperFormPage() {
       Theory: null,
       'Maths & Logical Reasoning': null,
     })
+    setUploadedFileNames({})
+  }
+
+  const handleContinueToForm = () => {
+    setMode('manual')
   }
 
   const handleJSONFileUpload = async (file, section) => {
@@ -247,10 +253,11 @@ export default function AddQuestionPaperFormPage() {
 
           setUploadedQuestions(allQuestions)
           
-          // Switch to manual form if we have at least one section uploaded
-          if (allQuestions.length > 0) {
-            setMode('manual')
-          }
+          // Track uploaded file names for UI display
+          setUploadedFileNames(prev => ({ ...prev, [section]: file.name }))
+          
+          // Don't automatically switch to manual mode - let users continue uploading section files
+          // Users can manually navigate to the form when ready
           
           return updated
         })
@@ -458,6 +465,8 @@ export default function AddQuestionPaperFormPage() {
                 onBack={handleBackToChoice}
                 onDownloadTemplate={handleDownloadTemplate}
                 onDownloadSectionTemplate={handleDownloadTemplate}
+                onContinueToForm={handleContinueToForm}
+                uploadedFiles={uploadedFileNames}
               />
             </div>
           ) : (

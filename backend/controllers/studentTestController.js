@@ -2,9 +2,9 @@ const pool = require('../config/database');
 const QuestionPaper = require('../models/QuestionPaper');
 
 const SECTION_REQUIREMENTS = {
-  'Theory-1': 20,
+  'Technical section': 20,
+  'Theory section': 10,
   'Coding': 10,
-  'Theory-2': 10,
   'Maths & Logical Reasoning': 10,
 };
 
@@ -14,17 +14,36 @@ const normalizeSectionName = (section) => {
   if (!section || typeof section !== 'string') return null;
   const normalized = section.trim().toLowerCase();
   
-  // Theory-1 section (20 questions)
+  // Theory section - map various theory-related names
   if (
+    normalized === 'theory' ||
+    normalized === 'theory section' ||
     normalized === 'theory-1' ||
     normalized === 'theory 1' ||
     normalized === 'theory section 1' ||
-    normalized === 'theory_section_1'
+    normalized === 'theory_section_1' ||
+    normalized === 'theory-2' ||
+    normalized === 'theory 2' ||
+    normalized === 'theory section 2' ||
+    normalized === 'theory_section_2'
   ) {
-    return 'Theory-1';
+    return 'Theory section';
   }
   
-  // Coding section (10 questions)
+  // Technical section - map various technical-related names
+  if (
+    normalized === 'technical' ||
+    normalized === 'technical section' ||
+    normalized === 'technical/coding' ||
+    normalized === 'technical coding' ||
+    normalized === 'tech based' ||
+    normalized === 'tech-based' ||
+    normalized === 'technical mcqs'
+  ) {
+    return 'Technical section';
+  }
+  
+  // Coding section
   if (
     normalized === 'coding' ||
     normalized === 'coding section' ||
@@ -34,17 +53,7 @@ const normalizeSectionName = (section) => {
     return 'Coding';
   }
   
-  // Theory-2 section (10 questions)
-  if (
-    normalized === 'theory-2' ||
-    normalized === 'theory 2' ||
-    normalized === 'theory section 2' ||
-    normalized === 'theory_section_2'
-  ) {
-    return 'Theory-2';
-  }
-  
-  // Maths & Logical Reasoning section (10 questions)
+  // Maths & Logical Reasoning section
   if (
     normalized === 'maths & logical reasoning' ||
     normalized === 'maths and logical reasoning' ||
@@ -56,21 +65,6 @@ const normalizeSectionName = (section) => {
     normalized === 'maths and logical'
   ) {
     return 'Maths & Logical Reasoning';
-  }
-  
-  // Legacy support
-  if (normalized === 'theory' || normalized === 'theory section') {
-    return 'Theory-1';
-  }
-  if (
-    normalized === 'technical' ||
-    normalized === 'technical/coding' ||
-    normalized === 'technical coding' ||
-    normalized === 'tech based' ||
-    normalized === 'tech-based' ||
-    normalized === 'technical mcqs'
-  ) {
-    return 'Coding';
   }
   
   return null;
@@ -95,9 +89,9 @@ const buildQuestionPoolForPaper = async (questionPaperId) => {
 
   // Initialize sections map with all 4 required sections
   const sectionsMap = {
-    'Theory-1': [],
+    'Technical section': [],
+    'Theory section': [],
     'Coding': [],
-    'Theory-2': [],
     'Maths & Logical Reasoning': [],
   };
 

@@ -1,23 +1,46 @@
 const QuestionPaper = require('../models/QuestionPaper');
 const { logActivitySimple } = require('../middleware/activityLogger');
 
-const ALLOWED_SECTIONS = ['Theory-1', 'Coding', 'Theory-2', 'Maths & Logical Reasoning'];
+// NOTE:
+// The system requires 4 sections: Theory section, Technical section, Coding, Maths & Logical Reasoning.
+// The frontend uses simplified names (Theory, Technical, Coding, Maths & Logical Reasoning)
+// which are normalized to the full section names here.
+const ALLOWED_SECTIONS = ['Theory section', 'Technical section', 'Coding', 'Maths & Logical Reasoning'];
 
 const normalizeSectionName = (section) => {
   if (!section) return null;
   const normalized = section.trim().toLowerCase();
   
-  // Theory-1 section (20 questions)
+  // Theory section - map various theory-related names
   if (
+    normalized === 'theory' ||
+    normalized === 'theory section' ||
     normalized === 'theory-1' ||
     normalized === 'theory 1' ||
     normalized === 'theory section 1' ||
-    normalized === 'theory_section_1'
+    normalized === 'theory_section_1' ||
+    normalized === 'theory-2' ||
+    normalized === 'theory 2' ||
+    normalized === 'theory section 2' ||
+    normalized === 'theory_section_2'
   ) {
-    return 'Theory-1';
+    return 'Theory section';
   }
   
-  // Coding section (10 questions)
+  // Technical section - map various technical-related names
+  if (
+    normalized === 'technical' ||
+    normalized === 'technical section' ||
+    normalized === 'technical/coding' ||
+    normalized === 'technical coding' ||
+    normalized === 'tech based' ||
+    normalized === 'tech-based' ||
+    normalized === 'technical mcqs'
+  ) {
+    return 'Technical section';
+  }
+  
+  // Coding section
   if (
     normalized === 'coding' ||
     normalized === 'coding section' ||
@@ -27,17 +50,7 @@ const normalizeSectionName = (section) => {
     return 'Coding';
   }
   
-  // Theory-2 section (10 questions)
-  if (
-    normalized === 'theory-2' ||
-    normalized === 'theory 2' ||
-    normalized === 'theory section 2' ||
-    normalized === 'theory_section_2'
-  ) {
-    return 'Theory-2';
-  }
-  
-  // Maths & Logical Reasoning section (10 questions)
+  // Maths & Logical Reasoning section
   if (
     normalized === 'maths & logical reasoning' ||
     normalized === 'maths and logical reasoning' ||
@@ -49,22 +62,6 @@ const normalizeSectionName = (section) => {
     normalized === 'maths and logical'
   ) {
     return 'Maths & Logical Reasoning';
-  }
-  
-  // Legacy support: map old section names to new ones
-  if (normalized === 'theory' || normalized === 'theory section') {
-    return 'Theory-1'; // Default to Theory-1 for backward compatibility
-  }
-  if (
-    normalized === 'technical' ||
-    normalized === 'technical section' ||
-    normalized === 'technical/coding' ||
-    normalized === 'technical coding' ||
-    normalized === 'tech based' ||
-    normalized === 'tech-based' ||
-    normalized === 'technical mcqs'
-  ) {
-    return 'Coding'; // Map Technical to Coding
   }
   
   return null;
@@ -89,7 +86,7 @@ exports.createQuestionPaper = async (req, res) => {
     } = req.body;
 
     // Handle both old format (questions) and new format (sections)
-    // New format: 4 separate sections (Theory-1, Coding, Theory-2, Maths & Logical Reasoning)
+    // New format: 4 separate sections (Theory section, Technical section, Coding, Maths & Logical Reasoning)
     let allQuestions = [];
     if (sections && Array.isArray(sections)) {
       // New format: sections with questions
@@ -118,7 +115,7 @@ exports.createQuestionPaper = async (req, res) => {
       }));
     }
     
-    // Validate section distribution - ensure all 4 required sections are present
+    // Validate section distribution - ensure all required sections are present
     const sectionCounts = {};
     allQuestions.forEach(q => {
       const section = q.section;
@@ -127,16 +124,43 @@ exports.createQuestionPaper = async (req, res) => {
       }
     });
     
-    // Check if we have questions from all 4 required sections
-    const requiredSections = ['Theory-1', 'Coding', 'Theory-2', 'Maths & Logical Reasoning'];
+    // Check if we have questions from all required sections.
+    // Required sections: Theory section, Technical section, Coding, Maths & Logical Reasoning
+    const requiredSections = ['Theory section', 'Technical section', 'Coding', 'Maths & Logical Reasoning'];
     const missingSections = requiredSections.filter(section => !sectionCounts[section] || sectionCounts[section] === 0);
     
     if (missingSections.length > 0) {
       return res.status(400).json({
         success: false,
-        message: `Missing questions from required sections: ${missingSections.join(', ')}. All 4 sections (Theory-1, Coding, Theory-2, Maths & Logical Reasoning) are required when creating a question paper.`,
+        message: `Missing questions from required sections: ${missingSections.join(', ')}. The following sections are required when creating a question paper: ${requiredSections.join(', ')}.`,
         sectionCounts,
         requiredSections,
+      });
+    }
+
+    // Validate minimum question counts per section
+    // Expected distribution: 20 Technical, 10 Theory, 10 Coding, 10 Maths & Logical Reasoning
+    const SECTION_MINIMUMS = {
+      'Technical section': 20,
+      'Theory section': 10,
+      'Coding': 10,
+      'Maths & Logical Reasoning': 10,
+    };
+
+    const insufficientSections = [];
+    for (const [sectionName, minimumCount] of Object.entries(SECTION_MINIMUMS)) {
+      const actualCount = sectionCounts[sectionName] || 0;
+      if (actualCount < minimumCount) {
+        insufficientSections.push(`${sectionName} (need at least ${minimumCount}, have ${actualCount})`);
+      }
+    }
+
+    if (insufficientSections.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient questions in some sections. Expected distribution: 20 Technical section, 10 Theory section, 10 Coding, 10 Maths & Logical Reasoning. Issues: ${insufficientSections.join('; ')}.`,
+        sectionCounts,
+        requiredMinimums: SECTION_MINIMUMS,
       });
     }
 
