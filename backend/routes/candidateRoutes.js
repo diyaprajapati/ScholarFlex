@@ -44,10 +44,24 @@ router.post(
 
 /**
  * @route   GET /api/candidates
- * @desc    Get all candidates with marks
+ * @desc    Get all students with marks
  * @access  Private (Admin, Super Admin)
  */
 router.get('/', candidateController.getAllCandidates);
+
+/**
+ * @route   GET /api/candidates/:id
+ * @desc    Get student by ID with full details
+ * @access  Private (Admin, Super Admin)
+ */
+router.get('/:id', candidateController.getStudentById);
+
+/**
+ * @route   POST /api/candidates/import-google-sheets
+ * @desc    Import students from Google Sheets CSV URL
+ * @access  Private (Admin, Super Admin)
+ */
+router.post('/import-google-sheets', candidateController.importFromGoogleSheets);
 
 /**
  * @route   PUT /api/candidates/:id/selection

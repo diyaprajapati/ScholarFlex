@@ -497,6 +497,22 @@ export const api = {
         }),
       });
     },
+
+    getById: async (id) => {
+      return apiRequest(`/candidates/${id}`, {
+        method: 'GET',
+      });
+    },
+
+    importFromGoogleSheets: async (googleSheetsUrl, uniqueField = 'email') => {
+      return apiRequest('/candidates/import-google-sheets', {
+        method: 'POST',
+        body: JSON.stringify({
+          google_sheets_url: googleSheetsUrl,
+          unique_field: uniqueField,
+        }),
+      });
+    },
   },
 };
 

@@ -1,8 +1,10 @@
 const multer = require('multer');
 const XLSX = require('xlsx');
-const Candidate = require('../models/Candidate');
+const { PrismaClient } = require('@prisma/client');
 const { logActivitySimple } = require('../middleware/activityLogger');
 const pool = require('../config/database');
+
+const prisma = new PrismaClient();
 
 // Configure multer for file uploads (memory storage)
 const storage = multer.memoryStorage();
@@ -86,9 +88,9 @@ const parseSpreadsheet = (buffer, mimetype) => {
 };
 
 /**
- * Map spreadsheet row to candidate data
+ * Map spreadsheet row to student data
  */
-const mapSpreadsheetToCandidate = (row) => {
+const mapSpreadsheetToStudent = (row) => {
   // Handle various column name variations
   const getValue = (possibleKeys) => {
     for (const key of possibleKeys) {
@@ -104,54 +106,19 @@ const mapSpreadsheetToCandidate = (row) => {
   const lastName = getValue(['Last Name', 'last_name', 'lastName']);
   const email = getValue(['Email', 'email', 'Email Address', 'email_address']);
   const mobileNumber = getValue(['Mobile Number (WhatsApp)', 'Mobile Number', 'mobile_number', 'mobileNumber', 'phone', 'Phone']);
-  const instituteName = getValue(['Name of Institute', 'Institute Name', 'institute_name', 'instituteName']);
-  const courseTaken = getValue(['Course Taken', 'course_taken', 'courseTaken', 'Course']);
-  const areaOfInterests = getValue(['Area of Interests', 'Area of Interest', 'area_of_interests', 'areaOfInterests', 'Interests']);
-  const internshipStartDate = getValue(['Internship Start Date', 'internship_start_date', 'startDate', 'Start Date']);
-  const internshipEndDate = getValue(['Internship End Date', 'internship_end_date', 'endDate', 'End Date']);
-  const referenceInfo = getValue(['Reference Information', 'reference_information', 'referenceInfo', 'Reference']);
-  const photograph = getValue(['Photograph', 'photograph', 'Photo', 'photo', 'Image', 'image']);
-  const internalFacultyName = getValue(['Internal Faculty of Institute', 'Internal Faculty', 'internal_faculty_name', 'facultyName']);
-  const facultyContact = getValue(['Faculty Contact', 'faculty_contact', 'facultyContact']);
-  const facultyEmail = getValue(['Faculty Email Id', 'Faculty Email', 'faculty_email', 'facultyEmail']);
+  const photograph = getValue(['Photograph', 'photograph', 'Photo', 'photo', 'Image', 'image', 'image_url', 'Image URL']);
 
   // Convert Google Drive link to embeddable format
-  const photographUrl = photograph ? convertGoogleDriveLink(photograph) : null;
+  const imageUrl = photograph ? convertGoogleDriveLink(photograph) : null;
 
-  // Parse dates
-  let parsedStartDate = null;
-  let parsedEndDate = null;
-  
-  if (internshipStartDate) {
-    const startDate = new Date(internshipStartDate);
-    if (!isNaN(startDate.getTime())) {
-      parsedStartDate = startDate.toISOString().split('T')[0];
-    }
-  }
-  
-  if (internshipEndDate) {
-    const endDate = new Date(internshipEndDate);
-    if (!isNaN(endDate.getTime())) {
-      parsedEndDate = endDate.toISOString().split('T')[0];
-    }
-  }
+  // Build full name
+  const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ').trim();
 
   return {
-    first_name: firstName,
-    middle_name: middleName,
-    last_name: lastName,
-    email: email,
-    mobile_number: mobileNumber,
-    institute_name: instituteName,
-    course_taken: courseTaken,
-    area_of_interests: areaOfInterests,
-    internship_start_date: parsedStartDate,
-    internship_end_date: parsedEndDate,
-    reference_information: referenceInfo,
-    photograph_url: photographUrl,
-    internal_faculty_name: internalFacultyName,
-    faculty_contact: facultyContact,
-    faculty_email: facultyEmail,
+    email: email ? email.toLowerCase().trim() : null,
+    fullName: fullName || 'Unknown',
+    phone: mobileNumber || null,
+    imageUrl: imageUrl,
   };
 };
 
@@ -188,23 +155,24 @@ exports.uploadSpreadsheet = async (req, res) => {
       console.log('📋 Available columns:', Object.keys(rows[0]));
     }
 
-    const candidatesData = [];
+    const studentsData = [];
     const errors = [];
     const emailSet = new Set();
+    const results = { created: [], updated: [], failed: [] };
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const rowNum = i + 2; // +2 because row 1 is header, and arrays are 0-indexed
 
       try {
-        const mapped = mapSpreadsheetToCandidate(row);
+        const mapped = mapSpreadsheetToStudent(row);
 
         // Validate required fields
-        if (!mapped.first_name || !mapped.last_name || !mapped.email) {
+        if (!mapped.email) {
           errors.push({
             row: rowNum,
-            email: mapped.email || 'N/A',
-            reason: 'Missing required fields: First Name, Last Name, or Email',
+            email: 'N/A',
+            reason: 'Missing required field: Email',
           });
           continue;
         }
@@ -221,8 +189,7 @@ exports.uploadSpreadsheet = async (req, res) => {
         }
 
         // Check for duplicate emails within spreadsheet
-        const emailLower = mapped.email.toLowerCase().trim();
-        if (emailSet.has(emailLower)) {
+        if (emailSet.has(mapped.email)) {
           errors.push({
             row: rowNum,
             email: mapped.email,
@@ -230,9 +197,9 @@ exports.uploadSpreadsheet = async (req, res) => {
           });
           continue;
         }
-        emailSet.add(emailLower);
+        emailSet.add(mapped.email);
 
-        candidatesData.push(mapped);
+        studentsData.push(mapped);
       } catch (error) {
         errors.push({
           row: rowNum,
@@ -242,39 +209,90 @@ exports.uploadSpreadsheet = async (req, res) => {
       }
     }
 
-    if (candidatesData.length === 0) {
+    if (studentsData.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'No valid candidate data found in spreadsheet.',
+        message: 'No valid student data found in spreadsheet.',
         errors,
       });
     }
 
-    // Bulk insert candidates
-    const results = await Candidate.bulkCreate(candidatesData);
+    // Upsert students (update image_url if exists, create if not)
+    for (const studentData of studentsData) {
+      try {
+        // Check if student exists
+        const existingStudent = await prisma.student.findUnique({
+          where: { email: studentData.email },
+        });
+
+        if (existingStudent) {
+          // Update only image_url if provided
+          const updateData = {};
+          if (studentData.imageUrl) {
+            updateData.imageUrl = studentData.imageUrl;
+          }
+
+          if (Object.keys(updateData).length > 0) {
+            const updated = await prisma.student.update({
+              where: { id: existingStudent.id },
+              data: updateData,
+            });
+            results.updated.push({
+              id: updated.id,
+              name: updated.fullName,
+              email: updated.email,
+            });
+          } else {
+            results.updated.push({
+              id: existingStudent.id,
+              name: existingStudent.fullName,
+              email: existingStudent.email,
+            });
+          }
+        } else {
+          // Create new student
+          const created = await prisma.student.create({
+            data: {
+              email: studentData.email,
+              fullName: studentData.fullName,
+              phone: studentData.phone,
+              imageUrl: studentData.imageUrl,
+            },
+          });
+          results.created.push({
+            id: created.id,
+            name: created.fullName,
+            email: created.email,
+          });
+        }
+      } catch (error) {
+        results.failed.push({
+          email: studentData.email,
+          reason: error.message || 'Database error',
+        });
+      }
+    }
 
     // Log activity
     await logActivitySimple(
       req,
-      'UPLOAD_CANDIDATES',
-      'CANDIDATE',
+      'UPLOAD_STUDENTS',
+      'STUDENT',
       null,
-      `Uploaded ${results.created.length} candidates from spreadsheet`
+      `Uploaded ${results.created.length} new students, updated ${results.updated.length} students from spreadsheet`
     );
 
     res.status(200).json({
       success: true,
-      message: `Successfully processed ${results.created.length} candidates`,
+      message: `Successfully processed ${results.created.length} new students and updated ${results.updated.length} students`,
       data: {
         created: results.created.length,
-        failed: results.errors.length + errors.length,
+        updated: results.updated.length,
+        failed: results.failed.length + errors.length,
         details: {
-          created: results.created.map(c => ({
-            id: c.id,
-            name: `${c.first_name} ${c.last_name}`,
-            email: c.email,
-          })),
-          failed: [...results.errors, ...errors],
+          created: results.created,
+          updated: results.updated,
+          failed: [...results.failed, ...errors],
         },
       },
     });
@@ -288,91 +306,145 @@ exports.uploadSpreadsheet = async (req, res) => {
 };
 
 /**
- * Get all candidates with marks
+ * Get all students with marks (for Candidates tab)
  */
 exports.getAllCandidates = async (req, res) => {
   try {
-    const candidates = await Candidate.findAll();
+    // Fetch students with their marks from test attempts
+    const result = await pool.query(
+      `SELECT 
+        s.id,
+        s.email,
+        s.full_name,
+        s.phone as mobile_number,
+        s.image_url,
+        s.domain_id,
+        s.status_id,
+        s.registration_date,
+        s.is_active,
+        s.created_at,
+        s.updated_at,
+        d.domain_name,
+        ist.status_name,
+        COALESCE(MAX(ta.percentage_score), 0) as marks,
+        MAX(ta.submitted_at) as last_test_date,
+        COUNT(DISTINCT ta.id) as total_attempts,
+        NULL as reference_information
+      FROM students s
+      LEFT JOIN domains d ON s.domain_id = d.id
+      LEFT JOIN intern_status ist ON s.status_id = ist.id
+      LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
+      WHERE s.is_active = TRUE
+      GROUP BY s.id, s.email, s.full_name, s.phone, s.image_url, s.domain_id, s.status_id, 
+               s.registration_date, s.is_active, s.created_at, s.updated_at, d.domain_name, ist.status_name
+      ORDER BY s.created_at DESC`
+    );
+
+    const students = result.rows.map(s => ({
+      id: s.id,
+      email: s.email,
+      full_name: s.full_name,
+      mobile_number: s.mobile_number,
+      image_url: s.image_url,
+      marks: parseFloat(s.marks || 0),
+      reference_information: s.reference_information,
+      status: s.status_name,
+      domain: s.domain_name,
+      total_attempts: parseInt(s.total_attempts || 0),
+      last_test_date: s.last_test_date,
+      registration_date: s.registration_date,
+      is_active: s.is_active,
+      created_at: s.created_at,
+      updated_at: s.updated_at,
+    }));
 
     // Log activity
     await logActivitySimple(
       req,
-      'VIEW_CANDIDATES',
-      'CANDIDATE',
+      'VIEW_STUDENTS',
+      'STUDENT',
       null,
-      `Viewed ${candidates.length} candidates`
+      `Viewed ${students.length} students`
     );
 
     res.status(200).json({
       success: true,
-      candidates: candidates.map(c => ({
-        id: c.id,
-        first_name: c.first_name,
-        middle_name: c.middle_name,
-        last_name: c.last_name,
-        full_name: `${c.first_name}${c.middle_name ? ` ${c.middle_name}` : ''} ${c.last_name}`.trim(),
-        email: c.email,
-        mobile_number: c.mobile_number,
-        marks: parseFloat(c.marks || 0),
-        reference_information: c.reference_information,
-        photograph_url: c.photograph_url,
-        is_selected: c.is_selected || false,
-        institute_name: c.institute_name,
-        course_taken: c.course_taken,
-        area_of_interests: c.area_of_interests,
-        created_at: c.created_at,
-        updated_at: c.updated_at,
-      })),
+      candidates: students,
     });
   } catch (error) {
-    console.error('Error getting candidates:', error);
+    console.error('Error getting students:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: error.message || 'Internal server error',
     });
   }
 };
 
 /**
- * Update candidate selection status
+ * Update candidate selection status (Deprecated - using students table now)
  */
 exports.updateCandidateSelection = async (req, res) => {
+  return res.status(400).json({
+    success: false,
+    message: 'Selection feature is not available. This endpoint is deprecated.',
+  });
+};
+
+/**
+ * Get student by ID with full details
+ */
+exports.getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { is_selected } = req.body;
 
-    if (typeof is_selected !== 'boolean') {
-      return res.status(400).json({
-        success: false,
-        message: 'is_selected must be a boolean',
-      });
-    }
+    const result = await pool.query(
+      `SELECT 
+        s.*,
+        d.domain_name,
+        ist.status_name,
+        COALESCE(MAX(ta.percentage_score), 0) as marks,
+        MAX(ta.submitted_at) as last_test_date,
+        COUNT(DISTINCT ta.id) as total_attempts,
+        NULL as reference_information
+      FROM students s
+      LEFT JOIN domains d ON s.domain_id = d.id
+      LEFT JOIN intern_status ist ON s.status_id = ist.id
+      LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
+      WHERE s.id = $1 AND s.is_active = TRUE
+      GROUP BY s.id, d.domain_name, ist.status_name`,
+      [id]
+    );
 
-    const updated = await Candidate.update(id, { is_selected });
-
-    if (!updated) {
+    if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Candidate not found',
+        message: 'Student not found',
       });
     }
 
-    // Log activity
-    await logActivitySimple(
-      req,
-      'UPDATE_CANDIDATE',
-      'CANDIDATE',
-      id,
-      `Updated candidate selection status: ${is_selected}`
-    );
+    const student = result.rows[0];
 
     res.status(200).json({
       success: true,
-      message: 'Candidate updated successfully',
-      candidate: updated,
+      student: {
+        id: student.id,
+        email: student.email,
+        full_name: student.full_name,
+        phone: student.phone,
+        image_url: student.image_url,
+        domain: student.domain_name,
+        status: student.status_name,
+        marks: parseFloat(student.marks || 0),
+        reference_information: student.reference_information,
+        total_attempts: parseInt(student.total_attempts || 0),
+        last_test_date: student.last_test_date,
+        registration_date: student.registration_date,
+        created_at: student.created_at,
+        updated_at: student.updated_at,
+      },
     });
   } catch (error) {
-    console.error('Error updating candidate:', error);
+    console.error('Error getting student by ID:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',
@@ -381,63 +453,55 @@ exports.updateCandidateSelection = async (req, res) => {
 };
 
 /**
- * Bulk update candidate selection status
+ * Import students from Google Sheets CSV URL
  */
-exports.bulkUpdateSelection = async (req, res) => {
+exports.importFromGoogleSheets = async (req, res) => {
   try {
-    const { candidate_ids, is_selected } = req.body;
+    const { google_sheets_url, unique_field = 'email' } = req.body;
 
-    if (!Array.isArray(candidate_ids) || candidate_ids.length === 0) {
+    if (!google_sheets_url) {
       return res.status(400).json({
         success: false,
-        message: 'candidate_ids must be a non-empty array',
+        message: 'Google Sheets URL is required',
       });
     }
 
-    if (typeof is_selected !== 'boolean') {
-      return res.status(400).json({
-        success: false,
-        message: 'is_selected must be a boolean',
-      });
-    }
+    // Import the script function
+    const { importStudents } = require('../scripts/import-students-from-google-sheets');
 
-    const client = await pool.connect();
-    try {
-      await client.query('BEGIN');
+    // Run import
+    const results = await importStudents(google_sheets_url, unique_field);
 
-      const updatePromises = candidate_ids.map(id =>
-        Candidate.update(id, { is_selected })
-      );
+    // Log activity
+    await logActivitySimple(
+      req,
+      'IMPORT_STUDENTS_GOOGLE_SHEETS',
+      'STUDENT',
+      null,
+      `Imported ${results.created.length} new students, updated ${results.updated.length} students`
+    );
 
-      await Promise.all(updatePromises);
-
-      await client.query('COMMIT');
-
-      // Log activity
-      await logActivitySimple(
-        req,
-        'BULK_UPDATE_CANDIDATES',
-        'CANDIDATE',
-        null,
-        `Updated selection status for ${candidate_ids.length} candidates`
-      );
-
-      res.status(200).json({
-        success: true,
-        message: `Successfully updated ${candidate_ids.length} candidates`,
-      });
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    res.status(200).json({
+      success: true,
+      message: `Successfully imported ${results.created.length} new students and updated ${results.updated.length} students`,
+      data: results,
+    });
   } catch (error) {
-    console.error('Error bulk updating candidates:', error);
+    console.error('Error importing from Google Sheets:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',
     });
   }
+};
+
+/**
+ * Bulk update candidate selection status (Deprecated - using students table now)
+ */
+exports.bulkUpdateSelection = async (req, res) => {
+  return res.status(400).json({
+    success: false,
+    message: 'Bulk selection feature is not available. This endpoint is deprecated.',
+  });
 };
 
