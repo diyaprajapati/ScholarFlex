@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,13 +5,322 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // SSL configuration is handled via connection string parameters
-  // Add ?sslmode=require&sslcert=... or use connection pooling
 }
 
-// ============================================
-// ENUMS
-// ============================================
+model Role {
+  id          Int      @id @default(autoincrement())
+  roleName    String   @unique @map("role_name") @db.VarChar(50)
+  roleCode    String   @unique @map("role_code") @db.VarChar(20)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  users       User[]
+
+  @@map("roles")
+}
+
+model Domain {
+  id             Int                   @id @default(autoincrement())
+  domainName     String                @unique @map("domain_name") @db.VarChar(100)
+  domainCode     String                @unique @map("domain_code") @db.VarChar(50)
+  description    String?
+  isActive       Boolean               @default(true) @map("is_active")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+  questionPapers QuestionPaperDomain[]
+  students       Student[]
+
+  @@map("domains")
+}
+
+model InternStatus {
+  id          Int       @id @default(autoincrement())
+  statusName  String    @unique @map("status_name") @db.VarChar(50)
+  statusCode  String    @unique @map("status_code") @db.VarChar(20)
+  description String?
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  students    Student[]
+
+  @@map("intern_status")
+}
+
+model User {
+  id                    Int              @id @default(autoincrement())
+  email                 String           @unique @db.VarChar(255)
+  passwordHash          String?          @map("password_hash") @db.VarChar(255)
+  fullName              String?          @map("full_name") @db.VarChar(255)
+  roleId                Int              @map("role_id")
+  isActive              Boolean          @default(true) @map("is_active")
+  lastLoginAt           DateTime?        @map("last_login_at")
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+  createdBy             Int?             @map("created_by")
+  activityLogs          ActivityLog[]
+  fileUploads           FileUpload[]
+  questionPapersCreated QuestionPaper[]  @relation("QuestionPaperCreator")
+  questionPapersUpdated QuestionPaper[]  @relation("QuestionPaperUpdater")
+  questionsCreated      Question[]       @relation("QuestionCreator")
+  questionsUpdated      Question[]       @relation("QuestionUpdater")
+  studentsCreated       Student[]        @relation("StudentCreator")
+  testAssignments       TestAssignment[]
+  creator               User?            @relation("UserCreator", fields: [createdBy], references: [id])
+  created               User[]           @relation("UserCreator")
+  role                  Role             @relation(fields: [roleId], references: [id])
+
+  @@map("users")
+}
+
+model OtpVerification {
+  id        Int      @id @default(autoincrement())
+  email     String   @db.VarChar(255)
+  otp       String   @db.VarChar(10)
+  expiresAt DateTime @map("expires_at")
+  isUsed    Boolean  @default(false) @map("is_used")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@index([otp])
+  @@index([expiresAt])
+  @@index([isUsed])
+  @@map("otp_verifications")
+}
+
+model Student {
+  id               Int              @id @default(autoincrement())
+  email            String           @unique @db.VarChar(255)
+  fullName         String           @map("full_name") @db.VarChar(255)
+  phone            String?          @db.VarChar(20)
+  domainId         Int?             @map("domain_id")
+  statusId         Int              @default(1) @map("status_id")
+  registrationDate DateTime         @default(now()) @map("registration_date")
+  formLinkToken    String?          @unique @map("form_link_token") @db.VarChar(100)
+  isActive         Boolean          @default(true) @map("is_active")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  createdBy        Int?             @map("created_by")
+  creator          User?            @relation("StudentCreator", fields: [createdBy], references: [id])
+  domain           Domain?          @relation(fields: [domainId], references: [id])
+  status           InternStatus     @relation(fields: [statusId], references: [id])
+  testAssignments  TestAssignment[]
+  testAttempts     TestAttempt[]
+
+  @@index([email])
+  @@index([domainId])
+  @@index([statusId])
+  @@index([formLinkToken])
+  @@index([isActive])
+  @@index([domainId, statusId, isActive])
+  @@map("students")
+}
+
+model QuestionPaper {
+  id              Int                   @id @default(autoincrement())
+  paperName       String                @map("paper_name") @db.VarChar(255)
+  description     String?
+  subject         String?               @db.VarChar(100)
+  year            String?               @db.VarChar(10)
+  semester        String?               @db.VarChar(50)
+  totalQuestions  Int                   @default(0) @map("total_questions")
+  totalWeightage  Int                   @default(0) @map("total_weightage")
+  durationMinutes Int                   @default(60) @map("duration_minutes")
+  status          QuestionPaperStatus   @default(draft)
+  isActive        Boolean               @default(true) @map("is_active")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+  createdBy       Int                   @map("created_by")
+  updatedBy       Int?                  @map("updated_by")
+  domains         QuestionPaperDomain[]
+  creator         User                  @relation("QuestionPaperCreator", fields: [createdBy], references: [id])
+  updater         User?                 @relation("QuestionPaperUpdater", fields: [updatedBy], references: [id])
+  questions       Question[]
+  testAssignments TestAssignment[]
+  testAttempts    TestAttempt[]
+
+  @@index([isActive])
+  @@index([status])
+  @@index([subject])
+  @@index([year])
+  @@index([createdBy])
+  @@map("question_papers")
+}
+
+model QuestionPaperDomain {
+  id              Int           @id @default(autoincrement())
+  questionPaperId Int           @map("question_paper_id")
+  domainId        Int           @map("domain_id")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  domain          Domain        @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  questionPaper   QuestionPaper @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+
+  @@unique([questionPaperId, domainId])
+  @@index([questionPaperId])
+  @@index([domainId])
+  @@map("question_paper_domains")
+}
+
+model TestAssignment {
+  id              Int           @id @default(autoincrement())
+  questionPaperId Int           @map("question_paper_id")
+  studentId       Int           @map("student_id")
+  assignedBy      Int           @map("assigned_by")
+  assignedAt      DateTime      @default(now()) @map("assigned_at")
+  isActive        Boolean       @default(true) @map("is_active")
+  assigner        User          @relation(fields: [assignedBy], references: [id])
+  questionPaper   QuestionPaper @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+  student         Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([questionPaperId, studentId])
+  @@index([questionPaperId])
+  @@index([studentId])
+  @@index([isActive])
+  @@map("test_assignments")
+}
+
+model Question {
+  id              Int              @id @default(autoincrement())
+  questionPaperId Int              @map("question_paper_id")
+  questionText    String           @map("question_text")
+  questionType    QuestionType     @default(MCQ) @map("question_type")
+  weightage       Int              @default(1)
+  correctAnswer   String?          @map("correct_answer")
+  displayOrder    Int              @default(0) @map("display_order")
+  isActive        Boolean          @default(true) @map("is_active")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  createdBy       Int              @map("created_by")
+  updatedBy       Int?             @map("updated_by")
+  section         String?          @db.VarChar(100)
+  options         QuestionOption[]
+  creator         User             @relation("QuestionCreator", fields: [createdBy], references: [id])
+  questionPaper   QuestionPaper    @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+  updater         User?            @relation("QuestionUpdater", fields: [updatedBy], references: [id])
+  studentAnswers  StudentAnswer[]
+
+  @@index([questionPaperId])
+  @@index([questionType])
+  @@index([displayOrder])
+  @@index([isActive])
+  @@index([questionPaperId, isActive, displayOrder])
+  @@map("questions")
+}
+
+model QuestionOption {
+  id             Int             @id @default(autoincrement())
+  questionId     Int             @map("question_id")
+  optionText     String          @map("option_text")
+  optionLabel    String          @map("option_label") @db.VarChar(10)
+  isCorrect      Boolean         @default(false) @map("is_correct")
+  displayOrder   Int             @default(0) @map("display_order")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  question       Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  studentAnswers StudentAnswer[] @relation("SelectedOption")
+
+  @@index([questionId])
+  @@index([isCorrect])
+  @@index([displayOrder])
+  @@map("question_options")
+}
+
+model TestAttempt {
+  id                 Int               @id @default(autoincrement())
+  studentId          Int               @map("student_id")
+  questionPaperId    Int               @map("question_paper_id")
+  startedAt          DateTime          @default(now()) @map("started_at")
+  submittedAt        DateTime?         @map("submitted_at")
+  autoSubmitted      Boolean           @default(false) @map("auto_submitted")
+  timeTakenSeconds   Int?              @map("time_taken_seconds")
+  totalQuestions     Int               @default(0) @map("total_questions")
+  questionsAttempted Int               @default(0) @map("questions_attempted")
+  totalScore         Decimal           @default(0) @map("total_score") @db.Decimal(10, 2)
+  maxPossibleScore   Decimal           @default(0) @map("max_possible_score") @db.Decimal(10, 2)
+  percentageScore    Decimal           @default(0) @map("percentage_score") @db.Decimal(5, 2)
+  status             TestAttemptStatus @default(IN_PROGRESS)
+  ipAddress          String?           @map("ip_address") @db.VarChar(45)
+  userAgent          String?           @map("user_agent")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  questionPool       Json?             @map("question_pool")
+  studentAnswers     StudentAnswer[]
+  questionPaper      QuestionPaper     @relation(fields: [questionPaperId], references: [id])
+  student            Student           @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@index([questionPaperId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([studentId, status])
+  @@map("test_attempts")
+}
+
+model StudentAnswer {
+  id                Int             @id @default(autoincrement())
+  testAttemptId     Int             @map("test_attempt_id")
+  questionId        Int             @map("question_id")
+  selectedOptionId  Int?            @map("selected_option_id")
+  selectedOptionIds String?         @map("selected_option_ids")
+  answerText        String?         @map("answer_text")
+  isCorrect         Boolean         @default(false) @map("is_correct")
+  scoreObtained     Decimal         @default(0) @map("score_obtained") @db.Decimal(10, 2)
+  answeredAt        DateTime        @default(now()) @map("answered_at")
+  question          Question        @relation(fields: [questionId], references: [id])
+  selectedOption    QuestionOption? @relation("SelectedOption", fields: [selectedOptionId], references: [id])
+  testAttempt       TestAttempt     @relation(fields: [testAttemptId], references: [id], onDelete: Cascade)
+
+  @@unique([testAttemptId, questionId])
+  @@index([testAttemptId])
+  @@index([questionId])
+  @@index([isCorrect])
+  @@index([testAttemptId, questionId])
+  @@map("student_answers")
+}
+
+model ActivityLog {
+  id             Int      @id @default(autoincrement())
+  userId         Int?     @map("user_id")
+  userType       UserType @map("user_type")
+  action         String   @db.VarChar(100)
+  entityType     String   @map("entity_type") @db.VarChar(50)
+  entityId       Int?     @map("entity_id")
+  description    String?
+  requestMethod  String?  @map("request_method") @db.VarChar(10)
+  requestPath    String?  @map("request_path") @db.VarChar(255)
+  requestBody    Json?    @map("request_body")
+  responseStatus Int?     @map("response_status")
+  ipAddress      String?  @map("ip_address") @db.VarChar(45)
+  userAgent      String?  @map("user_agent")
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([userType])
+  @@index([createdAt(sort: Desc)], map: "idx_created_at_desc_logs")
+  @@map("activity_logs")
+}
+
+model FileUpload {
+  id               Int          @id @default(autoincrement())
+  fileName         String       @map("file_name") @db.VarChar(255)
+  fileType         String       @map("file_type") @db.VarChar(50)
+  fileSize         BigInt?      @map("file_size")
+  uploadType       UploadType   @map("upload_type")
+  status           UploadStatus @default(PENDING)
+  recordsProcessed Int          @default(0) @map("records_processed")
+  recordsFailed    Int          @default(0) @map("records_failed")
+  errorMessage     String?      @map("error_message")
+  uploadedBy       Int          @map("uploaded_by")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  uploader         User         @relation(fields: [uploadedBy], references: [id])
+
+  @@index([uploadType])
+  @@index([status])
+  @@index([uploadedBy])
+  @@map("file_uploads")
+}
 
 enum QuestionPaperStatus {
   draft
@@ -49,354 +355,4 @@ enum UploadStatus {
   PROCESSING
   COMPLETED
   FAILED
-}
-
-// ============================================
-// MASTER TABLES
-// ============================================
-
-model Role {
-  id          Int      @id @default(autoincrement())
-  roleName    String   @map("role_name") @db.VarChar(50)
-  roleCode    String   @unique @map("role_code") @db.VarChar(20)
-  description String?  @db.Text
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  users User[]
-
-  @@unique([roleName])
-  @@map("roles")
-}
-
-model Domain {
-  id          Int      @id @default(autoincrement())
-  domainName  String   @unique @map("domain_name") @db.VarChar(100)
-  domainCode  String   @unique @map("domain_code") @db.VarChar(50)
-  description String?  @db.Text
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  students Student[]
-  questionPapers QuestionPaperDomain[]
-
-  @@map("domains")
-}
-
-model InternStatus {
-  id          Int      @id @default(autoincrement())
-  statusName  String   @unique @map("status_name") @db.VarChar(50)
-  statusCode  String   @unique @map("status_code") @db.VarChar(20)
-  description String?  @db.Text
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  students Student[]
-
-  @@map("intern_status")
-}
-
-// ============================================
-// USER MANAGEMENT TABLES
-// ============================================
-
-model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique @db.VarChar(255)
-  passwordHash String?   @map("password_hash") @db.VarChar(255)
-  fullName     String?   @map("full_name") @db.VarChar(255)
-  roleId       Int       @map("role_id")
-  isActive     Boolean   @default(true) @map("is_active")
-  lastLoginAt  DateTime? @map("last_login_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  createdBy    Int?      @map("created_by")
-
-  role       Role              @relation(fields: [roleId], references: [id])
-  creator    User?             @relation("UserCreator", fields: [createdBy], references: [id])
-  created    User[]            @relation("UserCreator")
-  questionPapersCreated QuestionPaper[] @relation("QuestionPaperCreator")
-  questionPapersUpdated QuestionPaper[] @relation("QuestionPaperUpdater")
-  questionsCreated      Question[]      @relation("QuestionCreator")
-  questionsUpdated      Question[]      @relation("QuestionUpdater")
-  studentsCreated       Student[]       @relation("StudentCreator")
-  fileUploads           FileUpload[]
-  activityLogs          ActivityLog[]
-  testAssignments       TestAssignment[]
-
-  @@map("users")
-}
-
-model OtpVerification {
-  id        Int      @id @default(autoincrement())
-  email     String   @db.VarChar(255)
-  otp       String   @db.VarChar(10)
-  expiresAt DateTime @map("expires_at")
-  isUsed    Boolean  @default(false) @map("is_used")
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@index([email])
-  @@index([otp])
-  @@index([expiresAt])
-  @@index([isUsed])
-  @@map("otp_verifications")
-}
-
-model Student {
-  id               Int           @id @default(autoincrement())
-  email            String        @unique @db.VarChar(255)
-  fullName         String        @map("full_name") @db.VarChar(255)
-  phone            String?       @db.VarChar(20)
-  domainId         Int?          @map("domain_id")
-  statusId         Int           @default(1) @map("status_id")
-  registrationDate DateTime      @default(now()) @map("registration_date")
-  formLinkToken    String?       @unique @map("form_link_token") @db.VarChar(100)
-  isActive         Boolean       @default(true) @map("is_active")
-  createdAt        DateTime      @default(now()) @map("created_at")
-  updatedAt        DateTime      @updatedAt @map("updated_at")
-  createdBy        Int?          @map("created_by")
-
-  domain       Domain?        @relation(fields: [domainId], references: [id])
-  status       InternStatus   @relation(fields: [statusId], references: [id])
-  creator      User?          @relation("StudentCreator", fields: [createdBy], references: [id])
-  testAttempts TestAttempt[]
-  testAssignments TestAssignment[]
-
-  @@index([email])
-  @@index([domainId])
-  @@index([statusId])
-  @@index([formLinkToken])
-  @@index([isActive])
-  @@index([domainId, statusId, isActive])
-  @@map("students")
-}
-
-// ============================================
-// QUESTION PAPER MANAGEMENT TABLES
-// ============================================
-
-model QuestionPaper {
-  id             Int                @id @default(autoincrement())
-  paperName      String             @map("paper_name") @db.VarChar(255)
-  description    String?            @db.Text
-  subject        String?            @db.VarChar(100)
-  year           String?            @db.VarChar(10)
-  semester       String?            @db.VarChar(50)
-  totalQuestions Int                @default(0) @map("total_questions")
-  totalWeightage Int                @default(0) @map("total_weightage")
-  durationMinutes Int               @default(60) @map("duration_minutes")
-  status         QuestionPaperStatus @default(draft)
-  isActive       Boolean            @default(true) @map("is_active")
-  createdAt      DateTime           @default(now()) @map("created_at")
-  updatedAt      DateTime           @updatedAt @map("updated_at")
-  createdBy      Int                @map("created_by")
-  updatedBy      Int?               @map("updated_by")
-
-  creator   User        @relation("QuestionPaperCreator", fields: [createdBy], references: [id])
-  updater   User?       @relation("QuestionPaperUpdater", fields: [updatedBy], references: [id])
-  questions Question[]
-  testAttempts TestAttempt[]
-  domains   QuestionPaperDomain[]
-  testAssignments TestAssignment[]
-
-  @@index([isActive])
-  @@index([status])
-  @@index([subject])
-  @@index([year])
-  @@index([createdBy])
-  @@map("question_papers")
-}
-
-model QuestionPaperDomain {
-  id             Int          @id @default(autoincrement())
-  questionPaperId Int         @map("question_paper_id")
-  domainId       Int          @map("domain_id")
-  createdAt      DateTime     @default(now()) @map("created_at")
-
-  questionPaper QuestionPaper @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
-  domain        Domain        @relation(fields: [domainId], references: [id], onDelete: Cascade)
-
-  @@unique([questionPaperId, domainId])
-  @@index([questionPaperId])
-  @@index([domainId])
-  @@map("question_paper_domains")
-}
-
-model TestAssignment {
-  id             Int          @id @default(autoincrement())
-  questionPaperId Int         @map("question_paper_id")
-  studentId      Int          @map("student_id")
-  assignedBy     Int          @map("assigned_by")
-  assignedAt     DateTime     @default(now()) @map("assigned_at")
-  isActive       Boolean      @default(true) @map("is_active")
-
-  questionPaper QuestionPaper @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
-  student       Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  assigner      User          @relation(fields: [assignedBy], references: [id])
-
-  @@unique([questionPaperId, studentId])
-  @@index([questionPaperId])
-  @@index([studentId])
-  @@index([isActive])
-  @@map("test_assignments")
-}
-
-model Question {
-  id              Int          @id @default(autoincrement())
-  questionPaperId Int          @map("question_paper_id")
-  questionText    String       @map("question_text") @db.Text
-  questionType    QuestionType @default(MCQ) @map("question_type")
-  weightage       Int          @default(1)
-  correctAnswer   String?      @map("correct_answer") @db.Text
-  section         String?      @db.VarChar(100)
-  displayOrder    Int          @default(0) @map("display_order")
-  isActive        Boolean      @default(true) @map("is_active")
-  createdAt       DateTime     @default(now()) @map("created_at")
-  updatedAt       DateTime     @updatedAt @map("updated_at")
-  createdBy       Int          @map("created_by")
-  updatedBy       Int?         @map("updated_by")
-
-  questionPaper QuestionPaper   @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
-  creator       User            @relation("QuestionCreator", fields: [createdBy], references: [id])
-  updater       User?           @relation("QuestionUpdater", fields: [updatedBy], references: [id])
-  options       QuestionOption[]
-  studentAnswers StudentAnswer[]
-
-  @@index([questionPaperId])
-  @@index([questionType])
-  @@index([displayOrder])
-  @@index([isActive])
-  @@index([questionPaperId, isActive, displayOrder])
-  @@map("questions")
-}
-
-model QuestionOption {
-  id           Int      @id @default(autoincrement())
-  questionId   Int      @map("question_id")
-  optionText   String   @map("option_text") @db.Text
-  optionLabel  String   @map("option_label") @db.VarChar(10)
-  isCorrect    Boolean  @default(false) @map("is_correct")
-  displayOrder Int      @default(0) @map("display_order")
-  createdAt    DateTime @default(now()) @map("created_at")
-
-  question        Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  studentAnswers  StudentAnswer[] @relation("SelectedOption")
-
-  @@index([questionId])
-  @@index([isCorrect])
-  @@index([displayOrder])
-  @@map("question_options")
-}
-
-// ============================================
-// TEST ATTEMPT TABLES
-// ============================================
-
-model TestAttempt {
-  id                 Int               @id @default(autoincrement())
-  studentId          Int               @map("student_id")
-  questionPaperId    Int               @map("question_paper_id")
-  startedAt          DateTime          @default(now()) @map("started_at")
-  submittedAt        DateTime?         @map("submitted_at")
-  autoSubmitted      Boolean           @default(false) @map("auto_submitted")
-  timeTakenSeconds   Int?              @map("time_taken_seconds")
-  totalQuestions     Int               @default(0) @map("total_questions")
-  questionsAttempted Int               @default(0) @map("questions_attempted")
-  totalScore         Decimal           @default(0) @map("total_score") @db.Decimal(10, 2)
-  maxPossibleScore   Decimal           @default(0) @map("max_possible_score") @db.Decimal(10, 2)
-  percentageScore    Decimal           @default(0) @map("percentage_score") @db.Decimal(5, 2)
-  status             TestAttemptStatus @default(IN_PROGRESS)
-  ipAddress          String?           @map("ip_address") @db.VarChar(45)
-  userAgent          String?           @map("user_agent") @db.Text
-  createdAt          DateTime          @default(now()) @map("created_at")
-  updatedAt          DateTime          @updatedAt @map("updated_at")
-  questionPool       Json?             @map("question_pool")
-
-  student        Student        @relation(fields: [studentId], references: [id])
-  questionPaper  QuestionPaper  @relation(fields: [questionPaperId], references: [id])
-  studentAnswers StudentAnswer[]
-
-  @@index([studentId])
-  @@index([questionPaperId])
-  @@index([status])
-  @@index([submittedAt])
-  @@index([studentId, status])
-  @@map("test_attempts")
-}
-
-model StudentAnswer {
-  id                 Int      @id @default(autoincrement())
-  testAttemptId      Int      @map("test_attempt_id")
-  questionId         Int      @map("question_id")
-  selectedOptionId   Int?     @map("selected_option_id")
-  selectedOptionIds  String?  @map("selected_option_ids") @db.Text // JSON array for MULTIPLE_SELECT
-  answerText         String?  @map("answer_text") @db.Text
-  isCorrect          Boolean  @default(false) @map("is_correct")
-  scoreObtained      Decimal  @default(0) @map("score_obtained") @db.Decimal(10, 2)
-  answeredAt         DateTime @default(now()) @map("answered_at")
-
-  testAttempt     TestAttempt    @relation(fields: [testAttemptId], references: [id], onDelete: Cascade)
-  question        Question       @relation(fields: [questionId], references: [id])
-  selectedOption  QuestionOption? @relation("SelectedOption", fields: [selectedOptionId], references: [id])
-
-  @@unique([testAttemptId, questionId])
-  @@index([testAttemptId])
-  @@index([questionId])
-  @@index([isCorrect])
-  @@index([testAttemptId, questionId])
-  @@map("student_answers")
-}
-
-// ============================================
-// AUDIT & LOGGING TABLES
-// ============================================
-
-model ActivityLog {
-  id             Int       @id @default(autoincrement())
-  userId         Int?      @map("user_id")
-  userType       UserType  @map("user_type")
-  action         String    @db.VarChar(100)
-  entityType     String    @map("entity_type") @db.VarChar(50)
-  entityId       Int?      @map("entity_id")
-  description    String?   @db.Text
-  requestMethod  String?   @map("request_method") @db.VarChar(10)
-  requestPath    String?   @map("request_path") @db.VarChar(255)
-  requestBody    Json?     @map("request_body")
-  responseStatus Int?      @map("response_status")
-  ipAddress      String?   @map("ip_address") @db.VarChar(45)
-  userAgent      String?   @map("user_agent") @db.Text
-  createdAt      DateTime  @default(now()) @map("created_at")
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([userId])
-  @@index([entityType, entityId])
-  @@index([action])
-  @@index([userType])
-  @@index([createdAt(sort: Desc)], map: "idx_created_at_desc_logs")
-  @@map("activity_logs")
-}
-
-model FileUpload {
-  id               Int          @id @default(autoincrement())
-  fileName         String       @map("file_name") @db.VarChar(255)
-  fileType         String       @map("file_type") @db.VarChar(50)
-  fileSize         BigInt?      @map("file_size")
-  uploadType       UploadType   @map("upload_type")
-  status           UploadStatus @default(PENDING)
-  recordsProcessed Int          @default(0) @map("records_processed")
-  recordsFailed    Int          @default(0) @map("records_failed")
-  errorMessage     String?      @map("error_message") @db.Text
-  uploadedBy       Int          @map("uploaded_by")
-  createdAt        DateTime     @default(now()) @map("created_at")
-  updatedAt        DateTime     @updatedAt @map("updated_at")
-
-  uploader User @relation(fields: [uploadedBy], references: [id])
-
-  @@index([uploadType])
-  @@index([status])
-  @@index([uploadedBy])
-  @@map("file_uploads")
 }

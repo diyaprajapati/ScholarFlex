@@ -1,34 +1,9 @@
 const express = require('express');
 const { body } = require('express-validator');
-const multer = require('multer');
 const adminController = require('../controllers/adminController');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
-
-// Configure multer for candidate spreadsheet uploads (memory storage)
-const candidateStorage = multer.memoryStorage();
-const candidateUpload = multer({
-  storage: candidateStorage,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    // Accept Excel and CSV files
-    const allowedMimes = [
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'text/csv',
-      'application/csv',
-    ];
-
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Please upload Excel (.xlsx, .xls) or CSV file.'));
-    }
-  },
-});
 
 // All routes require authentication and super admin role
 router.use(authenticate);
@@ -105,28 +80,6 @@ router.put(
  * @access  Private (Super Admin)
  */
 router.delete('/:id', adminController.deleteAdmin);
-
-/**
- * @route   POST /api/admin/candidates/upload
- * @desc    Upload Excel/CSV to extract candidate details (image, name, checkbox, mobile, marks, reference)
- * @access  Private (Super Admin)
- */
-router.post(
-  '/candidates/upload',
-  candidateUpload.single('file'),
-  (req, res, next) => {
-    // Handle multer errors gracefully
-    const err = req.fileValidationError;
-    if (err) {
-      return res.status(400).json({
-        success: false,
-        message: err.message || 'File upload error',
-      });
-    }
-    next();
-  },
-  adminController.uploadCandidatesSpreadsheet
-);
 
 module.exports = router;
 

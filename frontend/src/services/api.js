@@ -463,6 +463,41 @@ export const api = {
       });
     },
   },
+
+  candidates: {
+    uploadSpreadsheet: async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      return apiRequest('/candidates/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+
+    getAll: async () => {
+      return apiRequest('/candidates', {
+        method: 'GET',
+      });
+    },
+
+    updateSelection: async (id, isSelected) => {
+      return apiRequest(`/candidates/${id}/selection`, {
+        method: 'PUT',
+        body: JSON.stringify({ is_selected: isSelected }),
+      });
+    },
+
+    bulkUpdateSelection: async (candidateIds, isSelected) => {
+      return apiRequest('/candidates/bulk-selection', {
+        method: 'PUT',
+        body: JSON.stringify({ 
+          candidate_ids: candidateIds,
+          is_selected: isSelected 
+        }),
+      });
+    },
+  },
 };
 
 export default api;
