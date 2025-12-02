@@ -1,7 +1,161 @@
 const { validationResult } = require('express-validator');
+const XLSX = require('xlsx');
 const pool = require('../config/database');
 const User = require('../models/User');
 const { logActivitySimple } = require('../middleware/activityLogger');
+
+/**
+ * Parse spreadsheet file (Excel/CSV) into JSON rows
+ */
+const parseSpreadsheet = (buffer, mimetype) => {
+  try {
+    let workbook;
+
+    if (mimetype === 'text/csv' || mimetype === 'application/csv') {
+      // Parse CSV
+      const csvData = buffer.toString('utf8');
+      workbook = XLSX.read(csvData, { type: 'string' });
+    } else {
+      // Parse Excel
+      workbook = XLSX.read(buffer, { type: 'buffer' });
+    }
+
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+
+    // Convert to JSON using header row
+    return XLSX.utils.sheet_to_json(worksheet, { raw: false });
+  } catch (error) {
+    console.error('Error parsing candidate spreadsheet:', error);
+    throw new Error('Failed to parse spreadsheet file');
+  }
+};
+
+/**
+ * Extract Google Drive image view URL from shared link
+ * Example input: https://drive.google.com/open?id=FILE_ID
+ * Output: https://drive.google.com/uc?export=view&id=FILE_ID
+ */
+const getDriveViewUrl = (url) => {
+  if (!url || typeof url !== 'string') return null;
+
+  try {
+    if (url.includes('drive.google.com')) {
+      // Try query param ?id=
+      const hasIdParam = url.includes('id=');
+      if (hasIdParam) {
+        const [, idPart] = url.split('id=');
+        const id = idPart.split('&')[0].trim();
+        if (id) {
+          return `https://drive.google.com/uc?export=view&id=${id}`;
+        }
+      }
+
+      // Fallback for /d/<id>/ style URLs
+      const match = url.match(/\/d\/([^/]+)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      }
+    }
+  } catch (e) {
+    // Ignore parsing errors and fall through
+  }
+
+  return url;
+};
+
+/**
+ * Normalize a checkbox-like value to boolean
+ */
+const parseCheckboxValue = (value) => {
+  if (value === undefined || value === null) return false;
+  const v = String(value).trim().toLowerCase();
+  if (!v) return false;
+  const truthy = ['yes', 'y', 'true', '1', 'checked', 'selected'];
+  return truthy.includes(v);
+};
+
+/**
+ * Map a spreadsheet row to a candidate object
+ * Expected data points:
+ *  - imageUrl: drive link or image URL (e.g. from "Photograph" column)
+ *  - name: full name (from a combined Name column or First/Middle/Last)
+ *  - checkboxSelected: boolean (from a checkbox/selection column)
+ *  - mobile: mobile number
+ *  - marks: numeric or string marks/score column
+ *  - referenceName: reference / referrer name
+ */
+const mapRowToCandidate = (row, index) => {
+  const get = (keys) => {
+    for (const key of keys) {
+      if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
+        return String(row[key]).trim();
+      }
+    }
+    return '';
+  };
+
+  // Name: try combined or first/middle/last
+  const firstName = get(['First Name', 'FirstName', 'Given Name', 'GivenName']);
+  const middleName = get(['Middle Name', 'MiddleName']);
+  const lastName = get(['Last Name', 'LastName', 'Surname']);
+  const fullNameFromParts = [firstName, middleName, lastName].filter(Boolean).join(' ').trim();
+  const name =
+    get(['Name', 'Full Name', 'FullName', 'Candidate Name', 'Student Name']) ||
+    fullNameFromParts;
+
+  // Mobile
+  const mobile = get([
+    'Mobile Number',
+    'Mobile Number (WhatsApp)',
+    'Mobile',
+    'Phone',
+    'Contact Number',
+  ]);
+
+  // Marks / score
+  const marks = get(['Marks', 'Score', 'Total Marks', 'Test Marks']);
+
+  // Reference name
+  const referenceName = get([
+    'Reference Name',
+    'Reference',
+    'Reference Information',
+    'Referrer',
+  ]);
+
+  // Checkbox / selection
+  const checkboxRaw =
+    row['Checkbox'] ||
+    row['Selected'] ||
+    row['Is Selected'] ||
+    row['Selection'] ||
+    row['Shortlisted'] ||
+    row['Approved'];
+  const checkboxSelected = parseCheckboxValue(checkboxRaw);
+
+  // Image URL (Drive link or other)
+  const rawImageUrl =
+    get(['Photograph', 'Photo', 'Image', 'Image URL', 'Photo URL', 'Profile Picture']) || '';
+  const imageUrl = rawImageUrl || null;
+  const imageViewUrl = imageUrl ? getDriveViewUrl(imageUrl) : null;
+
+  // If we have absolutely nothing meaningful, skip this row
+  if (!name && !mobile && !marks && !referenceName && !imageUrl) {
+    return null;
+  }
+
+  return {
+    rowIndex: index + 2, // +2 to account for header + 1-based index
+    name: name || null,
+    mobile: mobile || null,
+    marks: marks || null,
+    referenceName: referenceName || null,
+    checkboxSelected,
+    imageUrl,
+    imageViewUrl,
+  };
+};
 
 /**
  * Create a new admin (Super Admin only)
@@ -304,11 +458,87 @@ const deleteAdmin = async (req, res) => {
   }
 };
 
+/**
+ * Upload candidate spreadsheet and extract candidate details
+ * Does NOT create users; only parses and returns structured data
+ */
+const uploadCandidatesSpreadsheet = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded. Please upload an Excel or CSV file.',
+      });
+    }
+
+    const { buffer, mimetype, originalname } = req.file;
+
+    const rows = parseSpreadsheet(buffer, mimetype);
+    if (!rows || !Array.isArray(rows) || rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'The uploaded file is empty or has no readable rows.',
+      });
+    }
+
+    const candidates = [];
+    const failed = [];
+
+    rows.forEach((row, index) => {
+      try {
+        const candidate = mapRowToCandidate(row, index);
+        if (candidate) {
+          candidates.push(candidate);
+        } else {
+          failed.push({
+            row: index + 2, // header is row 1
+            reason: 'Row does not contain enough candidate information',
+            data: row,
+          });
+        }
+      } catch (err) {
+        console.error(`Error parsing candidate row ${index + 2}:`, err);
+        failed.push({
+          row: index + 2,
+          reason: err.message || 'Failed to parse row',
+          data: row,
+        });
+      }
+    });
+
+    // Log activity (no entity id, just a bulk parse)
+    await logActivitySimple(
+      req,
+      'UPLOAD_CANDIDATE_SPREADSHEET',
+      'CANDIDATE_IMPORT',
+      null,
+      `${req.user.email} uploaded candidate spreadsheet "${originalname}" with ${candidates.length} parsed candidates`
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully parsed ${candidates.length} candidate(s) from spreadsheet`,
+      data: {
+        candidates,
+        failed,
+        totalRows: rows.length,
+      },
+    });
+  } catch (error) {
+    console.error('Error in uploadCandidatesSpreadsheet:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to process candidate spreadsheet',
+    });
+  }
+};
+
 module.exports = {
   createAdmin,
   getAllAdmins,
   getAdminById,
   updateAdmin,
   deleteAdmin,
+  uploadCandidatesSpreadsheet,
 };
 

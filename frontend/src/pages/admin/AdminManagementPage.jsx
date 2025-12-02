@@ -9,6 +9,7 @@ import api from '../../services/api';
 const AdminManagementPage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [activeTab, setActiveTab] = useState('admins'); // 'admins' | 'candidates'
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -20,6 +21,12 @@ const AdminManagementPage = () => {
     full_name: '',
     role_code: 'ADMIN',
   });
+
+  // Candidate import tab state
+  const [candidateFile, setCandidateFile] = useState(null);
+  const [candidateUploading, setCandidateUploading] = useState(false);
+  const [candidateError, setCandidateError] = useState('');
+  const [candidateResult, setCandidateResult] = useState(null);
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -145,6 +152,36 @@ const AdminManagementPage = () => {
     setError('');
   };
 
+  const handleCandidateFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setCandidateFile(file);
+    setCandidateError('');
+  };
+
+  const handleCandidateUpload = async (event) => {
+    event.preventDefault();
+    if (!candidateFile) {
+      setCandidateError('Please select an Excel or CSV file to upload.');
+      return;
+    }
+
+    setCandidateUploading(true);
+    setCandidateError('');
+    setCandidateResult(null);
+
+    try {
+      const response = await api.admin.uploadCandidatesSpreadsheet(candidateFile);
+      // API wrapper may return data directly or nested under .data
+      setCandidateResult(response.data || response);
+    } catch (err) {
+      console.error('Error uploading candidate spreadsheet:', err);
+      setCandidateError(err.message || 'Failed to upload candidate spreadsheet. Please try again.');
+    } finally {
+      setCandidateUploading(false);
+    }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleString();
@@ -161,141 +198,347 @@ const AdminManagementPage = () => {
       <main className="flex-1 ml-64 overflow-y-auto pt-14 sm:pt-16">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-semibold text-gray-900">Admin Management</h1>
-            <button
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200"
-              onClick={() => {
-                resetForm();
-                setShowModal(true);
-              }}
-            >
-              + Create Admin
-            </button>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 sm:mb-8">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+                Admin & Candidate Tools
+              </h1>
+              <p className="mt-1 text-xs sm:text-sm text-gray-600">
+                Manage admin users and import candidate data from Excel.
+              </p>
+            </div>
+
+            {activeTab === 'admins' && (
+              <button
+                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-indigo-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-indigo-700 transition-colors duration-200"
+                onClick={() => {
+                  resetForm();
+                  setShowModal(true);
+                }}
+              >
+                + Create Admin
+              </button>
+            )}
           </div>
 
-          {/* Alerts */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg">
+          {/* Tabs */}
+          <div className="mb-6 border-b border-gray-200">
+            <nav className="-mb-px flex space-x-4 sm:space-x-8" aria-label="Tabs">
+              <button
+                type="button"
+                onClick={() => setActiveTab('admins')}
+                className={`whitespace-nowrap pb-2 px-1 border-b-2 text-xs sm:text-sm font-medium ${
+                  activeTab === 'admins'
+                    ? 'border-[#4C763B] text-[#043915]'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Admin Management
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('candidates')}
+                className={`whitespace-nowrap pb-2 px-1 border-b-2 text-xs sm:text-sm font-medium ${
+                  activeTab === 'candidates'
+                    ? 'border-[#4C763B] text-[#043915]'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Candidate Excel Import
+              </button>
+            </nav>
+          </div>
+
+          {/* Alerts for admin tab */}
+          {activeTab === 'admins' && error && (
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg text-xs sm:text-sm">
               {error}
             </div>
           )}
 
-          {success && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">
+          {activeTab === 'admins' && success && (
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg text-xs sm:text-sm">
               {success}
             </div>
           )}
 
-          {/* Table */}
-          {loading ? (
-            <div className="text-center py-12 text-gray-500 text-lg">Loading admins...</div>
-          ) : (
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        ID
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        Email
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        Full Name
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        Role
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        Last Login
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        Created At
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {admins.length === 0 ? (
-                      <tr>
-                        <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
-                          No admins found
-                        </td>
-                      </tr>
-                    ) : (
-                      admins.map((admin) => (
-                        <tr key={admin.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {admin.id}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {admin.email}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {admin.full_name}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                admin.role === 'SUPER_ADMIN'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-blue-100 text-blue-800'
-                              }`}
-                            >
-                              {admin.role_name || admin.role}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                admin.is_active
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}
-                            >
-                              {admin.is_active ? 'Active' : 'Inactive'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {formatDate(admin.last_login_at)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {formatDate(admin.created_at)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex gap-2">
-                              <button
-                                className="px-3 py-1.5 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
-                                onClick={() => handleEdit(admin)}
-                              >
-                                Edit
-                              </button>
-                              {admin.id !== user?.id && (
-                                <button
-                                  className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
-                                  onClick={() => handleDelete(admin.id, admin.email)}
-                                >
-                                  Delete
-                                </button>
-                              )}
-                            </div>
-                          </td>
+          {/* Admins tab content */}
+          {activeTab === 'admins' && (
+            <>
+              {loading ? (
+                <div className="text-center py-12 text-gray-500 text-sm sm:text-base">
+                  Loading admins...
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            ID
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            Email
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            Full Name
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            Role
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            Status
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            Last Login
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            Created At
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                            Actions
+                          </th>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {admins.length === 0 ? (
+                          <tr>
+                            <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
+                              No admins found
+                            </td>
+                          </tr>
+                        ) : (
+                          admins.map((admin) => (
+                            <tr key={admin.id} className="hover:bg-gray-50 transition-colors">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {admin.id}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {admin.email}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {admin.full_name}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span
+                                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                    admin.role === 'SUPER_ADMIN'
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-blue-100 text-blue-800'
+                                  }`}
+                                >
+                                  {admin.role_name || admin.role}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span
+                                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                    admin.is_active
+                                      ? 'bg-green-100 text-green-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}
+                                >
+                                  {admin.is_active ? 'Active' : 'Inactive'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {formatDate(admin.last_login_at)}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {formatDate(admin.created_at)}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div className="flex gap-2">
+                                  <button
+                                    className="px-3 py-1.5 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
+                                    onClick={() => handleEdit(admin)}
+                                  >
+                                    Edit
+                                  </button>
+                                  {admin.id !== user?.id && (
+                                    <button
+                                      className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
+                                      onClick={() => handleDelete(admin.id, admin.email)}
+                                    >
+                                      Delete
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
+          {/* Candidate import tab content */}
+          {activeTab === 'candidates' && (
+            <div className="space-y-4 sm:space-y-5">
+              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5">
+                <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
+                  Candidate Excel Import
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-600 mb-2">
+                  Upload an Excel (.xlsx / .xls) or CSV file. The system will extract{' '}
+                  <span className="font-medium">
+                    image URL, name, checkbox selected, mobile number, marks, reference name
+                  </span>
+                  .
+                </p>
+                <p className="text-[11px] sm:text-xs text-gray-500">
+                  For images stored in Google Drive (links like{' '}
+                  <code className="bg-gray-100 px-1 py-0.5 rounded text-[10px] sm:text-[11px]">
+                    https://drive.google.com/open?id=FILE_ID
+                  </code>
+                  ), we automatically generate a viewable image URL.
+                </p>
+              </div>
+
+              <form
+                onSubmit={handleCandidateUpload}
+                className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 space-y-4"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    onChange={handleCandidateFileChange}
+                    className="block w-full text-xs sm:text-sm text-gray-700 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-medium file:bg-[#4C763B] file:text-white hover:file:bg-[#043915] cursor-pointer"
+                  />
+                  <button
+                    type="submit"
+                    disabled={candidateUploading}
+                    className="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-[#4C763B] hover:bg-[#043915] disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {candidateUploading ? 'Uploading...' : 'Upload & Extract'}
+                  </button>
+                </div>
+
+                {candidateError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs sm:text-sm text-red-800">
+                    {candidateError}
+                  </div>
+                )}
+              </form>
+
+              {candidateResult && (
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-900">
+                        Parsed Candidates
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-gray-500">
+                        Total rows: {candidateResult.totalRows || candidateResult.candidates?.length || 0}. Parsed candidates:{' '}
+                        {candidateResult.candidates?.length || 0}.
+                      </p>
+                    </div>
+                  </div>
+
+                  {candidateResult.candidates && candidateResult.candidates.length > 0 ? (
+                    <div className="border border-gray-100 rounded-lg overflow-hidden">
+                      <div className="max-h-80 overflow-auto">
+                        <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-3 py-2 text-left font-semibold text-gray-700 border-b border-gray-200">
+                                Row
+                              </th>
+                              <th className="px-3 py-2 text-left font-semibold text-gray-700 border-b border-gray-200">
+                                Image
+                              </th>
+                              <th className="px-3 py-2 text-left font-semibold text-gray-700 border-b border-gray-200">
+                                Name
+                              </th>
+                              <th className="px-3 py-2 text-left font-semibold text-gray-700 border-b border-gray-200">
+                                Checkbox
+                              </th>
+                              <th className="px-3 py-2 text-left font-semibold text-gray-700 border-b border-gray-200">
+                                Mobile
+                              </th>
+                              <th className="px-3 py-2 text-left font-semibold text-gray-700 border-b border-gray-200">
+                                Marks
+                              </th>
+                              <th className="px-3 py-2 text-left font-semibold text-gray-700 border-b border-gray-200">
+                                Reference
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {candidateResult.candidates.map((c, index) => (
+                              <tr key={`${c.rowIndex || index}-${c.name || 'candidate'}`}>
+                                <td className="px-3 py-2 whitespace-nowrap text-gray-700">
+                                  {c.rowIndex ?? index + 1}
+                                </td>
+                                <td className="px-3 py-2 whitespace-nowrap text-gray-700">
+                                  {c.imageViewUrl || c.imageUrl ? (
+                                    <a
+                                      href={c.imageViewUrl || c.imageUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-indigo-600 hover:text-indigo-800 underline"
+                                    >
+                                      View Image
+                                    </a>
+                                  ) : (
+                                    <span className="text-gray-400">N/A</span>
+                                  )}
+                                </td>
+                                <td className="px-3 py-2 whitespace-nowrap text-gray-900">
+                                  {c.name || <span className="text-gray-400">N/A</span>}
+                                </td>
+                                <td className="px-3 py-2 whitespace-nowrap">
+                                  <span
+                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                                      c.checkboxSelected
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-gray-100 text-gray-500'
+                                    }`}
+                                  >
+                                    {c.checkboxSelected ? 'Selected' : 'Not selected'}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2 whitespace-nowrap text-gray-700">
+                                  {c.mobile || <span className="text-gray-400">N/A</span>}
+                                </td>
+                                <td className="px-3 py-2 whitespace-nowrap text-gray-700">
+                                  {c.marks || <span className="text-gray-400">N/A</span>}
+                                </td>
+                                <td className="px-3 py-2 whitespace-nowrap text-gray-700">
+                                  {c.referenceName || <span className="text-gray-400">N/A</span>}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs sm:text-sm text-gray-500">
+                      No candidates were parsed from the uploaded file.
+                    </p>
+                  )}
+
+                  {candidateResult.failed && candidateResult.failed.length > 0 && (
+                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-[11px] sm:text-xs font-semibold text-yellow-900 mb-1">
+                        Some rows could not be parsed ({candidateResult.failed.length}):
+                      </p>
+                      <p className="text-[11px] sm:text-xs text-yellow-800">
+                        Check the console logs for detailed reasons and row data.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           {/* Create/Edit Modal */}
           {showModal && (
             <>
