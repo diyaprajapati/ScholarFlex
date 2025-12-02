@@ -179,6 +179,15 @@ exports.createQuestionPaper = async (req, res) => {
       });
     }
 
+    // Validate maximum question limit (1000 questions per paper)
+    const MAX_QUESTIONS = 1000;
+    if (allQuestions.length > MAX_QUESTIONS) {
+      return res.status(400).json({
+        success: false,
+        message: `Too many questions. Maximum allowed is ${MAX_QUESTIONS} questions per paper. You have ${allQuestions.length} questions.`,
+      });
+    }
+
     // Validate each question
     const validationErrors = [];
     for (let i = 0; i < allQuestions.length; i++) {

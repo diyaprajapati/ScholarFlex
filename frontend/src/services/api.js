@@ -40,6 +40,11 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
+      // If there are detailed validation errors, include them in the error message
+      if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+        const errorDetails = data.errors.join('\n');
+        throw new Error(`${data.message || 'Validation errors'}:\n${errorDetails}`);
+      }
       throw new Error(data.message || 'An error occurred');
     }
 

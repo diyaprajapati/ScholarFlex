@@ -130,7 +130,32 @@ export default function AddQuestionPaperFormPage() {
       navigate(ROUTES.QUESTION_PAPERS.LIST)
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} question paper:`, error)
-      const errorMessage = error.message || `Failed to ${isEditMode ? 'update' : 'create'} question paper. Please try again.`
+      console.error('Full error details:', error)
+      
+      let errorMessage = error.message || `Failed to ${isEditMode ? 'update' : 'create'} question paper. Please try again.`
+      
+      // Format validation errors for better readability
+      if (errorMessage.includes('\n')) {
+        // Split by newlines and format as a list
+        const lines = errorMessage.split('\n')
+        const mainMessage = lines[0]
+        const errorList = lines.slice(1).filter(line => line.trim())
+        
+        if (errorList.length > 0) {
+          // Show first 10 errors to avoid overwhelming the user
+          const errorsToShow = errorList.slice(0, 10)
+          const remainingCount = errorList.length - errorsToShow.length
+          
+          errorMessage = `${mainMessage}\n\n${errorsToShow.join('\n')}`
+          if (remainingCount > 0) {
+            errorMessage += `\n\n... and ${remainingCount} more error(s). Check the console for full details.`
+          }
+          
+          // Log all errors to console for debugging
+          console.error('All validation errors:', errorList)
+        }
+      }
+      
       alert(errorMessage)
     } finally {
       setIsSubmitting(false)
