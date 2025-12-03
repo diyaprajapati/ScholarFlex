@@ -68,7 +68,7 @@ router.post('/import-google-sheets', candidateController.importFromGoogleSheets)
  * @desc    Update candidate selection status
  * @access  Private (Admin, Super Admin)
  */
-router.put('/:id/selection', candidateController.updateCandidateSelection);
+router.put('/:id/selection', candidateController.updateStudentSelection);
 
 /**
  * @route   PUT /api/candidates/bulk-selection

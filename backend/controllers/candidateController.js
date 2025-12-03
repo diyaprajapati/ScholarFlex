@@ -101,24 +101,62 @@ const mapSpreadsheetToStudent = (row) => {
     return null;
   };
 
-  const firstName = getValue(['First Name', 'First Name', 'first_name', 'firstName']);
-  const middleName = getValue(['Middle Name', 'middle_name', 'middleName']);
-  const lastName = getValue(['Last Name', 'last_name', 'lastName']);
+  const getDateValue = (possibleKeys) => {
+    const value = getValue(possibleKeys);
+    if (!value) return null;
+    try {
+      // Try to parse the date
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    } catch (e) {
+      // If parsing fails, return null
+    }
+    return null;
+  };
+  
+  // Extract name parts to build full_name (but don't store them separately)
+  const firstName = getValue(['First Name', 'FirstName', 'first_name', 'firstName']);
+  const middleName = getValue(['Middle Name', 'MiddleName', 'middle_name', 'middleName']);
+  const lastName = getValue(['Last Name', 'LastName', 'last_name', 'lastName']);
+  
   const email = getValue(['Email', 'email', 'Email Address', 'email_address']);
   const mobileNumber = getValue(['Mobile Number (WhatsApp)', 'Mobile Number', 'mobile_number', 'mobileNumber', 'phone', 'Phone']);
   const photograph = getValue(['Photograph', 'photograph', 'Photo', 'photo', 'Image', 'image', 'image_url', 'Image URL']);
+  const instituteName = getValue(['Name of Institute', 'Institute Name', 'institute_name', 'instituteName', 'Institute']);
+  const courseTaken = getValue(['Course Taken', 'course_taken', 'courseTaken', 'Course']);
+  const areaOfInterests = getValue(['Area of Interests', 'Area of Interest', 'area_of_interests', 'areaOfInterests', 'Domain', 'domain']);
+  const internshipStartDate = getDateValue(['Internship Start Date', 'internship_start_date', 'internshipStartDate', 'Start Date']);
+  const internshipEndDate = getDateValue(['Internship End Date', 'internship_end_date', 'internshipEndDate', 'End Date']);
+  const internshipDuration = getValue(['Internship Duration', 'internship_duration', 'internshipDuration', 'Duration']);
+  const referenceInformation = getValue(['Reference Information', 'reference_information', 'referenceInformation', 'Reference']);
+  const internalFacultyName = getValue(['Internal Faculty of Institute', 'Internal Faculty', 'internal_faculty_name', 'internalFacultyName', 'Faculty Name']);
+  const facultyContact = getValue(['Faculty Contact', 'faculty_contact', 'facultyContact', 'Faculty Phone']);
+  const facultyEmail = getValue(['Faculty Email Id', 'Faculty Email', 'faculty_email', 'facultyEmail', 'Faculty Email ID']);
 
   // Convert Google Drive link to embeddable format
   const imageUrl = photograph ? convertGoogleDriveLink(photograph) : null;
 
-  // Build full name
-  const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ').trim();
+  // Build full name from parts or use full_name if available (but don't store name parts separately)
+  const nameParts = [firstName, middleName, lastName].filter(Boolean);
+  const fullName = nameParts.length > 0 ? nameParts.join(' ').trim() : getValue(['Full Name', 'full_name', 'fullName']) || 'Unknown';
 
   return {
     email: email ? email.toLowerCase().trim() : null,
-    fullName: fullName || 'Unknown',
+    fullName: fullName,
     phone: mobileNumber || null,
     imageUrl: imageUrl,
+    instituteName: instituteName || null,
+    courseTaken: courseTaken || null,
+    areaOfInterests: areaOfInterests || null,
+    internshipStartDate: internshipStartDate,
+    internshipEndDate: internshipEndDate,
+    internshipDuration: internshipDuration || null,
+    referenceInformation: referenceInformation || null,
+    internalFacultyName: internalFacultyName || null,
+    facultyContact: facultyContact || null,
+    facultyEmail: facultyEmail || null,
   };
 };
 
@@ -212,8 +250,9 @@ exports.uploadSpreadsheet = async (req, res) => {
     if (studentsData.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'No valid student data found in spreadsheet.',
-        errors,
+        message: `No valid student data found in spreadsheet. ${errors.length > 0 ? `Found ${errors.length} error(s).` : ''}`,
+        errors: errors,
+        errorCount: errors.length,
       });
     }
 
@@ -226,11 +265,21 @@ exports.uploadSpreadsheet = async (req, res) => {
         });
 
         if (existingStudent) {
-          // Update only image_url if provided
+          // Update all provided fields
           const updateData = {};
-          if (studentData.imageUrl) {
-            updateData.imageUrl = studentData.imageUrl;
-          }
+          if (studentData.fullName) updateData.fullName = studentData.fullName;
+          if (studentData.phone !== null) updateData.phone = studentData.phone;
+          if (studentData.imageUrl !== null) updateData.imageUrl = studentData.imageUrl;
+          if (studentData.instituteName !== null) updateData.instituteName = studentData.instituteName;
+          if (studentData.courseTaken !== null) updateData.courseTaken = studentData.courseTaken;
+          if (studentData.areaOfInterests !== null) updateData.areaOfInterests = studentData.areaOfInterests;
+          if (studentData.internshipStartDate !== null) updateData.internshipStartDate = studentData.internshipStartDate;
+          if (studentData.internshipEndDate !== null) updateData.internshipEndDate = studentData.internshipEndDate;
+          if (studentData.internshipDuration !== null) updateData.internshipDuration = studentData.internshipDuration;
+          if (studentData.referenceInformation !== null) updateData.referenceInformation = studentData.referenceInformation;
+          if (studentData.internalFacultyName !== null) updateData.internalFacultyName = studentData.internalFacultyName;
+          if (studentData.facultyContact !== null) updateData.facultyContact = studentData.facultyContact;
+          if (studentData.facultyEmail !== null) updateData.facultyEmail = studentData.facultyEmail;
 
           if (Object.keys(updateData).length > 0) {
             const updated = await prisma.student.update({
@@ -250,13 +299,23 @@ exports.uploadSpreadsheet = async (req, res) => {
             });
           }
         } else {
-          // Create new student
+          // Create new student with all fields
           const created = await prisma.student.create({
             data: {
               email: studentData.email,
               fullName: studentData.fullName,
               phone: studentData.phone,
               imageUrl: studentData.imageUrl,
+              instituteName: studentData.instituteName,
+              courseTaken: studentData.courseTaken,
+              areaOfInterests: studentData.areaOfInterests,
+              internshipStartDate: studentData.internshipStartDate,
+              internshipEndDate: studentData.internshipEndDate,
+              internshipDuration: studentData.internshipDuration,
+              referenceInformation: studentData.referenceInformation,
+              internalFacultyName: studentData.internalFacultyName,
+              facultyContact: studentData.facultyContact,
+              facultyEmail: studentData.facultyEmail,
             },
           });
           results.created.push({
@@ -321,22 +380,35 @@ exports.getAllCandidates = async (req, res) => {
         s.domain_id,
         s.status_id,
         s.registration_date,
+        s.institute_name,
+        s.course_taken,
+        s.area_of_interests,
+        s.internship_start_date,
+        s.internship_end_date,
+        s.internship_duration,
+        s.reference_information,
+        s.internal_faculty_name,
+        s.faculty_contact,
+        s.faculty_email,
         s.is_active,
+        s.is_selected,
         s.created_at,
         s.updated_at,
         d.domain_name,
         ist.status_name,
         COALESCE(MAX(ta.percentage_score), 0) as marks,
         MAX(ta.submitted_at) as last_test_date,
-        COUNT(DISTINCT ta.id) as total_attempts,
-        NULL as reference_information
+        COUNT(DISTINCT ta.id) as total_attempts
       FROM students s
       LEFT JOIN domains d ON s.domain_id = d.id
       LEFT JOIN intern_status ist ON s.status_id = ist.id
       LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
       WHERE s.is_active = TRUE
-      GROUP BY s.id, s.email, s.full_name, s.phone, s.image_url, s.domain_id, s.status_id, 
-               s.registration_date, s.is_active, s.created_at, s.updated_at, d.domain_name, ist.status_name
+      GROUP BY s.id, s.email, s.full_name, s.phone, s.image_url, 
+               s.domain_id, s.status_id, s.registration_date, s.institute_name, s.course_taken, 
+               s.area_of_interests, s.internship_start_date, s.internship_end_date, s.internship_duration,
+               s.reference_information, s.internal_faculty_name, s.faculty_contact, s.faculty_email,
+               s.is_active, s.is_selected, s.created_at, s.updated_at, d.domain_name, ist.status_name
       ORDER BY s.created_at DESC`
     );
 
@@ -350,6 +422,16 @@ exports.getAllCandidates = async (req, res) => {
       reference_information: s.reference_information,
       status: s.status_name,
       domain: s.domain_name,
+      institute_name: s.institute_name,
+      course_taken: s.course_taken,
+      area_of_interests: s.area_of_interests,
+      internship_start_date: s.internship_start_date,
+      internship_end_date: s.internship_end_date,
+      internship_duration: s.internship_duration,
+      internal_faculty_name: s.internal_faculty_name,
+      faculty_contact: s.faculty_contact,
+      faculty_email: s.faculty_email,
+      is_selected: s.is_selected || false,
       total_attempts: parseInt(s.total_attempts || 0),
       last_test_date: s.last_test_date,
       registration_date: s.registration_date,
@@ -404,14 +486,13 @@ exports.getStudentById = async (req, res) => {
         ist.status_name,
         COALESCE(MAX(ta.percentage_score), 0) as marks,
         MAX(ta.submitted_at) as last_test_date,
-        COUNT(DISTINCT ta.id) as total_attempts,
-        NULL as reference_information
+        COUNT(DISTINCT ta.id) as total_attempts
       FROM students s
       LEFT JOIN domains d ON s.domain_id = d.id
       LEFT JOIN intern_status ist ON s.status_id = ist.id
       LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
       WHERE s.id = $1 AND s.is_active = TRUE
-      GROUP BY s.id, d.domain_name, ist.status_name`,
+      GROUP BY s.id, d.domain_name, ist.status_name, s.is_selected`,
       [id]
     );
 
@@ -436,6 +517,16 @@ exports.getStudentById = async (req, res) => {
         status: student.status_name,
         marks: parseFloat(student.marks || 0),
         reference_information: student.reference_information,
+        institute_name: student.institute_name,
+        course_taken: student.course_taken,
+        area_of_interests: student.area_of_interests,
+        internship_start_date: student.internship_start_date,
+        internship_end_date: student.internship_end_date,
+        internship_duration: student.internship_duration,
+        internal_faculty_name: student.internal_faculty_name,
+        faculty_contact: student.faculty_contact,
+        faculty_email: student.faculty_email,
+        is_selected: student.is_selected || false,
         total_attempts: parseInt(student.total_attempts || 0),
         last_test_date: student.last_test_date,
         registration_date: student.registration_date,
@@ -445,6 +536,66 @@ exports.getStudentById = async (req, res) => {
     });
   } catch (error) {
     console.error('Error getting student by ID:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Update student selection status
+ */
+exports.updateStudentSelection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_selected } = req.body;
+
+    if (typeof is_selected !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'is_selected must be a boolean value',
+      });
+    }
+
+    // Check if student exists
+    const studentResult = await pool.query(
+      'SELECT id, email, full_name FROM students WHERE id = $1 AND is_active = TRUE',
+      [id]
+    );
+
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    // Update selection status
+    await pool.query(
+      'UPDATE students SET is_selected = $1, updated_at = NOW() WHERE id = $2',
+      [is_selected, id]
+    );
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'UPDATE_STUDENT_SELECTION',
+      'STUDENT',
+      id,
+      `${req.user.email} ${is_selected ? 'selected' : 'deselected'} student: ${studentResult.rows[0].email}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Student ${is_selected ? 'selected' : 'deselected'} successfully`,
+      data: {
+        id: parseInt(id),
+        is_selected,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating student selection:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',

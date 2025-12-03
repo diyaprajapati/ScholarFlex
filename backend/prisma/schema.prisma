@@ -98,7 +98,18 @@ model Student {
   registrationDate DateTime         @default(now()) @map("registration_date")
   formLinkToken    String?          @unique @map("form_link_token") @db.VarChar(100)
   imageUrl         String?          @map("image_url")
+  instituteName    String?          @map("institute_name") @db.VarChar(255)
+  courseTaken       String?          @map("course_taken") @db.VarChar(255)
+  areaOfInterests  String?          @map("area_of_interests") @db.Text
+  internshipStartDate DateTime?     @map("internship_start_date")
+  internshipEndDate   DateTime?     @map("internship_end_date")
+  internshipDuration  String?       @map("internship_duration") @db.VarChar(50)
+  referenceInformation String?      @map("reference_information") @db.Text
+  internalFacultyName String?       @map("internal_faculty_name") @db.VarChar(255)
+  facultyContact   String?          @map("faculty_contact") @db.VarChar(20)
+  facultyEmail     String?          @map("faculty_email") @db.VarChar(255)
   isActive         Boolean          @default(true) @map("is_active")
+  isSelected       Boolean          @default(false) @map("is_selected")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
   createdBy        Int?             @map("created_by")

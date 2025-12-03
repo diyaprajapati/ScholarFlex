@@ -42,8 +42,24 @@ const apiRequest = async (endpoint, options = {}) => {
     if (!response.ok) {
       // If there are detailed validation errors, include them in the error message
       if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
-        const errorDetails = data.errors.join('\n');
-        throw new Error(`${data.message || 'Validation errors'}:\n${errorDetails}`);
+        const errorDetails = data.errors
+          .map((err, idx) => {
+            if (typeof err === 'string') return err;
+            if (typeof err === 'object' && err !== null) {
+              // Format error object
+              if (err.reason) {
+                return `Row ${err.row || idx + 1}: ${err.reason}${err.email ? ` (${err.email})` : ''}`;
+              }
+              return JSON.stringify(err);
+            }
+            return String(err);
+          })
+          .slice(0, 10) // Limit to first 10 errors
+          .join('\n');
+        
+        const errorMessage = data.message || 'Validation errors';
+        const moreErrors = data.errors.length > 10 ? `\n... and ${data.errors.length - 10} more errors.` : '';
+        throw new Error(`${errorMessage}\n\n${errorDetails}${moreErrors}`);
       }
       throw new Error(data.message || 'An error occurred');
     }

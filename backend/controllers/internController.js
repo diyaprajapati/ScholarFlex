@@ -78,6 +78,20 @@ const mapSpreadsheetToStudent = (row) => {
     return '';
   };
 
+  const getDateValue = (row, possibleKeys) => {
+    const value = getValue(row, possibleKeys);
+    if (!value) return null;
+    try {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    } catch (e) {
+      // If parsing fails, return null
+    }
+    return null;
+  };
+
   // Extract values
   const firstName = getValue(row, ['First Name', 'FirstName', 'First Name', 'first name']);
   const middleName = getValue(row, ['Middle Name', 'MiddleName', 'Middle Name', 'middle name']);
@@ -114,12 +128,42 @@ const mapSpreadsheetToStudent = (row) => {
     'Specialization',
     'specialization'
   ]);
+  const photograph = getValue(row, ['Photograph', 'photograph', 'Photo', 'photo', 'Image', 'image', 'image_url', 'Image URL']);
+  const instituteName = getValue(row, ['Name of Institute', 'Institute Name', 'institute_name', 'instituteName', 'Institute']);
+  const courseTaken = getValue(row, ['Course Taken', 'course_taken', 'courseTaken', 'Course']);
+  const internshipStartDate = getDateValue(row, ['Internship Start Date', 'internship_start_date', 'internshipStartDate', 'Start Date']);
+  const internshipEndDate = getDateValue(row, ['Internship End Date', 'internship_end_date', 'internshipEndDate', 'End Date']);
+  const internshipDuration = getValue(row, ['Internship Duration', 'internship_duration', 'internshipDuration', 'Duration']);
+  const referenceInformation = getValue(row, ['Reference Information', 'reference_information', 'referenceInformation', 'Reference']);
+  const internalFacultyName = getValue(row, ['Internal Faculty of Institute', 'Internal Faculty', 'internal_faculty_name', 'internalFacultyName', 'Faculty Name']);
+  const facultyContact = getValue(row, ['Faculty Contact', 'faculty_contact', 'facultyContact', 'Faculty Phone']);
+  const facultyEmail = getValue(row, ['Faculty Email Id', 'Faculty Email', 'faculty_email', 'facultyEmail', 'Faculty Email ID']);
+
+  // Convert Google Drive link to embeddable format
+  const convertGoogleDriveLink = (url) => {
+    if (!url || typeof url !== 'string') return null;
+    const openMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    const fileId = openMatch ? openMatch[1] : (fileMatch ? fileMatch[1] : null);
+    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w400` : url;
+  };
+  const imageUrl = photograph ? convertGoogleDriveLink(photograph) : null;
 
   return {
     full_name: fullName,
     email: email,
     phone: phone || null,
     area_of_interest: areaOfInterest,
+    image_url: imageUrl,
+    institute_name: instituteName || null,
+    course_taken: courseTaken || null,
+    internship_start_date: internshipStartDate,
+    internship_end_date: internshipEndDate,
+    internship_duration: internshipDuration || null,
+    reference_information: referenceInformation || null,
+    internal_faculty_name: internalFacultyName || null,
+    faculty_contact: facultyContact || null,
+    faculty_email: facultyEmail || null,
   };
 };
 
@@ -219,8 +263,9 @@ exports.uploadSpreadsheet = async (req, res) => {
     if (studentsData.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'No valid student data found in spreadsheet.',
+        message: `No valid student data found in spreadsheet. ${errors.length > 0 ? `Found ${errors.length} error(s).` : ''}`,
         errors: errors,
+        errorCount: errors.length,
       });
     }
 
@@ -247,6 +292,17 @@ exports.uploadSpreadsheet = async (req, res) => {
         full_name: student.full_name,
         phone: student.phone,
         domain_id: domainId,
+        image_url: student.image_url,
+        institute_name: student.institute_name,
+        course_taken: student.course_taken,
+        area_of_interests: student.area_of_interest,
+        internship_start_date: student.internship_start_date,
+        internship_end_date: student.internship_end_date,
+        internship_duration: student.internship_duration,
+        reference_information: student.reference_information,
+        internal_faculty_name: student.internal_faculty_name,
+        faculty_contact: student.faculty_contact,
+        faculty_email: student.faculty_email,
         created_by: req.user?.id || null,
       });
     }

@@ -113,7 +113,13 @@ class Student {
 
       for (const studentData of studentsData) {
         try {
-          const { email, full_name, phone, domain_id, created_by } = studentData;
+          const { 
+            email, full_name, phone, domain_id, 
+            image_url, institute_name, course_taken, area_of_interests,
+            internship_start_date, internship_end_date, internship_duration,
+            reference_information, internal_faculty_name, faculty_contact, faculty_email,
+            created_by 
+          } = studentData;
           
           // Validate required fields
           if (!email || !full_name) {
@@ -141,9 +147,20 @@ class Student {
           }
 
           const result = await pool.query(
-            `INSERT INTO students (email, full_name, phone, domain_id, status_id, created_by, updated_at) 
-             VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING id`,
-            [email, full_name, phone || null, domain_id || null, defaultStatusId, created_by || null]
+            `INSERT INTO students (
+              email, full_name, phone, domain_id, 
+              image_url, institute_name, course_taken, area_of_interests,
+              internship_start_date, internship_end_date, internship_duration,
+              reference_information, internal_faculty_name, faculty_contact, faculty_email,
+              status_id, created_by, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, NOW()) RETURNING id`,
+            [
+              email, full_name, phone || null, domain_id || null, image_url || null,
+              institute_name || null, course_taken || null, area_of_interests || null,
+              internship_start_date || null, internship_end_date || null, internship_duration || null,
+              reference_information || null, internal_faculty_name || null, faculty_contact || null, faculty_email || null,
+              defaultStatusId, created_by || null
+            ]
           );
 
           results.success.push({
