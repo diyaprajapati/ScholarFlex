@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import * as XLSX from 'xlsx';
 import api from '../../services/api';
 
 const CandidatesTab = () => {
@@ -16,6 +17,19 @@ const CandidatesTab = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [failedImages, setFailedImages] = useState(new Set());
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    instituteName: '',
+    courseTaken: '',
+    areaOfInterests: '',
+    testGiven: '', // 'yes', 'no', or ''
+    marksRange: '', // 'below70', 'above70', or ''
+    selected: '', // 'yes', 'no', or ''
+    referencePresence: '', // 'yes', 'no', or '' (has reference or not)
+    referenceText: '', // free text search within reference
+    startDate: '',
+    endDate: '',
+  });
   const itemsPerPage = 10;
   const fileInputRef = useRef(null);
 
@@ -172,17 +186,121 @@ const CandidatesTab = () => {
     }
   }, []);
 
-  // Filter students by search query (name or email) - memoized
-  const filteredStudents = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return students;
+  // Helper function to split full name into first, middle, last
+  const splitName = useCallback((fullName) => {
+    if (!fullName) return { firstName: '', middleName: '', lastName: '' };
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return { firstName: parts[0], middleName: '', lastName: '' };
+    } else if (parts.length === 2) {
+      return { firstName: parts[0], middleName: '', lastName: parts[1] };
+    } else {
+      return {
+        firstName: parts[0],
+        middleName: parts.slice(1, -1).join(' '),
+        lastName: parts[parts.length - 1]
+      };
     }
-    const query = searchQuery.toLowerCase().trim();
-    return students.filter(student => 
-      student.full_name?.toLowerCase().includes(query) ||
-      student.email?.toLowerCase().includes(query)
-    );
-  }, [students, searchQuery]);
+  }, []);
+
+  // Filter students by search query and all filters - memoized
+  const filteredStudents = useMemo(() => {
+    let result = [...students];
+
+    // Apply search query filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(student => 
+        student.full_name?.toLowerCase().includes(query) ||
+        student.email?.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply institute name filter
+    if (filters.instituteName) {
+      result = result.filter(student =>
+        student.institute_name?.toLowerCase().includes(filters.instituteName.toLowerCase())
+      );
+    }
+
+    // Apply course taken filter
+    if (filters.courseTaken) {
+      result = result.filter(student =>
+        student.course_taken?.toLowerCase().includes(filters.courseTaken.toLowerCase())
+      );
+    }
+
+    // Apply area of interests filter
+    if (filters.areaOfInterests) {
+      result = result.filter(student =>
+        student.area_of_interests?.toLowerCase().includes(filters.areaOfInterests.toLowerCase())
+      );
+    }
+
+    // Apply test given filter (marks > 0 means test given)
+    if (filters.testGiven === 'yes') {
+      result = result.filter(student => 
+        typeof student.marks === 'number' && student.marks > 0
+      );
+    } else if (filters.testGiven === 'no') {
+      result = result.filter(student => 
+        !(typeof student.marks === 'number' && student.marks > 0)
+      );
+    }
+
+    // Apply marks range filter
+    if (filters.marksRange === 'below70') {
+      result = result.filter(student => 
+        student.marks !== null && student.marks !== undefined && student.marks < 70
+      );
+    } else if (filters.marksRange === 'above70') {
+      result = result.filter(student => 
+        student.marks !== null && student.marks !== undefined && student.marks >= 70
+      );
+    }
+
+    // Apply selected filter
+    if (filters.selected === 'yes') {
+      result = result.filter(student => student.is_selected === true);
+    } else if (filters.selected === 'no') {
+      result = result.filter(student => !student.is_selected);
+    }
+
+    // Apply reference presence filter
+    if (filters.referencePresence === 'yes') {
+      result = result.filter(student => !!student.reference_information && student.reference_information.trim() !== '');
+    } else if (filters.referencePresence === 'no') {
+      result = result.filter(student => !student.reference_information || student.reference_information.trim() === '');
+    }
+
+    // Apply reference text filter
+    if (filters.referenceText) {
+      const refQuery = filters.referenceText.toLowerCase();
+      result = result.filter(student =>
+        student.reference_information?.toLowerCase().includes(refQuery)
+      );
+    }
+
+    // Apply date range filters
+    if (filters.startDate) {
+      const startDate = new Date(filters.startDate);
+      result = result.filter(student => {
+        if (!student.internship_start_date) return false;
+        return new Date(student.internship_start_date) >= startDate;
+      });
+    }
+
+    if (filters.endDate) {
+      const endDate = new Date(filters.endDate);
+      endDate.setHours(23, 59, 59, 999); // Include entire end date
+      result = result.filter(student => {
+        if (!student.internship_end_date) return false;
+        return new Date(student.internship_end_date) <= endDate;
+      });
+    }
+
+    return result;
+  }, [students, searchQuery, filters]);
 
   // Pagination calculations - memoized (using filteredStudents)
   const totalPages = useMemo(() => Math.ceil(filteredStudents.length / itemsPerPage), [filteredStudents.length, itemsPerPage]);
@@ -253,6 +371,106 @@ const CandidatesTab = () => {
     });
   }, []);
 
+  const handleFilterChange = useCallback((filterName, value) => {
+    setFilters(prev => ({ ...prev, [filterName]: value }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFilters({
+      instituteName: '',
+      courseTaken: '',
+      areaOfInterests: '',
+      testGiven: '',
+      marksRange: '',
+      selected: '',
+      referencePresence: '',
+      referenceText: '',
+      startDate: '',
+      endDate: '',
+    });
+    setSearchQuery('');
+  }, []);
+
+  const hasActiveFilters = useMemo(() => {
+    return Object.values(filters).some(value => value !== '') || searchQuery.trim() !== '';
+  }, [filters, searchQuery]);
+
+  const downloadExcel = useCallback(() => {
+    // Prepare data for Excel export
+    const excelData = filteredStudents.map(student => {
+      const nameParts = splitName(student.full_name);
+      const timestamp = student.created_at || student.registration_date || new Date().toISOString();
+      
+      return {
+        'Timestamp': timestamp ? new Date(timestamp).toLocaleString() : '',
+        'First Name': nameParts.firstName,
+        'Middle Name': nameParts.middleName,
+        'Last Name': nameParts.lastName,
+        'Mobile Number (WhatsApp)': student.phone || student.mobile_number || '',
+        'Email': student.email || '',
+        'Name of Institute': student.institute_name || '',
+        'Course Taken': student.course_taken || '',
+        'Area of Interests': student.area_of_interests || '',
+        'Internship Start Date': student.internship_start_date 
+          ? new Date(student.internship_start_date).toLocaleDateString() 
+          : '',
+        'Internship End Date': student.internship_end_date 
+          ? new Date(student.internship_end_date).toLocaleDateString() 
+          : '',
+        'Reference Information': student.reference_information || '',
+        'Photograph': student.image_url || '',
+        'Internal Faculty of Institute': student.internal_faculty_name || '',
+        'Faculty Contact': student.faculty_contact || '',
+        'Faculty Email Id': student.faculty_email || '',
+        'Column 16': '', // Empty column as requested
+        'Test Marks': student.marks !== null && student.marks !== undefined 
+          ? `${student.marks.toFixed(2)}%` 
+          : 'Not Given',
+        'Selected?': student.is_selected ? 'Yes' : 'No',
+      };
+    });
+
+    // Create workbook and worksheet
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Students');
+
+    // Set column widths
+    const colWidths = [
+      { wch: 20 }, // Timestamp
+      { wch: 15 }, // First Name
+      { wch: 15 }, // Middle Name
+      { wch: 15 }, // Last Name
+      { wch: 20 }, // Mobile Number
+      { wch: 30 }, // Email
+      { wch: 30 }, // Name of Institute
+      { wch: 25 }, // Course Taken
+      { wch: 30 }, // Area of Interests
+      { wch: 20 }, // Internship Start Date
+      { wch: 20 }, // Internship End Date
+      { wch: 30 }, // Reference Information
+      { wch: 50 }, // Photograph
+      { wch: 30 }, // Internal Faculty
+      { wch: 15 }, // Faculty Contact
+      { wch: 30 }, // Faculty Email
+      { wch: 15 }, // Column 16
+      { wch: 12 }, // Test Marks
+      { wch: 10 }, // Selected?
+    ];
+    ws['!cols'] = colWidths;
+
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const filterInfo = hasActiveFilters ? '_filtered' : '_all';
+    const filename = `students_export${filterInfo}_${timestamp}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(wb, filename);
+    
+    setSuccess(`Excel file downloaded successfully! (${filteredStudents.length} students)`);
+    setTimeout(() => setSuccess(''), 5000);
+  }, [filteredStudents, splitName, hasActiveFilters]);
+
   return (
     <div className="space-y-6">
       {/* Header with Search and Upload */}
@@ -284,37 +502,208 @@ const CandidatesTab = () => {
           </div>
         </div>
         
-        {/* Search Bar */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by name or email..."
-            className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
-          />
-          {searchQuery && (
+        {/* Search Bar and Filters */}
+        <div className="space-y-3">
+          <div className="flex gap-3 items-center flex-wrap">
+            <div className="relative flex-1 min-w-[200px]">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name or email..."
+                className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              )}
+            </div>
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-              aria-label="Clear search"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                showFilters || hasActiveFilters
+                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
             >
-              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
               </svg>
+              Filters
+              {hasActiveFilters && (
+                <span className="ml-1 px-2 py-0.5 bg-indigo-500 bg-opacity-20 rounded-full border border-white text-xs">
+                  Active
+                </span>
+              )}
             </button>
+            <button
+              onClick={downloadExcel}
+              disabled={filteredStudents.length === 0}
+              className="px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              Download Excel ({filteredStudents.length})
+            </button>
+          </div>
+
+          {/* Filters Panel */}
+          {showFilters && (
+            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+                <button
+                  onClick={clearFilters}
+                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                >
+                  Clear All
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Institute Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Institute Name</label>
+                  <input
+                    type="text"
+                    value={filters.instituteName}
+                    onChange={(e) => handleFilterChange('instituteName', e.target.value)}
+                    placeholder="Filter by institute..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+
+                {/* Course Taken */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Course Taken</label>
+                  <input
+                    type="text"
+                    value={filters.courseTaken}
+                    onChange={(e) => handleFilterChange('courseTaken', e.target.value)}
+                    placeholder="Filter by course..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+
+                {/* Area of Interests */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Area of Interests</label>
+                  <input
+                    type="text"
+                    value={filters.areaOfInterests}
+                    onChange={(e) => handleFilterChange('areaOfInterests', e.target.value)}
+                    placeholder="Filter by interests..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+
+                {/* Test Given */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Test Given</label>
+                  <select
+                    value={filters.testGiven}
+                    onChange={(e) => handleFilterChange('testGiven', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  >
+                    <option value="">All</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                {/* Marks Range */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Marks Range</label>
+                  <select
+                    value={filters.marksRange}
+                    onChange={(e) => handleFilterChange('marksRange', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  >
+                    <option value="">All</option>
+                    <option value="below70">Below 70%</option>
+                    <option value="above70">70% and Above</option>
+                  </select>
+                </div>
+
+                {/* Selected */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Selected</label>
+                  <select
+                    value={filters.selected}
+                    onChange={(e) => handleFilterChange('selected', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  >
+                    <option value="">All</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                {/* Reference Information */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Reference</label>
+                  <select
+                    value={filters.referencePresence}
+                    onChange={(e) => handleFilterChange('referencePresence', e.target.value)}
+                    className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  >
+                    <option value="">All</option>
+                    <option value="yes">Has Reference</option>
+                    <option value="no">No Reference</option>
+                  </select>
+                  <input
+                    type="text"
+                    value={filters.referenceText}
+                    onChange={(e) => handleFilterChange('referenceText', e.target.value)}
+                    placeholder="Search in reference..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+
+                {/* Start Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Internship Start Date (From)</label>
+                  <input
+                    type="date"
+                    value={filters.startDate}
+                    onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+
+                {/* End Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Internship End Date (To)</label>
+                  <input
+                    type="date"
+                    value={filters.endDate}
+                    onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Results Count */}
+          {(hasActiveFilters || searchQuery) && (
+            <p className="text-sm text-gray-600">
+              Showing <span className="font-semibold">{filteredStudents.length}</span> of <span className="font-semibold">{students.length}</span> students
+            </p>
           )}
         </div>
-        {searchQuery && (
-          <p className="text-sm text-gray-600">
-            Showing {filteredStudents.length} of {students.length} students
-          </p>
-        )}
       </div>
 
       {/* Alerts */}

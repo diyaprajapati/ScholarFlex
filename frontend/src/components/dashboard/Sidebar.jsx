@@ -60,7 +60,7 @@ export default function Sidebar({ user }) {
                   {...navItemHoverStyle(ROUTES.DASHBOARD)}
                   aria-current={location.pathname === ROUTES.DASHBOARD ? 'page' : undefined}
                 >
-                  <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
                   Dashboard
@@ -75,7 +75,7 @@ export default function Sidebar({ user }) {
                   {...navItemHoverStyle(ROUTES.QUESTION_PAPERS.LIST)}
                   aria-current={location.pathname.startsWith(ROUTES.QUESTION_PAPERS.BASE) ? 'page' : undefined}
                 >
-                  <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6h6v6m2 4H7a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z" />
                   </svg>
                   Question Papers
@@ -89,7 +89,7 @@ export default function Sidebar({ user }) {
                   style={navItemStyle(ROUTES.INTERNS.VIEW)}
                   {...navItemHoverStyle(ROUTES.INTERNS.VIEW)}
                 >
-                  <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5V8H2v12h5m10 0v-6h-4v6m4 0H7" />
                   </svg>
                   All Interns
@@ -103,7 +103,7 @@ export default function Sidebar({ user }) {
                   style={navItemStyle(ROUTES.TEST_ATTEMPTS)}
                   {...navItemHoverStyle(ROUTES.TEST_ATTEMPTS)}
                 >
-                  <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 11h18M5 7h14M7 15h10m-6 4h2" />
                   </svg>
                   Test Results
@@ -118,7 +118,7 @@ export default function Sidebar({ user }) {
                     style={navItemStyle(ROUTES.RETAKE_PERMISSIONS)}
                     {...navItemHoverStyle(ROUTES.RETAKE_PERMISSIONS)}
                   >
-                    <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Retake Permissions
@@ -134,7 +134,7 @@ export default function Sidebar({ user }) {
                     style={navItemStyle(ROUTES.ADMIN_MANAGEMENT)}
                     {...navItemHoverStyle(ROUTES.ADMIN_MANAGEMENT)}
                   >
-                    <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                     Admin Management

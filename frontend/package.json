@@ -18,6 +18,7 @@
     "react-hook-form": "^7.66.0",
     "react-router-dom": "^7.9.5",
     "tailwindcss": "^4.1.17",
+    "xlsx": "^0.18.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {
