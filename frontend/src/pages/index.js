@@ -10,5 +10,6 @@ export { default as StudentTestPage } from './student/StudentTestPage'
 export { default as TestSubmissionPage } from './student/TestSubmissionPage'
 export { default as TestAttemptsPage } from './test-attempts/TestAttemptsPage'
 export { default as AdminManagementPage } from './admin/AdminManagementPage'
+export { default as RetakePermissionsPage } from './admin/RetakePermissionsPage'
 export { default as NotFoundPage } from './errors/NotFoundPage'
 

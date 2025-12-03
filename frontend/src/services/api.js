@@ -448,6 +448,36 @@ export const api = {
         method: 'DELETE',
       });
     },
+
+    retakePermissions: {
+      grant: async (data) => {
+        return apiRequest('/admin/retake-permissions/grant', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        });
+      },
+
+      grantByDomain: async (data) => {
+        return apiRequest('/admin/retake-permissions/grant-by-domain', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        });
+      },
+
+      revoke: async (data) => {
+        return apiRequest('/admin/retake-permissions/revoke', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        });
+      },
+
+      getAll: async (params = {}) => {
+        const queryString = new URLSearchParams(params).toString();
+        return apiRequest(`/admin/retake-permissions${queryString ? `?${queryString}` : ''}`, {
+          method: 'GET',
+        });
+      },
+    },
   },
 
   dashboard: {

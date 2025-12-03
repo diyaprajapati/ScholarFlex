@@ -109,6 +109,22 @@ export default function Sidebar({ user }) {
                   Test Results
                 </Link>
               </li>
+              {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
+                <li>
+                  <Link
+                    to={ROUTES.RETAKE_PERMISSIONS}
+                    onClick={() => handleNavClick('retake-permissions')}
+                    className={navItemClasses(ROUTES.RETAKE_PERMISSIONS)}
+                    style={navItemStyle(ROUTES.RETAKE_PERMISSIONS)}
+                    {...navItemHoverStyle(ROUTES.RETAKE_PERMISSIONS)}
+                  >
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Retake Permissions
+                  </Link>
+                </li>
+              )}
               {user?.role === 'SUPER_ADMIN' && (
                 <li>
                   <Link

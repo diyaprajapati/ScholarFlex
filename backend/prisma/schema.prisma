@@ -65,6 +65,7 @@ model User {
   questionsUpdated      Question[]       @relation("QuestionUpdater")
   studentsCreated       Student[]        @relation("StudentCreator")
   testAssignments       TestAssignment[]
+  testRetakePermissionsGranted TestRetakePermission[]
   creator               User?            @relation("UserCreator", fields: [createdBy], references: [id])
   created               User[]           @relation("UserCreator")
   role                  Role             @relation(fields: [roleId], references: [id])
@@ -104,8 +105,9 @@ model Student {
   creator          User?            @relation("StudentCreator", fields: [createdBy], references: [id])
   domain           Domain?          @relation(fields: [domainId], references: [id])
   status           InternStatus     @relation(fields: [statusId], references: [id])
-  testAssignments  TestAssignment[]
-  testAttempts     TestAttempt[]
+  testAssignments      TestAssignment[]
+  testAttempts         TestAttempt[]
+  testRetakePermissions TestRetakePermission[]
 
   @@index([email])
   @@index([domainId])
@@ -135,9 +137,10 @@ model QuestionPaper {
   domains         QuestionPaperDomain[]
   creator         User                  @relation("QuestionPaperCreator", fields: [createdBy], references: [id])
   updater         User?                 @relation("QuestionPaperUpdater", fields: [updatedBy], references: [id])
-  questions       Question[]
-  testAssignments TestAssignment[]
-  testAttempts    TestAttempt[]
+  questions            Question[]
+  testAssignments      TestAssignment[]
+  testAttempts         TestAttempt[]
+  testRetakePermissions TestRetakePermission[]
 
   @@index([isActive])
   @@index([status])
@@ -321,6 +324,27 @@ model FileUpload {
   @@index([status])
   @@index([uploadedBy])
   @@map("file_uploads")
+}
+
+model TestRetakePermission {
+  id              Int           @id @default(autoincrement())
+  studentId       Int           @map("student_id")
+  questionPaperId Int           @map("question_paper_id")
+  grantedBy       Int           @map("granted_by")
+  reason          String?       @db.VarChar(500)
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  student         Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  questionPaper   QuestionPaper @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+  granter         User          @relation(fields: [grantedBy], references: [id])
+
+  @@unique([studentId, questionPaperId])
+  @@index([studentId])
+  @@index([questionPaperId])
+  @@index([isActive])
+  @@index([studentId, questionPaperId, isActive])
+  @@map("test_retake_permissions")
 }
 
 enum QuestionPaperStatus {

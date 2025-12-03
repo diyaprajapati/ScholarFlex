@@ -628,21 +628,35 @@ exports.startTest = async (req, res) => {
       });
     }
 
-    const todayAttemptResult = await pool.query(
+    // Check if student has completed this test before
+    const completedAttemptResult = await pool.query(
       `SELECT id, status
        FROM test_attempts
        WHERE student_id = $1 
          AND question_paper_id = $2
-         AND DATE(started_at) = CURRENT_DATE
+         AND status IN ('COMPLETED', 'AUTO_SUBMITTED')
        ORDER BY started_at DESC LIMIT 1`,
       [studentId, testId]
     );
 
-    if (todayAttemptResult.rows.length > 0) {
-      return res.status(403).json({
-        success: false,
-        message: 'You have already attempted this test today. Please try again tomorrow.',
-      });
+    // If student has completed the test, check for retake permission
+    if (completedAttemptResult.rows.length > 0) {
+      const retakePermissionResult = await pool.query(
+        `SELECT id, is_active
+         FROM test_retake_permissions
+         WHERE student_id = $1 
+           AND question_paper_id = $2
+           AND is_active = TRUE`,
+        [studentId, testId]
+      );
+
+      // If no active retake permission, deny access
+      if (retakePermissionResult.rows.length === 0) {
+        return res.status(403).json({
+          success: false,
+          message: 'You have already attempted this test. You cannot attempt it again. Please contact an administrator if you need to retake this test.',
+        });
+      }
     }
 
     let questionPool;
