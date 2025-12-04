@@ -77,5 +77,19 @@ router.put('/:id/selection', candidateController.updateStudentSelection);
  */
 router.put('/bulk-selection', candidateController.bulkUpdateSelection);
 
+/**
+ * @route   POST /api/candidates
+ * @desc    Create a new student manually
+ * @access  Private (Admin, Super Admin)
+ */
+router.post('/', candidateController.createStudent);
+
+/**
+ * @route   PUT /api/candidates/:id
+ * @desc    Update an existing student
+ * @access  Private (Admin, Super Admin)
+ */
+router.put('/:id', candidateController.updateStudent);
+
 module.exports = router;
 

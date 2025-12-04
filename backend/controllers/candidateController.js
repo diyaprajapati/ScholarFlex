@@ -656,3 +656,292 @@ exports.bulkUpdateSelection = async (req, res) => {
   });
 };
 
+/**
+ * Create a new student manually
+ */
+exports.createStudent = async (req, res) => {
+  try {
+    const {
+      email,
+      full_name,
+      phone,
+      domain_id,
+      image_url,
+      institute_name,
+      course_taken,
+      area_of_interests,
+      internship_start_date,
+      internship_end_date,
+      internship_duration,
+      reference_information,
+      internal_faculty_name,
+      faculty_contact,
+      faculty_email,
+    } = req.body;
+
+    // Validate required fields
+    if (!email || !full_name) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and full name are required',
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format',
+      });
+    }
+
+    // Check if student already exists
+    const existingStudent = await prisma.student.findUnique({
+      where: { email: email.toLowerCase().trim() },
+    });
+
+    if (existingStudent) {
+      return res.status(400).json({
+        success: false,
+        message: 'Student with this email already exists',
+      });
+    }
+
+    // Validate domain_id if provided
+    if (domain_id) {
+      const domain = await prisma.domain.findUnique({
+        where: { id: parseInt(domain_id) },
+      });
+      if (!domain || !domain.isActive) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid domain selected',
+        });
+      }
+    }
+
+    // Create student
+    const student = await prisma.student.create({
+      data: {
+        email: email.toLowerCase().trim(),
+        fullName: full_name,
+        phone: phone || null,
+        domainId: domain_id ? parseInt(domain_id) : null,
+        imageUrl: image_url || null,
+        instituteName: institute_name || null,
+        courseTaken: course_taken || null,
+        areaOfInterests: area_of_interests || null,
+        internshipStartDate: internship_start_date ? new Date(internship_start_date) : null,
+        internshipEndDate: internship_end_date ? new Date(internship_end_date) : null,
+        internshipDuration: internship_duration || null,
+        referenceInformation: reference_information || null,
+        internalFacultyName: internal_faculty_name || null,
+        facultyContact: faculty_contact || null,
+        facultyEmail: faculty_email || null,
+        createdBy: req.user?.id || null,
+      },
+      include: {
+        domain: true,
+        status: true,
+      },
+    });
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'CREATE_STUDENT',
+      'STUDENT',
+      student.id,
+      `Created student: ${student.email}`
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Student created successfully',
+      student: {
+        id: student.id,
+        email: student.email,
+        full_name: student.fullName,
+        phone: student.phone,
+        domain_id: student.domainId,
+        domain: student.domain?.domainName || null,
+        image_url: student.imageUrl,
+        institute_name: student.instituteName,
+        course_taken: student.courseTaken,
+        area_of_interests: student.areaOfInterests,
+        internship_start_date: student.internshipStartDate,
+        internship_end_date: student.internshipEndDate,
+        internship_duration: student.internshipDuration,
+        reference_information: student.referenceInformation,
+        internal_faculty_name: student.internalFacultyName,
+        faculty_contact: student.facultyContact,
+        faculty_email: student.facultyEmail,
+        is_selected: student.isSelected,
+        created_at: student.createdAt,
+        updated_at: student.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating student:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Update an existing student
+ */
+exports.updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      email,
+      full_name,
+      phone,
+      domain_id,
+      image_url,
+      institute_name,
+      course_taken,
+      area_of_interests,
+      internship_start_date,
+      internship_end_date,
+      internship_duration,
+      reference_information,
+      internal_faculty_name,
+      faculty_contact,
+      faculty_email,
+    } = req.body;
+
+    // Check if student exists
+    const existingStudent = await prisma.student.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!existingStudent) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    // If email is being changed, check if new email already exists
+    if (email && email.toLowerCase().trim() !== existingStudent.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid email format',
+        });
+      }
+
+      const emailExists = await prisma.student.findUnique({
+        where: { email: email.toLowerCase().trim() },
+      });
+
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: 'Student with this email already exists',
+        });
+      }
+    }
+
+    // Validate and process domain_id if provided
+    let processedDomainId = domain_id;
+    if (domain_id !== undefined && domain_id !== null) {
+      if (domain_id === '') {
+        // Allow clearing domain
+        processedDomainId = null;
+      } else {
+        const domain = await prisma.domain.findUnique({
+          where: { id: parseInt(domain_id) },
+        });
+        if (!domain || !domain.isActive) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid domain selected',
+          });
+        }
+        processedDomainId = parseInt(domain_id);
+      }
+    }
+
+    // Build update data
+    const updateData = {};
+    if (email !== undefined) updateData.email = email.toLowerCase().trim();
+    if (full_name !== undefined) updateData.fullName = full_name;
+    if (phone !== undefined) updateData.phone = phone || null;
+    if (domain_id !== undefined) updateData.domainId = processedDomainId;
+    if (image_url !== undefined) updateData.imageUrl = image_url || null;
+    if (institute_name !== undefined) updateData.instituteName = institute_name || null;
+    if (course_taken !== undefined) updateData.courseTaken = course_taken || null;
+    if (area_of_interests !== undefined) updateData.areaOfInterests = area_of_interests || null;
+    if (internship_start_date !== undefined) {
+      updateData.internshipStartDate = internship_start_date ? new Date(internship_start_date) : null;
+    }
+    if (internship_end_date !== undefined) {
+      updateData.internshipEndDate = internship_end_date ? new Date(internship_end_date) : null;
+    }
+    if (internship_duration !== undefined) updateData.internshipDuration = internship_duration || null;
+    if (reference_information !== undefined) updateData.referenceInformation = reference_information || null;
+    if (internal_faculty_name !== undefined) updateData.internalFacultyName = internal_faculty_name || null;
+    if (faculty_contact !== undefined) updateData.facultyContact = faculty_contact || null;
+    if (faculty_email !== undefined) updateData.facultyEmail = faculty_email || null;
+
+    // Update student
+    const updatedStudent = await prisma.student.update({
+      where: { id: parseInt(id) },
+      data: updateData,
+      include: {
+        domain: true,
+        status: true,
+      },
+    });
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'UPDATE_STUDENT',
+      'STUDENT',
+      updatedStudent.id,
+      `Updated student: ${updatedStudent.email}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Student updated successfully',
+      student: {
+        id: updatedStudent.id,
+        email: updatedStudent.email,
+        full_name: updatedStudent.fullName,
+        phone: updatedStudent.phone,
+        domain_id: updatedStudent.domainId,
+        domain: updatedStudent.domain?.domainName || null,
+        image_url: updatedStudent.imageUrl,
+        institute_name: updatedStudent.instituteName,
+        course_taken: updatedStudent.courseTaken,
+        area_of_interests: updatedStudent.areaOfInterests,
+        internship_start_date: updatedStudent.internshipStartDate,
+        internship_end_date: updatedStudent.internshipEndDate,
+        internship_duration: updatedStudent.internshipDuration,
+        reference_information: updatedStudent.referenceInformation,
+        internal_faculty_name: updatedStudent.internalFacultyName,
+        faculty_contact: updatedStudent.facultyContact,
+        faculty_email: updatedStudent.facultyEmail,
+        is_selected: updatedStudent.isSelected,
+        created_at: updatedStudent.createdAt,
+        updated_at: updatedStudent.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating student:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
