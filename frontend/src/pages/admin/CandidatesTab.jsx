@@ -13,37 +13,15 @@ const CandidatesTab = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [domains, setDomains] = useState([]);
-  const [loadingDomains, setLoadingDomains] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [googleSheetsUrl, setGoogleSheetsUrl] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [failedImages, setFailedImages] = useState(new Set());
-  const [studentForm, setStudentForm] = useState({
-    email: '',
-    full_name: '',
-    phone: '',
-    domain_id: '',
-    image_url: '',
-    institute_name: '',
-    course_taken: '',
-    area_of_interests: '',
-    internship_start_date: '',
-    internship_end_date: '',
-    internship_duration: '',
-    reference_information: '',
-    internal_faculty_name: '',
-    faculty_contact: '',
-    faculty_email: '',
-  });
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     instituteName: '',
-    courseTaken: [], // Array for multiple course selection
-    areaOfInterests: [], // Array for multiple domain selection
+    courseTaken: '',
+    areaOfInterests: '',
     testGiven: '', // 'yes', 'no', or ''
     marksRange: '', // 'below70', 'above70', or ''
     selected: '', // 'yes', 'no', or ''
@@ -71,21 +49,7 @@ const CandidatesTab = () => {
 
   useEffect(() => {
     fetchStudents();
-    fetchDomains();
   }, [fetchStudents]);
-
-  const fetchDomains = useCallback(async () => {
-    try {
-      setLoadingDomains(true);
-      const response = await api.domains.getAll();
-      setDomains(response.data || []);
-    } catch (err) {
-      console.error('Error fetching domains:', err);
-      setError('Failed to fetch domains');
-    } finally {
-      setLoadingDomains(false);
-    }
-  }, []);
 
   const fetchStudentDetails = useCallback(async (id) => {
     try {
@@ -239,17 +203,6 @@ const CandidatesTab = () => {
     }
   }, []);
 
-  // Extract unique course names from students
-  const uniqueCourses = useMemo(() => {
-    const courses = new Set();
-    students.forEach(student => {
-      if (student.course_taken && student.course_taken.trim()) {
-        courses.add(student.course_taken.trim());
-      }
-    });
-    return Array.from(courses).sort();
-  }, [students]);
-
   // Filter students by search query and all filters - memoized
   const filteredStudents = useMemo(() => {
     let result = [...students];
@@ -270,25 +223,18 @@ const CandidatesTab = () => {
       );
     }
 
-    // Apply course taken filter (multiple selection)
-    if (filters.courseTaken && filters.courseTaken.length > 0) {
-      result = result.filter(student => {
-        if (!student.course_taken) return false;
-        return filters.courseTaken.some(course => 
-          student.course_taken?.toLowerCase().includes(course.toLowerCase())
-        );
-      });
+    // Apply course taken filter
+    if (filters.courseTaken) {
+      result = result.filter(student =>
+        student.course_taken?.toLowerCase().includes(filters.courseTaken.toLowerCase())
+      );
     }
 
-    // Apply area of interests filter (multiple domain selection)
-    if (filters.areaOfInterests && filters.areaOfInterests.length > 0) {
-      result = result.filter(student => {
-        // Check if student's domain matches any selected domain
-        const studentDomain = student.domain?.toLowerCase() || '';
-        return filters.areaOfInterests.some(selectedDomain => 
-          studentDomain === selectedDomain.toLowerCase()
-        );
-      });
+    // Apply area of interests filter
+    if (filters.areaOfInterests) {
+      result = result.filter(student =>
+        student.area_of_interests?.toLowerCase().includes(filters.areaOfInterests.toLowerCase())
+      );
     }
 
     // Apply test given filter (marks > 0 means test given)
@@ -378,173 +324,6 @@ const CandidatesTab = () => {
     setSelectedStudent(null);
   }, []);
 
-  const handleOpenAddModal = useCallback(() => {
-    setStudentForm({
-      email: '',
-      full_name: '',
-      phone: '',
-      domain_id: '',
-      image_url: '',
-      institute_name: '',
-      course_taken: '',
-      area_of_interests: '',
-      internship_start_date: '',
-      internship_end_date: '',
-      internship_duration: '',
-      reference_information: '',
-      internal_faculty_name: '',
-      faculty_contact: '',
-      faculty_email: '',
-    });
-    setShowAddModal(true);
-    setError('');
-  }, []);
-
-  const handleCloseAddModal = useCallback(() => {
-    setShowAddModal(false);
-    setStudentForm({
-      email: '',
-      full_name: '',
-      phone: '',
-      domain_id: '',
-      image_url: '',
-      institute_name: '',
-      course_taken: '',
-      area_of_interests: '',
-      internship_start_date: '',
-      internship_end_date: '',
-      internship_duration: '',
-      reference_information: '',
-      internal_faculty_name: '',
-      faculty_contact: '',
-      faculty_email: '',
-    });
-    setError('');
-  }, []);
-
-  const handleOpenEditModal = useCallback(() => {
-    if (!selectedStudent) return;
-    
-    // Format dates for input fields (YYYY-MM-DD)
-    const formatDateForInput = (dateString) => {
-      if (!dateString) return '';
-      try {
-        const date = new Date(dateString);
-        return date.toISOString().split('T')[0];
-      } catch {
-        return '';
-      }
-    };
-
-    // Find domain_id from domain name
-    const domain = domains.find(d => d.domain_name === selectedStudent.domain);
-    
-    setStudentForm({
-      email: selectedStudent.email || '',
-      full_name: selectedStudent.full_name || '',
-      phone: selectedStudent.phone || selectedStudent.mobile_number || '',
-      domain_id: domain ? domain.id.toString() : '',
-      image_url: selectedStudent.image_url || '',
-      institute_name: selectedStudent.institute_name || '',
-      course_taken: selectedStudent.course_taken || '',
-      area_of_interests: selectedStudent.area_of_interests || '',
-      internship_start_date: formatDateForInput(selectedStudent.internship_start_date),
-      internship_end_date: formatDateForInput(selectedStudent.internship_end_date),
-      internship_duration: selectedStudent.internship_duration || '',
-      reference_information: selectedStudent.reference_information || '',
-      internal_faculty_name: selectedStudent.internal_faculty_name || '',
-      faculty_contact: selectedStudent.faculty_contact || '',
-      faculty_email: selectedStudent.faculty_email || '',
-    });
-    setShowEditModal(true);
-    setShowDetailsModal(false);
-    setError('');
-  }, [selectedStudent, domains]);
-
-  const handleCloseEditModal = useCallback(() => {
-    setShowEditModal(false);
-    setError('');
-  }, []);
-
-  const handleFormChange = useCallback((field, value) => {
-    setStudentForm(prev => ({ ...prev, [field]: value }));
-  }, []);
-
-  const handleSaveStudent = useCallback(async (isEdit = false) => {
-    try {
-      setSaving(true);
-      setError('');
-
-      // Validate required fields
-      if (!studentForm.email || !studentForm.full_name) {
-        setError('Email and full name are required');
-        return;
-      }
-
-      // Prepare data
-      const data = {
-        email: studentForm.email.trim(),
-        full_name: studentForm.full_name.trim(),
-        phone: studentForm.phone.trim() || null,
-        domain_id: studentForm.domain_id || null,
-        image_url: studentForm.image_url.trim() || null,
-        institute_name: studentForm.institute_name.trim() || null,
-        course_taken: studentForm.course_taken.trim() || null,
-        area_of_interests: studentForm.area_of_interests.trim() || null,
-        internship_start_date: studentForm.internship_start_date || null,
-        internship_end_date: studentForm.internship_end_date || null,
-        internship_duration: studentForm.internship_duration.trim() || null,
-        reference_information: studentForm.reference_information.trim() || null,
-        internal_faculty_name: studentForm.internal_faculty_name.trim() || null,
-        faculty_contact: studentForm.faculty_contact.trim() || null,
-        faculty_email: studentForm.faculty_email.trim() || null,
-      };
-
-      if (isEdit && selectedStudent) {
-        await api.candidates.update(selectedStudent.id, data);
-        setSuccess('Student updated successfully');
-      } else {
-        await api.candidates.create(data);
-        setSuccess('Student created successfully');
-      }
-
-      // Refresh students list
-      await fetchStudents();
-      
-      // Close modals
-      setShowAddModal(false);
-      setShowEditModal(false);
-      setShowDetailsModal(false);
-      setSelectedStudent(null);
-      
-      // Reset form
-      setStudentForm({
-        email: '',
-        full_name: '',
-        phone: '',
-        domain_id: '',
-        image_url: '',
-        institute_name: '',
-        course_taken: '',
-        area_of_interests: '',
-        internship_start_date: '',
-        internship_end_date: '',
-        internship_duration: '',
-        reference_information: '',
-        internal_faculty_name: '',
-        faculty_contact: '',
-        faculty_email: '',
-      });
-
-      setTimeout(() => setSuccess(''), 5000);
-    } catch (err) {
-      console.error('Error saving student:', err);
-      setError(err.message || 'Failed to save student');
-    } finally {
-      setSaving(false);
-    }
-  }, [studentForm, selectedStudent, fetchStudents]);
-
   const handleCloseImportModal = useCallback(() => {
     setShowImportModal(false);
     setGoogleSheetsUrl('');
@@ -599,8 +378,8 @@ const CandidatesTab = () => {
   const clearFilters = useCallback(() => {
     setFilters({
       instituteName: '',
-      courseTaken: [],
-      areaOfInterests: [],
+      courseTaken: '',
+      areaOfInterests: '',
       testGiven: '',
       marksRange: '',
       selected: '',
@@ -613,13 +392,7 @@ const CandidatesTab = () => {
   }, []);
 
   const hasActiveFilters = useMemo(() => {
-    const hasFilter = Object.entries(filters).some(([key, value]) => {
-      if (Array.isArray(value)) {
-        return value.length > 0;
-      }
-      return value !== '';
-    });
-    return hasFilter || searchQuery.trim() !== '';
+    return Object.values(filters).some(value => value !== '') || searchQuery.trim() !== '';
   }, [filters, searchQuery]);
 
   const downloadExcel = useCallback(() => {
@@ -705,12 +478,6 @@ const CandidatesTab = () => {
         <div className="flex justify-between items-center flex-wrap gap-4">
           <h2 className="text-2xl font-semibold text-gray-900">Students</h2>
           <div className="flex gap-3 flex-wrap">
-            <button
-              onClick={handleOpenAddModal}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-            >
-              Add Student
-            </button>
             <button
               onClick={handleOpenImportModal}
               disabled={importing}
@@ -818,73 +585,28 @@ const CandidatesTab = () => {
                   />
                 </div>
 
-                {/* Course Taken - Multi-select */}
+                {/* Course Taken */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Course Taken
-                    <span className="ml-1 text-xs text-gray-500 font-normal">(Hold Ctrl/Cmd to select multiple)</span>
-                  </label>
-                  <select
-                    multiple
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Course Taken</label>
+                  <input
+                    type="text"
                     value={filters.courseTaken}
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions, option => option.value);
-                      handleFilterChange('courseTaken', selected);
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm min-h-[100px] bg-white"
-                    size={Math.min(uniqueCourses.length + 1, 6)}
-                  >
-                    {uniqueCourses.length > 0 ? (
-                      uniqueCourses.map((course) => (
-                        <option key={course} value={course}>
-                          {course}
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>No courses available</option>
-                    )}
-                  </select>
-                  {filters.courseTaken.length > 0 && (
-                    <p className="mt-1 text-xs text-indigo-600 font-medium">
-                      {filters.courseTaken.length} course(s) selected
-                    </p>
-                  )}
+                    onChange={(e) => handleFilterChange('courseTaken', e.target.value)}
+                    placeholder="Filter by course..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
                 </div>
 
-                {/* Area of Interests - Multi-select (Domains) */}
+                {/* Area of Interests */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Area of Interests (Domains)
-                    <span className="ml-1 text-xs text-gray-500 font-normal">(Hold Ctrl/Cmd to select multiple)</span>
-                  </label>
-                  <select
-                    multiple
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Area of Interests</label>
+                  <input
+                    type="text"
                     value={filters.areaOfInterests}
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions, option => option.value);
-                      handleFilterChange('areaOfInterests', selected);
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm min-h-[100px] bg-white"
-                    size={Math.min(domains.length + 1, 6)}
-                    disabled={loadingDomains}
-                  >
-                    {loadingDomains ? (
-                      <option disabled>Loading domains...</option>
-                    ) : domains.length > 0 ? (
-                      domains.map((domain) => (
-                        <option key={domain.id} value={domain.domain_name}>
-                          {domain.domain_name}
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>No domains available</option>
-                    )}
-                  </select>
-                  {filters.areaOfInterests.length > 0 && (
-                    <p className="mt-1 text-xs text-indigo-600 font-medium">
-                      {filters.areaOfInterests.length} domain(s) selected
-                    </p>
-                  )}
+                    onChange={(e) => handleFilterChange('areaOfInterests', e.target.value)}
+                    placeholder="Filter by interests..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
                 </div>
 
                 {/* Test Given */}
@@ -1046,7 +768,7 @@ const CandidatesTab = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Name</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Email</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Mobile</th>
-                  {/* <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Institute</th> */}
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Institute</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Course</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Marks</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
@@ -1096,9 +818,9 @@ const CandidatesTab = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {student.mobile_number || 'N/A'}
                         </td>
-                        {/* <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                        <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
                           {student.institute_name || 'N/A'}
-                        </td> */}
+                        </td>
                         <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
                           {student.course_taken || 'N/A'}
                         </td>
@@ -1427,13 +1149,6 @@ const CandidatesTab = () => {
               <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 sticky bottom-0 bg-white">
                 <button
                   type="button"
-                  className="px-5 py-2.5 text-sm font-medium text-indigo-600 bg-white border border-indigo-300 rounded-lg hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
-                  onClick={handleOpenEditModal}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
                   className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                   onClick={handleCloseDetailsModal}
                 >
@@ -1510,462 +1225,6 @@ const CandidatesTab = () => {
                   disabled={importing || !googleSheetsUrl.trim()}
                 >
                   {importing ? 'Importing...' : 'Import'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Add Student Modal */}
-      {showAddModal && (
-        <>
-          <div 
-            className="fixed inset-0 z-100 bg-gray-900/20 backdrop-blur-md"
-            onClick={handleCloseAddModal}
-          ></div>
-          
-          <div className="fixed inset-0 z-110 overflow-y-auto flex items-center justify-center p-4 pointer-events-none">
-            <div
-              className="relative bg-white rounded-lg shadow-2xl border border-gray-200 w-full max-w-4xl transform transition-all pointer-events-auto max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-                <h2 className="text-xl font-semibold text-gray-900">Add New Student</h2>
-                <button
-                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1.5 transition-all duration-200"
-                  onClick={handleCloseAddModal}
-                  aria-label="Close"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Modal Form */}
-              <div className="px-6 py-5">
-                {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm">
-                    {error}
-                  </div>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Required Fields */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      value={studentForm.email}
-                      onChange={(e) => handleFormChange('email', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                      required
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={studentForm.full_name}
-                      onChange={(e) => handleFormChange('full_name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input
-                      type="tel"
-                      value={studentForm.phone}
-                      onChange={(e) => handleFormChange('phone', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Domain</label>
-                    <select
-                      value={studentForm.domain_id}
-                      onChange={(e) => handleFormChange('domain_id', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                      disabled={loadingDomains}
-                    >
-                      <option value="">Select Domain</option>
-                      {domains.map((domain) => (
-                        <option key={domain.id} value={domain.id}>
-                          {domain.domain_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                    <input
-                      type="url"
-                      value={studentForm.image_url}
-                      onChange={(e) => handleFormChange('image_url', e.target.value)}
-                      placeholder="Google Drive link or image URL"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Institute Name</label>
-                    <input
-                      type="text"
-                      value={studentForm.institute_name}
-                      onChange={(e) => handleFormChange('institute_name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Course Taken</label>
-                    <input
-                      type="text"
-                      value={studentForm.course_taken}
-                      onChange={(e) => handleFormChange('course_taken', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Area of Interests</label>
-                    <textarea
-                      value={studentForm.area_of_interests}
-                      onChange={(e) => handleFormChange('area_of_interests', e.target.value)}
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internship Start Date</label>
-                    <input
-                      type="date"
-                      value={studentForm.internship_start_date}
-                      onChange={(e) => handleFormChange('internship_start_date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internship End Date</label>
-                    <input
-                      type="date"
-                      value={studentForm.internship_end_date}
-                      onChange={(e) => handleFormChange('internship_end_date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internship Duration</label>
-                    <input
-                      type="text"
-                      value={studentForm.internship_duration}
-                      onChange={(e) => handleFormChange('internship_duration', e.target.value)}
-                      placeholder="e.g., 3 months"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Reference Information</label>
-                    <textarea
-                      value={studentForm.reference_information}
-                      onChange={(e) => handleFormChange('reference_information', e.target.value)}
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internal Faculty Name</label>
-                    <input
-                      type="text"
-                      value={studentForm.internal_faculty_name}
-                      onChange={(e) => handleFormChange('internal_faculty_name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Faculty Contact</label>
-                    <input
-                      type="tel"
-                      value={studentForm.faculty_contact}
-                      onChange={(e) => handleFormChange('faculty_contact', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Faculty Email</label>
-                    <input
-                      type="email"
-                      value={studentForm.faculty_email}
-                      onChange={(e) => handleFormChange('faculty_email', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 sticky bottom-0 bg-white">
-                <button
-                  type="button"
-                  className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
-                  onClick={handleCloseAddModal}
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => handleSaveStudent(false)}
-                  disabled={saving || !studentForm.email || !studentForm.full_name}
-                >
-                  {saving ? 'Saving...' : 'Save Student'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Edit Student Modal */}
-      {showEditModal && selectedStudent && (
-        <>
-          <div 
-            className="fixed inset-0 z-100 bg-gray-900/20 backdrop-blur-md"
-            onClick={handleCloseEditModal}
-          ></div>
-          
-          <div className="fixed inset-0 z-110 overflow-y-auto flex items-center justify-center p-4 pointer-events-none">
-            <div
-              className="relative bg-white rounded-lg shadow-2xl border border-gray-200 w-full max-w-4xl transform transition-all pointer-events-auto max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-                <h2 className="text-xl font-semibold text-gray-900">Edit Student</h2>
-                <button
-                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1.5 transition-all duration-200"
-                  onClick={handleCloseEditModal}
-                  aria-label="Close"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Modal Form */}
-              <div className="px-6 py-5">
-                {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm">
-                    {error}
-                  </div>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Required Fields */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      value={studentForm.email}
-                      onChange={(e) => handleFormChange('email', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                      required
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={studentForm.full_name}
-                      onChange={(e) => handleFormChange('full_name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input
-                      type="tel"
-                      value={studentForm.phone}
-                      onChange={(e) => handleFormChange('phone', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Domain</label>
-                    <select
-                      value={studentForm.domain_id}
-                      onChange={(e) => handleFormChange('domain_id', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                      disabled={loadingDomains}
-                    >
-                      <option value="">Select Domain</option>
-                      {domains.map((domain) => (
-                        <option key={domain.id} value={domain.id}>
-                          {domain.domain_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                    <input
-                      type="url"
-                      value={studentForm.image_url}
-                      onChange={(e) => handleFormChange('image_url', e.target.value)}
-                      placeholder="Google Drive link or image URL"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Institute Name</label>
-                    <input
-                      type="text"
-                      value={studentForm.institute_name}
-                      onChange={(e) => handleFormChange('institute_name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Course Taken</label>
-                    <input
-                      type="text"
-                      value={studentForm.course_taken}
-                      onChange={(e) => handleFormChange('course_taken', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Area of Interests</label>
-                    <textarea
-                      value={studentForm.area_of_interests}
-                      onChange={(e) => handleFormChange('area_of_interests', e.target.value)}
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internship Start Date</label>
-                    <input
-                      type="date"
-                      value={studentForm.internship_start_date}
-                      onChange={(e) => handleFormChange('internship_start_date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internship End Date</label>
-                    <input
-                      type="date"
-                      value={studentForm.internship_end_date}
-                      onChange={(e) => handleFormChange('internship_end_date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internship Duration</label>
-                    <input
-                      type="text"
-                      value={studentForm.internship_duration}
-                      onChange={(e) => handleFormChange('internship_duration', e.target.value)}
-                      placeholder="e.g., 3 months"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Reference Information</label>
-                    <textarea
-                      value={studentForm.reference_information}
-                      onChange={(e) => handleFormChange('reference_information', e.target.value)}
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Internal Faculty Name</label>
-                    <input
-                      type="text"
-                      value={studentForm.internal_faculty_name}
-                      onChange={(e) => handleFormChange('internal_faculty_name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Faculty Contact</label>
-                    <input
-                      type="tel"
-                      value={studentForm.faculty_contact}
-                      onChange={(e) => handleFormChange('faculty_contact', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Faculty Email</label>
-                    <input
-                      type="email"
-                      value={studentForm.faculty_email}
-                      onChange={(e) => handleFormChange('faculty_email', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 sticky bottom-0 bg-white">
-                <button
-                  type="button"
-                  className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
-                  onClick={handleCloseEditModal}
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => handleSaveStudent(true)}
-                  disabled={saving || !studentForm.email || !studentForm.full_name}
-                >
-                  {saving ? 'Saving...' : 'Update Student'}
                 </button>
               </div>
             </div>
