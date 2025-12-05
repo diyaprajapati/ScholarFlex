@@ -25,7 +25,7 @@ const CandidatesTab = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     instituteName: '',
-    courseTaken: '',
+    courseTaken: [], // Array of selected courses
     testGiven: '', // 'yes', 'no', or ''
     marksRange: '', // 'below70', 'above70', or ''
     selected: '', // 'yes', 'no', or ''
@@ -240,11 +240,14 @@ const CandidatesTab = () => {
       );
     }
 
-    // Apply course taken filter
-    if (filters.courseTaken) {
-      result = result.filter(student =>
-        student.course_taken?.toLowerCase().includes(filters.courseTaken.toLowerCase())
-      );
+    // Apply course taken filter (multiple courses)
+    if (filters.courseTaken && filters.courseTaken.length > 0) {
+      result = result.filter(student => {
+        if (!student.course_taken) return false;
+        return filters.courseTaken.some(course => 
+          student.course_taken.toLowerCase() === course.toLowerCase()
+        );
+      });
     }
 
 
@@ -445,7 +448,7 @@ const CandidatesTab = () => {
   const clearFilters = useCallback(() => {
     setFilters({
       instituteName: '',
-      courseTaken: '',
+      courseTaken: [],
       testGiven: '',
       marksRange: '',
       selected: '',
@@ -458,8 +461,41 @@ const CandidatesTab = () => {
   }, []);
 
   const hasActiveFilters = useMemo(() => {
-    return Object.values(filters).some(value => value !== '') || searchQuery.trim() !== '';
+    return Object.values(filters).some(value => {
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return value !== '';
+    }) || searchQuery.trim() !== '';
   }, [filters, searchQuery]);
+
+  // Get unique courses from students data
+  const availableCourses = useMemo(() => {
+    const coursesSet = new Set();
+    students.forEach(student => {
+      if (student.course_taken && student.course_taken.trim()) {
+        coursesSet.add(student.course_taken.trim());
+      }
+    });
+    return Array.from(coursesSet).sort();
+  }, [students]);
+
+  const handleCourseToggle = useCallback((course) => {
+    setFilters(prev => {
+      const currentCourses = prev.courseTaken || [];
+      if (currentCourses.includes(course)) {
+        return {
+          ...prev,
+          courseTaken: currentCourses.filter(c => c !== course),
+        };
+      } else {
+        return {
+          ...prev,
+          courseTaken: [...currentCourses, course],
+        };
+      }
+    });
+  }, []);
 
   const downloadExcel = useCallback(() => {
     // Prepare data for Excel export
@@ -657,16 +693,48 @@ const CandidatesTab = () => {
                   />
                 </div>
 
-                {/* Course Taken */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Course Taken</label>
-                  <input
-                    type="text"
-                    value={filters.courseTaken}
-                    onChange={(e) => handleFilterChange('courseTaken', e.target.value)}
-                    placeholder="Filter by course..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                  />
+                {/* Course Taken - Multi-select */}
+                <div className="md:col-span-2 lg:col-span-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Course Taken</label>
+                  {availableCourses.length > 0 ? (
+                    <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-2 bg-white">
+                      <div className="space-y-2">
+                        {availableCourses.map((course) => (
+                          <label
+                            key={course}
+                            className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={filters.courseTaken.includes(course)}
+                              onChange={() => handleCourseToggle(course)}
+                              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            />
+                            <span className="flex-1">{course}</span>
+                            {filters.courseTaken.includes(course) && (
+                              <span className="text-xs text-indigo-600 font-medium">
+                                ({filters.courseTaken.filter(c => c === course).length})
+                              </span>
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                      {filters.courseTaken.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-gray-200">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, courseTaken: [] }))}
+                            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                          >
+                            Clear selection ({filters.courseTaken.length} selected)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-500 bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
+                      No courses available
+                    </div>
+                  )}
                 </div>
 
                 {/* Test Given */}

@@ -7,11 +7,8 @@ export default function ChoiceScreen({
   jsonDescription = "Import entries from a JSON file with drag & drop",
   formLinkLabel = "Copy Form Link",
   formLinkDescription = "Generate a shareable link for users to fill their data",
-  manualLabel = "Manual Add",
-  manualDescription = "Add a single entry manually using a form",
   onSelectJSON,
-  onSelectFormLink,
-  onSelectManual
+  onSelectFormLink
 }) {
   return (
     <div className="flex items-center justify-center py-4 sm:py-5 lg:py-6">
@@ -21,7 +18,7 @@ export default function ChoiceScreen({
           <p className="text-xs sm:text-sm text-gray-600">{description}</p>
         </div>
 
-        <div className={`grid gap-3 sm:gap-4 lg:gap-5 ${onSelectManual ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
           {/* JSON Upload Option */}
           <button
             onClick={onSelectJSON}
@@ -57,26 +54,6 @@ export default function ChoiceScreen({
               </div>
             </div>
           </button>
-
-          {/* Manual Add Option */}
-          {onSelectManual && (
-            <button
-              onClick={onSelectManual}
-              className="group relative bg-white border-2 border-gray-200 rounded-lg p-4 sm:p-5 lg:p-6 hover:border-[#4C763B] transition-all duration-200 text-left"
-            >
-              <div className="flex flex-col items-center text-center space-y-2 sm:space-y-2.5">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-[#4C763B]/10 flex items-center justify-center group-hover:bg-[#4C763B]/20 transition-colors">
-                  <svg className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 mb-0.5 sm:mb-1">{manualLabel}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">{manualDescription}</p>
-                </div>
-              </div>
-            </button>
-          )}
         </div>
       </div>
     </div>

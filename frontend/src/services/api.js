@@ -107,13 +107,6 @@ export const api = {
 
   // Intern endpoints
   interns: {
-    create: async (data) => {
-      return apiRequest('/interns', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-    },
-
     uploadSpreadsheet: async (file) => {
       const formData = new FormData();
       formData.append('file', file);
@@ -542,26 +535,6 @@ export const api = {
       });
     },
 
-    getById: async (id) => {
-      return apiRequest(`/candidates/${id}`, {
-        method: 'GET',
-      });
-    },
-
-    create: async (data) => {
-      return apiRequest('/candidates', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-    },
-
-    update: async (id, data) => {
-      return apiRequest(`/candidates/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      });
-    },
-
     updateSelection: async (id, isSelected) => {
       return apiRequest(`/candidates/${id}/selection`, {
         method: 'PUT',
@@ -576,6 +549,12 @@ export const api = {
           candidate_ids: candidateIds,
           is_selected: isSelected 
         }),
+      });
+    },
+
+    getById: async (id) => {
+      return apiRequest(`/candidates/${id}`, {
+        method: 'GET',
       });
     },
 

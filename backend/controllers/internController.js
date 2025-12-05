@@ -390,110 +390,6 @@ exports.uploadSpreadsheet = async (req, res) => {
 };
 
 /**
- * Create a new intern/student manually
- */
-exports.createIntern = async (req, res) => {
-  try {
-    const { full_name, email, phone, domain_id, domain_name, status_id, status_name } = req.body;
-
-    // Validate required fields
-    if (!full_name || !email) {
-      return res.status(400).json({
-        success: false,
-        message: 'Full name and email are required',
-      });
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid email format',
-      });
-    }
-
-    // Prepare student data
-    const studentData = {
-      email,
-      full_name,
-      phone: phone || null,
-      created_by: req.user?.id || null,
-    };
-
-    // Handle domain - accept either domain_id or domain_name
-    if (domain_id !== undefined && domain_id !== null && domain_id !== '') {
-      studentData.domain_id = parseInt(domain_id);
-    } else if (domain_name !== undefined && domain_name !== null && domain_name !== '') {
-      // Get or create domain by name
-      const resolvedDomainId = await Student.getOrCreateDomain(domain_name);
-      studentData.domain_id = resolvedDomainId;
-    }
-
-    // Handle status - accept either status_id or status_name
-    if (status_id !== undefined && status_id !== null && status_id !== '') {
-      studentData.status_id = parseInt(status_id);
-    } else if (status_name !== undefined && status_name !== null && status_name !== '') {
-      // Get status_id from status_name
-      const statusResult = await pool.query(
-        "SELECT id FROM intern_status WHERE status_name = $1 AND is_active = TRUE LIMIT 1",
-        [status_name]
-      );
-      if (statusResult.rows.length > 0) {
-        studentData.status_id = statusResult.rows[0].id;
-      }
-    }
-
-    // Create student
-    const newStudent = await Student.create(studentData);
-
-    // Log activity
-    if (req.user) {
-      await logActivitySimple(
-        req,
-        'CREATE',
-        'STUDENT',
-        newStudent.id,
-        `Created intern: ${newStudent.full_name}`
-      );
-    }
-
-    // Format response
-    const formattedStudent = {
-      id: newStudent.id,
-      name: newStudent.full_name,
-      email: newStudent.email,
-      domain: newStudent.domain_name || 'N/A',
-      domain_id: newStudent.domain_id,
-      phone: newStudent.phone,
-      status: newStudent.status_name,
-      registration_date: newStudent.registration_date,
-    };
-
-    res.status(201).json({
-      success: true,
-      message: 'Intern created successfully',
-      data: formattedStudent,
-    });
-  } catch (error) {
-    console.error('Error creating intern:', error);
-    
-    // Handle duplicate email error
-    if (error.code === 'DUPLICATE_EMAIL' || error.code === '23505' || error.message.includes('duplicate') || error.message.includes('already exists')) {
-      return res.status(400).json({
-        success: false,
-        message: error.message || 'Email already exists',
-      });
-    }
-
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Internal server error',
-    });
-  }
-};
-
-/**
  * Get all interns/students
  */
 exports.getAllInterns = async (req, res) => {
@@ -596,21 +492,18 @@ exports.updateIntern = async (req, res) => {
     if (phone !== undefined) updateData.phone = phone;
     
     // Handle domain - accept either domain_id or domain_name
-    if (domain_id !== undefined && domain_id !== null && domain_id !== '') {
-      updateData.domain_id = parseInt(domain_id);
-    } else if (domain_name !== undefined && domain_name !== null && domain_name !== '') {
+    if (domain_id !== undefined) {
+      updateData.domain_id = domain_id;
+    } else if (domain_name !== undefined) {
       // Get or create domain by name
       const resolvedDomainId = await Student.getOrCreateDomain(domain_name);
       updateData.domain_id = resolvedDomainId;
-    } else if (domain_id === null || domain_id === '') {
-      // Explicitly set to null to clear domain
-      updateData.domain_id = null;
     }
     
     // Handle status - accept either status_id or status_name
-    if (status_id !== undefined && status_id !== null && status_id !== '') {
-      updateData.status_id = parseInt(status_id);
-    } else if (status_name !== undefined && status_name !== null && status_name !== '') {
+    if (status_id !== undefined) {
+      updateData.status_id = status_id;
+    } else if (status_name !== undefined) {
       // Get status_id from status_name
       const statusResult = await pool.query(
         "SELECT id FROM intern_status WHERE status_name = $1 AND is_active = TRUE LIMIT 1",
@@ -618,12 +511,6 @@ exports.updateIntern = async (req, res) => {
       );
       if (statusResult.rows.length > 0) {
         updateData.status_id = statusResult.rows[0].id;
-      } else {
-        // If status not found, throw error
-        return res.status(400).json({
-          success: false,
-          message: `Status "${status_name}" not found`,
-        });
       }
     }
 

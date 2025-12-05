@@ -253,7 +253,7 @@ export default function InternsTable({ interns = [], isLoading = false, onEdit, 
                           right: `${menuPosition.right}px`
                         }}
                       >
-                        <button
+                        {/* <button
                           onClick={(e) => handleAction('view', intern, e)}
                           className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 sm:gap-3 transition-colors"
                         >
@@ -271,7 +271,7 @@ export default function InternsTable({ interns = [], isLoading = false, onEdit, 
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                           </svg>
                           Edit
-                        </button>
+                        </button> */}
                         <button
                           onClick={(e) => handleAction('delete', intern, e)}
                           className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 sm:gap-3 transition-colors"

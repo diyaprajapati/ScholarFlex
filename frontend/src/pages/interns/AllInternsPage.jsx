@@ -220,7 +220,7 @@ export default function AllInternsPage() {
             totalCount={interns.length}
           />
 
-          {/* Filter Panel */}
+          {/* Filter Panel
         <FilterPanel
           isOpen={isFilterPanelOpen}
           onClose={handleCloseFilterPanel}
@@ -229,7 +229,7 @@ export default function AllInternsPage() {
           onApplyFilters={(newFilters) => {
             setFilters(newFilters)
           }}
-        />
+        /> */}
 
           {/* Interns Table */}
           <InternsTable 

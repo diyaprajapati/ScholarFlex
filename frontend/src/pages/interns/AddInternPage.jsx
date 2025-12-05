@@ -16,7 +16,7 @@ export default function AddInternPage() {
   const editId = searchParams.get('edit')
   const isEditMode = !!editId
   const [user, setUser] = useState(null)
-  const [mode, setMode] = useState(isEditMode ? 'edit' : null) // null, 'spreadsheet', 'form-link', 'manual', or 'edit'
+  const [mode, setMode] = useState(isEditMode ? 'edit' : null) // null, 'spreadsheet', 'form-link', or 'edit'
   const [isUploading, setIsUploading] = useState(false)
   const [uploadResult, setUploadResult] = useState(null)
   const [internData, setInternData] = useState(null)
@@ -44,10 +44,6 @@ export default function AddInternPage() {
 
   const handleSelectFormLink = () => {
     setMode('form-link')
-  }
-
-  const handleSelectManual = () => {
-    setMode('manual')
   }
 
   const fetchInternData = async (internId) => {
@@ -78,41 +74,23 @@ export default function AddInternPage() {
     try {
       setIsUploading(true)
       
-      if (isEditMode) {
-        // Update existing intern
-        // Map form data to API format
-        const updateData = {
-          full_name: formData.name,
-          email: formData.email,
-          domain_id: formData.domain ? parseInt(formData.domain) : null, // Convert to integer
-          status_name: formData.status, // Backend will resolve to status_id
-        }
-        
-        const response = await api.interns.update(editId, updateData)
-        
-        if (response.success) {
-          alert('Intern updated successfully!')
-          navigate(ROUTES.INTERNS.VIEW)
-        }
-      } else {
-        // Create new intern
-        const createData = {
-          full_name: formData.name,
-          email: formData.email,
-          domain_id: formData.domain ? parseInt(formData.domain) : null, // Convert to integer
-          status_name: formData.status, // Backend will resolve to status_id
-        }
-        
-        const response = await api.interns.create(createData)
-        
-        if (response.success) {
-          alert('Intern added successfully!')
-          navigate(ROUTES.INTERNS.VIEW)
-        }
+      // Map form data to API format
+      const updateData = {
+        full_name: formData.name,
+        email: formData.email,
+        domain_name: formData.domain, // Backend will resolve to domain_id
+        status_name: formData.status, // Backend will resolve to status_id
+      }
+      
+      const response = await api.interns.update(editId, updateData)
+      
+      if (response.success) {
+        alert('Intern updated successfully!')
+        navigate(ROUTES.INTERNS.VIEW)
       }
     } catch (error) {
-      console.error('Save error:', error)
-      alert(error.message || 'Failed to save intern. Please try again.')
+      console.error('Update error:', error)
+      alert(error.message || 'Failed to update intern. Please try again.')
     } finally {
       setIsUploading(false)
     }
@@ -189,11 +167,8 @@ export default function AddInternPage() {
                 jsonDescription="Import interns from Excel or CSV file with drag & drop"
                 formLinkLabel="Copy Form Link"
                 formLinkDescription="Generate a shareable link for users to fill their data"
-                manualLabel="Manual Add"
-                manualDescription="Add a single intern manually using a form"
                 onSelectJSON={handleSelectSpreadsheet}
                 onSelectFormLink={handleSelectFormLink}
-                onSelectManual={handleSelectManual}
               />
             </div>
           ) : mode === 'spreadsheet' ? (
@@ -376,29 +351,6 @@ export default function AddInternPage() {
               </div>
               <CopyFormLink onBack={handleBackToChoice} />
             </div>
-          ) : mode === 'manual' ? (
-            // Manual Add Screen
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-5">
-              <div className="mb-3 sm:mb-4">
-                <button
-                  onClick={handleBackToChoice}
-                  className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors mb-2 sm:mb-3"
-                >
-                  <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back
-                </button>
-                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Add Intern Manually</h1>
-                <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-gray-600">Fill in the form below to add a new intern</p>
-              </div>
-              <InternForm
-                onSubmit={handleFormSubmit}
-                onCancel={handleBackToChoice}
-                initialData={null}
-                isEditMode={false}
-              />
-            </div>
           ) : mode === 'edit' ? (
             // Edit Intern Screen
             <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-5">
@@ -428,7 +380,7 @@ export default function AddInternPage() {
                   initialData={{
                     name: internData.name,
                     email: internData.email,
-                    domain: internData.domain_id || internData.domain, // Use domain_id if available
+                    domain: internData.domain,
                     status: internData.status,
                   }}
                   isEditMode={true}
