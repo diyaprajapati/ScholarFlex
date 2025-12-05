@@ -13,6 +13,11 @@ const CandidatesTab = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [domains, setDomains] = useState([]);
+  const [isLoadingDomains, setIsLoadingDomains] = useState(false);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [googleSheetsUrl, setGoogleSheetsUrl] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,7 +26,6 @@ const CandidatesTab = () => {
   const [filters, setFilters] = useState({
     instituteName: '',
     courseTaken: '',
-    areaOfInterests: '',
     testGiven: '', // 'yes', 'no', or ''
     marksRange: '', // 'below70', 'above70', or ''
     selected: '', // 'yes', 'no', or ''
@@ -49,7 +53,20 @@ const CandidatesTab = () => {
 
   useEffect(() => {
     fetchStudents();
+    fetchDomains();
   }, [fetchStudents]);
+
+  const fetchDomains = useCallback(async () => {
+    try {
+      setIsLoadingDomains(true);
+      const response = await api.domains.getAll();
+      setDomains(response.data || []);
+    } catch (err) {
+      console.error('Error fetching domains:', err);
+    } finally {
+      setIsLoadingDomains(false);
+    }
+  }, []);
 
   const fetchStudentDetails = useCallback(async (id) => {
     try {
@@ -230,12 +247,6 @@ const CandidatesTab = () => {
       );
     }
 
-    // Apply area of interests filter
-    if (filters.areaOfInterests) {
-      result = result.filter(student =>
-        student.area_of_interests?.toLowerCase().includes(filters.areaOfInterests.toLowerCase())
-      );
-    }
 
     // Apply test given filter (marks > 0 means test given)
     if (filters.testGiven === 'yes') {
@@ -329,6 +340,62 @@ const CandidatesTab = () => {
     setGoogleSheetsUrl('');
   }, []);
 
+  const handleOpenFormModal = useCallback((student = null) => {
+    setEditingStudent(student);
+    setShowFormModal(true);
+  }, []);
+
+  const handleCloseFormModal = useCallback(() => {
+    setShowFormModal(false);
+    setEditingStudent(null);
+  }, []);
+
+  const handleFormSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    setIsSubmittingForm(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const formData = new FormData(e.target);
+      const studentData = {
+        full_name: formData.get('full_name'),
+        email: formData.get('email'),
+        phone: formData.get('phone') || null,
+        domain_id: formData.get('domain_id') || null,
+        institute_name: formData.get('institute_name') || null,
+        course_taken: formData.get('course_taken') || null,
+        internship_start_date: formData.get('internship_start_date') || null,
+        internship_end_date: formData.get('internship_end_date') || null,
+        internship_duration: formData.get('internship_duration') || null,
+        reference_information: formData.get('reference_information') || null,
+        internal_faculty_name: formData.get('internal_faculty_name') || null,
+        faculty_contact: formData.get('faculty_contact') || null,
+        faculty_email: formData.get('faculty_email') || null,
+        image_url: formData.get('image_url') || null,
+      };
+
+      if (editingStudent) {
+        // Update existing student
+        await api.candidates.update(editingStudent.id, studentData);
+        setSuccess('Student updated successfully!');
+      } else {
+        // Create new student
+        await api.candidates.create(studentData);
+        setSuccess('Student added successfully!');
+      }
+
+      handleCloseFormModal();
+      fetchStudents();
+      setTimeout(() => setSuccess(''), 5000);
+    } catch (err) {
+      setError(err.message || 'Failed to save student');
+      console.error('Error saving student:', err);
+    } finally {
+      setIsSubmittingForm(false);
+    }
+  }, [editingStudent, fetchStudents, handleCloseFormModal]);
+
   const handleOpenImportModal = useCallback(() => {
     setShowImportModal(true);
   }, []);
@@ -379,7 +446,6 @@ const CandidatesTab = () => {
     setFilters({
       instituteName: '',
       courseTaken: '',
-      areaOfInterests: '',
       testGiven: '',
       marksRange: '',
       selected: '',
@@ -410,7 +476,7 @@ const CandidatesTab = () => {
         'Email': student.email || '',
         'Name of Institute': student.institute_name || '',
         'Course Taken': student.course_taken || '',
-        'Area of Interests': student.area_of_interests || '',
+        'Domain': student.domain || '',
         'Internship Start Date': student.internship_start_date 
           ? new Date(student.internship_start_date).toLocaleDateString() 
           : '',
@@ -441,18 +507,18 @@ const CandidatesTab = () => {
       { wch: 15 }, // First Name
       { wch: 15 }, // Middle Name
       { wch: 15 }, // Last Name
-      { wch: 20 }, // Mobile Number
+      { wch: 20 }, // Mobile Number (WhatsApp)
       { wch: 30 }, // Email
       { wch: 30 }, // Name of Institute
       { wch: 25 }, // Course Taken
-      { wch: 30 }, // Area of Interests
+      { wch: 25 }, // Domain
       { wch: 20 }, // Internship Start Date
       { wch: 20 }, // Internship End Date
       { wch: 30 }, // Reference Information
       { wch: 50 }, // Photograph
-      { wch: 30 }, // Internal Faculty
+      { wch: 30 }, // Internal Faculty of Institute
       { wch: 15 }, // Faculty Contact
-      { wch: 30 }, // Faculty Email
+      { wch: 30 }, // Faculty Email Id
       { wch: 15 }, // Column 16
       { wch: 12 }, // Test Marks
       { wch: 10 }, // Selected?
@@ -478,6 +544,12 @@ const CandidatesTab = () => {
         <div className="flex justify-between items-center flex-wrap gap-4">
           <h2 className="text-2xl font-semibold text-gray-900">Students</h2>
           <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={() => handleOpenFormModal(null)}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+            >
+              Add Student Manually
+            </button>
             <button
               onClick={handleOpenImportModal}
               disabled={importing}
@@ -593,18 +665,6 @@ const CandidatesTab = () => {
                     value={filters.courseTaken}
                     onChange={(e) => handleFilterChange('courseTaken', e.target.value)}
                     placeholder="Filter by course..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                  />
-                </div>
-
-                {/* Area of Interests */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Area of Interests</label>
-                  <input
-                    type="text"
-                    value={filters.areaOfInterests}
-                    onChange={(e) => handleFilterChange('areaOfInterests', e.target.value)}
-                    placeholder="Filter by interests..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                   />
                 </div>
@@ -845,12 +905,20 @@ const CandidatesTab = () => {
                         </label>
                       </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={handleViewClick}
-                            className="text-indigo-600 hover:text-indigo-900 font-medium"
-                          >
-                            View
-                          </button>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={handleViewClick}
+                              className="text-indigo-600 hover:text-indigo-900 font-medium"
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => handleOpenFormModal(student)}
+                              className="text-green-600 hover:text-green-900 font-medium"
+                            >
+                              Edit
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1035,10 +1103,6 @@ const CandidatesTab = () => {
                       <div>
                         <span className="text-xs text-gray-500">Course Taken</span>
                         <p className="text-sm text-gray-900">{selectedStudent.course_taken || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Area of Interests</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.area_of_interests || selectedStudent.domain || 'N/A'}</p>
                       </div>
                       <div>
                         <span className="text-xs text-gray-500">Domain</span>
@@ -1227,6 +1291,270 @@ const CandidatesTab = () => {
                   {importing ? 'Importing...' : 'Import'}
                 </button>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Add/Edit Student Form Modal */}
+      {showFormModal && (
+        <>
+          <div 
+            className="fixed inset-0 z-100 bg-gray-900/20 backdrop-blur-md"
+            onClick={handleCloseFormModal}
+          ></div>
+          
+          <div className="fixed inset-0 z-110 overflow-y-auto flex items-center justify-center p-4 pointer-events-none">
+            <div
+              className="relative bg-white rounded-lg shadow-2xl border border-gray-200 w-full max-w-3xl transform transition-all pointer-events-auto max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {editingStudent ? 'Edit Student' : 'Add Student'}
+                </h2>
+                <button
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1.5 transition-all duration-200"
+                  onClick={handleCloseFormModal}
+                  aria-label="Close"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Form */}
+              <form onSubmit={handleFormSubmit} className="px-6 py-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Full Name */}
+                  <div>
+                    <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="full_name"
+                      name="full_name"
+                      required
+                      defaultValue={editingStudent?.full_name || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      defaultValue={editingStudent?.email || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      defaultValue={editingStudent?.phone || editingStudent?.mobile_number || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Domain */}
+                  <div>
+                    <label htmlFor="domain_id" className="block text-sm font-medium text-gray-700 mb-1">
+                      Domain
+                    </label>
+                    <select
+                      id="domain_id"
+                      name="domain_id"
+                      disabled={isLoadingDomains}
+                      defaultValue={editingStudent?.domain_id || ''}
+                      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white ${
+                        isLoadingDomains ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      <option value="">{isLoadingDomains ? 'Loading domains...' : 'Select Domain'}</option>
+                      {domains.map((domain) => (
+                        <option key={domain.id} value={domain.id}>
+                          {domain.domain_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Institute Name */}
+                  <div>
+                    <label htmlFor="institute_name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Institute Name
+                    </label>
+                    <input
+                      type="text"
+                      id="institute_name"
+                      name="institute_name"
+                      defaultValue={editingStudent?.institute_name || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Course Taken */}
+                  <div>
+                    <label htmlFor="course_taken" className="block text-sm font-medium text-gray-700 mb-1">
+                      Course Taken
+                    </label>
+                    <input
+                      type="text"
+                      id="course_taken"
+                      name="course_taken"
+                      defaultValue={editingStudent?.course_taken || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Internship Start Date */}
+                  <div>
+                    <label htmlFor="internship_start_date" className="block text-sm font-medium text-gray-700 mb-1">
+                      Internship Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="internship_start_date"
+                      name="internship_start_date"
+                      defaultValue={editingStudent?.internship_start_date ? new Date(editingStudent.internship_start_date).toISOString().split('T')[0] : ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Internship End Date */}
+                  <div>
+                    <label htmlFor="internship_end_date" className="block text-sm font-medium text-gray-700 mb-1">
+                      Internship End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="internship_end_date"
+                      name="internship_end_date"
+                      defaultValue={editingStudent?.internship_end_date ? new Date(editingStudent.internship_end_date).toISOString().split('T')[0] : ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Internship Duration */}
+                  <div>
+                    <label htmlFor="internship_duration" className="block text-sm font-medium text-gray-700 mb-1">
+                      Internship Duration
+                    </label>
+                    <input
+                      type="text"
+                      id="internship_duration"
+                      name="internship_duration"
+                      defaultValue={editingStudent?.internship_duration || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Image URL */}
+                  <div>
+                    <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-1">
+                      Image URL
+                    </label>
+                    <input
+                      type="url"
+                      id="image_url"
+                      name="image_url"
+                      defaultValue={editingStudent?.image_url || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Reference Information */}
+                  <div className="md:col-span-2">
+                    <label htmlFor="reference_information" className="block text-sm font-medium text-gray-700 mb-1">
+                      Reference Information
+                    </label>
+                    <textarea
+                      id="reference_information"
+                      name="reference_information"
+                      rows={3}
+                      defaultValue={editingStudent?.reference_information || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Internal Faculty Name */}
+                  <div>
+                    <label htmlFor="internal_faculty_name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Internal Faculty Name
+                    </label>
+                    <input
+                      type="text"
+                      id="internal_faculty_name"
+                      name="internal_faculty_name"
+                      defaultValue={editingStudent?.internal_faculty_name || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Faculty Contact */}
+                  <div>
+                    <label htmlFor="faculty_contact" className="block text-sm font-medium text-gray-700 mb-1">
+                      Faculty Contact
+                    </label>
+                    <input
+                      type="tel"
+                      id="faculty_contact"
+                      name="faculty_contact"
+                      defaultValue={editingStudent?.faculty_contact || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  {/* Faculty Email */}
+                  <div className="md:col-span-2">
+                    <label htmlFor="faculty_email" className="block text-sm font-medium text-gray-700 mb-1">
+                      Faculty Email
+                    </label>
+                    <input
+                      type="email"
+                      id="faculty_email"
+                      name="faculty_email"
+                      defaultValue={editingStudent?.faculty_email || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                  <button
+                    type="button"
+                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                    onClick={handleCloseFormModal}
+                    disabled={isSubmittingForm}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingForm}
+                    className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmittingForm ? 'Saving...' : editingStudent ? 'Update Student' : 'Add Student'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </>

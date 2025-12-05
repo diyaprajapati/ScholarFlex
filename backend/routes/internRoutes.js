@@ -45,6 +45,17 @@ router.post(
 );
 
 /**
+ * @route   POST /api/interns
+ * @desc    Create a new intern/student manually
+ * @access  Private (Admin, Super Admin)
+ */
+router.post(
+  '/',
+  authorize('ADMIN', 'SUPER_ADMIN'),
+  internController.createIntern
+);
+
+/**
  * @route   GET /api/interns
  * @desc    Get all interns/students
  * @access  Private (Admin, Super Admin)

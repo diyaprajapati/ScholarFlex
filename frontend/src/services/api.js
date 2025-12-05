@@ -1,6 +1,7 @@
 // API service for making HTTP requests to the backend
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * Get JWT token from localStorage
@@ -106,6 +107,13 @@ export const api = {
 
   // Intern endpoints
   interns: {
+    create: async (data) => {
+      return apiRequest('/interns', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
     uploadSpreadsheet: async (file) => {
       const formData = new FormData();
       formData.append('file', file);
@@ -422,6 +430,13 @@ export const api = {
         body: JSON.stringify(data),
       });
     },
+
+    saveAnswer: async (attemptId, data) => {
+      return apiRequest(`/student/test-attempts/${attemptId}/save-answer`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
   },
 
   testAttempts: {
@@ -527,6 +542,26 @@ export const api = {
       });
     },
 
+    getById: async (id) => {
+      return apiRequest(`/candidates/${id}`, {
+        method: 'GET',
+      });
+    },
+
+    create: async (data) => {
+      return apiRequest('/candidates', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    update: async (id, data) => {
+      return apiRequest(`/candidates/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
     updateSelection: async (id, isSelected) => {
       return apiRequest(`/candidates/${id}/selection`, {
         method: 'PUT',
@@ -541,12 +576,6 @@ export const api = {
           candidate_ids: candidateIds,
           is_selected: isSelected 
         }),
-      });
-    },
-
-    getById: async (id) => {
-      return apiRequest(`/candidates/${id}`, {
-        method: 'GET',
       });
     },
 

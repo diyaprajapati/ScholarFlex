@@ -310,7 +310,7 @@ class Student {
       if (updateData.domain_id !== undefined) {
         paramCount++;
         fields.push(`domain_id = $${paramCount}`);
-        values.push(updateData.domain_id);
+        values.push(updateData.domain_id === null ? null : updateData.domain_id);
       }
 
       if (updateData.status_id !== undefined) {

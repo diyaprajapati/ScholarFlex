@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { api } from '../../../services/api'
 
 const internSchema = z.object({
   name: z.string().min(1, 'Name is required').min(2, 'Name must be at least 2 characters'),
@@ -11,10 +12,14 @@ const internSchema = z.object({
 })
 
 export default function InternForm({ onSubmit, onCancel, initialData = null, isEditMode = false }) {
+  const [domains, setDomains] = useState([])
+  const [isLoadingDomains, setIsLoadingDomains] = useState(true)
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm({
     resolver: zodResolver(internSchema),
     defaultValues: initialData || {
@@ -24,6 +29,32 @@ export default function InternForm({ onSubmit, onCancel, initialData = null, isE
       status: 'Pending',
     },
   })
+
+  useEffect(() => {
+    const fetchDomains = async () => {
+      try {
+        setIsLoadingDomains(true)
+        const response = await api.domains.getAll()
+        setDomains(response.data || [])
+      } catch (error) {
+        console.error('Error fetching domains:', error)
+      } finally {
+        setIsLoadingDomains(false)
+      }
+    }
+    fetchDomains()
+  }, [])
+
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        name: initialData.name || '',
+        email: initialData.email || '',
+        domain: initialData.domain || '',
+        status: initialData.status || 'Pending',
+      })
+    }
+  }, [initialData, reset])
 
   const handleFormSubmit = async (data) => {
     await onSubmit(data)
@@ -77,21 +108,17 @@ export default function InternForm({ onSubmit, onCancel, initialData = null, isE
         <select
           id="domain"
           {...register('domain')}
+          disabled={isLoadingDomains}
           className={`w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-lg focus:ring-2 focus:ring-[#4C763B] focus:border-[#4C763B] transition-colors bg-white ${
             errors.domain ? 'border-red-300' : 'border-gray-200'
-          }`}
+          } ${isLoadingDomains ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <option value="">Select Domain</option>
-          <option value="Web Development">React JS / MERN Stack</option>
-          <option value="Mobile Development">Data Science - Python & AI/ML / Python</option>
-          <option value="UI/UX Design">UI/UX Design</option>
-          <option value="Data Science">.NET MVC</option>
-          <option value="Cloud Computing">HTML, CSS, JS</option>
-          <option value="Cloud Computing">Flutter Dart</option>
-          <option value="Cloud Computing">.NET Core</option> 
-          <option value="Cloud Computing">Database Administrator</option>  
-          <option value="Cloud Computing">Cyber Security</option>  
-          <option value="Cloud Computing">Embedded Systems</option>  
+          <option value="">{isLoadingDomains ? 'Loading domains...' : 'Select Domain'}</option>
+          {domains.map((domain) => (
+            <option key={domain.id} value={domain.id}>
+              {domain.domain_name}
+            </option>
+          ))}
         </select>
         {errors.domain && (
           <p className="mt-1.5 text-xs sm:text-sm text-red-600">{errors.domain.message}</p>

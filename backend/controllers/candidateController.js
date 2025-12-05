@@ -126,7 +126,14 @@ const mapSpreadsheetToStudent = (row) => {
   const photograph = getValue(['Photograph', 'photograph', 'Photo', 'photo', 'Image', 'image', 'image_url', 'Image URL']);
   const instituteName = getValue(['Name of Institute', 'Institute Name', 'institute_name', 'instituteName', 'Institute']);
   const courseTaken = getValue(['Course Taken', 'course_taken', 'courseTaken', 'Course']);
-  const areaOfInterests = getValue(['Area of Interests', 'Area of Interest', 'area_of_interests', 'areaOfInterests', 'Domain', 'domain']);
+  // Map both "Area of Interest" and "Domain" columns to domain (they are treated the same)
+  // This handles various column name variations and converts them to domain_id during processing
+  const areaOfInterests = getValue([
+    'Domain', 'domain', 'DOMAIN', // Domain column variations
+    'Area of Interests', 'Area of Interest', 'Area Of Interest', 'Area Of Interests', // Area of Interest variations
+    'area_of_interests', 'areaOfInterests', 'area_of_interest', 'areaOfInterest',
+    'Interest Area', 'Interest', 'Field', 'field', 'Specialization', 'specialization' // Other common variations
+  ]);
   const internshipStartDate = getDateValue(['Internship Start Date', 'internship_start_date', 'internshipStartDate', 'Start Date']);
   const internshipEndDate = getDateValue(['Internship End Date', 'internship_end_date', 'internshipEndDate', 'End Date']);
   const internshipDuration = getValue(['Internship Duration', 'internship_duration', 'internshipDuration', 'Duration']);
@@ -149,7 +156,7 @@ const mapSpreadsheetToStudent = (row) => {
     imageUrl: imageUrl,
     instituteName: instituteName || null,
     courseTaken: courseTaken || null,
-    areaOfInterests: areaOfInterests || null,
+    areaOfInterests: areaOfInterests || null, // Will be converted to domainId during processing
     internshipStartDate: internshipStartDate,
     internshipEndDate: internshipEndDate,
     internshipDuration: internshipDuration || null,
@@ -191,6 +198,7 @@ exports.uploadSpreadsheet = async (req, res) => {
     // Log available columns in development
     if (process.env.NODE_ENV === 'development' && rows.length > 0) {
       console.log('📋 Available columns:', Object.keys(rows[0]));
+      console.log('💡 Note: Both "Area of Interest" and "Domain" columns will be converted to domain_id');
     }
 
     const studentsData = [];
@@ -257,14 +265,27 @@ exports.uploadSpreadsheet = async (req, res) => {
     }
 
     // Upsert students (update image_url if exists, create if not)
+    const Student = require('../models/Student');
     for (const studentData of studentsData) {
       try {
+        // Convert areaOfInterests (from "Area of Interest" or "Domain" column) to domainId
+        // Both column names are treated the same and converted to domain_id
+        let domainId = null;
+        if (studentData.areaOfInterests && studentData.areaOfInterests.trim()) {
+          domainId = await Student.getOrCreateDomain(studentData.areaOfInterests.trim());
+        }
+
         // Check if student exists
         const existingStudent = await prisma.student.findUnique({
           where: { email: studentData.email },
         });
 
         if (existingStudent) {
+          // If domainId is not set from spreadsheet but student has area_of_interests, migrate it
+          if (!domainId && existingStudent.areaOfInterests && existingStudent.areaOfInterests.trim() && !existingStudent.domainId) {
+            domainId = await Student.getOrCreateDomain(existingStudent.areaOfInterests.trim());
+          }
+
           // Update all provided fields
           const updateData = {};
           if (studentData.fullName) updateData.fullName = studentData.fullName;
@@ -272,7 +293,7 @@ exports.uploadSpreadsheet = async (req, res) => {
           if (studentData.imageUrl !== null) updateData.imageUrl = studentData.imageUrl;
           if (studentData.instituteName !== null) updateData.instituteName = studentData.instituteName;
           if (studentData.courseTaken !== null) updateData.courseTaken = studentData.courseTaken;
-          if (studentData.areaOfInterests !== null) updateData.areaOfInterests = studentData.areaOfInterests;
+          if (domainId !== null) updateData.domainId = domainId;
           if (studentData.internshipStartDate !== null) updateData.internshipStartDate = studentData.internshipStartDate;
           if (studentData.internshipEndDate !== null) updateData.internshipEndDate = studentData.internshipEndDate;
           if (studentData.internshipDuration !== null) updateData.internshipDuration = studentData.internshipDuration;
@@ -308,7 +329,7 @@ exports.uploadSpreadsheet = async (req, res) => {
               imageUrl: studentData.imageUrl,
               instituteName: studentData.instituteName,
               courseTaken: studentData.courseTaken,
-              areaOfInterests: studentData.areaOfInterests,
+              domainId: domainId,
               internshipStartDate: studentData.internshipStartDate,
               internshipEndDate: studentData.internshipEndDate,
               internshipDuration: studentData.internshipDuration,
@@ -417,14 +438,15 @@ exports.getAllCandidates = async (req, res) => {
       email: s.email,
       full_name: s.full_name,
       mobile_number: s.mobile_number,
+      phone: s.mobile_number,
       image_url: s.image_url,
       marks: parseFloat(s.marks || 0),
       reference_information: s.reference_information,
       status: s.status_name,
       domain: s.domain_name,
+      domain_id: s.domain_id,
       institute_name: s.institute_name,
       course_taken: s.course_taken,
-      area_of_interests: s.area_of_interests,
       internship_start_date: s.internship_start_date,
       internship_end_date: s.internship_end_date,
       internship_duration: s.internship_duration,
@@ -514,12 +536,12 @@ exports.getStudentById = async (req, res) => {
         phone: student.phone,
         image_url: student.image_url,
         domain: student.domain_name,
+        domain_id: student.domain_id,
         status: student.status_name,
         marks: parseFloat(student.marks || 0),
         reference_information: student.reference_information,
         institute_name: student.institute_name,
         course_taken: student.course_taken,
-        area_of_interests: student.area_of_interests,
         internship_start_date: student.internship_start_date,
         internship_end_date: student.internship_end_date,
         internship_duration: student.internship_duration,
@@ -654,5 +676,332 @@ exports.bulkUpdateSelection = async (req, res) => {
     success: false,
     message: 'Bulk selection feature is not available. This endpoint is deprecated.',
   });
+};
+
+/**
+ * Migrate area_of_interests to domain_id for existing students
+ */
+exports.migrateAreaOfInterestsToDomain = async (req, res) => {
+  try {
+    const Student = require('../models/Student');
+    
+    // Get all students with area_of_interests but no domain_id
+    const result = await pool.query(
+      `SELECT id, area_of_interests, domain_id 
+       FROM students 
+       WHERE area_of_interests IS NOT NULL 
+       AND area_of_interests != '' 
+       AND (domain_id IS NULL OR domain_id = 0)
+       AND is_active = TRUE`
+    );
+
+    let migrated = 0;
+    let failed = 0;
+    const errors = [];
+
+    for (const student of result.rows) {
+      try {
+        const areaOfInterest = student.area_of_interests.trim();
+        if (areaOfInterest) {
+          // Get or create domain from area_of_interests
+          const domainId = await Student.getOrCreateDomain(areaOfInterest);
+          
+          if (domainId) {
+            // Update student with domain_id
+            await pool.query(
+              'UPDATE students SET domain_id = $1, updated_at = NOW() WHERE id = $2',
+              [domainId, student.id]
+            );
+            migrated++;
+          } else {
+            failed++;
+            errors.push(`Student ID ${student.id}: Failed to create domain for "${areaOfInterest}"`);
+          }
+        }
+      } catch (error) {
+        failed++;
+        errors.push(`Student ID ${student.id}: ${error.message}`);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Migration completed: ${migrated} students migrated, ${failed} failed`,
+      data: {
+        migrated,
+        failed,
+        total: result.rows.length,
+        errors: errors.slice(0, 10), // Show first 10 errors
+      },
+    });
+  } catch (error) {
+    console.error('Error migrating area_of_interests:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Create a new student manually
+ */
+exports.createStudent = async (req, res) => {
+  try {
+    const {
+      full_name,
+      email,
+      phone,
+      domain_id,
+      status_id,
+      institute_name,
+      course_taken,
+      area_of_interests, // Legacy support - will be converted to domain_id
+      internship_start_date,
+      internship_end_date,
+      internship_duration,
+      reference_information,
+      internal_faculty_name,
+      faculty_contact,
+      faculty_email,
+      image_url,
+    } = req.body;
+
+    // Validate required fields
+    if (!full_name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Full name and email are required',
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format',
+      });
+    }
+
+    // Check if student with this email already exists
+    const existingStudent = await prisma.student.findUnique({
+      where: { email: email.toLowerCase().trim() },
+    });
+
+    if (existingStudent) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists',
+      });
+    }
+
+    // Handle domain_id: if area_of_interests is provided but domain_id is not, convert it
+    let finalDomainId = domain_id ? parseInt(domain_id) : null;
+    if (!finalDomainId && area_of_interests && area_of_interests.trim()) {
+      const Student = require('../models/Student');
+      finalDomainId = await Student.getOrCreateDomain(area_of_interests.trim());
+    }
+
+    // Prepare student data
+    const studentData = {
+      email: email.toLowerCase().trim(),
+      fullName: full_name,
+      phone: phone || null,
+      domainId: finalDomainId,
+      statusId: status_id ? parseInt(status_id) : undefined, // Let Prisma use default if not provided
+      instituteName: institute_name || null,
+      courseTaken: course_taken || null,
+      internshipStartDate: internship_start_date ? new Date(internship_start_date) : null,
+      internshipEndDate: internship_end_date ? new Date(internship_end_date) : null,
+      internshipDuration: internship_duration || null,
+      referenceInformation: reference_information || null,
+      internalFacultyName: internal_faculty_name || null,
+      facultyContact: faculty_contact || null,
+      facultyEmail: faculty_email || null,
+      imageUrl: image_url || null,
+    };
+
+    // Create student
+    const created = await prisma.student.create({
+      data: studentData,
+      include: {
+        domain: true,
+        status: true,
+      },
+    });
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'CREATE_STUDENT',
+      'STUDENT',
+      created.id,
+      `Created student: ${created.fullName}`
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Student created successfully',
+      student: {
+        id: created.id,
+        email: created.email,
+        full_name: created.fullName,
+        phone: created.phone,
+        domain: created.domain?.domainName || null,
+        domain_id: created.domainId,
+        status: created.status?.statusName || null,
+        institute_name: created.instituteName,
+        course_taken: created.courseTaken,
+        registration_date: created.registrationDate,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating student:', error);
+    
+    // Handle duplicate email error
+    if (error.code === 'P2002' || error.message.includes('Unique constraint') || error.message.includes('duplicate')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists',
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Update an existing student
+ */
+exports.updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      full_name,
+      email,
+      phone,
+      domain_id,
+      status_id,
+      institute_name,
+      course_taken,
+      area_of_interests, // Legacy support - will be converted to domain_id
+      internship_start_date,
+      internship_end_date,
+      internship_duration,
+      reference_information,
+      internal_faculty_name,
+      faculty_contact,
+      faculty_email,
+      image_url,
+    } = req.body;
+
+    // Check if student exists
+    const existingStudent = await prisma.student.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!existingStudent) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    // If email is being changed, check if new email already exists
+    if (email && email.toLowerCase().trim() !== existingStudent.email) {
+      const emailExists = await prisma.student.findUnique({
+        where: { email: email.toLowerCase().trim() },
+      });
+
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email already exists for another student',
+        });
+      }
+    }
+
+    // Handle domain_id: if area_of_interests is provided but domain_id is not, convert it
+    let finalDomainId = domain_id !== undefined ? (domain_id === '' || domain_id === null ? null : parseInt(domain_id)) : undefined;
+    if ((finalDomainId === undefined || finalDomainId === null) && area_of_interests && area_of_interests.trim()) {
+      const Student = require('../models/Student');
+      finalDomainId = await Student.getOrCreateDomain(area_of_interests.trim());
+    }
+
+    // Prepare update data
+    const updateData = {};
+    if (full_name !== undefined) updateData.fullName = full_name;
+    if (email !== undefined) updateData.email = email.toLowerCase().trim();
+    if (phone !== undefined) updateData.phone = phone || null;
+    if (finalDomainId !== undefined) {
+      updateData.domainId = finalDomainId;
+    }
+    if (status_id !== undefined) updateData.statusId = parseInt(status_id);
+    if (institute_name !== undefined) updateData.instituteName = institute_name || null;
+    if (course_taken !== undefined) updateData.courseTaken = course_taken || null;
+    if (internship_start_date !== undefined) updateData.internshipStartDate = internship_start_date ? new Date(internship_start_date) : null;
+    if (internship_end_date !== undefined) updateData.internshipEndDate = internship_end_date ? new Date(internship_end_date) : null;
+    if (internship_duration !== undefined) updateData.internshipDuration = internship_duration || null;
+    if (reference_information !== undefined) updateData.referenceInformation = reference_information || null;
+    if (internal_faculty_name !== undefined) updateData.internalFacultyName = internal_faculty_name || null;
+    if (faculty_contact !== undefined) updateData.facultyContact = faculty_contact || null;
+    if (faculty_email !== undefined) updateData.facultyEmail = faculty_email || null;
+    if (image_url !== undefined) updateData.imageUrl = image_url || null;
+
+    // Update student
+    const updated = await prisma.student.update({
+      where: { id: parseInt(id) },
+      data: updateData,
+      include: {
+        domain: true,
+        status: true,
+      },
+    });
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'UPDATE_STUDENT',
+      'STUDENT',
+      updated.id,
+      `Updated student: ${updated.fullName}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Student updated successfully',
+      student: {
+        id: updated.id,
+        email: updated.email,
+        full_name: updated.fullName,
+        phone: updated.phone,
+        domain: updated.domain?.domainName || null,
+        domain_id: updated.domainId,
+        status: updated.status?.statusName || null,
+        institute_name: updated.instituteName,
+        course_taken: updated.courseTaken,
+        registration_date: updated.registrationDate,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating student:', error);
+    
+    // Handle duplicate email error
+    if (error.code === 'P2002' || error.message.includes('Unique constraint') || error.message.includes('duplicate')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists for another student',
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
 };
 
