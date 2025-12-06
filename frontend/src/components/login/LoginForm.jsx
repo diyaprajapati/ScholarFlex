@@ -62,17 +62,23 @@ export default function LoginForm() {
         const response = await api.auth.verifyOTP(email, otp)
         
         if (response.success && response.token) {
-          // Store JWT token in localStorage
-          authService.setToken(response.token)
+          // Store JWT token and user data in localStorage
+          authService.setToken(response.token, response.user)
           
-          // Get user role from token
-          const user = authService.getUser()
+          // Get user from stored data
+          const user = response.user || authService.getUser()
           const role = user?.role
           
           // Navigate based on role
           if (role === 'STUDENT') {
-            // Student goes to test instructions page
-            navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+            // Check if student is selected
+            if (user?.is_selected) {
+              // Selected students go to dashboard
+              navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+            } else {
+              // Non-selected students go to test instructions page
+              navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+            }
           } else {
             // Admin and Super Admin go to dashboard
             navigate(ROUTES.DASHBOARD, { replace: true })

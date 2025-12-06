@@ -1,6 +1,7 @@
-// Auth utility functions for localStorage - stores only JWT token
+// Auth utility functions for localStorage - stores JWT token and user data
 
 const TOKEN_KEY = 'scholarflex_token'
+const USER_KEY = 'scholarflex_user'
 
 /**
  * Decode JWT token to get payload (without verification)
@@ -36,9 +37,12 @@ const isTokenExpired = (token) => {
 }
 
 export const authService = {
-  // Store JWT token only
-  setToken: (token) => {
+  // Store JWT token and user data
+  setToken: (token, userData = null) => {
     localStorage.setItem(TOKEN_KEY, token)
+    if (userData) {
+      localStorage.setItem(USER_KEY, JSON.stringify(userData))
+    }
   },
 
   // Get JWT token
@@ -46,9 +50,10 @@ export const authService = {
     return localStorage.getItem(TOKEN_KEY)
   },
 
-  // Remove JWT token
+  // Remove JWT token and user data
   logout: () => {
     localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(USER_KEY)
   },
 
   // Check if user is authenticated (has valid token)
@@ -65,8 +70,24 @@ export const authService = {
     return true
   },
 
-  // Get user data from token
+  // Get user data from stored user object or token
   getUser: () => {
+    // First try to get from stored user object
+    const storedUser = localStorage.getItem(USER_KEY)
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser)
+        // Verify token is still valid
+        const token = authService.getToken()
+        if (token && !isTokenExpired(token)) {
+          return user
+        }
+      } catch (e) {
+        // Invalid stored user, fall through to token decode
+      }
+    }
+
+    // Fallback to token decode
     const token = authService.getToken()
     if (!token) {
       return null

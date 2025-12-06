@@ -617,6 +617,44 @@ export const api = {
         method: 'DELETE',
       });
     },
+
+    // Student playlist endpoints
+    getStudentPlaylists: async () => {
+      return apiRequest('/student/playlists', {
+        method: 'GET',
+      });
+    },
+
+    getRecommendedPlaylists: async () => {
+      return apiRequest('/student/playlists/recommended', {
+        method: 'GET',
+      });
+    },
+  },
+
+  // Activity endpoints
+  activity: {
+    log: async (activityType, metadata) => {
+      return apiRequest('/activity/log', {
+        method: 'POST',
+        body: JSON.stringify({
+          activity_type: activityType,
+          metadata: metadata || null,
+        }),
+      });
+    },
+
+    getRecentVideos: async () => {
+      return apiRequest('/activity/videos/recent', {
+        method: 'GET',
+      });
+    },
+
+    getSummary: async () => {
+      return apiRequest('/activity/summary', {
+        method: 'GET',
+      });
+    },
   },
 };
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, RetakePermissionsPage, PlaylistManagementPage, AddVideosToPlaylistPage } from '../pages'
+import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, RetakePermissionsPage, PlaylistManagementPage, AddVideosToPlaylistPage } from '../pages'
 import { ROUTES } from './paths'
 
 /**
@@ -139,6 +139,14 @@ export default function AppRoutes() {
       />
 
       {/* Student Routes */}
+      <Route
+        path={ROUTES.STUDENT.DASHBOARD}
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
+            <StudentDashboardPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path={ROUTES.STUDENT.INSTRUCTIONS}
         element={

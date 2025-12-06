@@ -16,7 +16,13 @@ export default function LoginPage() {
 
     const role = authService.getUserRole()
     if (role === 'STUDENT') {
-      navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+      const user = authService.getUser()
+      // Check if student is selected
+      if (user?.is_selected) {
+        navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+      } else {
+        navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+      }
     } else {
       navigate(ROUTES.DASHBOARD, { replace: true })
     }

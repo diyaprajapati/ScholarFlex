@@ -141,6 +141,11 @@ const verifyOTP = async (req, res) => {
       role_name: user.role_name,
     };
 
+    // Add is_selected for students
+    if (user.source === 'students' && user.is_selected !== undefined) {
+      userData.is_selected = user.is_selected;
+    }
+
     // Set cookie
     res.cookie('token', token, {
       httpOnly: true,

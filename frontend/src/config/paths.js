@@ -39,6 +39,7 @@ export const ROUTES = {
   // Student Routes
   STUDENT: {
     BASE: '/student',
+    DASHBOARD: '/student/dashboard',
     INSTRUCTIONS: '/student/instructions',
     TEST: '/student/test',
     SUBMISSION: '/student/submission',

@@ -47,5 +47,27 @@ router.post(
   activityLogController.saveActivityLog
 );
 
+/**
+ * @route   GET /api/activity/videos/recent
+ * @desc    Get last 5 video activity logs for continue watching (Student)
+ * @access  Private (Student)
+ */
+router.get(
+  '/videos/recent',
+  authorize('STUDENT'),
+  activityLogController.getRecentVideoActivities
+);
+
+/**
+ * @route   GET /api/activity/summary
+ * @desc    Get comprehensive activity summary for student (Student)
+ * @access  Private (Student)
+ */
+router.get(
+  '/summary',
+  authorize('STUDENT'),
+  activityLogController.getActivitySummary
+);
+
 module.exports = router;
 
