@@ -27,6 +27,12 @@ export default function StudentTestInstructionsPage() {
       return
     }
 
+    // If student is selected, redirect to dashboard
+    if (userData?.is_selected) {
+      navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+      return
+    }
+
     const fetchTests = async () => {
       setIsLoadingTests(true)
       try {
@@ -42,6 +48,49 @@ export default function StudentTestInstructionsPage() {
     }
 
     fetchTests()
+  }, [navigate])
+
+  // Periodic check for is_selected status changes
+  useEffect(() => {
+    if (!authService.isAuthenticated() || !authService.isStudent()) {
+      return
+    }
+
+    const checkUserStatus = async () => {
+      try {
+        const response = await api.auth.getCurrentUser()
+        if (response.success && response.user) {
+          const currentUser = response.user
+          const storedUser = authService.getUser()
+          
+          // Check if is_selected status has changed
+          if (storedUser && storedUser.is_selected !== currentUser.is_selected) {
+            // Update user data in localStorage
+            authService.updateUser({ is_selected: currentUser.is_selected })
+            setUser({ ...storedUser, is_selected: currentUser.is_selected })
+            
+            // Redirect based on new status
+            if (currentUser.is_selected) {
+              // Student was selected, redirect to dashboard
+              navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+            }
+            // If deselected, stay on instructions page (which is correct)
+          }
+        }
+      } catch (error) {
+        console.error('Error checking user status:', error)
+        // Don't redirect on error, just log it
+      }
+    }
+
+    // Check immediately
+    checkUserStatus()
+
+    // Set up interval to check every 5 seconds
+    const intervalId = setInterval(checkUserStatus, 5000)
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId)
   }, [navigate])
 
   const handleStartTest = async (test) => {

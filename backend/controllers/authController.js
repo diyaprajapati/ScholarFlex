@@ -212,6 +212,11 @@ const getCurrentUser = async (req, res) => {
       role_name: req.user.role_name,
     };
 
+    // Include is_selected for students
+    if (req.user.role_code === 'STUDENT') {
+      userData.is_selected = req.user.is_selected || false;
+    }
+
     res.status(200).json({
       success: true,
       user: userData,

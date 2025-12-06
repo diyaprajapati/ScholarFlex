@@ -132,5 +132,22 @@ export const authService = {
   isStudent: () => {
     return authService.getUserRole() === 'STUDENT'
   },
+
+  // Update user data in localStorage
+  updateUser: (userData) => {
+    const storedUser = localStorage.getItem(USER_KEY)
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser)
+        const updatedUser = { ...user, ...userData }
+        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser))
+        return updatedUser
+      } catch (e) {
+        console.error('Error updating user data:', e)
+        return null
+      }
+    }
+    return null
+  },
 }
 
