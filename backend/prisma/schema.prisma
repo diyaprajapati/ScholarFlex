@@ -67,6 +67,7 @@ model User {
   studentsCreated       Student[]        @relation("StudentCreator")
   testAssignments       TestAssignment[]
   testRetakePermissionsGranted TestRetakePermission[]
+  nocLettersReviewed    NOCLetter[]      @relation("NOCReviewer")
   creator               User?            @relation("UserCreator", fields: [createdBy], references: [id])
   created               User[]           @relation("UserCreator")
   role                  Role             @relation(fields: [roleId], references: [id])
@@ -121,6 +122,7 @@ model Student {
   testAttempts         TestAttempt[]
   testRetakePermissions TestRetakePermission[]
   studentActivityLogs   StudentActivityLog[] @relation("StudentActivityLogs")
+  nocLetters            NOCLetter[]           @relation("NOCLetters")
 
   @@index([email])
   @@index([domainId])
@@ -403,6 +405,25 @@ model StudentActivityLog {
   @@map("student_activity_logs")
 }
 
+model NOCLetter {
+  id          Int      @id @default(autoincrement())
+  studentId   Int      @map("student_id")
+  fileName    String   @map("file_name") @db.VarChar(255)
+  filePath    String   @map("file_path") @db.VarChar(500)
+  fileSize    BigInt   @map("file_size")
+  status      NOCStatus @default(PENDING)
+  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+  reviewedAt  DateTime? @map("reviewed_at")
+  reviewedBy  Int?     @map("reviewed_by")
+  reviewer    User?    @relation("NOCReviewer", fields: [reviewedBy], references: [id])
+  student     Student  @relation("NOCLetters", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([status])
+  @@index([uploadedAt])
+  @@map("noc_letters")
+}
+
 enum QuestionPaperStatus {
   draft
   published
@@ -436,4 +457,10 @@ enum UploadStatus {
   PROCESSING
   COMPLETED
   FAILED
+}
+
+enum NOCStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

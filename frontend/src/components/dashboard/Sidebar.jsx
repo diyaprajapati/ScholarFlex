@@ -97,6 +97,20 @@ export default function Sidebar({ user }) {
               </li>
               <li>
                 <Link
+                  to={ROUTES.NOC_MANAGEMENT}
+                  onClick={() => handleNavClick('noc-management')}
+                  className={navItemClasses(ROUTES.NOC_MANAGEMENT)}
+                  style={navItemStyle(ROUTES.NOC_MANAGEMENT)}
+                  {...navItemHoverStyle(ROUTES.NOC_MANAGEMENT)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  NOC Letters
+                </Link>
+              </li>
+              <li>
+                <Link
                   to={ROUTES.PLAYLISTS.MANAGEMENT}
                   onClick={() => handleNavClick('playlists')}
                   className={navItemClasses(ROUTES.PLAYLISTS.MANAGEMENT)}

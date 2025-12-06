@@ -7,6 +7,7 @@ import StudentSidebar from '../../components/student/StudentSidebar';
 import DashboardTab from '../../components/student/DashboardTab';
 import PlaylistsTab from '../../components/student/PlaylistsTab';
 import ActivityTab from '../../components/student/ActivityTab';
+import NOCTab from '../../components/student/NOCTab';
 import PlaylistModal from '../../components/student/PlaylistModal';
 import { Menu } from 'lucide-react';
 
@@ -342,6 +343,9 @@ const StudentDashboardPage = () => {
               formatTime={formatTime}
             />
           )}
+
+          {/* NOC Tab */}
+          {activeTab === 'noc' && <NOCTab />}
         </main>
       </div>
 

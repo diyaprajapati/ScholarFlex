@@ -1,11 +1,12 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, BarChart3, X } from 'lucide-react';
+import { LayoutDashboard, BookOpen, BarChart3, FileText, X } from 'lucide-react';
 
 export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen }) {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'playlists', label: 'Playlists', icon: BookOpen },
     { id: 'activity', label: 'Activity', icon: BarChart3 },
+    { id: 'noc', label: 'NOC Letter', icon: FileText },
   ];
 
   const handleItemClick = (itemId) => {

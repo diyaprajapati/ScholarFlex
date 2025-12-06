@@ -234,6 +234,30 @@ adminRouter.get('/playlists', (req, res, next) => {
   next();
 }, playlistController.getAllPlaylists);
 
+// Import NOC controller for admin routes
+const nocController = require('../controllers/nocController');
+
+/**
+ * @route   GET /api/admin/noc
+ * @desc    Get all NOC letters (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/noc', nocController.getAllNOC);
+
+/**
+ * @route   GET /api/admin/noc/:id/download
+ * @desc    Download/view NOC letter (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/noc/:id/download', nocController.downloadNOC);
+
+/**
+ * @route   PATCH /api/admin/noc/:id/status
+ * @desc    Update NOC status (Approve/Reject) (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.patch('/noc/:id/status', nocController.updateNOCStatus);
+
 // Mount routers
 // IMPORTANT: Mount adminRouter FIRST (with specific routes like /playlists)
 // BEFORE superAdminRouter (which has catch-all /:id route)

@@ -13,7 +13,7 @@ const DashboardTab = ({
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 sm:p-6 border border-green-200">
+      <div className="bg-linear-to-r from-green-50 to-green-100 rounded-lg p-4 sm:p-6 border border-green-200">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
           Welcome to Your Learning Dashboard
         </h2>

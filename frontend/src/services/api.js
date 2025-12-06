@@ -656,6 +656,70 @@ export const api = {
       });
     },
   },
+
+  // NOC Letter endpoints
+  noc: {
+    upload: async (file) => {
+      const formData = new FormData();
+      formData.append('nocFile', file);
+      
+      return apiRequest('/student/noc/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+
+    getStudentNOC: async () => {
+      return apiRequest('/student/noc', {
+        method: 'GET',
+      });
+    },
+
+    deleteStudentNOC: async (id) => {
+      return apiRequest(`/student/noc/${id}`, {
+        method: 'DELETE',
+      });
+    },
+
+    getAll: async (filters = {}) => {
+      const queryParams = new URLSearchParams();
+      if (filters.status) queryParams.append('status', filters.status);
+      if (filters.page) queryParams.append('page', filters.page);
+      if (filters.limit) queryParams.append('limit', filters.limit);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/admin/noc?${queryString}` : '/admin/noc';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+
+    download: async (id) => {
+      const response = await fetch(`${API_BASE_URL}/admin/noc/${id}/download`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to download NOC letter');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      return url;
+    },
+
+    updateStatus: async (id, status) => {
+      return apiRequest(`/admin/noc/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+    },
+  },
 };
 
 export default api;
