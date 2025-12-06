@@ -97,6 +97,21 @@ export default function Sidebar({ user }) {
               </li>
               <li>
                 <Link
+                  to={ROUTES.PLAYLISTS.MANAGEMENT}
+                  onClick={() => handleNavClick('playlists')}
+                  className={navItemClasses(ROUTES.PLAYLISTS.MANAGEMENT)}
+                  style={navItemStyle(ROUTES.PLAYLISTS.MANAGEMENT)}
+                  {...navItemHoverStyle(ROUTES.PLAYLISTS.MANAGEMENT)}
+                  aria-current={location.pathname.startsWith(ROUTES.PLAYLISTS.BASE) ? 'page' : undefined}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                  </svg>
+                  Playlists
+                </Link>
+              </li>
+              <li>
+                <Link
                   to={ROUTES.TEST_ATTEMPTS}
                   onClick={() => handleNavClick('test-attempts')}
                   className={navItemClasses(ROUTES.TEST_ATTEMPTS)}

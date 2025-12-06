@@ -15,7 +15,8 @@ exports.getAllDomains = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Domains retrieved successfully',
-      data: result.rows,
+      domains: result.rows,
+      data: result.rows, // Keep for backward compatibility
     });
   } catch (error) {
     console.error('Error fetching domains:', error);

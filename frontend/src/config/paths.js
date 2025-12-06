@@ -29,6 +29,13 @@ export const ROUTES = {
     VIEW: '/interns/view',
   },
   
+  // Playlist Routes
+  PLAYLISTS: {
+    BASE: '/playlists',
+    MANAGEMENT: '/playlists/management',
+    ADD_VIDEOS: '/playlists/add-videos',
+  },
+  
   // Student Routes
   STUDENT: {
     BASE: '/student',

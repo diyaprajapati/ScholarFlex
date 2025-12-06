@@ -12,6 +12,7 @@ const studentTestRoutes = require('./routes/studentTestRoutes');
 const domainRoutes = require('./routes/domainRoutes');
 const testAttemptRoutes = require('./routes/testAttemptRoutes');
 const candidateRoutes = require('./routes/candidateRoutes');
+const activityRoutes = require('./routes/activityRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const pool = require('./config/database');
 const { prisma } = require('./config/database');
@@ -57,6 +58,7 @@ app.use('/api/student', studentTestRoutes);
 app.use('/api/domains', domainRoutes);
 app.use('/api/test-attempts', testAttemptRoutes);
 app.use('/api/candidates', candidateRoutes);
+app.use('/api/activity', activityRoutes);
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // 404 handler

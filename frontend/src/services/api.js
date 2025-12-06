@@ -582,6 +582,42 @@ export const api = {
       });
     },
   },
+
+  // Playlist endpoints
+  playlists: {
+    create: async (data) => {
+      return apiRequest('/admin/playlists', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: data.title,
+          description: data.description,
+          domain: data.domain,
+        }),
+      });
+    },
+
+    getAll: async () => {
+      return apiRequest('/admin/playlists', {
+        method: 'GET',
+      });
+    },
+
+    addVideo: async (playlistId, data) => {
+      return apiRequest(`/admin/playlists/${playlistId}/videos`, {
+        method: 'POST',
+        body: JSON.stringify({
+          video_title: data.video_title,
+          youtube_url: data.youtube_url,
+        }),
+      });
+    },
+
+    deleteVideo: async (playlistId, videoId) => {
+      return apiRequest(`/admin/playlists/${playlistId}/videos/${videoId}`, {
+        method: 'DELETE',
+      });
+    },
+  },
 };
 
 export default api;

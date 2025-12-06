@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, RetakePermissionsPage } from '../pages'
+import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, RetakePermissionsPage, PlaylistManagementPage, AddVideosToPlaylistPage } from '../pages'
 import { ROUTES } from './paths'
 
 /**
@@ -116,6 +116,24 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
             <AddInternPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Playlist Routes - Admin and Super Admin only */}
+      <Route
+        path={ROUTES.PLAYLISTS.MANAGEMENT}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <PlaylistManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.PLAYLISTS.ADD_VIDEOS}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <AddVideosToPlaylistPage />
           </ProtectedRoute>
         }
       />

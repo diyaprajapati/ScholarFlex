@@ -30,6 +30,7 @@ model Domain {
   updatedAt      DateTime              @updatedAt @map("updated_at")
   questionPapers QuestionPaperDomain[]
   students       Student[]
+  playlists      Playlist[]
 
   @@map("domains")
 }
@@ -119,6 +120,7 @@ model Student {
   testAssignments      TestAssignment[]
   testAttempts         TestAttempt[]
   testRetakePermissions TestRetakePermission[]
+  studentActivityLogs   StudentActivityLog[] @relation("StudentActivityLogs")
 
   @@index([email])
   @@index([domainId])
@@ -356,6 +358,49 @@ model TestRetakePermission {
   @@index([isActive])
   @@index([studentId, questionPaperId, isActive])
   @@map("test_retake_permissions")
+}
+
+model Playlist {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String?
+  domainId    Int      @map("domain_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  domain      Domain   @relation(fields: [domainId], references: [id])
+  videos      Video[]
+
+  @@index([domainId])
+  @@map("playlists")
+}
+
+model Video {
+  id          Int      @id @default(autoincrement())
+  playlistId  Int      @map("playlist_id")
+  title       String   @db.VarChar(255)
+  youtubeUrl  String   @map("youtube_url") @db.VarChar(500)
+  orderIndex  Int      @default(0) @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  @@index([playlistId])
+  @@index([orderIndex])
+  @@index([playlistId, orderIndex])
+  @@map("videos")
+}
+
+model StudentActivityLog {
+  id           Int      @id @default(autoincrement())
+  studentId    Int      @map("student_id")
+  activityType String   @map("activity_type") @db.VarChar(100)
+  metadata     Json?
+  timestamp    DateTime @default(now())
+  student      Student  @relation("StudentActivityLogs", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([activityType])
+  @@index([timestamp])
+  @@index([studentId, timestamp])
+  @@map("student_activity_logs")
 }
 
 enum QuestionPaperStatus {

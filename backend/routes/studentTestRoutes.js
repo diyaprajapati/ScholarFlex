@@ -1,5 +1,6 @@
 const express = require('express');
 const studentTestController = require('../controllers/studentTestController');
+const playlistController = require('../controllers/playlistController');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -45,6 +46,28 @@ router.post(
   '/test-attempts/:attemptId/submit',
   authorize('STUDENT'),
   studentTestController.submitTest
+);
+
+/**
+ * @route   GET /api/student/playlists
+ * @desc    Get all playlists (Student)
+ * @access  Private (Student)
+ */
+router.get(
+  '/playlists',
+  authorize('STUDENT'),
+  playlistController.getStudentPlaylists
+);
+
+/**
+ * @route   GET /api/student/playlists/recommended
+ * @desc    Get recommended playlists based on student's domain (Student)
+ * @access  Private (Student)
+ */
+router.get(
+  '/playlists/recommended',
+  authorize('STUDENT'),
+  playlistController.getRecommendedPlaylists
 );
 
 module.exports = router;

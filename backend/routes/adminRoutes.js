@@ -1,6 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const adminController = require('../controllers/adminController');
+const playlistController = require('../controllers/playlistController');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -161,9 +162,84 @@ adminRouter.post(
  */
 adminRouter.get('/retake-permissions', adminController.getRetakePermissions);
 
+// Admin/Super Admin routes for playlists
+/**
+ * @route   POST /api/admin/playlists
+ * @desc    Create a new playlist (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.post(
+  '/playlists',
+  [
+    body('title')
+      .trim()
+      .notEmpty()
+      .withMessage('Title is required')
+      .isLength({ max: 255 })
+      .withMessage('Title must be less than 255 characters'),
+    body('description')
+      .optional()
+      .trim(),
+    body('domain')
+      .isInt()
+      .withMessage('Domain must be a valid integer'),
+  ],
+  playlistController.createPlaylist
+);
+
+/**
+ * @route   POST /api/admin/playlists/:id/videos
+ * @desc    Add a video to a playlist (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.post(
+  '/playlists/:id/videos',
+  [
+    body('video_title')
+      .trim()
+      .notEmpty()
+      .withMessage('Video title is required')
+      .isLength({ max: 255 })
+      .withMessage('Video title must be less than 255 characters'),
+    body('youtube_url')
+      .trim()
+      .notEmpty()
+      .withMessage('YouTube URL is required')
+      .isURL()
+      .withMessage('YouTube URL must be a valid URL')
+      .isLength({ max: 500 })
+      .withMessage('YouTube URL must be less than 500 characters'),
+  ],
+  playlistController.addVideoToPlaylist
+);
+
+/**
+ * @route   DELETE /api/admin/playlists/:playlistId/videos/:videoId
+ * @desc    Delete a video from a playlist (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.delete(
+  '/playlists/:playlistId/videos/:videoId',
+  playlistController.deleteVideoFromPlaylist
+);
+
+/**
+ * @route   GET /api/admin/playlists
+ * @desc    Get all playlists (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/playlists', (req, res, next) => {
+  console.log('📥 GET /api/admin/playlists - Request received');
+  console.log('User:', req.user?.email);
+  next();
+}, playlistController.getAllPlaylists);
+
 // Mount routers
-router.use('/', superAdminRouter);
+// IMPORTANT: Mount adminRouter FIRST (with specific routes like /playlists)
+// BEFORE superAdminRouter (which has catch-all /:id route)
+// This ensures /playlists matches before /:id
 router.use('/', adminRouter);
+router.use('/', superAdminRouter);
 
 module.exports = router;
 
