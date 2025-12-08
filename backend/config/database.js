@@ -92,7 +92,31 @@ const pool = new Pool({
   ssl: sslConfig, // This will override any SSL settings in the connection string
   max: 10, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 30000, // Increased to 30 seconds for cloud database connections
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10000,
+});
+
+// Add error handlers for better diagnostics
+pool.on('error', (err, client) => {
+  console.error('❌ Unexpected error on idle database client:', err.message);
+  console.error('Error details:', {
+    code: err.code,
+    detail: err.detail,
+    hint: err.hint,
+  });
+});
+
+pool.on('connect', (client) => {
+  console.log('✅ New database client connected');
+});
+
+pool.on('acquire', (client) => {
+  // Client acquired from pool
+});
+
+pool.on('remove', (client) => {
+  console.log('⚠️  Database client removed from pool');
 });
 
 // Initialize Prisma Client with SSL configuration
@@ -110,23 +134,52 @@ const prisma = new PrismaClient({
   },
 });
 
-// Test database connection (pool)
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) {
-    console.error('❌ Database pool connection error:', err.message);
-  } else {
-    console.log('✅ Database pool connected successfully');
-  }
-});
+// Test database connection (pool) with retry logic
+let poolConnectionAttempts = 0;
+const maxPoolAttempts = 3;
 
-// Test Prisma connection
-prisma.$connect()
-  .then(() => {
-    console.log('✅ Prisma Client connected successfully');
-  })
-  .catch((err) => {
-    console.error('❌ Prisma Client connection error:', err.message);
+function testPoolConnection() {
+  pool.query('SELECT NOW()', (err, res) => {
+    if (err) {
+      poolConnectionAttempts++;
+      console.error(`❌ Database pool connection error (attempt ${poolConnectionAttempts}/${maxPoolAttempts}):`, err.message);
+      if (poolConnectionAttempts < maxPoolAttempts) {
+        // Retry after 5 seconds
+        setTimeout(testPoolConnection, 5000);
+      } else {
+        console.error('❌ Failed to connect to database pool after multiple attempts');
+      }
+    } else {
+      console.log('✅ Database pool connected successfully');
+      poolConnectionAttempts = 0; // Reset on success
+    }
   });
+}
+
+testPoolConnection();
+
+// Test Prisma connection with retry logic
+let prismaConnectionAttempts = 0;
+const maxPrismaAttempts = 3;
+
+async function testPrismaConnection() {
+  try {
+    await prisma.$connect();
+    console.log('✅ Prisma Client connected successfully');
+    prismaConnectionAttempts = 0; // Reset on success
+  } catch (err) {
+    prismaConnectionAttempts++;
+    console.error(`❌ Prisma Client connection error (attempt ${prismaConnectionAttempts}/${maxPrismaAttempts}):`, err.message);
+    if (prismaConnectionAttempts < maxPrismaAttempts) {
+      // Retry after 5 seconds
+      setTimeout(testPrismaConnection, 5000);
+    } else {
+      console.error('❌ Failed to connect to Prisma Client after multiple attempts');
+    }
+  }
+}
+
+testPrismaConnection();
 
 // Graceful shutdown handlers are in server.js
 // Do not add shutdown handlers here to avoid calling pool.end() multiple times
