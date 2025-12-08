@@ -1,6 +1,7 @@
 // API service for making HTTP requests to the backend
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.106.55.164:5000/api';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
@@ -471,36 +472,6 @@ export const api = {
       return apiRequest(`/admin/${id}`, {
         method: 'DELETE',
       });
-    },
-
-    retakePermissions: {
-      grant: async (data) => {
-        return apiRequest('/admin/retake-permissions/grant', {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
-      },
-
-      grantByDomain: async (data) => {
-        return apiRequest('/admin/retake-permissions/grant-by-domain', {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
-      },
-
-      revoke: async (data) => {
-        return apiRequest('/admin/retake-permissions/revoke', {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
-      },
-
-      getAll: async (params = {}) => {
-        const queryString = new URLSearchParams(params).toString();
-        return apiRequest(`/admin/retake-permissions${queryString ? `?${queryString}` : ''}`, {
-          method: 'GET',
-        });
-      },
     },
   },
 

@@ -639,24 +639,12 @@ exports.startTest = async (req, res) => {
       [studentId, testId]
     );
 
-    // If student has completed the test, check for retake permission
+    // If student has completed the test, deny access
     if (completedAttemptResult.rows.length > 0) {
-      const retakePermissionResult = await pool.query(
-        `SELECT id, is_active
-         FROM test_retake_permissions
-         WHERE student_id = $1 
-           AND question_paper_id = $2
-           AND is_active = TRUE`,
-        [studentId, testId]
-      );
-
-      // If no active retake permission, deny access
-      if (retakePermissionResult.rows.length === 0) {
-        return res.status(403).json({
-          success: false,
-          message: 'You have already attempted this test. You cannot attempt it again. Please contact an administrator if you need to retake this test.',
-        });
-      }
+      return res.status(403).json({
+        success: false,
+        message: 'You have already attempted this test. You cannot attempt it again.',
+      });
     }
 
     let questionPool;

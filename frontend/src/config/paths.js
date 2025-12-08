@@ -11,7 +11,6 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   TEST_ATTEMPTS: '/test-attempts',
   ADMIN_MANAGEMENT: '/admin-management',
-  RETAKE_PERMISSIONS: '/retake-permissions',
   NOC_MANAGEMENT: '/noc-management',
   
   // Question Papers Routes
