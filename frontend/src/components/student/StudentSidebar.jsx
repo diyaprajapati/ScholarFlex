@@ -1,16 +1,21 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, BookOpen, BarChart3, FileText, X } from 'lucide-react';
+import { ROUTES } from '../../config/paths';
 
 export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen }) {
+  const navigate = useNavigate();
+  
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'playlists', label: 'Playlists', icon: BookOpen },
-    { id: 'activity', label: 'Activity', icon: BarChart3 },
-    { id: 'noc', label: 'NOC Letter', icon: FileText },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD },
+    { id: 'playlists', label: 'Playlists', icon: BookOpen, path: ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS },
+    { id: 'activity', label: 'Activity', icon: BarChart3, path: ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY },
+    { id: 'noc', label: 'NOC Letter', icon: FileText, path: ROUTES.STUDENT.DASHBOARD_TABS.NOC },
   ];
 
-  const handleItemClick = (itemId) => {
+  const handleItemClick = (itemId, path) => {
     setActiveTab(itemId);
+    navigate(path);
     // Close sidebar on mobile after selection
     if (window.innerWidth < 1024) {
       setIsOpen(false);
@@ -60,7 +65,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
             {menuItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => handleItemClick(item.id)}
+                onClick={() => handleItemClick(item.id, item.path)}
                 className={`
                   w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
                   transition-all duration-200

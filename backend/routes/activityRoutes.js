@@ -59,6 +59,17 @@ router.get(
 );
 
 /**
+ * @route   GET /api/activity/video/progress
+ * @desc    Get latest video progress for a specific video (Student)
+ * @access  Private (Student)
+ */
+router.get(
+  '/video/progress',
+  authorize('STUDENT'),
+  activityLogController.getVideoProgress
+);
+
+/**
  * @route   GET /api/activity/summary
  * @desc    Get comprehensive activity summary for student (Student)
  * @access  Private (Student)

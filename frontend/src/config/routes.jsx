@@ -1,7 +1,7 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage } from '../pages'
+import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage } from '../pages'
 import { ROUTES } from './paths'
 
 /**
@@ -140,7 +140,31 @@ export default function AppRoutes() {
 
       {/* Student Routes */}
       <Route
-        path={ROUTES.STUDENT.DASHBOARD}
+        path={ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD}
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
+            <StudentDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS}
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
+            <StudentDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY}
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
+            <StudentDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.STUDENT.DASHBOARD_TABS.NOC}
         element={
           <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
             <StudentDashboardPage />
@@ -168,6 +192,14 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['STUDENT']}>
             <TestSubmissionPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/student/video/:videoId"
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']}>
+            <VideoPage />
           </ProtectedRoute>
         }
       />

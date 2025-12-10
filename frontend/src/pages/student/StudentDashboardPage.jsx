@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../utils/auth';
 import { ROUTES } from '../../config/paths';
 import api from '../../services/api';
@@ -13,8 +13,19 @@ import { Menu } from 'lucide-react';
 
 const StudentDashboardPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // Determine active tab from URL
+  const getActiveTabFromPath = () => {
+    const path = location.pathname;
+    if (path === ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS) return 'playlists';
+    if (path === ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY) return 'activity';
+    if (path === ROUTES.STUDENT.DASHBOARD_TABS.NOC) return 'noc';
+    return 'dashboard'; // Default to dashboard
+  };
+  
+  const [activeTab, setActiveTab] = useState(getActiveTabFromPath());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -60,7 +71,11 @@ const StudentDashboardPage = () => {
     }
 
     fetchInitialData();
-  }, [navigate]);
+    
+    // Set active tab based on current URL
+    setActiveTab(getActiveTabFromPath());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]); // Update tab when URL changes
 
   // Periodic check for is_selected status changes
   useEffect(() => {
@@ -100,12 +115,13 @@ const StudentDashboardPage = () => {
     // Check immediately
     checkUserStatus();
 
-    // Set up interval to check every 5 seconds
-    const intervalId = setInterval(checkUserStatus, 5000);
+    // Set up interval to check every 30 seconds (reduced frequency to avoid interference)
+    const intervalId = setInterval(checkUserStatus, 30000);
 
     // Cleanup interval on unmount
     return () => clearInterval(intervalId);
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only set up once on mount
 
   const fetchInitialData = async () => {
     try {
@@ -227,19 +243,58 @@ const StudentDashboardPage = () => {
   };
 
   const handleVideoClick = (video) => {
-    if (video.youtubeUrl) {
-      window.open(video.youtubeUrl, '_blank');
+    console.log('handleVideoClick called with video:', video);
+    
+    // Construct YouTube URL if not provided
+    let youtubeUrl = video.youtubeUrl;
+    if (!youtubeUrl && video.videoId) {
+      // If we have videoId (YouTube ID), construct the URL
+      youtubeUrl = `https://www.youtube.com/watch?v=${video.videoId}`;
+    }
+    
+    console.log('Constructed youtubeUrl:', youtubeUrl);
+    
+    if (!youtubeUrl) {
+      console.error('Cannot open video: missing YouTube URL and videoId', video);
+      return;
+    }
+    
+    try {
+      // Navigate to video page instead of opening YouTube in new tab
+      const videoUrl = encodeURIComponent(youtubeUrl);
+      const title = encodeURIComponent(video.videoTitle || video.title || 'Video');
       
-      // Log activity when video is clicked
-      if (selectedPlaylist) {
-        api.activity.log('VIDEO_CLICKED', {
-          video_id: video.id,
-          video_title: video.title,
-          playlist_id: selectedPlaylist.id,
-          playlist_title: selectedPlaylist.title,
-          youtube_url: video.youtubeUrl,
-        }).catch(err => console.error('Error logging activity:', err));
+      // Extract YouTube video ID from URL for the route parameter
+      // The VideoPage will find the actual video by YouTube URL if videoId doesn't match
+      const youtubeVideoId = extractVideoId(youtubeUrl);
+      
+      if (!youtubeVideoId) {
+        console.error('Cannot extract YouTube video ID from URL:', youtubeUrl);
+        return;
       }
+      
+      // Use YouTube video ID for the route (VideoPage will find the actual video by URL)
+      const routeVideoId = youtubeVideoId;
+      
+      let navigationPath = '';
+      if (selectedPlaylist) {
+        // Include playlist context from modal
+        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&playlistId=${selectedPlaylist.id}&title=${title}`;
+      } else if (video.playlistId) {
+        // Video has playlist context from continue watching
+        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&playlistId=${video.playlistId}&title=${title}`;
+      } else {
+        // Single video without playlist - try to find it in any playlist
+        // Use YouTube ID as placeholder, VideoPage will handle finding the video
+        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&title=${title}`;
+      }
+      
+      console.log('Navigating to:', navigationPath);
+      navigate(navigationPath);
+    } catch (error) {
+      console.error('Error navigating to video:', error);
+      // Fallback: open in new tab
+      window.open(youtubeUrl, '_blank');
     }
   };
 
@@ -321,6 +376,7 @@ const StudentDashboardPage = () => {
               recommendedTests={recommendedTests}
               getThumbnailUrl={getThumbnailUrl}
               handlePlaylistClick={handlePlaylistClick}
+              handleVideoClick={handleVideoClick}
             />
           )}
 

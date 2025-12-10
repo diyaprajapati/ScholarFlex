@@ -9,6 +9,7 @@ const DashboardTab = ({
   recommendedTests,
   getThumbnailUrl,
   handlePlaylistClick,
+  handleVideoClick,
 }) => {
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -40,22 +41,45 @@ const DashboardTab = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
             {continueWatching.slice(0, 5).map((video) => (
               <div
-                key={video.id}
-                onClick={() => video.youtubeUrl && window.open(video.youtubeUrl, '_blank')}
+                key={video.id || video.videoId}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  
+                  console.log('Continue watching video clicked:', video);
+                  
+                  const youtubeUrl = video.youtubeUrl || (video.videoId ? `https://www.youtube.com/watch?v=${video.videoId}` : null);
+                  
+                  if (!youtubeUrl) {
+                    console.error('Video missing YouTube URL and videoId:', video);
+                    return;
+                  }
+                  
+                  if (handleVideoClick) {
+                    handleVideoClick({ ...video, youtubeUrl });
+                  } else {
+                    console.warn('handleVideoClick not provided, opening in new tab');
+                    window.open(youtubeUrl, '_blank');
+                  }
+                }}
                 className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
               >
                 <div className="aspect-video bg-gray-200 relative">
-                  {getThumbnailUrl(video.youtubeUrl) ? (
-                    <img
-                      src={getThumbnailUrl(video.youtubeUrl)}
-                      alt={video.videoTitle}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Play className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400" />
-                    </div>
-                  )}
+                  {(() => {
+                    const youtubeUrl = video.youtubeUrl || (video.videoId ? `https://www.youtube.com/watch?v=${video.videoId}` : null);
+                    const thumbnailUrl = youtubeUrl ? getThumbnailUrl(youtubeUrl) : null;
+                    return thumbnailUrl ? (
+                      <img
+                        src={thumbnailUrl}
+                        alt={video.videoTitle || 'Video'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Play className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400" />
+                      </div>
+                    );
+                  })()}
                   {video.progress > 0 && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-300">
                       <div

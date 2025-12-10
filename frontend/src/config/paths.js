@@ -40,9 +40,16 @@ export const ROUTES = {
   STUDENT: {
     BASE: '/student',
     DASHBOARD: '/student/dashboard',
+    DASHBOARD_TABS: {
+      DASHBOARD: '/student/dashboard',
+      PLAYLISTS: '/student/playlists',
+      ACTIVITY: '/student/activity',
+      NOC: '/student/noc',
+    },
     INSTRUCTIONS: '/student/instructions',
     TEST: '/student/test',
     SUBMISSION: '/student/submission',
+    VIDEO: (videoId) => `/student/video/${videoId}`,
   },
 }
 

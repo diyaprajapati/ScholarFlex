@@ -75,7 +75,7 @@ const PlaylistModal = ({
                           </h3>
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
-                          Click to watch on YouTube
+                          Click to watch
                         </p>
                       </div>
                       <div className="ml-4 shrink-0">
