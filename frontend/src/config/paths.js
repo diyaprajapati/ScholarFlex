@@ -12,6 +12,7 @@ export const ROUTES = {
   TEST_ATTEMPTS: '/test-attempts',
   ADMIN_MANAGEMENT: '/admin-management',
   NOC_MANAGEMENT: '/noc-management',
+  STUDENT_ANALYTICS: '/student-analytics',
   
   // Question Papers Routes
   QUESTION_PAPERS: {

@@ -15,5 +15,6 @@ export { default as AdminManagementPage } from './admin/AdminManagementPage'
 export { default as NOCManagementPage } from './admin/NOCManagementPage'
 export { default as PlaylistManagementPage } from './admin/PlaylistManagementPage'
 export { default as AddVideosToPlaylistPage } from './admin/AddVideosToPlaylistPage'
+export { default as StudentAnalyticsPage } from './admin/StudentAnalyticsPage'
 export { default as NotFoundPage } from './errors/NotFoundPage'
 

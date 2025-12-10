@@ -138,6 +138,20 @@ export default function Sidebar({ user }) {
                   Test Results
                 </Link>
               </li>
+              <li>
+                <Link
+                  to={ROUTES.STUDENT_ANALYTICS}
+                  onClick={() => handleNavClick('student-analytics')}
+                  className={navItemClasses(ROUTES.STUDENT_ANALYTICS)}
+                  style={navItemStyle(ROUTES.STUDENT_ANALYTICS)}
+                  {...navItemHoverStyle(ROUTES.STUDENT_ANALYTICS)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Student Analytics
+                </Link>
+              </li>
               {user?.role === 'SUPER_ADMIN' && (
                 <li>
                   <Link

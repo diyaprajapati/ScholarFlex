@@ -206,6 +206,13 @@ adminRouter.get('/noc/:id/download', nocController.downloadNOC);
  */
 adminRouter.patch('/noc/:id/status', nocController.updateNOCStatus);
 
+/**
+ * @route   GET /api/admin/students/analytics
+ * @desc    Get student analytics for all selected students (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/students/analytics', adminController.getStudentAnalytics);
+
 // Mount routers
 // IMPORTANT: Mount adminRouter FIRST (with specific routes like /playlists)
 // BEFORE superAdminRouter (which has catch-all /:id route)

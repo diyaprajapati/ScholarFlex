@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const pool = require('../config/database');
+const { prisma } = require('../config/database');
 const User = require('../models/User');
 const { logActivitySimple } = require('../middleware/activityLogger');
 
@@ -304,11 +305,206 @@ const deleteAdmin = async (req, res) => {
   }
 };
 
+/**
+ * Get student analytics for all selected students
+ * GET /api/admin/students/analytics
+ */
+const getStudentAnalytics = async (req, res) => {
+  try {
+    // Get all selected students
+    const selectedStudentsResult = await pool.query(
+      `SELECT 
+        s.id,
+        s.email,
+        s.full_name,
+        s.phone,
+        s.domain_id,
+        d.domain_name,
+        s.is_selected,
+        s.created_at,
+        s.updated_at
+      FROM students s
+      LEFT JOIN domains d ON s.domain_id = d.id
+      WHERE s.is_active = TRUE
+      AND s.is_selected = TRUE
+      ORDER BY s.full_name ASC`
+    );
+
+    const students = selectedStudentsResult.rows;
+    
+    // Get all student IDs
+    const studentIds = students.map(s => s.id);
+    
+    // Fetch all video activities for all selected students in a single query
+    const allVideoActivities = await prisma.studentActivityLog.findMany({
+      where: {
+        studentId: {
+          in: studentIds,
+        },
+        activityType: {
+          in: ['video_start', 'video_complete', 'video_progress', 'VIDEO_START', 'VIDEO_COMPLETE', 'VIDEO_PROGRESS'],
+        },
+      },
+      orderBy: {
+        timestamp: 'asc',
+      },
+    });
+    
+    // Group activities by studentId
+    const activitiesByStudent = new Map();
+    allVideoActivities.forEach((activity) => {
+      const studentId = activity.studentId;
+      if (!activitiesByStudent.has(studentId)) {
+        activitiesByStudent.set(studentId, []);
+      }
+      activitiesByStudent.get(studentId).push(activity);
+    });
+    
+    // Process analytics for each student
+    const analytics = students.map((student) => {
+      const studentId = student.id;
+      const videoActivities = activitiesByStudent.get(studentId) || [];
+
+      // Track watch time per video and per day
+      const videoWatchTimeMap = new Map(); // videoKey -> watchTime
+      const dailyWatchTimeMap = new Map(); // date -> seconds
+      const videosCompleted = new Set();
+      const videosStarted = new Set();
+
+      videoActivities.forEach((activity) => {
+        const metadata = activity.metadata || {};
+        const activityType = activity.activityType.toLowerCase();
+        const videoId = metadata.videoId || metadata.video_id || null;
+        const youtubeUrl = metadata.youtubeUrl || metadata.youtube_url || null;
+        
+        if (!videoId && !youtubeUrl) return;
+        
+        const videoKey = youtubeUrl || `video_${videoId}`;
+        const activityDate = new Date(activity.timestamp).toISOString().split('T')[0]; // YYYY-MM-DD
+        
+        // Initialize maps
+        if (!videoWatchTimeMap.has(videoKey)) {
+          videoWatchTimeMap.set(videoKey, {
+            watchTime: 0,
+            completed: false,
+            videoTitle: metadata.videoTitle || metadata.video_title || 'Unknown Video',
+          });
+        }
+        
+        if (!dailyWatchTimeMap.has(activityDate)) {
+          dailyWatchTimeMap.set(activityDate, 0);
+        }
+
+        const videoData = videoWatchTimeMap.get(videoKey);
+
+        // Video completed - use full duration
+        if (activityType === 'video_complete') {
+          videosCompleted.add(videoKey);
+          videosStarted.add(videoKey);
+          videoData.completed = true;
+          const duration = metadata.duration || 0;
+          if (duration > 0) {
+            videoData.watchTime = duration;
+            // Add to daily watch time
+            dailyWatchTimeMap.set(activityDate, dailyWatchTimeMap.get(activityDate) + duration);
+          }
+        }
+
+        // Video progress - track actual currentTime watched
+        if (activityType === 'video_progress') {
+          videosStarted.add(videoKey);
+          const currentTime = metadata.currentTime || metadata.current_time || 0;
+          if (currentTime > 0) {
+            // Update max watch time for this video
+            if (currentTime > videoData.watchTime) {
+              videoData.watchTime = currentTime;
+            }
+            // For daily tracking, use the currentTime from this progress event
+            // This represents the time watched up to this point on this day
+            // We'll use the maximum currentTime per day per video to avoid double counting
+            const dayVideoKey = `${activityDate}_${videoKey}`;
+            if (!dailyWatchTimeMap.has(dayVideoKey)) {
+              dailyWatchTimeMap.set(dayVideoKey, currentTime);
+            } else {
+              const existingTime = dailyWatchTimeMap.get(dayVideoKey);
+              if (currentTime > existingTime) {
+                dailyWatchTimeMap.set(dayVideoKey, currentTime);
+              }
+            }
+          }
+        }
+
+        // Video started
+        if (activityType === 'video_start') {
+          videosStarted.add(videoKey);
+        }
+      });
+
+      // Calculate totals
+      let totalWatchTime = 0;
+      videoWatchTimeMap.forEach((data) => {
+        totalWatchTime += data.watchTime;
+      });
+
+      // Aggregate daily watch time by date
+      const dailyWatchTimeAggregated = new Map();
+      dailyWatchTimeMap.forEach((seconds, dayVideoKey) => {
+        const date = dayVideoKey.split('_')[0]; // Extract date from key
+        if (!dailyWatchTimeAggregated.has(date)) {
+          dailyWatchTimeAggregated.set(date, 0);
+        }
+        dailyWatchTimeAggregated.set(date, dailyWatchTimeAggregated.get(date) + seconds);
+      });
+
+      // Convert daily watch time map to array
+      const dailyWatchTime = Array.from(dailyWatchTimeAggregated.entries())
+        .map(([date, seconds]) => ({
+          date,
+          seconds,
+          minutes: Math.round(seconds / 60 * 100) / 100,
+          hours: Math.round((seconds / 3600) * 100) / 100,
+        }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Most recent first
+
+      return {
+        studentId: student.id,
+        email: student.email,
+        fullName: student.full_name,
+        phone: student.phone,
+        domainId: student.domain_id,
+        domainName: student.domain_name,
+        videosWatched: videosCompleted.size,
+        videosStarted: videosStarted.size,
+        totalWatchTimeSeconds: totalWatchTime,
+        totalWatchTimeMinutes: Math.round(totalWatchTime / 60 * 100) / 100,
+        totalWatchTimeHours: Math.round((totalWatchTime / 3600) * 100) / 100,
+        dailyWatchTime: dailyWatchTime,
+        createdAt: student.created_at,
+        updatedAt: student.updated_at,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Student analytics retrieved successfully',
+      analytics: analytics,
+      totalStudents: analytics.length,
+    });
+  } catch (error) {
+    console.error('Error getting student analytics:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
 module.exports = {
   createAdmin,
   getAllAdmins,
   getAdminById,
   updateAdmin,
   deleteAdmin,
+  getStudentAnalytics,
 };
 
