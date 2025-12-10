@@ -102,10 +102,45 @@ const AddVideosToPlaylistPage = () => {
     const isPlaylistUrl = formData.youtube_url.includes('playlist?list=');
     
     if (inputMode === 'playlist' || isPlaylistUrl) {
-      setError('YouTube playlist import requires YouTube Data API integration. Please add videos individually for now.');
+      // Handle bulk import from YouTube playlist
+      try {
+        setIsSubmitting(true);
+        const response = await api.playlists.addVideosFromPlaylist(
+          parseInt(formData.playlist_id),
+          formData.youtube_url
+        );
+
+        if (response.success) {
+          const { added, skipped, errors, total } = response.data;
+          let message = `Successfully imported ${added} video(s)!`;
+          
+          if (skipped > 0) {
+            message += ` ${skipped} video(s) were skipped (already exist).`;
+          }
+          if (errors > 0) {
+            message += ` ${errors} video(s) had errors.`;
+          }
+          
+          setSuccess(message);
+          setFormData({
+            playlist_id: formData.playlist_id,
+            video_title: '',
+            youtube_url: '',
+          });
+          // Refresh videos list
+          fetchPlaylistVideos(formData.playlist_id);
+          setTimeout(() => setSuccess(''), 5000);
+        }
+      } catch (err) {
+        setError(err.message || 'Failed to import playlist');
+        console.error('Error importing playlist:', err);
+      } finally {
+        setIsSubmitting(false);
+      }
       return;
     }
 
+    // Handle single video addition
     try {
       setIsSubmitting(true);
       const response = await api.playlists.addVideo(parseInt(formData.playlist_id), {
@@ -237,21 +272,23 @@ const AddVideosToPlaylistPage = () => {
                   )}
                 </div>
 
-                <div>
-                  <label htmlFor="video_title" className="block text-sm font-medium text-gray-700 mb-1">
-                    Video Title *
-                  </label>
-                  <input
-                    type="text"
-                    id="video_title"
-                    name="video_title"
-                    required
-                    value={formData.video_title}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Enter video title"
-                  />
-                </div>
+                {inputMode === 'single' && (
+                  <div>
+                    <label htmlFor="video_title" className="block text-sm font-medium text-gray-700 mb-1">
+                      Video Title *
+                    </label>
+                    <input
+                      type="text"
+                      id="video_title"
+                      name="video_title"
+                      required={inputMode === 'single'}
+                      value={formData.video_title}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="Enter video title"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <div className="flex items-center gap-4 mb-2">
@@ -299,8 +336,8 @@ const AddVideosToPlaylistPage = () => {
                   />
                   <p className="mt-1 text-xs text-gray-500">
                     {inputMode === 'playlist' ? (
-                      <span className="text-amber-600">
-                        ⚠️ Playlist import requires YouTube Data API. For now, please add videos individually.
+                      <span className="text-green-600">
+                        ✓ Enter a YouTube playlist URL to import all videos automatically
                       </span>
                     ) : (
                       'Enter the full YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)'
@@ -313,7 +350,10 @@ const AddVideosToPlaylistPage = () => {
                   disabled={isSubmitting || !formData.playlist_id}
                   className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Adding...' : 'Add Video'}
+                  {isSubmitting 
+                    ? (inputMode === 'playlist' ? 'Importing Playlist...' : 'Adding...')
+                    : (inputMode === 'playlist' ? 'Import Playlist' : 'Add Video')
+                  }
                 </button>
               </form>
             </div>

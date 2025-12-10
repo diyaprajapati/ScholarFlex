@@ -26,6 +26,7 @@ const CandidatesTab = () => {
   const [filters, setFilters] = useState({
     instituteName: '',
     courseTaken: [], // Array of selected courses
+    domain: [], // Array of selected domain IDs
     testGiven: '', // 'yes', 'no', or ''
     marksRange: '', // 'below70', 'above70', or ''
     selected: '', // 'yes', 'no', or ''
@@ -60,7 +61,8 @@ const CandidatesTab = () => {
     try {
       setIsLoadingDomains(true);
       const response = await api.domains.getAll();
-      setDomains(response.data || []);
+      // API returns both 'data' and 'domains' for backward compatibility
+      setDomains(response.domains || response.data || []);
     } catch (err) {
       console.error('Error fetching domains:', err);
     } finally {
@@ -250,6 +252,25 @@ const CandidatesTab = () => {
       });
     }
 
+    // Apply domain filter (multiple domains)
+    if (filters.domain && filters.domain.length > 0) {
+      result = result.filter(student => {
+        // Check if student has domain_id that matches selected domains
+        if (student.domain_id !== null && student.domain_id !== undefined) {
+          return filters.domain.includes(student.domain_id);
+        }
+        // Fallback: check domain_name if domain_id is not available
+        if (student.domain_name || student.domain) {
+          const domainName = (student.domain_name || student.domain || '').toLowerCase();
+          return filters.domain.some(domainId => {
+            const selectedDomain = domains.find(d => d.id === domainId);
+            return selectedDomain && domainName === selectedDomain.domain_name.toLowerCase();
+          });
+        }
+        return false;
+      });
+    }
+
 
     // Apply test given filter (marks > 0 means test given)
     if (filters.testGiven === 'yes') {
@@ -314,7 +335,7 @@ const CandidatesTab = () => {
     }
 
     return result;
-  }, [students, searchQuery, filters]);
+  }, [students, searchQuery, filters, domains]);
 
   // Pagination calculations - memoized (using filteredStudents)
   const totalPages = useMemo(() => Math.ceil(filteredStudents.length / itemsPerPage), [filteredStudents.length, itemsPerPage]);
@@ -449,6 +470,7 @@ const CandidatesTab = () => {
     setFilters({
       instituteName: '',
       courseTaken: [],
+      domain: [],
       testGiven: '',
       marksRange: '',
       selected: '',
@@ -492,6 +514,23 @@ const CandidatesTab = () => {
         return {
           ...prev,
           courseTaken: [...currentCourses, course],
+        };
+      }
+    });
+  }, []);
+
+  const handleDomainToggle = useCallback((domainId) => {
+    setFilters(prev => {
+      const currentDomains = prev.domain || [];
+      if (currentDomains.includes(domainId)) {
+        return {
+          ...prev,
+          domain: currentDomains.filter(d => d !== domainId),
+        };
+      } else {
+        return {
+          ...prev,
+          domain: [...currentDomains, domainId],
         };
       }
     });
@@ -733,6 +772,54 @@ const CandidatesTab = () => {
                   ) : (
                     <div className="text-sm text-gray-500 bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
                       No courses available
+                    </div>
+                  )}
+                </div>
+
+                {/* Domain - Multi-select */}
+                <div className="md:col-span-2 lg:col-span-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Domain</label>
+                  {isLoadingDomains ? (
+                    <div className="text-sm text-gray-500 bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
+                      Loading domains...
+                    </div>
+                  ) : domains.length > 0 ? (
+                    <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-2 bg-white">
+                      <div className="space-y-2">
+                        {domains.map((domain) => (
+                          <label
+                            key={domain.id}
+                            className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={filters.domain.includes(domain.id)}
+                              onChange={() => handleDomainToggle(domain.id)}
+                              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            />
+                            <span className="flex-1">{domain.domain_name}</span>
+                            {filters.domain.includes(domain.id) && (
+                              <span className="text-xs text-indigo-600 font-medium">
+                                ({filters.domain.filter(d => d === domain.id).length})
+                              </span>
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                      {filters.domain.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-gray-200">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, domain: [] }))}
+                            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                          >
+                            Clear selection ({filters.domain.length} selected)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-500 bg-gray-50 border border-gray-300 rounded-lg px-3 py-2">
+                      No domains available
                     </div>
                   )}
                 </div>

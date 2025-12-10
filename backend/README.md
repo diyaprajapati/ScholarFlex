@@ -85,6 +85,11 @@ EMAIL_FROM=ScholarFlex <noreply@scholarflex.com>
 
 # Frontend URL
 FRONTEND_URL=http://localhost:5173
+
+# YouTube Data API v3 Configuration (for playlist import)
+# Get your API key from: https://console.cloud.google.com/apis/credentials
+# Enable "YouTube Data API v3" in Google Cloud Console
+YOUTUBE_DATA_API_KEY=your-youtube-api-key-here
 ```
 
 ### Step 4: Database Setup

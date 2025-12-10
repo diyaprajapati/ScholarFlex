@@ -550,6 +550,15 @@ const addVideosFromPlaylistUrl = async (req, res) => {
     const { id } = req.params;
     const { youtube_playlist_url } = req.body;
 
+    // Check if YouTube API key is configured
+    const youtubeApiKey = process.env.YOUTUBE_DATA_API_KEY;
+    if (!youtubeApiKey) {
+      return res.status(500).json({
+        success: false,
+        message: 'YouTube Data API key is not configured. Please set YOUTUBE_DATA_API_KEY in environment variables.',
+      });
+    }
+
     // Validate playlist exists
     const playlist = await prisma.playlist.findUnique({
       where: { id: parseInt(id) },
@@ -567,22 +576,184 @@ const addVideosFromPlaylistUrl = async (req, res) => {
     if (!playlistIdMatch) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid YouTube playlist URL. Please provide a valid playlist URL.',
+        message: 'Invalid YouTube playlist URL. Please provide a valid playlist URL with format: https://www.youtube.com/playlist?list=PLAYLIST_ID',
       });
     }
 
-    // For now, return a message that this requires YouTube API
-    // In production, you would use YouTube Data API v3 to fetch playlist videos
-    return res.status(501).json({
-      success: false,
-      message: 'YouTube playlist import requires YouTube Data API integration. Please add videos individually or configure YouTube API key.',
-      note: 'To enable this feature, you need to: 1) Get YouTube Data API key, 2) Install youtube-playlist-parser or use YouTube API, 3) Configure API key in environment variables',
+    const youtubePlaylistId = playlistIdMatch[1];
+
+    // Fetch all videos from YouTube playlist using YouTube Data API v3
+    const allVideos = [];
+    let nextPageToken = null;
+    let pageCount = 0;
+    const maxPages = 50; // Safety limit to prevent infinite loops
+
+    do {
+      pageCount++;
+      if (pageCount > maxPages) {
+        console.warn(`Reached maximum page limit (${maxPages}) for playlist ${youtubePlaylistId}`);
+        break;
+      }
+
+      // Build API URL
+      let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${youtubePlaylistId}&maxResults=50&key=${youtubeApiKey}`;
+      if (nextPageToken) {
+        apiUrl += `&pageToken=${nextPageToken}`;
+      }
+
+      // Fetch playlist items
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle API errors
+        if (data.error) {
+          const errorMessage = data.error.message || 'YouTube API error';
+          const errorCode = data.error.code;
+          
+          if (errorCode === 403) {
+            return res.status(403).json({
+              success: false,
+              message: 'YouTube API access denied. Please check your API key permissions and quota.',
+              error: errorMessage,
+            });
+          } else if (errorCode === 404) {
+            return res.status(404).json({
+              success: false,
+              message: 'YouTube playlist not found. Please check the playlist URL.',
+              error: errorMessage,
+            });
+          } else {
+            return res.status(400).json({
+              success: false,
+              message: `YouTube API error: ${errorMessage}`,
+              error: errorMessage,
+            });
+          }
+        }
+        throw new Error(`YouTube API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Extract video information
+      if (data.items && data.items.length > 0) {
+        for (const item of data.items) {
+          // Skip deleted or private videos
+          if (item.snippet.title === 'Deleted video' || item.snippet.title === 'Private video') {
+            continue;
+          }
+
+          const videoId = item.contentDetails?.videoId || item.snippet?.resourceId?.videoId;
+          if (!videoId) {
+            continue;
+          }
+
+          allVideos.push({
+            title: item.snippet.title || 'Untitled Video',
+            youtubeUrl: `https://www.youtube.com/watch?v=${videoId}`,
+            videoId: videoId,
+            description: item.snippet.description || '',
+            thumbnail: item.snippet.thumbnails?.default?.url || '',
+            position: item.snippet.position || allVideos.length,
+          });
+        }
+      }
+
+      // Check for next page
+      nextPageToken = data.nextPageToken || null;
+    } while (nextPageToken);
+
+    if (allVideos.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No videos found in the YouTube playlist. The playlist might be empty, private, or inaccessible.',
+      });
+    }
+
+    // Get the highest order_index for this playlist
+    const lastVideo = await prisma.video.findFirst({
+      where: { playlistId: parseInt(id) },
+      orderBy: { orderIndex: 'desc' },
+    });
+
+    let nextOrderIndex = lastVideo ? lastVideo.orderIndex + 1 : 0;
+
+    // Add videos to database
+    const addedVideos = [];
+    const skippedVideos = [];
+    const videoErrors = [];
+
+    for (const videoData of allVideos) {
+      try {
+        // Check if video already exists in this playlist (by YouTube URL)
+        const existingVideo = await prisma.video.findFirst({
+          where: {
+            playlistId: parseInt(id),
+            youtubeUrl: videoData.youtubeUrl,
+          },
+        });
+
+        if (existingVideo) {
+          skippedVideos.push({
+            title: videoData.title,
+            reason: 'Video already exists in playlist',
+          });
+          continue;
+        }
+
+        // Create video
+        const video = await prisma.video.create({
+          data: {
+            playlistId: parseInt(id),
+            title: videoData.title,
+            youtubeUrl: videoData.youtubeUrl,
+            orderIndex: nextOrderIndex++,
+          },
+        });
+
+        addedVideos.push({
+          id: video.id,
+          title: video.title,
+          youtubeUrl: video.youtubeUrl,
+        });
+      } catch (error) {
+        console.error(`Error adding video "${videoData.title}":`, error);
+        videoErrors.push({
+          title: videoData.title,
+          reason: error.message || 'Unknown error',
+        });
+      }
+    }
+
+    // Log the activity
+    await logActivitySimple(
+      req,
+      'BULK_ADD_VIDEOS_TO_PLAYLIST',
+      'USER',
+      playlist.id,
+      `${req.user.email} imported ${addedVideos.length} videos from YouTube playlist to: ${playlist.title}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Successfully imported ${addedVideos.length} video(s) from YouTube playlist`,
+      data: {
+        total: allVideos.length,
+        added: addedVideos.length,
+        skipped: skippedVideos.length,
+        errors: videoErrors.length,
+        details: {
+          added: addedVideos,
+          skipped: skippedVideos.slice(0, 10), // Limit to first 10
+          errors: videoErrors.slice(0, 10), // Limit to first 10
+        },
+      },
     });
   } catch (error) {
     console.error('Error in addVideosFromPlaylistUrl:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 };

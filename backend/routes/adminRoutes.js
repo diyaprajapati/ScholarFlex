@@ -142,6 +142,26 @@ adminRouter.post(
 );
 
 /**
+ * @route   POST /api/admin/playlists/:id/videos/bulk
+ * @desc    Add multiple videos from YouTube playlist URL (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.post(
+  '/playlists/:id/videos/bulk',
+  [
+    body('youtube_playlist_url')
+      .trim()
+      .notEmpty()
+      .withMessage('YouTube playlist URL is required')
+      .isURL()
+      .withMessage('YouTube playlist URL must be a valid URL')
+      .matches(/playlist\?list=/)
+      .withMessage('URL must be a valid YouTube playlist URL'),
+  ],
+  playlistController.addVideosFromPlaylistUrl
+);
+
+/**
  * @route   DELETE /api/admin/playlists/:playlistId/videos/:videoId
  * @desc    Delete a video from a playlist (Admin/Super Admin)
  * @access  Private (Admin, Super Admin)

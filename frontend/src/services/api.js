@@ -583,6 +583,15 @@ export const api = {
       });
     },
 
+    addVideosFromPlaylist: async (playlistId, youtubePlaylistUrl) => {
+      return apiRequest(`/admin/playlists/${playlistId}/videos/bulk`, {
+        method: 'POST',
+        body: JSON.stringify({
+          youtube_playlist_url: youtubePlaylistUrl,
+        }),
+      });
+    },
+
     deleteVideo: async (playlistId, videoId) => {
       return apiRequest(`/admin/playlists/${playlistId}/videos/${videoId}`, {
         method: 'DELETE',
