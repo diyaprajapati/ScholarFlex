@@ -182,6 +182,42 @@ adminRouter.get('/playlists', (req, res, next) => {
   next();
 }, playlistController.getAllPlaylists);
 
+/**
+ * @route   PUT /api/admin/playlists/:id
+ * @desc    Update a playlist (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.put(
+  '/playlists/:id',
+  [
+    body('title')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Title cannot be empty')
+      .isLength({ max: 255 })
+      .withMessage('Title must be less than 255 characters'),
+    body('description')
+      .optional()
+      .trim(),
+    body('domain')
+      .optional()
+      .isInt()
+      .withMessage('Domain must be a valid integer'),
+  ],
+  playlistController.updatePlaylist
+);
+
+/**
+ * @route   DELETE /api/admin/playlists/:id
+ * @desc    Delete a playlist (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.delete(
+  '/playlists/:id',
+  playlistController.deletePlaylist
+);
+
 // Import NOC controller for admin routes
 const nocController = require('../controllers/nocController');
 

@@ -758,6 +758,172 @@ const addVideosFromPlaylistUrl = async (req, res) => {
   }
 };
 
+/**
+ * Update a playlist (Admin/Super Admin)
+ * PUT /api/admin/playlists/:id
+ */
+const updatePlaylist = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { id } = req.params;
+    const { title, description, domain } = req.body;
+
+    // Validate playlist exists
+    const existingPlaylist = await prisma.playlist.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!existingPlaylist) {
+      return res.status(404).json({
+        success: false,
+        message: 'Playlist not found',
+      });
+    }
+
+    // Validate domain exists if provided
+    if (domain) {
+      const domainRecord = await prisma.domain.findUnique({
+        where: { id: parseInt(domain) },
+      });
+
+      if (!domainRecord) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid domain ID',
+        });
+      }
+    }
+
+    // Update playlist
+    const playlist = await prisma.playlist.update({
+      where: { id: parseInt(id) },
+      data: {
+        ...(title && { title }),
+        ...(description !== undefined && { description: description || null }),
+        ...(domain && { domainId: parseInt(domain) }),
+      },
+      include: {
+        domain: {
+          select: {
+            id: true,
+            domainName: true,
+            domainCode: true,
+          },
+        },
+        _count: {
+          select: {
+            videos: true,
+          },
+        },
+      },
+    });
+
+    // Log the activity
+    await logActivitySimple(
+      req,
+      'UPDATE_PLAYLIST',
+      'USER',
+      playlist.id,
+      `${req.user.email} updated playlist: ${playlist.title}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Playlist updated successfully',
+      playlist: {
+        id: playlist.id,
+        title: playlist.title,
+        description: playlist.description,
+        domain: {
+          id: playlist.domain.id,
+          name: playlist.domain.domainName,
+          code: playlist.domain.domainCode,
+        },
+        videoCount: playlist._count.videos,
+        createdAt: playlist.createdAt,
+        updatedAt: playlist.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error in updatePlaylist:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    });
+  }
+};
+
+/**
+ * Delete a playlist (Admin/Super Admin)
+ * DELETE /api/admin/playlists/:id
+ */
+const deletePlaylist = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate playlist exists
+    const playlist = await prisma.playlist.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        _count: {
+          select: {
+            videos: true,
+          },
+        },
+      },
+    });
+
+    if (!playlist) {
+      return res.status(404).json({
+        success: false,
+        message: 'Playlist not found',
+      });
+    }
+
+    // Delete all videos in the playlist first (cascade delete)
+    await prisma.video.deleteMany({
+      where: { playlistId: parseInt(id) },
+    });
+
+    // Delete playlist
+    await prisma.playlist.delete({
+      where: { id: parseInt(id) },
+    });
+
+    // Log the activity
+    await logActivitySimple(
+      req,
+      'DELETE_PLAYLIST',
+      'USER',
+      parseInt(id),
+      `${req.user.email} deleted playlist: ${playlist.title}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Playlist deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error in deletePlaylist:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    });
+  }
+};
+
 module.exports = {
   createPlaylist,
   addVideoToPlaylist,
@@ -766,5 +932,7 @@ module.exports = {
   getAllPlaylists,
   getStudentPlaylists,
   getRecommendedPlaylists,
+  updatePlaylist,
+  deletePlaylist,
 };
 

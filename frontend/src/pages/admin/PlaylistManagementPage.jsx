@@ -110,10 +110,17 @@ const PlaylistManagementPage = () => {
 
     try {
       if (editingPlaylist) {
-        // Update playlist (if update endpoint exists)
-        // For now, we'll just show an error
-        setError('Update functionality not yet implemented');
-        return;
+        // Update playlist
+        const response = await api.playlists.update(editingPlaylist.id, formData);
+        if (response.success) {
+          setSuccess('Playlist updated successfully!');
+          setShowModal(false);
+          resetForm();
+          fetchPlaylists();
+          setTimeout(() => setSuccess(''), 3000);
+        } else {
+          setError(response.message || 'Failed to update playlist');
+        }
       } else {
         // Create playlist
         const response = await api.playlists.create(formData);
@@ -123,6 +130,8 @@ const PlaylistManagementPage = () => {
           resetForm();
           fetchPlaylists();
           setTimeout(() => setSuccess(''), 3000);
+        } else {
+          setError(response.message || 'Failed to create playlist');
         }
       }
     } catch (err) {
@@ -146,10 +155,16 @@ const PlaylistManagementPage = () => {
 
     try {
       setIsDeleting(true);
-      // Delete playlist (if delete endpoint exists)
-      // For now, we'll just show an error
-      setError('Delete functionality not yet implemented');
-      setDeleteModal({ isOpen: false, playlist: null });
+      setError('');
+      const response = await api.playlists.delete(deleteModal.playlist.id);
+      if (response.success) {
+        setSuccess('Playlist deleted successfully!');
+        setDeleteModal({ isOpen: false, playlist: null });
+        fetchPlaylists();
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError(response.message || 'Failed to delete playlist');
+      }
     } catch (err) {
       setError(err.message || 'Failed to delete playlist');
       console.error('Error deleting playlist:', err);
