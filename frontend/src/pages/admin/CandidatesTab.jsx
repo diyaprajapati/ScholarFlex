@@ -34,6 +34,8 @@ const CandidatesTab = () => {
     referenceText: '', // free text search within reference
     startDate: '',
     endDate: '',
+    testDateStart: '', // Test date filter start
+    testDateEnd: '', // Test date filter end
   });
   const itemsPerPage = 10;
   const fileInputRef = useRef(null);
@@ -334,6 +336,25 @@ const CandidatesTab = () => {
       });
     }
 
+    // Apply test date range filters
+    if (filters.testDateStart) {
+      const testStartDate = new Date(filters.testDateStart);
+      testStartDate.setHours(0, 0, 0, 0);
+      result = result.filter(student => {
+        if (!student.last_test_date) return false;
+        return new Date(student.last_test_date) >= testStartDate;
+      });
+    }
+
+    if (filters.testDateEnd) {
+      const testEndDate = new Date(filters.testDateEnd);
+      testEndDate.setHours(23, 59, 59, 999); // Include entire end date
+      result = result.filter(student => {
+        if (!student.last_test_date) return false;
+        return new Date(student.last_test_date) <= testEndDate;
+      });
+    }
+
     return result;
   }, [students, searchQuery, filters, domains]);
 
@@ -478,6 +499,8 @@ const CandidatesTab = () => {
       referenceText: '',
       startDate: '',
       endDate: '',
+      testDateStart: '',
+      testDateEnd: '',
     });
     setSearchQuery('');
   }, []);
@@ -905,6 +928,28 @@ const CandidatesTab = () => {
                     type="date"
                     value={filters.endDate}
                     onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+
+                {/* Test Date Start */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Test Date (From)</label>
+                  <input
+                    type="date"
+                    value={filters.testDateStart}
+                    onChange={(e) => handleFilterChange('testDateStart', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+
+                {/* Test Date End */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Test Date (To)</label>
+                  <input
+                    type="date"
+                    value={filters.testDateEnd}
+                    onChange={(e) => handleFilterChange('testDateEnd', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                   />
                 </div>
