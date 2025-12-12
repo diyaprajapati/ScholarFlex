@@ -224,6 +224,15 @@ const CandidatesTab = () => {
     }
   }, []);
 
+  // Helper function to compare dates (date only, ignoring time)
+  const compareDates = useCallback((date1, date2) => {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    const date1Only = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+    const date2Only = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+    return date1Only.getTime() - date2Only.getTime();
+  }, []);
+
   // Filter students by search query and all filters - memoized
   const filteredStudents = useMemo(() => {
     let result = [...students];
@@ -337,26 +346,40 @@ const CandidatesTab = () => {
     }
 
     // Apply test date range filters
-    if (filters.testDateStart) {
-      const testStartDate = new Date(filters.testDateStart);
-      testStartDate.setHours(0, 0, 0, 0);
+    if (filters.testDateStart || filters.testDateEnd) {
       result = result.filter(student => {
+        // Skip students who haven't taken a test (no last_test_date)
         if (!student.last_test_date) return false;
-        return new Date(student.last_test_date) >= testStartDate;
-      });
-    }
-
-    if (filters.testDateEnd) {
-      const testEndDate = new Date(filters.testDateEnd);
-      testEndDate.setHours(23, 59, 59, 999); // Include entire end date
-      result = result.filter(student => {
-        if (!student.last_test_date) return false;
-        return new Date(student.last_test_date) <= testEndDate;
+        
+        try {
+          const studentTestDate = new Date(student.last_test_date);
+          // Validate the date is valid
+          if (isNaN(studentTestDate.getTime())) return false;
+          
+          // Check start date filter
+          if (filters.testDateStart) {
+            const startDate = new Date(filters.testDateStart);
+            if (isNaN(startDate.getTime())) return false;
+            if (compareDates(studentTestDate, startDate) < 0) return false;
+          }
+          
+          // Check end date filter
+          if (filters.testDateEnd) {
+            const endDate = new Date(filters.testDateEnd);
+            if (isNaN(endDate.getTime())) return false;
+            if (compareDates(studentTestDate, endDate) > 0) return false;
+          }
+          
+          return true;
+        } catch (error) {
+          console.error('Error comparing test dates:', error, student.last_test_date);
+          return false;
+        }
       });
     }
 
     return result;
-  }, [students, searchQuery, filters, domains]);
+  }, [students, searchQuery, filters, domains, compareDates]);
 
   // Pagination calculations - memoized (using filteredStudents)
   const totalPages = useMemo(() => Math.ceil(filteredStudents.length / itemsPerPage), [filteredStudents.length, itemsPerPage]);
