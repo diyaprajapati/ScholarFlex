@@ -63,12 +63,18 @@ export default function StudentTestInstructionsPage() {
           const currentUser = response.user
           const storedUser = authService.getUser()
           
-          // Check if is_selected status has changed
-          if (storedUser && storedUser.is_selected !== currentUser.is_selected) {
-            // Update user data in localStorage
-            authService.updateUser({ is_selected: currentUser.is_selected })
-            setUser({ ...storedUser, is_selected: currentUser.is_selected })
-            
+          if (storedUser) {
+            const updatedUser = {
+              ...storedUser,
+              is_selected: currentUser.is_selected,
+              can_retest: currentUser.can_retest,
+            }
+            authService.updateUser({
+              is_selected: currentUser.is_selected,
+              can_retest: currentUser.can_retest,
+            })
+            setUser(updatedUser)
+
             // Redirect based on new status
             if (currentUser.is_selected) {
               // Student was selected, redirect to dashboard
@@ -79,7 +85,9 @@ export default function StudentTestInstructionsPage() {
         }
       } catch (error) {
         console.error('Error checking user status:', error)
-        // Don't redirect on error, just log it
+        // If user was removed/deactivated, clear auth and send to login
+        authService.logout()
+        navigate(ROUTES.LOGIN, { replace: true })
       }
     }
 
@@ -166,7 +174,10 @@ export default function StudentTestInstructionsPage() {
     },
   ]
 
-  const nextTestToStart = availableTests.find(test => !test.is_attempted) || availableTests[0] || null
+  const nextTestToStart =
+    availableTests.find(test => !(test.is_attempted && !user?.can_retest)) ||
+    availableTests[0] ||
+    null
 
   return (
     <div className="bg-linear-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center p-2 sm:p-3 lg:p-4 h-full">
@@ -225,7 +236,7 @@ export default function StudentTestInstructionsPage() {
                     <span>Questions: 50</span>
                   </div>
 
-                  {test.is_attempted ? (
+                  {test.is_attempted && !user?.can_retest ? (
                     <div className="text-[11px] text-[#4C763B] bg-[#4C763B]/10 border border-[#4C763B]/30 rounded-lg px-2 py-1">
                       Attempted
                     </div>

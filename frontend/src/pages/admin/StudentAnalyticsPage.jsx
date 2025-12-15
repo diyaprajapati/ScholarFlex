@@ -16,6 +16,8 @@ const StudentAnalyticsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [detailViewMode, setDetailViewMode] = useState('day'); // 'week' or 'day' for detail modal
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -141,6 +143,18 @@ const StudentAnalyticsPage = () => {
     );
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredAnalytics.length / pageSize));
+
+  const paginatedAnalytics = filteredAnalytics.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   if (!user) {
     return null;
   }
@@ -214,7 +228,7 @@ const StudentAnalyticsPage = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredAnalytics.map((student) => (
+                      {paginatedAnalytics.map((student) => (
                         <tr key={student.studentId} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-2">
@@ -258,6 +272,49 @@ const StudentAnalyticsPage = () => {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Pagination */}
+                {filteredAnalytics.length > 0 && (
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-white">
+                    <div className="text-xs sm:text-sm text-gray-600">
+                      Showing{' '}
+                      <span className="font-semibold">
+                        {filteredAnalytics.length === 0
+                          ? 0
+                          : (currentPage - 1) * pageSize + 1}
+                      </span>{' '}
+                      to{' '}
+                      <span className="font-semibold">
+                        {Math.min(currentPage * pageSize, filteredAnalytics.length)}
+                      </span>{' '}
+                      of{' '}
+                      <span className="font-semibold">
+                        {filteredAnalytics.length}
+                      </span>{' '}
+                      students
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-xs sm:text-sm text-gray-700">
+                        Page <span className="font-semibold">{currentPage}</span> of{' '}
+                        <span className="font-semibold">{totalPages}</span>
+                      </span>
+                      <button
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

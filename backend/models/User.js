@@ -24,7 +24,8 @@ class User {
           s.full_name, 
           'Student' AS role_name, 
           'STUDENT' AS role_code,
-          s.is_selected
+          s.is_selected,
+          s.can_retest
          FROM students s
          WHERE s.email = $1 AND s.is_active = TRUE`,
         [email]
@@ -65,7 +66,8 @@ class User {
           'Student' AS role_name, 
           'STUDENT' AS role_code,
           s.is_active,
-          s.is_selected
+          s.is_selected,
+          s.can_retest
          FROM students s
          WHERE s.id = $1 AND s.is_active = TRUE`,
         [id]

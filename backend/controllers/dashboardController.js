@@ -58,20 +58,18 @@ exports.getDashboardStats = async (req, res) => {
     const previousCompleted = parseInt(previousCompletedResult.rows[0].total) || 0;
     const completedChange = completedAptitude - previousCompleted;
 
-    // Get selected students (students with SELECTED status)
+    // Get selected students (using students.is_selected flag)
     const selectedStudentsResult = await pool.query(
       `SELECT COUNT(*) as total 
       FROM students s
-      JOIN intern_status ist ON s.status_id = ist.id
       WHERE s.is_active = TRUE 
-      AND ist.status_code = 'SELECTED'`
+      AND s.is_selected = TRUE`
     );
     const previousSelectedResult = await pool.query(
       `SELECT COUNT(*) as total 
       FROM students s
-      JOIN intern_status ist ON s.status_id = ist.id
       WHERE s.is_active = TRUE 
-      AND ist.status_code = 'SELECTED'
+      AND s.is_selected = TRUE
       AND s.updated_at < NOW() - INTERVAL '30 days'`
     );
     const selectedStudents = parseInt(selectedStudentsResult.rows[0].total) || 0;
@@ -380,16 +378,15 @@ exports.getCardDetails = async (req, res) => {
       }
 
       case 'selected-students': {
-        // Get selected students by domain
+        // Get selected students by domain using students.is_selected flag
         const selectedByDomainResult = await pool.query(
           `SELECT 
             d.domain_name,
             COUNT(s.id) as count
           FROM students s
-          JOIN intern_status ist ON s.status_id = ist.id
           LEFT JOIN domains d ON s.domain_id = d.id
           WHERE s.is_active = TRUE
-          AND ist.status_code = 'SELECTED'
+          AND s.is_selected = TRUE
           GROUP BY d.id, d.domain_name
           ORDER BY count DESC`
         );
@@ -413,10 +410,9 @@ exports.getCardDetails = async (req, res) => {
             s.updated_at as selection_date,
             'Selected' as status
           FROM students s
-          JOIN intern_status ist ON s.status_id = ist.id
           LEFT JOIN domains d ON s.domain_id = d.id
           WHERE s.is_active = TRUE
-          AND ist.status_code = 'SELECTED'
+          AND s.is_selected = TRUE
           ORDER BY s.updated_at DESC
           LIMIT 50`
         );

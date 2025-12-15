@@ -639,8 +639,8 @@ exports.startTest = async (req, res) => {
       [studentId, testId]
     );
 
-    // If student has completed the test, deny access
-    if (completedAttemptResult.rows.length > 0) {
+    // If student has completed the test, deny access unless they have explicit retest access
+    if (completedAttemptResult.rows.length > 0 && req.user?.can_retest !== true) {
       return res.status(403).json({
         success: false,
         message: 'You have already attempted this test. You cannot attempt it again.',
@@ -846,6 +846,18 @@ exports.submitTest = async (req, res) => {
     }
 
     await pool.query('SELECT sp_calculate_test_score($1)', [attemptId]);
+
+    // If this student was granted retest access, consume it after this submission
+    // so future logins and access behave like a normal post-test student again.
+    try {
+      await pool.query(
+        'UPDATE students SET can_retest = FALSE, updated_at = NOW() WHERE id = $1 AND can_retest = TRUE',
+        [attempt.student_id]
+      );
+    } catch (consumeError) {
+      console.error('Error consuming student can_retest flag after submission:', consumeError);
+      // Do not fail the submission because of this; just log it.
+    }
 
     const summaryResult = await pool.query(
       `SELECT 

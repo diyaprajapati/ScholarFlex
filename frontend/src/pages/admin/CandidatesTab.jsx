@@ -468,33 +468,37 @@ const CandidatesTab = () => {
     setShowImportModal(true);
   }, []);
 
-  const handleSelectionChange = useCallback(async (studentId, isSelected) => {
-    try {
-      // Optimistically update the UI
-      setStudents(prevStudents =>
-        prevStudents.map(student =>
-          student.id === studentId
-            ? { ...student, is_selected: isSelected }
-            : student
-        )
-      );
+  const handleSelectionChange = useCallback(
+    async (studentId, isSelected, options = {}) => {
+      try {
+        // Optimistically update the UI
+        setStudents(prevStudents =>
+          prevStudents.map(student =>
+            student.id === studentId
+              ? { ...student, is_selected: isSelected }
+              : student
+          )
+        );
 
-      // Update in database
-      await api.candidates.updateSelection(studentId, isSelected);
-    } catch (err) {
-      console.error('Error updating selection:', err);
-      // Revert on error
-      setStudents(prevStudents =>
-        prevStudents.map(student =>
-          student.id === studentId
-            ? { ...student, is_selected: !isSelected }
-            : student
-        )
-      );
-      setError(err.message || 'Failed to update selection status');
-      setTimeout(() => setError(''), 3000);
-    }
-  }, []);
+        // Update in database – only selection here.
+        // Retest access (can_retest) is managed explicitly from the Retest Management page.
+        await api.candidates.updateSelection(studentId, isSelected);
+      } catch (err) {
+        console.error('Error updating selection:', err);
+        // Revert on error
+        setStudents(prevStudents =>
+          prevStudents.map(student =>
+            student.id === studentId
+              ? { ...student, is_selected: !isSelected }
+              : student
+          )
+        );
+        setError(err.message || 'Failed to update selection status');
+        setTimeout(() => setError(''), 3000);
+      }
+    },
+    []
+  );
 
   const handleImageError = useCallback((imageKey) => (e) => {
     // Prevent infinite loop by hiding the image and marking it as failed
@@ -1115,7 +1119,9 @@ const CandidatesTab = () => {
                           <input
                             type="checkbox"
                             checked={student.is_selected || false}
-                            onChange={(e) => handleSelectionChange(student.id, e.target.checked)}
+                            onChange={(e) =>
+                              handleSelectionChange(student.id, e.target.checked)
+                            }
                             className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2 cursor-pointer"
                           />
                           <span className={`ml-2 text-sm font-medium ${

@@ -1,8 +1,8 @@
 // API service for making HTTP requests to the backend
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.154.201.164:5000/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.154.201.164:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * Get JWT token from localStorage
@@ -531,10 +531,14 @@ export const api = {
       });
     },
 
-    updateSelection: async (id, isSelected) => {
+    updateSelection: async (id, isSelected, options = {}) => {
+      const payload = { is_selected: isSelected };
+      if (typeof options.canRetest === 'boolean') {
+        payload.can_retest = options.canRetest;
+      }
       return apiRequest(`/candidates/${id}/selection`, {
         method: 'PUT',
-        body: JSON.stringify({ is_selected: isSelected }),
+        body: JSON.stringify(payload),
       });
     },
 

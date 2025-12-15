@@ -152,6 +152,25 @@ export default function Sidebar({ user }) {
                   Student Analytics
                 </Link>
               </li>
+              <li>
+                <Link
+                  to={ROUTES.RETEST_MANAGEMENT}
+                  onClick={() => handleNavClick('retest-management')}
+                  className={navItemClasses(ROUTES.RETEST_MANAGEMENT)}
+                  style={navItemStyle(ROUTES.RETEST_MANAGEMENT)}
+                  {...navItemHoverStyle(ROUTES.RETEST_MANAGEMENT)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9M4 20v-5h.582m0 0A8.003 8.003 0 0012 20a8.003 8.003 0 007.418-5"
+                    />
+                  </svg>
+                  Retest Management
+                </Link>
+              </li>
               {user?.role === 'SUPER_ADMIN' && (
                 <li>
                   <Link

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const OTPService = require('../services/otpService');
 const { logActivitySimple } = require('../middleware/activityLogger');
+const pool = require('../config/database');
 
 /**
  * Send OTP to email
@@ -105,7 +106,36 @@ const verifyOTP = async (req, res) => {
       });
     }
 
-    // Update last login
+    // If this is a student who has already completed a test and was not selected,
+    // AND they do not have explicit retest access, block login.
+    if (user.source === 'students' && user.is_selected === false && user.can_retest !== true) {
+      try {
+        const result = await pool.query(
+          `SELECT 1
+           FROM test_attempts
+           WHERE student_id = $1
+             AND status IN ('COMPLETED', 'AUTO_SUBMITTED')
+           LIMIT 1`,
+          [user.id]
+        );
+
+        if (result.rows.length > 0) {
+          return res.status(403).json({
+            success: false,
+            message:
+              'Your test has been completed and you were not selected, so you can no longer log in to the student portal.',
+          });
+        }
+      } catch (checkError) {
+        console.error('Error checking student test status during verifyOTP:', checkError);
+        return res.status(500).json({
+          success: false,
+          message: 'Internal server error',
+        });
+      }
+    }
+
+    // Update last login (only for non-student users)
     if (user.source !== 'students') {
       await User.updateLastLogin(user.id);
     }
@@ -141,9 +171,14 @@ const verifyOTP = async (req, res) => {
       role_name: user.role_name,
     };
 
-    // Add is_selected for students
-    if (user.source === 'students' && user.is_selected !== undefined) {
-      userData.is_selected = user.is_selected;
+    // Add student-specific fields
+    if (user.source === 'students') {
+      if (user.is_selected !== undefined) {
+        userData.is_selected = user.is_selected;
+      }
+      if (user.can_retest !== undefined) {
+        userData.can_retest = user.can_retest;
+      }
     }
 
     // Set cookie
@@ -212,9 +247,10 @@ const getCurrentUser = async (req, res) => {
       role_name: req.user.role_name,
     };
 
-    // Include is_selected for students
+    // Include student-specific flags
     if (req.user.role_code === 'STUDENT') {
       userData.is_selected = req.user.is_selected || false;
+      userData.can_retest = req.user.can_retest || false;
     }
 
     res.status(200).json({

@@ -413,6 +413,7 @@ exports.getAllCandidates = async (req, res) => {
         s.faculty_email,
         s.is_active,
         s.is_selected,
+        s.can_retest,
         s.created_at,
         s.updated_at,
         d.domain_name,
@@ -429,7 +430,7 @@ exports.getAllCandidates = async (req, res) => {
                s.domain_id, s.status_id, s.registration_date, s.institute_name, s.course_taken, 
                s.area_of_interests, s.internship_start_date, s.internship_end_date, s.internship_duration,
                s.reference_information, s.internal_faculty_name, s.faculty_contact, s.faculty_email,
-               s.is_active, s.is_selected, s.created_at, s.updated_at, d.domain_name, ist.status_name
+               s.is_active, s.is_selected, s.can_retest, s.created_at, s.updated_at, d.domain_name, ist.status_name
       ORDER BY s.created_at DESC`
     );
 
@@ -454,6 +455,7 @@ exports.getAllCandidates = async (req, res) => {
       faculty_contact: s.faculty_contact,
       faculty_email: s.faculty_email,
       is_selected: s.is_selected || false,
+      can_retest: s.can_retest || false,
       total_attempts: parseInt(s.total_attempts || 0),
       last_test_date: s.last_test_date,
       registration_date: s.registration_date,
@@ -571,7 +573,7 @@ exports.getStudentById = async (req, res) => {
 exports.updateStudentSelection = async (req, res) => {
   try {
     const { id } = req.params;
-    const { is_selected } = req.body;
+    const { is_selected, can_retest } = req.body;
 
     if (typeof is_selected !== 'boolean') {
       return res.status(400).json({
@@ -593,11 +595,18 @@ exports.updateStudentSelection = async (req, res) => {
       });
     }
 
-    // Update selection status
-    await pool.query(
-      'UPDATE students SET is_selected = $1, updated_at = NOW() WHERE id = $2',
-      [is_selected, id]
-    );
+    // Update selection status (and optionally can_retest if provided)
+    if (typeof can_retest === 'boolean') {
+      await pool.query(
+        'UPDATE students SET is_selected = $1, can_retest = $2, updated_at = NOW() WHERE id = $3',
+        [is_selected, can_retest, id]
+      );
+    } else {
+      await pool.query(
+        'UPDATE students SET is_selected = $1, updated_at = NOW() WHERE id = $2',
+        [is_selected, id]
+      );
+    }
 
     // Log activity
     await logActivitySimple(
@@ -614,6 +623,7 @@ exports.updateStudentSelection = async (req, res) => {
       data: {
         id: parseInt(id),
         is_selected,
+        can_retest: typeof can_retest === 'boolean' ? can_retest : undefined,
       },
     });
   } catch (error) {

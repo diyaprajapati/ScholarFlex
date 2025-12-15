@@ -95,20 +95,23 @@ const StudentDashboardPage = () => {
             // Update user data in localStorage
             authService.updateUser({ is_selected: currentUser.is_selected });
             setUser({ ...storedUser, is_selected: currentUser.is_selected });
-            
-            // Redirect based on new status
+
+            // Redirect based on new selection status
             if (currentUser.is_selected) {
-              // Student was selected, redirect to dashboard
+              // Student just became selected, ensure they stay on dashboard
               navigate(ROUTES.STUDENT.DASHBOARD, { replace: true });
             } else {
-              // Student was deselected, redirect to instructions
+              // Student was deselected while on portal – send them back to test instructions
               navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true });
             }
           }
         }
       } catch (error) {
         console.error('Error checking user status:', error);
-        // Don't redirect on error, just log it
+        // If backend says the user is no longer valid (e.g. removed/deactivated),
+        // force logout and send them back to login
+        authService.logout();
+        navigate(ROUTES.LOGIN, { replace: true });
       }
     };
 

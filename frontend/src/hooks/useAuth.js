@@ -19,8 +19,18 @@ export function useAuth() {
         try {
           const response = await api.auth.getCurrentUser()
           if (response.success && response.user) {
+            // Merge backend flags like is_selected and can_retest into stored user
+            const mergedUser = {
+              ...(userData || {}),
+              is_selected: response.user.is_selected,
+              can_retest: response.user.can_retest,
+            }
+            authService.updateUser({
+              is_selected: response.user.is_selected,
+              can_retest: response.user.can_retest,
+            })
             setIsAuthenticated(true)
-            setUser(response.user)
+            setUser(mergedUser)
           } else {
             // Token might be invalid, clear it
             authService.logout()
