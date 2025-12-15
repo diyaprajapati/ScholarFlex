@@ -58,7 +58,7 @@ const PlaylistsTab = ({
       </section>
 
       {/* All Playlists */}
-      {/* <section>
+      <section>
         <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">All Playlists</h2>
         {loadingPlaylists ? (
           <div className="flex items-center justify-center py-12 bg-white rounded-lg border border-gray-200">
@@ -102,7 +102,7 @@ const PlaylistsTab = ({
             ))}
           </div>
         )}
-      </section> */}
+      </section>
     </div>
   );
 };

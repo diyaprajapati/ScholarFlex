@@ -1,19 +1,6 @@
 version: "3.9"
 
 services:
-  db:
-    image: postgres:16
-    container_name: scholarflex-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: scholarflex
-      POSTGRES_PASSWORD: scholarflex
-      POSTGRES_DB: scholarflex
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
   backend:
     build: ./backend
     container_name: node-backend
@@ -21,8 +8,6 @@ services:
       - "5000:5000"
     env_file:
       - ./backend/.env
-    depends_on:
-      - db
 
   frontend:
     build: ./frontend
@@ -31,6 +16,3 @@ services:
       - "3000:80"
     depends_on:
       - backend
-
-volumes:
-  db_data:
