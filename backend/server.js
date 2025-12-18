@@ -25,20 +25,46 @@ const PORT = process.env.PORT || 5000; // Changed from 5000 to avoid AirPlay con
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, curl, Postman) or any origin
+    // This allows requests from any IP address, localhost, or domain
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🌐 CORS: Allowing request from origin: ${origin || 'no origin'}`);
+    }
     callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'Accept', 
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
+  ],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
+  maxAge: 86400, // Cache preflight requests for 24 hours
 }));
+
 // Increase body size limit to support uploading up to 1000 questions at once
 // Default is 100kb, we'll set it to 10mb to handle large question papers
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+// Request logging middleware (for debugging)
+if (process.env.NODE_ENV === 'development') {
+  app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+      const duration = Date.now() - start;
+      console.log(`${req.method} ${req.path} - ${res.statusCode} - ${duration}ms`);
+    });
+    next();
+  });
+}
 
 // Health check route
 app.get('/health', (req, res) => {
@@ -111,6 +137,35 @@ const gracefulShutdown = async (signal) => {
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  console.error('Stack:', error.stack);
+  // Don't exit immediately in development, let nodemon handle it
+  // In production, you might want to exit here
+  if (process.env.NODE_ENV === 'production') {
+    gracefulShutdown('UNCAUGHT_EXCEPTION').then(() => {
+      process.exit(1);
+    });
+  }
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise);
+  console.error('Reason:', reason);
+  if (reason instanceof Error) {
+    console.error('Stack:', reason.stack);
+  }
+  // Don't exit immediately in development, let nodemon handle it
+  // In production, you might want to exit here
+  if (process.env.NODE_ENV === 'production') {
+    gracefulShutdown('UNHANDLED_REJECTION').then(() => {
+      process.exit(1);
+    });
+  }
+});
 
 module.exports = app;
 
