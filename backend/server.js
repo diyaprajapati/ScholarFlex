@@ -21,6 +21,32 @@ const { prisma } = require('./config/database');
 const app = express();
 const PORT = process.env.PORT || 5000; // Changed from 5000 to avoid AirPlay conflict
 
+// Handle OPTIONS requests (preflight) before CORS middleware
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    const origin = req.headers.origin;
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🔍 OPTIONS preflight request from origin: ${origin || 'no origin'}`);
+    }
+    // When credentials is true, we must specify the exact origin, not '*'
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+    } else {
+      // No origin means it's not a browser CORS request, allow all
+      res.header('Access-Control-Allow-Origin', '*');
+    }
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+    res.header('Access-Control-Max-Age', '86400');
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ OPTIONS preflight response sent`);
+    }
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 // Middleware - CORS configuration to allow all origins
 app.use(cors({
   origin: function (origin, callback) {
