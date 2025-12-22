@@ -90,38 +90,40 @@ model OtpVerification {
 }
 
 model Student {
-  id               Int              @id @default(autoincrement())
-  email            String           @unique @db.VarChar(255)
-  fullName         String           @map("full_name") @db.VarChar(255)
-  phone            String?          @db.VarChar(20)
-  domainId         Int?             @map("domain_id")
-  statusId         Int              @default(1) @map("status_id")
-  registrationDate DateTime         @default(now()) @map("registration_date")
-  formLinkToken    String?          @unique @map("form_link_token") @db.VarChar(100)
-  imageUrl         String?          @map("image_url")
-  instituteName    String?          @map("institute_name") @db.VarChar(255)
-  courseTaken       String?          @map("course_taken") @db.VarChar(255)
-  areaOfInterests  String?          @map("area_of_interests") @db.Text
-  internshipStartDate DateTime?     @map("internship_start_date")
-  internshipEndDate   DateTime?     @map("internship_end_date")
-  internshipDuration  String?       @map("internship_duration") @db.VarChar(50)
-  referenceInformation String?      @map("reference_information") @db.Text
-  internalFacultyName String?       @map("internal_faculty_name") @db.VarChar(255)
-  facultyContact   String?          @map("faculty_contact") @db.VarChar(20)
-  facultyEmail     String?          @map("faculty_email") @db.VarChar(255)
-  isActive         Boolean          @default(true) @map("is_active")
-  isSelected       Boolean          @default(false) @map("is_selected")
-  canRetest        Boolean          @default(false) @map("can_retest")
-  createdAt        DateTime         @default(now()) @map("created_at")
-  updatedAt        DateTime         @updatedAt @map("updated_at")
-  createdBy        Int?             @map("created_by")
-  creator          User?            @relation("StudentCreator", fields: [createdBy], references: [id])
-  domain           Domain?          @relation(fields: [domainId], references: [id])
-  status           InternStatus     @relation(fields: [statusId], references: [id])
+  id                   Int                  @id @default(autoincrement())
+  email                String               @unique @db.VarChar(255)
+  fullName             String               @map("full_name") @db.VarChar(255)
+  phone                String?              @db.VarChar(20)
+  domainId             Int?                 @map("domain_id")
+  statusId             Int                  @default(1) @map("status_id")
+  registrationDate     DateTime             @default(now()) @map("registration_date")
+  formLinkToken        String?              @unique @map("form_link_token") @db.VarChar(100)
+  imageUrl             String?              @map("image_url")
+  instituteName        String?              @map("institute_name") @db.VarChar(255)
+  courseTaken          String?              @map("course_taken") @db.VarChar(255)
+  areaOfInterests      String?              @map("area_of_interests") @db.Text
+  internshipStartDate  DateTime?            @map("internship_start_date")
+  internshipEndDate    DateTime?            @map("internship_end_date")
+  internshipDuration   String?              @map("internship_duration") @db.VarChar(50)
+  referenceInformation String?              @map("reference_information") @db.Text
+  internalFacultyName  String?              @map("internal_faculty_name") @db.VarChar(255)
+  facultyContact       String?              @map("faculty_contact") @db.VarChar(20)
+  facultyEmail         String?              @map("faculty_email") @db.VarChar(255)
+  isActive             Boolean              @default(true) @map("is_active")
+  isSelected           Boolean              @default(false) @map("is_selected")
+  canRetest            Boolean              @default(false) @map("can_retest")
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  createdBy            Int?                 @map("created_by")
+  creator              User?                @relation("StudentCreator", fields: [createdBy], references: [id])
+  domain               Domain?              @relation(fields: [domainId], references: [id])
+  status               InternStatus         @relation(fields: [statusId], references: [id])
   testAssignments      TestAssignment[]
   testAttempts         TestAttempt[]
-  studentActivityLogs   StudentActivityLog[] @relation("StudentActivityLogs")
-  nocLetters            NOCLetter[]           @relation("NOCLetters")
+  studentActivityLogs  StudentActivityLog[] @relation("StudentActivityLogs")
+  nocLetters           NOCLetter[]          @relation("NOCLetters")
+  videoProgresses      VideoProgress[]
+  playlistAccesses     PlaylistAccess[]
 
   @@index([email])
   @@index([domainId])
@@ -151,9 +153,9 @@ model QuestionPaper {
   domains         QuestionPaperDomain[]
   creator         User                  @relation("QuestionPaperCreator", fields: [createdBy], references: [id])
   updater         User?                 @relation("QuestionPaperUpdater", fields: [updatedBy], references: [id])
-  questions            Question[]
-  testAssignments      TestAssignment[]
-  testAttempts         TestAttempt[]
+  questions       Question[]
+  testAssignments TestAssignment[]
+  testAttempts    TestAttempt[]
 
   @@index([isActive])
   @@index([status])
@@ -353,13 +355,14 @@ model Playlist {
 }
 
 model Video {
-  id          Int      @id @default(autoincrement())
-  playlistId  Int      @map("playlist_id")
-  title       String   @db.VarChar(255)
-  youtubeUrl  String   @map("youtube_url") @db.VarChar(500)
-  orderIndex  Int      @default(0) @map("order_index")
-  createdAt   DateTime @default(now()) @map("created_at")
-  playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  id              Int             @id @default(autoincrement())
+  playlistId      Int             @map("playlist_id")
+  title           String          @db.VarChar(255)
+  youtubeUrl      String          @map("youtube_url") @db.VarChar(500)
+  orderIndex      Int             @default(0) @map("order_index")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  playlist        Playlist        @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  videoProgresses VideoProgress[]
 
   @@index([playlistId])
   @@index([orderIndex])
@@ -383,22 +386,109 @@ model StudentActivityLog {
 }
 
 model NOCLetter {
-  id          Int      @id @default(autoincrement())
-  studentId   Int      @map("student_id")
-  fileName    String   @map("file_name") @db.VarChar(255)
-  filePath    String   @map("file_path") @db.VarChar(500)
-  fileSize    BigInt   @map("file_size")
-  status      NOCStatus @default(PENDING)
-  uploadedAt  DateTime @default(now()) @map("uploaded_at")
-  reviewedAt  DateTime? @map("reviewed_at")
-  reviewedBy  Int?     @map("reviewed_by")
-  reviewer    User?    @relation("NOCReviewer", fields: [reviewedBy], references: [id])
-  student     Student  @relation("NOCLetters", fields: [studentId], references: [id], onDelete: Cascade)
+  id         Int       @id @default(autoincrement())
+  studentId  Int       @map("student_id")
+  fileName   String    @map("file_name") @db.VarChar(255)
+  filePath   String    @map("file_path") @db.VarChar(500)
+  fileSize   BigInt    @map("file_size")
+  status     NOCStatus @default(PENDING)
+  uploadedAt DateTime  @default(now()) @map("uploaded_at")
+  reviewedAt DateTime? @map("reviewed_at")
+  reviewedBy Int?      @map("reviewed_by")
+  reviewer   User?     @relation("NOCReviewer", fields: [reviewedBy], references: [id])
+  student    Student   @relation("NOCLetters", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([status])
   @@index([uploadedAt])
   @@map("noc_letters")
+}
+
+model VideoProgress {
+  id               Int            @id @default(autoincrement())
+  studentId        Int            @map("student_id")
+  videoId          Int            @map("video_id")
+  playlistId       Int            @map("playlist_id")
+  openedAt         DateTime?      @map("opened_at")
+  startedWatching  DateTime?      @map("started_watching")
+  completedAt      DateTime?      @map("completed_at")
+  watchTimeSeconds Int            @default(0) @map("watch_time_seconds")
+  progressPercent  Decimal        @default(0) @map("progress_percent") @db.Decimal(5, 2)
+  lastPosition     Decimal        @default(0) @map("last_position") @db.Decimal(10, 2)
+  isCompleted      Boolean        @default(false) @map("is_completed")
+  replayCount      Int            @default(0) @map("replay_count")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  student          Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  video            Video          @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  sessions         VideoSession[]
+
+  @@unique([studentId, videoId])
+  @@index([studentId])
+  @@index([videoId])
+  @@index([playlistId])
+  @@index([isCompleted])
+  @@index([studentId, isCompleted])
+  @@index([studentId, videoId])
+  @@map("video_progress")
+}
+
+model VideoSession {
+  id               Int           @id @default(autoincrement())
+  videoProgressId  Int           @map("video_progress_id")
+  sessionId        String        @unique @map("session_id") @db.VarChar(100)
+  startedAt        DateTime      @map("started_at")
+  endedAt          DateTime?     @map("ended_at")
+  watchTimeSeconds Int           @default(0) @map("watch_time_seconds")
+  maxProgress      Decimal       @default(0) @map("max_progress") @db.Decimal(5, 2)
+  isCompleted      Boolean       @default(false) @map("is_completed")
+  exitReason       String?       @map("exit_reason") @db.VarChar(50)
+  userAgent        String?       @map("user_agent")
+  ipAddress        String?       @map("ip_address") @db.VarChar(45)
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  videoProgress    VideoProgress @relation(fields: [videoProgressId], references: [id], onDelete: Cascade)
+  events           VideoEvent[]
+
+  @@index([videoProgressId])
+  @@index([sessionId])
+  @@index([startedAt])
+  @@index([videoProgressId, startedAt])
+  @@map("video_sessions")
+}
+
+model VideoEvent {
+  id              Int          @id @default(autoincrement())
+  sessionId       Int          @map("session_id")
+  eventType       String       @map("event_type") @db.VarChar(50)
+  videoPosition   Decimal      @default(0) @map("video_position") @db.Decimal(10, 2)
+  videoDuration   Decimal?     @map("video_duration") @db.Decimal(10, 2)
+  progressPercent Decimal      @default(0) @map("progress_percent") @db.Decimal(5, 2)
+  playbackRate    Decimal      @default(1) @map("playback_rate") @db.Decimal(3, 2)
+  timestamp       DateTime     @default(now())
+  metadata        Json?
+  session         VideoSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([eventType])
+  @@index([timestamp])
+  @@index([sessionId, eventType])
+  @@index([sessionId, timestamp])
+  @@map("video_events")
+}
+
+model PlaylistAccess {
+  id         Int      @id @default(autoincrement())
+  studentId  Int      @map("student_id")
+  playlistId Int      @map("playlist_id")
+  openedAt   DateTime @default(now()) @map("opened_at")
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([playlistId])
+  @@index([studentId, playlistId])
+  @@index([openedAt])
+  @@map("playlist_access")
 }
 
 enum QuestionPaperStatus {

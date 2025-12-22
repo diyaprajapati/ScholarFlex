@@ -1,8 +1,8 @@
 // API service for making HTTP requests to the backend
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.140.247.164:5000/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * Get JWT token from localStorage
@@ -732,6 +732,147 @@ export const api = {
       return apiRequest(`/admin/noc/${id}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status }),
+      });
+    },
+  },
+
+  // Video tracking endpoints
+  videoTracking: {
+    trackOpened: async (videoId, playlistId) => {
+      return apiRequest('/video-tracking/open', {
+        method: 'POST',
+        body: JSON.stringify({
+          videoId,
+          playlistId,
+        }),
+      });
+    },
+
+    trackStarted: async (videoId, playlistId) => {
+      return apiRequest('/video-tracking/start', {
+        method: 'POST',
+        body: JSON.stringify({
+          videoId,
+          playlistId,
+        }),
+      });
+    },
+
+    trackProgress: async (videoId, playlistId, watchTimeSeconds, progressPercent, lastPosition) => {
+      return apiRequest('/video-tracking/progress', {
+        method: 'POST',
+        body: JSON.stringify({
+          videoId,
+          playlistId,
+          watchTimeSeconds,
+          progressPercent,
+          lastPosition,
+        }),
+      });
+    },
+
+    trackCompleted: async (videoId, playlistId, watchTimeSeconds) => {
+      return apiRequest('/video-tracking/complete', {
+        method: 'POST',
+        body: JSON.stringify({
+          videoId,
+          playlistId,
+          watchTimeSeconds,
+        }),
+      });
+    },
+
+    getProgress: async (videoId) => {
+      return apiRequest(`/video-tracking/progress/${videoId}`, {
+        method: 'GET',
+      });
+    },
+  },
+
+  // Video analytics endpoints
+  videoAnalytics: {
+    getStudentAnalytics: async () => {
+      return apiRequest('/video-analytics/student', {
+        method: 'GET',
+      });
+    },
+
+    getAdminAnalytics: async (selectedOnly = true) => {
+      const params = new URLSearchParams();
+      if (selectedOnly !== undefined) {
+        params.append('selectedOnly', selectedOnly.toString());
+      }
+      const queryString = params.toString();
+      const endpoint = queryString ? `/video-analytics/admin?${queryString}` : '/video-analytics/admin';
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+
+    getStudentDetailedAnalytics: async (studentId) => {
+      return apiRequest(`/video-analytics/admin/student/${studentId}`, {
+        method: 'GET',
+      });
+    },
+  },
+
+  // Enhanced video tracking endpoints
+  enhancedVideoTracking: {
+    trackPlaylistOpened: async (playlistId) => {
+      return apiRequest('/video-tracking/playlist-opened', {
+        method: 'POST',
+        body: JSON.stringify({ playlistId }),
+      });
+    },
+
+    startSession: async (videoId, playlistId) => {
+      return apiRequest('/video-tracking/session/start', {
+        method: 'POST',
+        body: JSON.stringify({ videoId, playlistId }),
+      });
+    },
+
+    trackEvent: async (sessionId, eventData) => {
+      return apiRequest('/video-tracking/session/event', {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId,
+          ...eventData,
+        }),
+      });
+    },
+
+    endSession: async (sessionId, exitReason = 'exited') => {
+      return apiRequest('/video-tracking/session/end', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, exitReason }),
+      });
+    },
+  },
+
+  // Enhanced video analytics endpoints
+  enhancedVideoAnalytics: {
+    getStudentDetailed: async () => {
+      return apiRequest('/video-analytics/student/detailed', {
+        method: 'GET',
+      });
+    },
+
+    getAdminDetailed: async (selectedOnly = true) => {
+      const params = new URLSearchParams();
+      if (selectedOnly !== undefined) {
+        params.append('selectedOnly', selectedOnly.toString());
+      }
+      const queryString = params.toString();
+      const endpoint = queryString 
+        ? `/video-analytics/admin/detailed?${queryString}` 
+        : '/video-analytics/admin/detailed';
+      return apiRequest(endpoint, { method: 'GET' });
+    },
+
+    getVideoAnalytics: async (videoId) => {
+      return apiRequest(`/video-analytics/admin/video/${videoId}`, {
+        method: 'GET',
       });
     },
   },

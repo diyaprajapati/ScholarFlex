@@ -364,13 +364,14 @@ const getStudentAnalytics = async (req, res) => {
     const analytics = students.map((student) => {
       const studentId = student.id;
       const videoActivities = activitiesByStudent.get(studentId) || [];
-
+      
       // Track watch time per video and per day
-      const videoWatchTimeMap = new Map(); // videoKey -> watchTime
-      const dailyWatchTimeMap = new Map(); // date -> seconds
+      const videoWatchTimeMap = new Map(); // videoKey -> { watchTime, completed, videoTitle }
+      const dailyWatchTimeMap = new Map(); // dayVideoKey (date_videoKey) -> seconds
+      const dailyVideoMap = new Map(); // date -> Map<videoKey, { videoTitle, seconds }>
       const videosCompleted = new Set();
       const videosStarted = new Set();
-
+      
       videoActivities.forEach((activity) => {
         const metadata = activity.metadata || {};
         const activityType = activity.activityType.toLowerCase();
@@ -382,7 +383,7 @@ const getStudentAnalytics = async (req, res) => {
         const videoKey = youtubeUrl || `video_${videoId}`;
         const activityDate = new Date(activity.timestamp).toISOString().split('T')[0]; // YYYY-MM-DD
         
-        // Initialize maps
+        // Initialize per-video map
         if (!videoWatchTimeMap.has(videoKey)) {
           videoWatchTimeMap.set(videoKey, {
             watchTime: 0,
@@ -391,12 +392,25 @@ const getStudentAnalytics = async (req, res) => {
           });
         }
         
-        if (!dailyWatchTimeMap.has(activityDate)) {
-          dailyWatchTimeMap.set(activityDate, 0);
-        }
-
         const videoData = videoWatchTimeMap.get(videoKey);
-
+        
+        // Initialize per-day structures
+        const dayVideoKey = `${activityDate}_${videoKey}`;
+        if (!dailyWatchTimeMap.has(dayVideoKey)) {
+          dailyWatchTimeMap.set(dayVideoKey, 0);
+        }
+        if (!dailyVideoMap.has(activityDate)) {
+          dailyVideoMap.set(activityDate, new Map());
+        }
+        const dayVideoMap = dailyVideoMap.get(activityDate);
+        if (!dayVideoMap.has(videoKey)) {
+          dayVideoMap.set(videoKey, {
+            videoTitle: videoData.videoTitle,
+            seconds: 0,
+          });
+        }
+        const dayVideoData = dayVideoMap.get(videoKey);
+      
         // Video completed - use full duration
         if (activityType === 'video_complete') {
           videosCompleted.add(videoKey);
@@ -405,11 +419,14 @@ const getStudentAnalytics = async (req, res) => {
           const duration = metadata.duration || 0;
           if (duration > 0) {
             videoData.watchTime = duration;
-            // Add to daily watch time
-            dailyWatchTimeMap.set(activityDate, dailyWatchTimeMap.get(activityDate) + duration);
+            // For per-day/per-video, use max duration for that day
+            const existingDaySeconds = dailyWatchTimeMap.get(dayVideoKey) || 0;
+            const newDaySeconds = Math.max(existingDaySeconds, duration);
+            dailyWatchTimeMap.set(dayVideoKey, newDaySeconds);
+            dayVideoData.seconds = Math.max(dayVideoData.seconds, duration);
           }
         }
-
+      
         // Video progress - track actual currentTime watched
         if (activityType === 'video_progress') {
           videosStarted.add(videoKey);
@@ -419,33 +436,29 @@ const getStudentAnalytics = async (req, res) => {
             if (currentTime > videoData.watchTime) {
               videoData.watchTime = currentTime;
             }
-            // For daily tracking, use the currentTime from this progress event
-            // This represents the time watched up to this point on this day
-            // We'll use the maximum currentTime per day per video to avoid double counting
-            const dayVideoKey = `${activityDate}_${videoKey}`;
-            if (!dailyWatchTimeMap.has(dayVideoKey)) {
+            // For daily tracking, use the maximum currentTime per day per video
+            const existingTime = dailyWatchTimeMap.get(dayVideoKey) || 0;
+            if (currentTime > existingTime) {
               dailyWatchTimeMap.set(dayVideoKey, currentTime);
-            } else {
-              const existingTime = dailyWatchTimeMap.get(dayVideoKey);
-              if (currentTime > existingTime) {
-                dailyWatchTimeMap.set(dayVideoKey, currentTime);
-              }
+            }
+            if (currentTime > dayVideoData.seconds) {
+              dayVideoData.seconds = currentTime;
             }
           }
         }
-
+      
         // Video started
         if (activityType === 'video_start') {
           videosStarted.add(videoKey);
         }
       });
-
+      
       // Calculate totals
       let totalWatchTime = 0;
       videoWatchTimeMap.forEach((data) => {
         totalWatchTime += data.watchTime;
       });
-
+      
       // Aggregate daily watch time by date
       const dailyWatchTimeAggregated = new Map();
       dailyWatchTimeMap.forEach((seconds, dayVideoKey) => {
@@ -455,17 +468,36 @@ const getStudentAnalytics = async (req, res) => {
         }
         dailyWatchTimeAggregated.set(date, dailyWatchTimeAggregated.get(date) + seconds);
       });
-
+      
       // Convert daily watch time map to array
       const dailyWatchTime = Array.from(dailyWatchTimeAggregated.entries())
         .map(([date, seconds]) => ({
           date,
           seconds,
-          minutes: Math.round(seconds / 60 * 100) / 100,
+          minutes: Math.round((seconds / 60) * 100) / 100,
           hours: Math.round((seconds / 3600) * 100) / 100,
         }))
         .sort((a, b) => new Date(b.date) - new Date(a.date)); // Most recent first
-
+      
+      // Build daily video-wise watch details: per date, which videos and how many minutes
+      const dailyVideoWatch = Array.from(dailyVideoMap.entries())
+        .map(([date, videosMap]) => {
+          const videos = Array.from(videosMap.values()).map(v => ({
+            videoTitle: v.videoTitle,
+            seconds: v.seconds,
+            minutes: Math.round((v.seconds / 60) * 100) / 100,
+          }));
+          const totalSeconds = videos.reduce((sum, v) => sum + v.seconds, 0);
+          return {
+            date,
+            totalSeconds,
+            minutes: Math.round((totalSeconds / 60) * 100) / 100,
+            hours: Math.round((totalSeconds / 3600) * 100) / 100,
+            videos,
+          };
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Most recent first
+      
       return {
         studentId: student.id,
         email: student.email,
@@ -476,9 +508,10 @@ const getStudentAnalytics = async (req, res) => {
         videosWatched: videosCompleted.size,
         videosStarted: videosStarted.size,
         totalWatchTimeSeconds: totalWatchTime,
-        totalWatchTimeMinutes: Math.round(totalWatchTime / 60 * 100) / 100,
+        totalWatchTimeMinutes: Math.round((totalWatchTime / 60) * 100) / 100,
         totalWatchTimeHours: Math.round((totalWatchTime / 3600) * 100) / 100,
-        dailyWatchTime: dailyWatchTime,
+        dailyWatchTime,
+        dailyVideoWatch,
         createdAt: student.created_at,
         updatedAt: student.updated_at,
       };

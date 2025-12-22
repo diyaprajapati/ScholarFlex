@@ -9,7 +9,7 @@ import api from '../../services/api';
  * - Tracks video start, completion, and progress milestones (25%, 50%, 75%)
  * - Logs activities to backend
  */
-const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlistTitle, onVideoEnd, startTime = 0 }) => {
+const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlistTitle, onVideoEnd, startTime = 0, dbVideoId = null }) => {
   const playerRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
@@ -37,8 +37,18 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
   };
 
   const finalVideoId = videoId || extractVideoId(videoUrl);
+  const finalDbVideoId = dbVideoId || videoId; // Use dbVideoId if provided, otherwise fallback to videoId
 
-  // Log activity to backend
+  // Track video opened when component mounts
+  useEffect(() => {
+    if (playlistId && finalDbVideoId) {
+      api.videoTracking.trackOpened(parseInt(finalDbVideoId), parseInt(playlistId)).catch(err => {
+        console.error('Error tracking video opened:', err);
+      });
+    }
+  }, [playlistId, finalDbVideoId]);
+
+  // Log activity to backend (keep for backward compatibility)
   const logActivity = async (activityType, metadata) => {
     try {
       await api.activity.log(activityType, metadata);
@@ -233,11 +243,20 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
     // Video started (playing)
     if (state === window.YT.PlayerState.PLAYING && !progressMilestones.current.started) {
       progressMilestones.current.started = true;
+      
+      // Track using new API
+      if (playlistId && finalDbVideoId) {
+        api.videoTracking.trackStarted(parseInt(finalDbVideoId), parseInt(playlistId)).catch(err => {
+          console.error('Error tracking video started:', err);
+        });
+      }
+      
+      // Also log to activity log for backward compatibility
       logActivity('video_start', {
         videoId: finalVideoId,
-        video_id: finalVideoId, // Also include snake_case for compatibility
+        video_id: finalVideoId,
         videoTitle: videoTitle || 'Unknown Video',
-        video_title: videoTitle || 'Unknown Video', // Also include snake_case for compatibility
+        video_title: videoTitle || 'Unknown Video',
         playlistId: playlistId || null,
         playlist_id: playlistId || null,
         playlistTitle: playlistTitle || null,
@@ -256,6 +275,20 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
           const progress = (currentTime / duration) * 100;
           // Only log if significant time has passed (avoid spam)
           if (Math.abs(currentTime - lastLoggedTime.current) > 5) {
+            // Track using new API
+            if (playlistId && finalDbVideoId) {
+              api.videoTracking.trackProgress(
+                parseInt(finalDbVideoId),
+                parseInt(playlistId),
+                Math.round(currentTime),
+                progress,
+                currentTime
+              ).catch(err => {
+                console.error('Error tracking video progress:', err);
+              });
+            }
+            
+            // Also log to activity log for backward compatibility
             logActivity('video_progress', {
               videoId: finalVideoId,
               video_id: finalVideoId,
@@ -294,11 +327,23 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
         console.error('Error getting video duration:', err);
       }
       
+      // Track using new API
+      if (playlistId && finalDbVideoId) {
+        api.videoTracking.trackCompleted(
+          parseInt(finalDbVideoId),
+          parseInt(playlistId),
+          Math.round(videoDuration)
+        ).catch(err => {
+          console.error('Error tracking video completed:', err);
+        });
+      }
+      
+      // Also log to activity log for backward compatibility
       logActivity('video_complete', {
         videoId: finalVideoId,
-        video_id: finalVideoId, // Also include snake_case for compatibility
+        video_id: finalVideoId,
         videoTitle: videoTitle || 'Unknown Video',
-        video_title: videoTitle || 'Unknown Video', // Also include snake_case for compatibility
+        video_title: videoTitle || 'Unknown Video',
         playlistId: playlistId || null,
         playlist_id: playlistId || null,
         playlistTitle: playlistTitle || null,
@@ -406,6 +451,20 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
           // Save progress every 10 seconds (for resume functionality)
           // Only log if at least 10 seconds have passed since last log
           if (Math.abs(currentTime - lastLoggedTime.current) >= 10) {
+            // Track using new API
+            if (playlistId && finalDbVideoId) {
+              api.videoTracking.trackProgress(
+                parseInt(finalDbVideoId),
+                parseInt(playlistId),
+                Math.round(currentTime),
+                progress,
+                currentTime
+              ).catch(err => {
+                console.error('Error tracking video progress:', err);
+              });
+            }
+            
+            // Also log to activity log for backward compatibility
             logActivity('video_progress', {
               videoId: finalVideoId,
               video_id: finalVideoId,

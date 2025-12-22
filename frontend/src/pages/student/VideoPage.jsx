@@ -261,6 +261,7 @@ const VideoPage = () => {
                 <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
                   <YouTubeVideoPlayer
                     videoId={finalVideoId}
+                    dbVideoId={video.id}
                     videoTitle={video.title}
                     videoUrl={video.youtubeUrl}
                     playlistId={playlist?.id}

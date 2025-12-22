@@ -14,6 +14,8 @@ const testAttemptRoutes = require('./routes/testAttemptRoutes');
 const candidateRoutes = require('./routes/candidateRoutes');
 const activityRoutes = require('./routes/activityRoutes');
 const nocRoutes = require('./routes/nocRoutes');
+const videoTrackingRoutes = require('./routes/videoTrackingRoutes');
+const videoAnalyticsRoutes = require('./routes/videoAnalyticsRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const pool = require('./config/database');
 const { prisma } = require('./config/database');
@@ -86,6 +88,10 @@ app.use('/api/test-attempts', testAttemptRoutes);
 app.use('/api/candidates', candidateRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api', nocRoutes);
+app.use('/api/video-tracking', videoTrackingRoutes);
+app.use('/api/video-tracking', require('./routes/enhancedVideoTrackingRoutes'));
+app.use('/api/video-analytics', videoAnalyticsRoutes);
+app.use('/api/video-analytics', require('./routes/enhancedVideoAnalyticsRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // 404 handler

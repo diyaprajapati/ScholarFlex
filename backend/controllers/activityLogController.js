@@ -89,8 +89,52 @@ const getRecentVideoActivities = async (req, res) => {
       });
     }
 
-    // Get all video activity logs (include both uppercase and lowercase variants)
-    // We need to process them to find videos in progress
+    // Get videos from VideoProgress table (new tracking system)
+    // We treat a video as \"continue watching\" if:
+    // - It is not completed
+    // - AND (has some progress OR has startedWatching set OR has any watch time)
+    const videoProgresses = await prisma.videoProgress.findMany({
+      where: {
+        studentId: student.id,
+        isCompleted: false,
+        OR: [
+          {
+            progressPercent: {
+              gt: 0,
+              lt: 100,
+            },
+          },
+          {
+            startedWatching: {
+              not: null,
+            },
+          },
+          {
+            watchTimeSeconds: {
+              gt: 0,
+            },
+          },
+        ],
+      },
+      include: {
+        video: {
+          include: {
+            playlist: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+      take: 10,
+    });
+
+    // Also get from activity logs (old tracking system) for backward compatibility
     const allActivityLogs = await prisma.studentActivityLog.findMany({
       where: {
         studentId: student.id,
@@ -104,7 +148,7 @@ const getRecentVideoActivities = async (req, res) => {
       orderBy: {
         timestamp: 'desc',
       },
-      take: 100, // Get more to filter properly
+      take: 100,
       include: {
         student: {
           select: {
@@ -124,9 +168,8 @@ const getRecentVideoActivities = async (req, res) => {
       const videoId = metadata.videoId || metadata.video_id || null;
       const youtubeUrl = metadata.youtubeUrl || metadata.youtube_url || null;
       
-      if (!videoId && !youtubeUrl) return; // Skip if no video identifier
+      if (!videoId && !youtubeUrl) return;
       
-      // Use YouTube URL or videoId as key
       const key = youtubeUrl || `video_${videoId}`;
       const activityType = log.activityType.toLowerCase();
       
@@ -146,19 +189,16 @@ const getRecentVideoActivities = async (req, res) => {
       
       const videoData = videoMap.get(key);
       
-      // Update latest timestamp
       if (new Date(log.timestamp) > new Date(videoData.latestTimestamp)) {
         videoData.latestTimestamp = log.timestamp;
         videoData.latestActivityLogId = log.id;
       }
       
-      // Check if video is completed (already lowercase from line 131)
       if (activityType === 'video_complete') {
         videoData.isCompleted = true;
         videoData.maxProgress = 100;
       }
       
-      // Update progress from progress milestones
       if (activityType === 'video_progress' && metadata.progress) {
         const progress = parseInt(metadata.progress) || 0;
         if (progress > videoData.maxProgress) {
@@ -167,32 +207,61 @@ const getRecentVideoActivities = async (req, res) => {
       }
     });
     
-    // Filter to only videos in progress (not completed and have some progress)
-    const inProgressVideos = Array.from(videoMap.values())
+    // Combine VideoProgress data with activity log data
+    const videosFromProgress = videoProgresses.map(vp => ({
+      id: vp.id,
+      videoId: vp.videoId,
+      videoTitle: vp.video.title,
+      playlistId: vp.playlistId,
+      playlistTitle: vp.video.playlist?.title || null,
+      youtubeUrl: vp.video.youtubeUrl,
+      timestamp: vp.updatedAt,
+      activityType: 'video_progress',
+      progress: parseFloat(vp.progressPercent),
+    }));
+
+    // Get in-progress videos from activity logs
+    const inProgressVideosFromLogs = Array.from(videoMap.values())
       .filter(video => !video.isCompleted && video.maxProgress > 0 && video.maxProgress < 100)
-      .sort((a, b) => new Date(b.latestTimestamp) - new Date(a.latestTimestamp))
-      .slice(0, 5); // Get top 5 most recent
+      .map((videoData) => {
+        let finalYoutubeUrl = videoData.youtubeUrl;
+        if (!finalYoutubeUrl && videoData.videoId) {
+          finalYoutubeUrl = `https://www.youtube.com/watch?v=${videoData.videoId}`;
+        }
+        
+        return {
+          id: videoData.latestActivityLogId,
+          videoId: videoData.videoId,
+          videoTitle: videoData.videoTitle,
+          playlistId: videoData.playlistId,
+          playlistTitle: videoData.playlistTitle,
+          youtubeUrl: finalYoutubeUrl,
+          timestamp: videoData.latestTimestamp,
+          activityType: 'video_progress',
+          progress: videoData.maxProgress,
+        };
+      });
+
+    // Combine both sources, remove duplicates (by youtubeUrl), and sort by timestamp
+    const allVideos = [...videosFromProgress, ...inProgressVideosFromLogs];
+    const uniqueVideos = new Map();
     
-    // Extract video information
-    const videos = inProgressVideos.map((videoData) => {
-      // Construct YouTube URL from videoId if URL is missing
-      let finalYoutubeUrl = videoData.youtubeUrl;
-      if (!finalYoutubeUrl && videoData.videoId) {
-        finalYoutubeUrl = `https://www.youtube.com/watch?v=${videoData.videoId}`;
+    allVideos.forEach(video => {
+      const key = video.youtubeUrl || `video_${video.videoId}`;
+      if (!uniqueVideos.has(key)) {
+        uniqueVideos.set(key, video);
+      } else {
+        // Keep the one with more recent timestamp
+        const existing = uniqueVideos.get(key);
+        if (new Date(video.timestamp) > new Date(existing.timestamp)) {
+          uniqueVideos.set(key, video);
+        }
       }
-      
-      return {
-        id: videoData.latestActivityLogId,
-        videoId: videoData.videoId,
-        videoTitle: videoData.videoTitle,
-        playlistId: videoData.playlistId,
-        playlistTitle: videoData.playlistTitle,
-        youtubeUrl: finalYoutubeUrl,
-        timestamp: videoData.latestTimestamp,
-        activityType: 'video_progress',
-        progress: videoData.maxProgress,
-      };
     });
+
+    const videos = Array.from(uniqueVideos.values())
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(0, 10); // Get top 10 most recent
 
     res.status(200).json({
       success: true,

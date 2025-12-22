@@ -452,28 +452,67 @@ const StudentAnalyticsPage = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Activity Breakdown</h3>
                   {selectedStudent.dailyWatchTime.length > 0 ? (
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                       {selectedStudent.dailyWatchTime.map((day, idx) => (
-                        <div key={idx} className="flex items-center justify-between border border-gray-200 rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors">
-                          <div className="flex-1">
-                            <span className="text-sm font-semibold text-gray-900">{formatDate(day.date)}</span>
-                            <span className="text-xs text-gray-500 ml-2">
-                              ({day.hours.toFixed(2)} hours)
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div className="w-48 bg-gray-200 rounded-full h-3">
-                              <div
-                                className="bg-green-600 h-3 rounded-full transition-all"
-                                style={{
-                                  width: `${Math.min((day.seconds / 3600) * 5, 100)}%`,
-                                }}
-                              ></div>
+                        <div
+                          key={idx}
+                          className="border border-gray-200 rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex-1">
+                              <span className="text-sm font-semibold text-gray-900">
+                                {formatDate(day.date)}
+                              </span>
+                              <span className="text-xs text-gray-500 ml-2">
+                                ({day.hours.toFixed(2)} hours)
+                              </span>
                             </div>
-                            <span className="text-sm font-bold text-gray-900 min-w-[80px] text-right">
-                              {formatTime(day.seconds)}
-                            </span>
+                            <div className="flex items-center gap-4">
+                              <div className="w-48 bg-gray-200 rounded-full h-3">
+                                <div
+                                  className="bg-green-600 h-3 rounded-full transition-all"
+                                  style={{
+                                    width: `${Math.min((day.seconds / 3600) * 5, 100)}%`,
+                                  }}
+                                ></div>
+                              </div>
+                              <span className="text-sm font-bold text-gray-900 min-w-[80px] text-right">
+                                {formatTime(day.seconds)}
+                              </span>
+                            </div>
                           </div>
+
+                          {/* Video-wise breakdown for this day */}
+                          {selectedStudent.dailyVideoWatch && (
+                            (() => {
+                              const dayVideos = selectedStudent.dailyVideoWatch.find(
+                                (d) => d.date === day.date
+                              );
+                              if (!dayVideos || !dayVideos.videos || dayVideos.videos.length === 0) {
+                                return null;
+                              }
+                              return (
+                                <div className="mt-3 pt-3 border-t border-gray-100">
+                                  <h4 className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                                    <span>Videos watched this day</span>
+                                  </h4>
+                                  <div className="space-y-1">
+                                    {dayVideos.videos.map((video, vIdx) => (
+                                      <div
+                                        key={vIdx}
+                                        className="flex items-center justify-between text-xs text-gray-700"
+                                      >
+                                        <span className="flex-1 truncate pr-2">{video.videoTitle}</span>
+                                        <span className="font-semibold text-gray-900">
+                                          {formatTime(video.seconds)}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })()
+                          )}
                         </div>
                       ))}
                     </div>

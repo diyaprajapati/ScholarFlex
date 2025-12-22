@@ -13,6 +13,7 @@ export const ROUTES = {
   ADMIN_MANAGEMENT: '/admin-management',
   NOC_MANAGEMENT: '/noc-management',
   STUDENT_ANALYTICS: '/student-analytics',
+  VIDEO_ANALYTICS: '/video-analytics',
   RETEST_MANAGEMENT: '/retest-management',
   
   // Question Papers Routes
@@ -52,6 +53,7 @@ export const ROUTES = {
     TEST: '/student/test',
     SUBMISSION: '/student/submission',
     VIDEO: (videoId) => `/student/video/${videoId}`,
+    VIDEO_ANALYTICS: '/student/video-analytics',
   },
 }
 

@@ -382,7 +382,7 @@ const AddVideosToPlaylistPage = () => {
                 <div className="space-y-4 max-h-[600px] overflow-y-auto">
                   {videos.map((video, index) => (
                     <div key={video.id} className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {getThumbnailUrl(video.youtubeUrl) ? (
                           <img
                             src={getThumbnailUrl(video.youtubeUrl)}

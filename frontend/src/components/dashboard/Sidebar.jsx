@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ROUTES } from '../../config/paths'
+import CandidatesTab from '../../pages/admin/CandidatesTab';
 
 export default function Sidebar({ user }) {
   const location = useLocation()
@@ -84,7 +85,7 @@ export default function Sidebar({ user }) {
               <li>
                 <Link
                   to={ROUTES.INTERNS.VIEW}
-                  onClick={() => handleNavClick('all-interns')}
+                  onClick={() => handleNavClick('candidates')}
                   className={navItemClasses(ROUTES.INTERNS.VIEW)}
                   style={navItemStyle(ROUTES.INTERNS.VIEW)}
                   {...navItemHoverStyle(ROUTES.INTERNS.VIEW)}
@@ -92,7 +93,7 @@ export default function Sidebar({ user }) {
                   <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5V8H2v12h5m10 0v-6h-4v6m4 0H7" />
                   </svg>
-                  All Interns
+                  Candidates
                 </Link>
               </li>
               <li>
@@ -124,7 +125,7 @@ export default function Sidebar({ user }) {
                   Playlists
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   to={ROUTES.TEST_ATTEMPTS}
                   onClick={() => handleNavClick('test-attempts')}
@@ -137,7 +138,7 @@ export default function Sidebar({ user }) {
                   </svg>
                   Test Results
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   to={ROUTES.STUDENT_ANALYTICS}

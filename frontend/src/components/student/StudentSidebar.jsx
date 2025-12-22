@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, BarChart3, FileText, X } from 'lucide-react';
+import { LayoutDashboard, BookOpen, BarChart3, FileText, X, Video } from 'lucide-react';
 import { ROUTES } from '../../config/paths';
 
 export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen }) {
@@ -10,6 +10,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD },
     { id: 'playlists', label: 'Playlists', icon: BookOpen, path: ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS },
     { id: 'activity', label: 'Activity', icon: BarChart3, path: ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY },
+    { id: 'video-analytics', label: 'Video Analytics', icon: Video, path: ROUTES.STUDENT.VIDEO_ANALYTICS },
     { id: 'noc', label: 'NOC Letter', icon: FileText, path: ROUTES.STUDENT.DASHBOARD_TABS.NOC },
   ];
 
@@ -85,7 +86,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
           {/* Footer */}
           <div className="p-4 border-t border-gray-200">
             <div className="text-xs text-gray-500 text-center">
-              <p>© 2024 ScholarFlex</p>
+              <p>© 2025 ScholarFlex</p>
             </div>
           </div>
         </div>

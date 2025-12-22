@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, StudentAnalyticsPage, RetestManagementPage } from '../pages'
+import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, StudentAnalyticsPage, RetestManagementPage, CandidatesPage } from '../pages'
 import { ROUTES } from './paths'
 
 /**
@@ -89,7 +89,7 @@ export default function AppRoutes() {
         path={ROUTES.INTERNS.VIEW}
         element={
           <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
-            <AllInternsPage />
+            <CandidatesPage />
           </ProtectedRoute>
         }
       />
@@ -147,6 +147,8 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+
       <Route
         path={ROUTES.RETEST_MANAGEMENT}
         element={
@@ -218,6 +220,16 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['STUDENT']}>
             <VideoPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Student Video Analytics Route */}
+      <Route
+        path={ROUTES.STUDENT.VIDEO_ANALYTICS}
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
+            <StudentVideoAnalyticsPage />
           </ProtectedRoute>
         }
       />
