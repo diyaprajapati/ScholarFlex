@@ -5,7 +5,7 @@ import { ROUTES } from '../../config/paths';
 import Sidebar from '../../components/dashboard/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import api from '../../services/api';
-import { FileText, Download, CheckCircle, XCircle, Clock, Eye, AlertCircle } from 'lucide-react';
+import { FileText, Download, CheckCircle, XCircle, Clock, Eye, AlertCircle, Archive } from 'lucide-react';
 
 const NOCManagementPage = () => {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const NOCManagementPage = () => {
   const [selectedNOC, setSelectedNOC] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [downloadingAll, setDownloadingAll] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,
@@ -101,6 +102,24 @@ const NOCManagementPage = () => {
     }
   };
 
+  const handleDownloadAll = async () => {
+    try {
+      setDownloadingAll(true);
+      setError('');
+      setSuccess('');
+      
+      const status = statusFilter !== 'ALL' ? statusFilter : null;
+      await api.noc.downloadAll(status);
+      
+      setSuccess('All NOC letters downloaded successfully as ZIP file');
+      setTimeout(() => setSuccess(''), 5000);
+    } catch (err) {
+      setError(err.message || 'Failed to download NOC letters');
+    } finally {
+      setDownloadingAll(false);
+    }
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'APPROVED':
@@ -143,22 +162,32 @@ const NOCManagementPage = () => {
             <p className="text-gray-600">Review and manage student NOC letters</p>
           </div>
 
-          {/* Filters */}
-          <div className="mb-6 flex items-center gap-4">
-            <label className="text-sm font-medium text-gray-700">Filter by Status:</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPagination(prev => ({ ...prev, page: 1 }));
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          {/* Filters and Actions */}
+          <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700">Filter by Status:</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPagination(prev => ({ ...prev, page: 1 }));
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="ALL">All</option>
+                <option value="PENDING">Pending</option>
+                <option value="APPROVED">Approved</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+            </div>
+            <button
+              onClick={handleDownloadAll}
+              disabled={downloadingAll || pagination.total === 0}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
             >
-              <option value="ALL">All</option>
-              <option value="PENDING">Pending</option>
-              <option value="APPROVED">Approved</option>
-              <option value="REJECTED">Rejected</option>
-            </select>
+              <Archive className="w-5 h-5" />
+              {downloadingAll ? 'Downloading...' : `Download All NOC (${pagination.total})`}
+            </button>
           </div>
 
           {/* Messages */}

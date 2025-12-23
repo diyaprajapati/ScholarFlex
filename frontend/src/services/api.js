@@ -728,6 +728,49 @@ export const api = {
       return url;
     },
 
+    downloadAll: async (status = null) => {
+      const queryParams = new URLSearchParams();
+      if (status) queryParams.append('status', status);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/admin/noc/download-all?${queryString}` : '/admin/noc/download-all';
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Failed to download NOC letters' }));
+        throw new Error(error.message || 'Failed to download NOC letters');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Get filename from Content-Disposition header or use default
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'all_noc_letters.zip';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      return { success: true, filename };
+    },
+
     updateStatus: async (id, status) => {
       return apiRequest(`/admin/noc/${id}/status`, {
         method: 'PATCH',

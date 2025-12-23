@@ -236,6 +236,13 @@ adminRouter.get('/noc', nocController.getAllNOC);
 adminRouter.get('/noc/:id/download', nocController.downloadNOC);
 
 /**
+ * @route   GET /api/admin/noc/download-all
+ * @desc    Download all NOC letters as ZIP (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/noc/download-all', nocController.downloadAllNOC);
+
+/**
  * @route   PATCH /api/admin/noc/:id/status
  * @desc    Update NOC status (Approve/Reject) (Admin/Super Admin)
  * @access  Private (Admin, Super Admin)

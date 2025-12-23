@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const archiver = require('archiver');
 const { PrismaClient } = require('@prisma/client');
 const { authenticate, authorize } = require('../middleware/auth');
 
@@ -369,6 +370,111 @@ const downloadNOC = async (req, res) => {
 };
 
 /**
+ * Download all NOC letters as ZIP (Admin only)
+ * GET /api/admin/noc/download-all
+ */
+const downloadAllNOC = async (req, res) => {
+  try {
+    const { status } = req.query;
+    
+    // Build where clause for filtering
+    const where = {};
+    if (status && ['PENDING', 'APPROVED', 'REJECTED'].includes(status)) {
+      where.status = status;
+    }
+
+    // Get all NOC letters with student information
+    const nocLetters = await prisma.nOCLetter.findMany({
+      where,
+      include: {
+        student: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+          },
+        },
+      },
+      orderBy: {
+        uploadedAt: 'desc',
+      },
+    });
+
+    if (nocLetters.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No NOC letters found to download',
+      });
+    }
+
+    // Create a ZIP archive
+    const archive = archiver('zip', {
+      zlib: { level: 9 }, // Maximum compression
+    });
+
+    // Set response headers
+    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const statusSuffix = status ? `_${status}` : '';
+    const filename = `all_noc_letters${statusSuffix}_${timestamp}.zip`;
+    
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    // Pipe archive data to the response
+    archive.pipe(res);
+
+    // Add each NOC file to the archive
+    let addedCount = 0;
+    for (const noc of nocLetters) {
+      if (fs.existsSync(noc.filePath)) {
+        // Create a safe filename: StudentName_Email_NOCID.pdf
+        const studentName = (noc.student?.fullName || 'Unknown')
+          .replace(/[^a-zA-Z0-9]/g, '_')
+          .substring(0, 50);
+        const studentEmail = (noc.student?.email || 'unknown')
+          .replace(/[^a-zA-Z0-9@._-]/g, '_')
+          .substring(0, 50);
+        const safeFileName = `${studentName}_${studentEmail}_${noc.id}.pdf`;
+        
+        // Add file to archive
+        archive.file(noc.filePath, { name: safeFileName });
+        addedCount++;
+      } else {
+        console.warn(`NOC file not found: ${noc.filePath} (ID: ${noc.id})`);
+      }
+    }
+
+    // Finalize the archive
+    archive.finalize();
+
+    // Handle archive errors
+    archive.on('error', (err) => {
+      console.error('Archive error:', err);
+      if (!res.headersSent) {
+        res.status(500).json({
+          success: false,
+          message: 'Failed to create ZIP archive',
+        });
+      }
+    });
+
+    // Log completion
+    archive.on('end', () => {
+      console.log(`ZIP archive created with ${addedCount} NOC letters`);
+    });
+
+  } catch (error) {
+    console.error('Error downloading all NOC letters:', error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to download NOC letters',
+      });
+    }
+  }
+};
+
+/**
  * Update NOC status (Approve/Reject) - Admin only
  * PATCH /api/admin/noc/:id/status
  */
@@ -448,6 +554,7 @@ module.exports = {
   deleteStudentNOC,
   getAllNOC,
   downloadNOC,
+  downloadAllNOC,
   updateNOCStatus,
 };
 
