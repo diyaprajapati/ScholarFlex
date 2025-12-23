@@ -224,14 +224,24 @@ const CandidatesTab = () => {
     }
   }, []);
 
+  // Helper function to normalize a date to date-only (local time, no time component)
+  const normalizeDate = useCallback((dateInput) => {
+    // If it's a date string in YYYY-MM-DD format, parse it directly to avoid timezone issues
+    if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateInput)) {
+      const [year, month, day] = dateInput.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }
+    // Otherwise, create a Date object and normalize to date-only
+    const d = new Date(dateInput);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }, []);
+
   // Helper function to compare dates (date only, ignoring time)
   const compareDates = useCallback((date1, date2) => {
-    const d1 = new Date(date1);
-    const d2 = new Date(date2);
-    const date1Only = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
-    const date2Only = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+    const date1Only = normalizeDate(date1);
+    const date2Only = normalizeDate(date2);
     return date1Only.getTime() - date2Only.getTime();
-  }, []);
+  }, [normalizeDate]);
 
   // Filter students by search query and all filters - memoized
   const filteredStudents = useMemo(() => {
@@ -327,21 +337,50 @@ const CandidatesTab = () => {
       );
     }
 
-    // Apply date range filters
+    // Apply date range filters - EXACT DATE MATCH
     if (filters.startDate) {
-      const startDate = new Date(filters.startDate);
       result = result.filter(student => {
+        // Skip students without internship start date
         if (!student.internship_start_date) return false;
-        return new Date(student.internship_start_date) >= startDate;
+        
+        try {
+          const studentStartDate = new Date(student.internship_start_date);
+          // Validate the date is valid
+          if (isNaN(studentStartDate.getTime())) return false;
+          
+          const filterStartDate = new Date(filters.startDate);
+          if (isNaN(filterStartDate.getTime())) return false;
+          
+          // Use compareDates helper for EXACT date match
+          // compareDates returns: 0 if dates are equal (same day)
+          return compareDates(studentStartDate, filterStartDate) === 0;
+        } catch (error) {
+          console.error('Error comparing start dates:', error, student.internship_start_date);
+          return false;
+        }
       });
     }
 
     if (filters.endDate) {
-      const endDate = new Date(filters.endDate);
-      endDate.setHours(23, 59, 59, 999); // Include entire end date
       result = result.filter(student => {
+        // Skip students without internship end date
         if (!student.internship_end_date) return false;
-        return new Date(student.internship_end_date) <= endDate;
+        
+        try {
+          const studentEndDate = new Date(student.internship_end_date);
+          // Validate the date is valid
+          if (isNaN(studentEndDate.getTime())) return false;
+          
+          const filterEndDate = new Date(filters.endDate);
+          if (isNaN(filterEndDate.getTime())) return false;
+          
+          // Use compareDates helper for EXACT date match
+          // compareDates returns: 0 if dates are equal (same day)
+          return compareDates(studentEndDate, filterEndDate) === 0;
+        } catch (error) {
+          console.error('Error comparing end dates:', error, student.internship_end_date);
+          return false;
+        }
       });
     }
 
