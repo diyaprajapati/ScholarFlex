@@ -22,7 +22,8 @@
     "db:migrate": "node scripts/run-migration.js",
     "db:create-enums": "node scripts/create-enum-types.js",
     "db:create-function": "node scripts/create-calculate-score-function.js",
-    "db:recalculate-scores": "node scripts/recalculate-test-scores.js"
+    "db:recalculate-scores": "node scripts/recalculate-test-scores.js",
+    "db:create-feedback-table": "node scripts/create-feedback-table.js"
   },
   "keywords": [
     "scholarflex",

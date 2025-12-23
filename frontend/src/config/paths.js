@@ -12,6 +12,7 @@ export const ROUTES = {
   TEST_ATTEMPTS: '/test-attempts',
   ADMIN_MANAGEMENT: '/admin-management',
   NOC_MANAGEMENT: '/noc-management',
+  FEEDBACK_MANAGEMENT: '/feedback-management',
   STUDENT_ANALYTICS: '/student-analytics',
   VIDEO_ANALYTICS: '/video-analytics',
   RETEST_MANAGEMENT: '/retest-management',
@@ -54,6 +55,7 @@ export const ROUTES = {
     SUBMISSION: '/student/submission',
     VIDEO: (videoId) => `/student/video/${videoId}`,
     VIDEO_ANALYTICS: '/student/video-analytics',
+    FEEDBACK: '/student/feedback',
   },
 }
 

@@ -122,6 +122,7 @@ model Student {
   testAttempts         TestAttempt[]
   studentActivityLogs  StudentActivityLog[] @relation("StudentActivityLogs")
   nocLetters           NOCLetter[]          @relation("NOCLetters")
+  internshipFeedbacks  InternshipFeedback[] @relation("InternshipFeedbacks")
   videoProgresses      VideoProgress[]
   playlistAccesses     PlaylistAccess[]
 
@@ -402,6 +403,26 @@ model NOCLetter {
   @@index([status])
   @@index([uploadedAt])
   @@map("noc_letters")
+}
+
+model InternshipFeedback {
+  id                 Int      @id @default(autoincrement())
+  studentId          Int      @map("student_id")
+  overallRating      Int      @map("overall_rating") // 1-5 scale
+  learningExperience String?  @map("learning_experience") @db.Text
+  contentQuality     Int?     @map("content_quality") // 1-5 scale
+  mentorSupport      Int?     @map("mentor_support") // 1-5 scale
+  platformUsability  Int?     @map("platform_usability") // 1-5 scale
+  suggestions        String?  @db.Text
+  wouldRecommend     Boolean? @map("would_recommend")
+  additionalComments String?  @map("additional_comments") @db.Text
+  submittedAt        DateTime @default(now()) @map("submitted_at")
+  student            Student  @relation("InternshipFeedbacks", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId])
+  @@index([studentId])
+  @@index([submittedAt])
+  @@map("internship_feedback")
 }
 
 model VideoProgress {

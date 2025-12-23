@@ -4,6 +4,7 @@ const User = require('../models/User');
 const OTPService = require('../services/otpService');
 const { logActivitySimple } = require('../middleware/activityLogger');
 const pool = require('../config/database');
+const { prisma } = require('../config/database');
 
 /**
  * Send OTP to email
@@ -106,6 +107,36 @@ const verifyOTP = async (req, res) => {
       });
     }
 
+    // Check if student's internship has ended
+    if (user.source === 'students' && user.internship_end_date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const endDate = new Date(user.internship_end_date);
+      endDate.setHours(23, 59, 59, 999);
+      
+      if (today > endDate) {
+        // Check if feedback has already been submitted
+        try {
+          const feedback = await prisma.internshipFeedback.findUnique({
+            where: { studentId: user.id },
+            select: { id: true },
+          });
+          
+          if (feedback) {
+            // Feedback already submitted, block login permanently
+            return res.status(403).json({
+              success: false,
+              message: 'Your internship has ended and you have already submitted your feedback. You can no longer access the portal.',
+            });
+          }
+          // If feedback not submitted, allow login to submit feedback (will be redirected to feedback page)
+        } catch (feedbackError) {
+          console.error('Error checking feedback during login:', feedbackError);
+          // If error checking feedback, allow login but will be redirected to feedback page
+        }
+      }
+    }
+
     // If this is a student who has already completed a test and was not selected,
     // AND they do not have explicit retest access, block login.
     if (user.source === 'students' && user.is_selected === false && user.can_retest !== true) {
@@ -178,6 +209,9 @@ const verifyOTP = async (req, res) => {
       }
       if (user.can_retest !== undefined) {
         userData.can_retest = user.can_retest;
+      }
+      if (user.internship_end_date !== undefined) {
+        userData.internship_end_date = user.internship_end_date;
       }
     }
 

@@ -14,6 +14,7 @@ const testAttemptRoutes = require('./routes/testAttemptRoutes');
 const candidateRoutes = require('./routes/candidateRoutes');
 const activityRoutes = require('./routes/activityRoutes');
 const nocRoutes = require('./routes/nocRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 const videoTrackingRoutes = require('./routes/videoTrackingRoutes');
 const videoAnalyticsRoutes = require('./routes/videoAnalyticsRoutes');
 const errorHandler = require('./middleware/errorHandler');

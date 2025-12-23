@@ -1098,7 +1098,7 @@ const CandidatesTab = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Course</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Marks</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase sticky right-0 bg-gray-50 z-10 border-l border-gray-200">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -1117,7 +1117,7 @@ const CandidatesTab = () => {
                     const imageFailed = failedImages.has(imageKey);
                     
                     return (
-                      <tr key={student.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={student.id} className="hover:bg-gray-50 transition-colors group">
                         <td className="px-6 py-4">
                           {student.image_url && !imageFailed ? (
                             <img
@@ -1171,8 +1171,8 @@ const CandidatesTab = () => {
                             {student.is_selected ? 'Selected' : 'Not Selected'}
                           </span>
                         </label>
-                      </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white group-hover:bg-gray-50 z-10 border-l border-gray-200">
                           <div className="flex gap-3">
                             <button
                               onClick={handleViewClick}

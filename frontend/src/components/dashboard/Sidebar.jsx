@@ -112,6 +112,20 @@ export default function Sidebar({ user }) {
               </li>
               <li>
                 <Link
+                  to={ROUTES.FEEDBACK_MANAGEMENT}
+                  onClick={() => handleNavClick('feedback-management')}
+                  className={navItemClasses(ROUTES.FEEDBACK_MANAGEMENT)}
+                  style={navItemStyle(ROUTES.FEEDBACK_MANAGEMENT)}
+                  {...navItemHoverStyle(ROUTES.FEEDBACK_MANAGEMENT)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Feedback
+                </Link>
+              </li>
+              <li>
+                <Link
                   to={ROUTES.PLAYLISTS.MANAGEMENT}
                   onClick={() => handleNavClick('playlists')}
                   className={navItemClasses(ROUTES.PLAYLISTS.MANAGEMENT)}

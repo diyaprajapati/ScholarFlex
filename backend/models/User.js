@@ -25,7 +25,8 @@ class User {
           'Student' AS role_name, 
           'STUDENT' AS role_code,
           s.is_selected,
-          s.can_retest
+          s.can_retest,
+          s.internship_end_date
          FROM students s
          WHERE s.email = $1 AND s.is_active = TRUE`,
         [email]
@@ -67,7 +68,8 @@ class User {
           'STUDENT' AS role_code,
           s.is_active,
           s.is_selected,
-          s.can_retest
+          s.can_retest,
+          s.internship_end_date
          FROM students s
          WHERE s.id = $1 AND s.is_active = TRUE`,
         [id]

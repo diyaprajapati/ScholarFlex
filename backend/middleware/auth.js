@@ -30,6 +30,30 @@ const authenticate = async (req, res, next) => {
       });
     }
 
+    // For students: Check if internship has ended
+    if (user.role_code === 'STUDENT' && user.internship_end_date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const endDate = new Date(user.internship_end_date);
+      endDate.setHours(23, 59, 59, 999);
+      
+      if (today > endDate) {
+        // Allow access to feedback routes even after internship ends
+        const isFeedbackRoute = req.path === '/student/feedback' || req.path.startsWith('/student/feedback');
+        
+        if (!isFeedbackRoute) {
+          // Block access to all other routes after internship ends
+          return res.status(403).json({
+            success: false,
+            message: 'Your internship has ended. You can no longer access the portal. Please submit your feedback if you haven\'t already.',
+          });
+        }
+        
+        // For feedback routes, check if feedback already submitted
+        // This check is done in the feedback controller, so we allow the request to proceed
+      }
+    }
+
     // For students: if they have already completed a test and were not selected,
     // and do NOT have explicit retest access, block further access to the student portal and APIs
     if (user.role_code === 'STUDENT' && user.is_selected === false && user.can_retest !== true) {

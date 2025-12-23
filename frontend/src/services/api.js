@@ -779,6 +779,35 @@ export const api = {
     },
   },
 
+  // Feedback endpoints
+  feedback: {
+    submit: async (feedbackData) => {
+      return apiRequest('/student/feedback', {
+        method: 'POST',
+        body: JSON.stringify(feedbackData),
+      });
+    },
+
+    getStudentFeedback: async () => {
+      return apiRequest('/student/feedback', {
+        method: 'GET',
+      });
+    },
+
+    getAll: async (filters = {}) => {
+      const queryParams = new URLSearchParams();
+      if (filters.page) queryParams.append('page', filters.page);
+      if (filters.limit) queryParams.append('limit', filters.limit);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/admin/feedback?${queryString}` : '/admin/feedback';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+  },
+
   // Video tracking endpoints
   videoTracking: {
     trackOpened: async (videoId, playlistId) => {

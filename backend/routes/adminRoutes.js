@@ -256,6 +256,17 @@ adminRouter.patch('/noc/:id/status', nocController.updateNOCStatus);
  */
 adminRouter.get('/students/analytics', adminController.getStudentAnalytics);
 
+// Import feedback controller
+const feedbackController = require('../controllers/feedbackController');
+
+/**
+ * @route   GET /api/admin/feedback
+ * @desc    Get all feedback (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ * IMPORTANT: This route must be registered BEFORE the /:id route to avoid conflicts
+ */
+adminRouter.get('/feedback', feedbackController.getAllFeedback);
+
 // Mount routers
 // IMPORTANT: Mount adminRouter FIRST (with specific routes like /playlists)
 // BEFORE superAdminRouter (which has catch-all /:id route)

@@ -225,22 +225,16 @@ const StudentAnalyticsPage = () => {
                         <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                           Total Watch Time
                         </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sticky right-0 bg-gray-50 z-10 border-l border-gray-200">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {paginatedAnalytics.map((student) => (
-                        <tr key={student.studentId} className="hover:bg-gray-50 transition-colors">
+                        <tr key={student.studentId} className="hover:bg-gray-50 transition-colors group">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-2">
-                              <div className="text-sm font-semibold text-gray-900">{student.fullName}</div>
-                              <button
-                                onClick={() => setSelectedStudent(student)}
-                                className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                title="View detailed analytics"
-                              >
-                                <Eye className="w-4 h-4" />
-                              </button>
-                            </div>
+                            <div className="text-sm font-semibold text-gray-900">{student.fullName}</div>
                             {student.phone && (
                               <div className="text-xs text-gray-500 mt-1">{student.phone}</div>
                             )}
@@ -266,6 +260,16 @@ const StudentAnalyticsPage = () => {
                             <div className="text-xs text-gray-500">
                               ({student.totalWatchTimeHours.toFixed(2)} hrs)
                             </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white group-hover:bg-gray-50 z-10 border-l border-gray-200">
+                            <button
+                              onClick={() => setSelectedStudent(student)}
+                              className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-2 cursor-pointer"
+                              title="View detailed analytics"
+                            >
+                              View
+                              <Eye className="w-4 h-4" />
+                            </button>
                           </td>
                         </tr>
                       ))}
