@@ -111,7 +111,7 @@ const FeedbackManagementPage = () => {
     <div className="h-screen flex bg-gray-50 overflow-hidden">
       <Sidebar user={user} />
       <TopNavbar user={user} />
-      <main className="flex-1 ml-64 overflow-y-auto pt-14 sm:pt-16">
+      <main className="flex-1 lg:ml-64 overflow-y-auto pt-14 sm:pt-16">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Header */}
           <div className="mb-6">

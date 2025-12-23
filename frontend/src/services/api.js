@@ -542,6 +542,13 @@ export const api = {
       });
     },
 
+    updateNOCStatus: async (id, nocReceived) => {
+      return apiRequest(`/candidates/${id}/noc-status`, {
+        method: 'PUT',
+        body: JSON.stringify({ noc_received: nocReceived }),
+      });
+    },
+
     bulkUpdateSelection: async (candidateIds, isSelected) => {
       return apiRequest('/candidates/bulk-selection', {
         method: 'PUT',

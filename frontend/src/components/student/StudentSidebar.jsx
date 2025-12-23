@@ -28,7 +28,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 backdrop-blur-md bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

@@ -1,13 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ROUTES } from '../../config/paths'
 import CandidatesTab from '../../pages/admin/CandidatesTab';
+import { X } from 'lucide-react';
+import { useSidebar } from '../../contexts/SidebarContext';
 
 export default function Sidebar({ user }) {
   const location = useLocation()
+  const { isOpen: sidebarOpen, setIsOpen: setSidebarOpen } = useSidebar()
+
+  // Close sidebar on mobile when route changes
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
+  }, [location.pathname, setSidebarOpen])
 
   const handleNavClick = () => {
-    // Navigation click handler
+    // Close sidebar on mobile after navigation
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
   }
 
   const navItemClasses = (path) => {
@@ -44,12 +57,40 @@ export default function Sidebar({ user }) {
   }
 
   return (
-    <aside className="w-64 h-screen bg-white flex flex-col border-r border-gray-200 fixed left-0 top-0">
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4 sm:p-5 lg:p-6 space-y-4 sm:space-y-5 lg:space-y-6">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-            <span className="text-[#4C763B]">Scholar</span>Flex
-          </h2>
+    <>
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 backdrop-blur-md bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          w-64 h-screen bg-white flex flex-col border-r border-gray-200 
+          fixed left-0 top-0 z-50
+          transform transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0
+        `}
+      >
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-5 lg:p-6 space-y-4 sm:space-y-5 lg:space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                <span className="text-[#4C763B]">Scholar</span>Flex
+              </h2>
+              {/* Close button for mobile */}
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+                aria-label="Close sidebar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           <nav className="space-y-4 sm:space-y-5 lg:space-y-6 text-xs sm:text-sm">
             <ul className="space-y-2">
               <li>
@@ -207,6 +248,7 @@ export default function Sidebar({ user }) {
         </div>
       </div>
     </aside>
+    </>
   )
 }
 

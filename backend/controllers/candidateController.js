@@ -6,6 +6,26 @@ const pool = require('../config/database');
 
 const prisma = new PrismaClient();
 
+/**
+ * Ensure the manual NOC status table exists.
+ * This table is used to track whether NOC has been received manually for each student.
+ */
+const ensureNOCStatusTable = async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS student_noc_status (
+      id SERIAL PRIMARY KEY,
+      student_id INT NOT NULL UNIQUE,
+      is_received BOOLEAN NOT NULL DEFAULT FALSE,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT fk_student_noc_status_student
+        FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_student_noc_status_student_id
+      ON student_noc_status(student_id);
+  `);
+};
+
 // Configure multer for file uploads (memory storage)
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -390,6 +410,9 @@ exports.uploadSpreadsheet = async (req, res) => {
  */
 exports.getAllCandidates = async (req, res) => {
   try {
+    // Ensure NOC status table exists
+    await ensureNOCStatusTable();
+
     // Fetch students with their marks from test attempts
     const result = await pool.query(
       `SELECT 
@@ -418,6 +441,7 @@ exports.getAllCandidates = async (req, res) => {
         s.updated_at,
         d.domain_name,
         ist.status_name,
+        COALESCE(BOOL_OR(sns.is_received), FALSE) as noc_received,
         COALESCE(MAX(ta.percentage_score), 0) as marks,
         MAX(ta.submitted_at) as last_test_date,
         COUNT(DISTINCT ta.id) as total_attempts
@@ -425,6 +449,7 @@ exports.getAllCandidates = async (req, res) => {
       LEFT JOIN domains d ON s.domain_id = d.id
       LEFT JOIN intern_status ist ON s.status_id = ist.id
       LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
+      LEFT JOIN student_noc_status sns ON sns.student_id = s.id
       WHERE s.is_active = TRUE
       GROUP BY s.id, s.email, s.full_name, s.phone, s.image_url, 
                s.domain_id, s.status_id, s.registration_date, s.institute_name, s.course_taken, 
@@ -441,6 +466,7 @@ exports.getAllCandidates = async (req, res) => {
       mobile_number: s.mobile_number,
       phone: s.mobile_number,
       image_url: s.image_url,
+      noc_received: s.noc_received,
       marks: parseFloat(s.marks || 0),
       reference_information: s.reference_information,
       status: s.status_name,
@@ -503,11 +529,15 @@ exports.getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Ensure NOC status table exists
+    await ensureNOCStatusTable();
+
     const result = await pool.query(
       `SELECT 
         s.*,
         d.domain_name,
         ist.status_name,
+        COALESCE(BOOL_OR(sns.is_received), FALSE) as noc_received,
         COALESCE(MAX(ta.percentage_score), 0) as marks,
         MAX(ta.submitted_at) as last_test_date,
         COUNT(DISTINCT ta.id) as total_attempts
@@ -515,6 +545,7 @@ exports.getStudentById = async (req, res) => {
       LEFT JOIN domains d ON s.domain_id = d.id
       LEFT JOIN intern_status ist ON s.status_id = ist.id
       LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
+      LEFT JOIN student_noc_status sns ON sns.student_id = s.id
       WHERE s.id = $1 AND s.is_active = TRUE
       GROUP BY s.id, d.domain_name, ist.status_name, s.is_selected`,
       [id]
@@ -540,6 +571,7 @@ exports.getStudentById = async (req, res) => {
         domain: student.domain_name,
         domain_id: student.domain_id,
         status: student.status_name,
+        noc_received: student.noc_received,
         marks: parseFloat(student.marks || 0),
         reference_information: student.reference_information,
         institute_name: student.institute_name,
@@ -628,6 +660,82 @@ exports.updateStudentSelection = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating student selection:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Update manual NOC received status for a student
+ * This is a manual flag, independent from the NOC letters table.
+ */
+exports.updateNOCReceivedStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { noc_received } = req.body;
+
+    if (typeof noc_received !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'noc_received must be a boolean value',
+      });
+    }
+
+    // Ensure NOC status table exists
+    await ensureNOCStatusTable();
+
+    // Check if student exists
+    const studentResult = await pool.query(
+      'SELECT id, email, full_name FROM students WHERE id = $1 AND is_active = TRUE',
+      [id]
+    );
+
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    // Upsert manual NOC status
+    const updateResult = await pool.query(
+      `
+      INSERT INTO student_noc_status (student_id, is_received, updated_at)
+      VALUES ($1, $2, NOW())
+      ON CONFLICT (student_id)
+      DO UPDATE SET is_received = EXCLUDED.is_received, updated_at = NOW()
+      RETURNING student_id, is_received, updated_at
+      `,
+      [id, noc_received]
+    );
+
+    console.log('✅ NOC status saved to database:', {
+      student_id: id,
+      noc_received: noc_received,
+      saved_data: updateResult.rows[0],
+    });
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'UPDATE_STUDENT_NOC_STATUS',
+      'STUDENT',
+      id,
+      `${req.user.email} set NOC received = ${noc_received ? 'YES' : 'NO'} for student: ${studentResult.rows[0].email}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'NOC received status updated successfully',
+      data: {
+        id: parseInt(id),
+        noc_received,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating NOC received status:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',

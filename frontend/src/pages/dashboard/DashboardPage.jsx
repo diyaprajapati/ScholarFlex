@@ -123,7 +123,7 @@ export default function DashboardPage() {
     <div className="h-screen flex bg-gray-50 overflow-hidden">
       <Sidebar user={user} />
       <TopNavbar user={user} />
-      <main className="flex-1 ml-64 overflow-y-auto pt-14 sm:pt-16">
+      <main className="flex-1 lg:ml-64 overflow-y-auto pt-14 sm:pt-16">
         <div className="mx-auto w-full max-w-[1280px] 2xl:max-w-[1536px] px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8 lg:space-y-10">
           {loading ? (
             <div className="flex items-center justify-center py-12">

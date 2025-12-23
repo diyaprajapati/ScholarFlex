@@ -3,9 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
 import { api } from '../../services/api'
+import { Menu } from 'lucide-react'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function TopNavbar({ user }) {
   const navigate = useNavigate()
+  const { toggleSidebar } = useSidebar()
   const [showNotifications, setShowNotifications] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -33,10 +36,18 @@ export default function TopNavbar({ user }) {
   }
 
   return (
-    <nav className="h-14 sm:h-16 bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 ml-64">
+    <nav className="h-14 sm:h-16 bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 lg:ml-64">
       <div className="h-full px-4 sm:px-5 lg:px-6 flex items-center justify-between">
-        {/* Left side - can be used for breadcrumbs or page title */}
-        <div className="flex-1">
+        {/* Left side - Hamburger menu for mobile */}
+        <div className="flex items-center gap-3 lg:flex-1">
+          {/* Hamburger menu button - visible on mobile */}
+          <button
+            onClick={toggleSidebar}
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
           {/* Optional: Add breadcrumbs or page title here */}
         </div>
 

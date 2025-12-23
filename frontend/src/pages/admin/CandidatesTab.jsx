@@ -539,6 +539,44 @@ const CandidatesTab = () => {
     []
   );
 
+  const handleNOCStatusChange = useCallback(
+    async (studentId, nocReceived) => {
+      try {
+        // Optimistically update the UI
+        setStudents(prevStudents =>
+          prevStudents.map(student =>
+            student.id === studentId
+              ? { ...student, noc_received: nocReceived }
+              : student
+          )
+        );
+
+        const response = await api.candidates.updateNOCStatus(studentId, nocReceived);
+        
+        if (response.success) {
+          console.log('✅ NOC status updated successfully:', {
+            studentId,
+            nocReceived,
+            response: response.data,
+          });
+        }
+      } catch (err) {
+        console.error('❌ Error updating NOC received status:', err);
+        // Revert on error
+        setStudents(prevStudents =>
+          prevStudents.map(student =>
+            student.id === studentId
+              ? { ...student, noc_received: !nocReceived }
+              : student
+          )
+        );
+        setError(err.message || 'Failed to update NOC received status');
+        setTimeout(() => setError(''), 3000);
+      }
+    },
+    []
+  );
+
   const handleImageError = useCallback((imageKey) => (e) => {
     // Prevent infinite loop by hiding the image and marking it as failed
     e.target.style.display = 'none';
@@ -656,6 +694,7 @@ const CandidatesTab = () => {
         'Test Marks': student.marks !== null && student.marks !== undefined 
           ? `${student.marks.toFixed(2)}%` 
           : 'Not Given',
+        'NOC Received': student.noc_received ? 'Yes' : 'No',
         'Selected?': student.is_selected ? 'Yes' : 'No',
       };
     });
@@ -685,6 +724,7 @@ const CandidatesTab = () => {
       { wch: 30 }, // Faculty Email Id
       { wch: 15 }, // Column 16
       { wch: 12 }, // Test Marks
+      { wch: 14 }, // NOC Received
       { wch: 10 }, // Selected?
     ];
     ws['!cols'] = colWidths;
@@ -1097,6 +1137,7 @@ const CandidatesTab = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Institute</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Course</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Marks</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">NOC Received</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase sticky right-0 bg-gray-50 z-10 border-l border-gray-200">Actions</th>
                 </tr>
@@ -1153,24 +1194,39 @@ const CandidatesTab = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                           {student.marks !== null && student.marks !== undefined ? `${student.marks.toFixed(2)}%` : 'N/A'}
                         </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <label className="flex items-center cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={student.is_selected || false}
-                            onChange={(e) =>
-                              handleSelectionChange(student.id, e.target.checked)
-                            }
-                            className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2 cursor-pointer"
-                          />
-                          <span className={`ml-2 text-sm font-medium ${
-                            student.is_selected 
-                              ? 'text-green-700' 
-                              : 'text-gray-500'
-                          }`}>
-                            {student.is_selected ? 'Selected' : 'Not Selected'}
-                          </span>
-                        </label>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <label className="flex items-center cursor-pointer group">
+                            <input
+                              type="checkbox"
+                              checked={student.noc_received || false}
+                              onChange={(e) =>
+                                handleNOCStatusChange(student.id, e.target.checked)
+                              }
+                              className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
+                            />
+                            <span className="ml-2 text-sm font-medium text-gray-700">
+                              {student.noc_received ? 'Received' : 'Not Received'}
+                            </span>
+                          </label>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <label className="flex items-center cursor-pointer group">
+                            <input
+                              type="checkbox"
+                              checked={student.is_selected || false}
+                              onChange={(e) =>
+                                handleSelectionChange(student.id, e.target.checked)
+                              }
+                              className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2 cursor-pointer"
+                            />
+                            <span className={`ml-2 text-sm font-medium ${
+                              student.is_selected 
+                                ? 'text-green-700' 
+                                : 'text-gray-500'
+                            }`}>
+                              {student.is_selected ? 'Selected' : 'Not Selected'}
+                            </span>
+                          </label>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white group-hover:bg-gray-50 z-10 border-l border-gray-200">
                           <div className="flex gap-3">

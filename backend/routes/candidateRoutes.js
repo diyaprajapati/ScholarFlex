@@ -71,6 +71,13 @@ router.post('/import-google-sheets', candidateController.importFromGoogleSheets)
 router.put('/:id/selection', candidateController.updateStudentSelection);
 
 /**
+ * @route   PUT /api/candidates/:id/noc-status
+ * @desc    Update manual NOC received status for a student
+ * @access  Private (Admin, Super Admin)
+ */
+router.put('/:id/noc-status', candidateController.updateNOCReceivedStatus);
+
+/**
  * @route   PUT /api/candidates/bulk-selection
  * @desc    Bulk update candidate selection status
  * @access  Private (Admin, Super Admin)
