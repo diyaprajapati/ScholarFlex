@@ -23,7 +23,8 @@
     "db:create-enums": "node scripts/create-enum-types.js",
     "db:create-function": "node scripts/create-calculate-score-function.js",
     "db:recalculate-scores": "node scripts/recalculate-test-scores.js",
-    "db:create-feedback-table": "node scripts/create-feedback-table.js"
+    "db:create-feedback-table": "node scripts/create-feedback-table.js",
+    "setup:env": "node scripts/setup-env.js"
   },
   "keywords": [
     "scholarflex",
@@ -39,7 +40,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "csv-parse": "^5.6.0",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",

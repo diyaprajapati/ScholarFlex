@@ -15,6 +15,18 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
   const userRole = authService.getUserRole()
   if (userRole === 'STUDENT') {
     const user = authService.getUser()
+    
+    // Check if form has been completed (only if not already on form page)
+    if (location.pathname !== ROUTES.STUDENT.FORM && (user?.email || user?.id)) {
+      const FORM_STORAGE_KEY = 'student_form_completed'
+      const storageKey = `${FORM_STORAGE_KEY}_${user.email || user.id}`
+      const formCompleted = localStorage.getItem(storageKey) === 'true'
+      
+      if (!formCompleted) {
+        // Form not completed, redirect to form page
+        return <Navigate to={ROUTES.STUDENT.FORM} replace />
+      }
+    }
     if (user?.internship_end_date) {
       const today = new Date()
       today.setHours(0, 0, 0, 0)

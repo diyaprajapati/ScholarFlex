@@ -71,13 +71,23 @@ export default function LoginForm() {
           
           // Navigate based on role
           if (role === 'STUDENT') {
-            // Check if student is selected
-            if (user?.is_selected) {
-              // Selected students go to dashboard
-              navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+            // Check if form has been completed
+            const FORM_STORAGE_KEY = 'student_form_completed'
+            const storageKey = `${FORM_STORAGE_KEY}_${user?.email || user?.id}`
+            const formCompleted = localStorage.getItem(storageKey) === 'true'
+            
+            if (!formCompleted) {
+              // Form not completed, redirect to form page
+              navigate(ROUTES.STUDENT.FORM, { replace: true })
             } else {
-              // Non-selected students go to test instructions page
-              navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+              // Form completed, check if student is selected
+              if (user?.is_selected) {
+                // Selected students go to dashboard
+                navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+              } else {
+                // Non-selected students go to test instructions page
+                navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+              }
             }
           } else {
             // Admin and Super Admin go to dashboard

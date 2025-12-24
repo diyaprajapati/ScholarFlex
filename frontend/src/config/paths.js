@@ -56,6 +56,7 @@ export const ROUTES = {
     VIDEO: (videoId) => `/student/video/${videoId}`,
     VIDEO_ANALYTICS: '/student/video-analytics',
     FEEDBACK: '/student/feedback',
+    FORM: '/student/form',
   },
 }
 
