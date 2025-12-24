@@ -1,8 +1,8 @@
 // API service for making HTTP requests to the backend
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.154.201.164:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.154.201.164:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * Get JWT token from localStorage
@@ -42,6 +42,14 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
+      // Check if this is a 403 error for /auth/me endpoint (non-selected student access denied)
+      // This is expected behavior, so we'll suppress logging for it
+      const isAccessDeniedForNonSelected = response.status === 403 && 
+                                           endpoint === '/auth/me' &&
+                                           data.message &&
+                                           data.message.includes('Access denied') &&
+                                           (data.message.includes('not selected') || data.message.includes('evaluated'));
+      
       // If there are detailed validation errors, include them in the error message
       if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
         const errorDetails = data.errors
@@ -61,14 +69,33 @@ const apiRequest = async (endpoint, options = {}) => {
         
         const errorMessage = data.message || 'Validation errors';
         const moreErrors = data.errors.length > 10 ? `\n... and ${data.errors.length - 10} more errors.` : '';
-        throw new Error(`${errorMessage}\n\n${errorDetails}${moreErrors}`);
+        const error = new Error(`${errorMessage}\n\n${errorDetails}${moreErrors}`);
+        // Suppress logging for access denied errors
+        if (!isAccessDeniedForNonSelected) {
+          console.error('API request error:', error);
+        }
+        throw error;
       }
-      throw new Error(data.message || 'An error occurred');
+      const error = new Error(data.message || 'An error occurred');
+      // Suppress logging for access denied errors
+      if (!isAccessDeniedForNonSelected) {
+        console.error('API request error:', error);
+      }
+      throw error;
     }
 
     return data;
   } catch (error) {
-    console.error('API request error:', error);
+    // Check if this is an access denied error that we should suppress
+    const errorMessage = error.message || error.toString() || '';
+    const isAccessDeniedForNonSelected = endpoint === '/auth/me' && 
+                                         errorMessage.includes('Access denied') &&
+                                         (errorMessage.includes('not selected') || errorMessage.includes('evaluated'));
+    
+    // Only log if it's not an access denied error for non-selected students
+    if (!isAccessDeniedForNonSelected) {
+      console.error('API request error:', error);
+    }
     throw error;
   }
 };

@@ -9,7 +9,8 @@ const router = express.Router();
 const emailValidation = body('email')
   .isEmail()
   .withMessage('Please provide a valid email address')
-  .normalizeEmail();
+  .trim()
+  .toLowerCase();
 
 const otpValidation = body('otp')
   .isLength({ min: 6, max: 6 })

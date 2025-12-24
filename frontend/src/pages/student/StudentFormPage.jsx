@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
@@ -12,43 +12,75 @@ export default function StudentFormPage() {
   const navigate = useNavigate()
   const [formCompleted, setFormCompleted] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
+  const hasNavigated = useRef(false)
 
   useEffect(() => {
-    // Check if user is authenticated
-    if (!authService.isAuthenticated()) {
-      navigate(ROUTES.LOGIN, { replace: true })
+    // Prevent multiple navigation attempts
+    if (hasNavigated.current) {
       return
     }
 
-    // Check if user is a student
-    const userRole = authService.getUserRole()
-    if (userRole !== 'STUDENT') {
-      navigate(ROUTES.DASHBOARD, { replace: true })
-      return
-    }
-
-    // Check if form is already completed
-    const user = authService.getUser()
-    if (!user?.email && !user?.id) {
-      // User data not available yet, wait a bit
-      return
-    }
-
-    const storageKey = `${FORM_STORAGE_KEY}_${user.email || user.id}`
-    const completed = localStorage.getItem(storageKey) === 'true'
-    
-    if (completed) {
-      // Form already completed, redirect to student portal
-      if (user.is_selected) {
-        navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
-      } else {
-        navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+    const performChecks = () => {
+      // Check if user is authenticated
+      if (!authService.isAuthenticated()) {
+        hasNavigated.current = true
+        navigate(ROUTES.LOGIN, { replace: true })
+        return true
       }
+
+      // Check if user is a student
+      const userRole = authService.getUserRole()
+      if (userRole !== 'STUDENT') {
+        hasNavigated.current = true
+        navigate(ROUTES.DASHBOARD, { replace: true })
+        return true
+      }
+
+      // Get user data
+      const user = authService.getUser()
+      if (!user?.email && !user?.id) {
+        // User data not available yet
+        return false
+      }
+
+      // Check if student is selected - only selected students can access this form page
+      if (!user?.is_selected) {
+        hasNavigated.current = true
+        navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+        return true
+      }
+
+      // Check if form is already completed
+      const storageKey = `${FORM_STORAGE_KEY}_${user.email || user.id}`
+      const completed = localStorage.getItem(storageKey) === 'true'
+      
+      if (completed) {
+        // Form already completed, redirect to student dashboard (only selected students reach here)
+        hasNavigated.current = true
+        navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+        return true
+      }
+
+      // All checks passed, show the form
+      setIsChecking(false)
+      return true
+    }
+
+    // Try to perform checks immediately
+    if (performChecks()) {
       return
     }
 
-    setIsChecking(false)
-  }, [navigate])
+    // If user data not available, wait a bit and retry once
+    const timeoutId = setTimeout(() => {
+      if (!hasNavigated.current) {
+        performChecks()
+      }
+    }, 200)
+
+    return () => clearTimeout(timeoutId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleFormComplete = () => {
     const user = authService.getUser()
@@ -63,14 +95,9 @@ export default function StudentFormPage() {
     localStorage.setItem(storageKey, 'true')
     setFormCompleted(true)
     
-    // Redirect to student portal after a short delay
+    // Redirect to student dashboard after a short delay (only selected students can complete form)
     setTimeout(() => {
-      const user = authService.getUser()
-      if (user?.is_selected) {
-        navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
-      } else {
-        navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
-      }
+      navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
     }, 1500)
   }
 
@@ -125,6 +152,7 @@ export default function StudentFormPage() {
               <p className="text-sm text-gray-300">
                 <strong className="text-emerald-400">Important:</strong> Please fill out the form completely. 
                 Once you have submitted the form, click the "I have completed the form" button below to proceed to the student portal.
+                <strong>If you already have completed the form, click the "I have completed the form" button below to proceed to the student portal.</strong>
               </p>
             </div>
 
