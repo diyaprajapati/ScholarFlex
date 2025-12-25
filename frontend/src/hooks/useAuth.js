@@ -38,10 +38,47 @@ export function useAuth() {
             setUser(null)
           }
         } catch (error) {
-          // Token is invalid or expired, clear it
-          authService.logout()
-          setIsAuthenticated(false)
-          setUser(null)
+          // Check if this is an authentication error (401) or network/server error
+          const statusCode = error.status || (error.message && error.message.match(/\b(401|403|500|502|503|504)\b/)?.[1])
+          const isAuthError = statusCode === 401 || 
+                             (error.message && (
+                               error.message.includes('Unauthorized') ||
+                               error.message.includes('Invalid token') ||
+                               error.message.includes('Token expired')
+                             ))
+          
+          // Check if it's a network error (no response from server - server restart, network issue, etc.)
+          const isNetworkError = error.isNetworkError || 
+                                 (!statusCode && (
+                                   error.message && (
+                                     error.message.includes('Failed to fetch') ||
+                                     error.message.includes('NetworkError') ||
+                                     error.message.includes('Network request failed')
+                                   ) ||
+                                   error.name === 'TypeError'
+                                 ))
+          
+          // Only logout if it's an actual authentication error (401)
+          // For network/server errors (server restart, 500, 502, 503, etc.), keep the session
+          if (isAuthError) {
+            // Token is invalid or expired, clear it
+            authService.logout()
+            setIsAuthenticated(false)
+            setUser(null)
+          } else if (isNetworkError || (statusCode && statusCode >= 500)) {
+            // Server is down or network error - keep the session using locally stored data
+            // User can continue using the app, and we'll retry when server is back
+            setIsAuthenticated(true)
+            setUser(userData)
+            // Only log in development to avoid console spam
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Server unavailable, using cached session:', error.message || 'Network error')
+            }
+          } else {
+            // Other errors (403, etc.) - keep session but don't update user data
+            setIsAuthenticated(true)
+            setUser(userData)
+          }
         }
       } else {
         setIsAuthenticated(false)

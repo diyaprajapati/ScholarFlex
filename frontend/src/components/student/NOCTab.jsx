@@ -173,7 +173,7 @@ const NOCTab = () => {
                 {(nocData.status === 'PENDING' || nocData.status === 'REJECTED') && (
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                     Delete
@@ -292,7 +292,7 @@ const NOCTab = () => {
               <button
                 onClick={handleUpload}
                 disabled={uploading}
-                className={`w-full sm:w-auto px-6 py-2 rounded-lg font-medium transition-colors ${
+                className={`w-full sm:w-auto px-6 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
                   uploading
                     ? 'bg-gray-400 cursor-not-allowed text-white'
                     : 'bg-green-600 hover:bg-green-700 text-white'

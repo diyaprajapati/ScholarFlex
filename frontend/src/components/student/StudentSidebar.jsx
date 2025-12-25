@@ -29,7 +29,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 backdrop-blur-md bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -46,31 +46,32 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
       >
         <div className="flex flex-col h-full">
           {/* Logo/Header */}
-          <div className="p-4 sm:p-5 lg:p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+          <div className="p-3 sm:p-4 lg:p-5 xl:p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
                 <span className="text-green-600">Scholar</span>Flex
               </h2>
               {/* Close button for mobile */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+                className="lg:hidden p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 text-gray-600 shrink-0 cursor-pointer"
+                aria-label="Close menu"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Student Portal</p>
+            <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">Student Portal</p>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+          <nav className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1 sm:space-y-2">
             {menuItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item.id, item.path)}
                 className={`
-                  w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
-                  transition-all duration-200
+                  w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium
+                  transition-all duration-200 cursor-pointer
                   ${
                     activeTab === item.id
                       ? 'bg-green-50 text-green-700 border-l-4 border-green-600'
@@ -78,14 +79,14 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
                   }
                 `}
               >
-                <item.icon className={`w-5 h-5 ${activeTab === item.id ? 'text-green-600' : 'text-gray-600'}`} />
-                <span>{item.label}</span>
+                <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${activeTab === item.id ? 'text-green-600' : 'text-gray-600'}`} />
+                <span className="truncate">{item.label}</span>
               </button>
             ))}
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-3 sm:p-4 border-t border-gray-200">
             <div className="text-xs text-gray-500 text-center">
               <p>© 2025 ScholarFlex</p>
             </div>

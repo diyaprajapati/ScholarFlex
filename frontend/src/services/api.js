@@ -70,6 +70,7 @@ const apiRequest = async (endpoint, options = {}) => {
         const errorMessage = data.message || 'Validation errors';
         const moreErrors = data.errors.length > 10 ? `\n... and ${data.errors.length - 10} more errors.` : '';
         const error = new Error(`${errorMessage}\n\n${errorDetails}${moreErrors}`);
+        error.status = response.status; // Include status code
         // Suppress logging for access denied errors
         if (!isAccessDeniedForNonSelected) {
           console.error('API request error:', error);
@@ -77,6 +78,7 @@ const apiRequest = async (endpoint, options = {}) => {
         throw error;
       }
       const error = new Error(data.message || 'An error occurred');
+      error.status = response.status; // Include status code
       // Suppress logging for access denied errors
       if (!isAccessDeniedForNonSelected) {
         console.error('API request error:', error);
@@ -91,6 +93,11 @@ const apiRequest = async (endpoint, options = {}) => {
     const isAccessDeniedForNonSelected = endpoint === '/auth/me' && 
                                          errorMessage.includes('Access denied') &&
                                          (errorMessage.includes('not selected') || errorMessage.includes('evaluated'));
+    
+    // Mark network errors (fetch failed before getting response)
+    if (error.name === 'TypeError' && (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError'))) {
+      error.isNetworkError = true;
+    }
     
     // Only log if it's not an access denied error for non-selected students
     if (!isAccessDeniedForNonSelected) {

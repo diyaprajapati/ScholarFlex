@@ -194,7 +194,7 @@ const DashboardTab = ({
       </section>
 
       {/* Recommended Tests */}
-      <section>
+      {/* <section>
         <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 flex items-center">
           <FileText className="w-5 h-5 mr-2 text-green-600" />
           Recommended Tests
@@ -238,7 +238,7 @@ const DashboardTab = ({
             ))}
           </div>
         )}
-      </section>
+      </section> */}
     </div>
   );
 };

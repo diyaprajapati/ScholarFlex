@@ -109,11 +109,40 @@ const StudentDashboardPage = () => {
           }
         }
       } catch (error) {
-        console.error('Error checking user status:', error);
-        // If backend says the user is no longer valid (e.g. removed/deactivated),
-        // force logout and send them back to login
-        authService.logout();
-        navigate(ROUTES.LOGIN, { replace: true });
+        // Check if this is an authentication error (401) or network/server error
+        const statusCode = error.status || (error.message && error.message.match(/\b(401|403|500|502|503|504)\b/)?.[1]);
+        const isAuthError = statusCode === 401 || 
+                           (error.message && (
+                             error.message.includes('Unauthorized') ||
+                             error.message.includes('Invalid token') ||
+                             error.message.includes('Token expired')
+                           ));
+        
+        // Check if it's a network error (server restart, network issue, etc.)
+        const isNetworkError = error.isNetworkError || 
+                               (!statusCode && (
+                                 error.message && (
+                                   error.message.includes('Failed to fetch') ||
+                                   error.message.includes('NetworkError') ||
+                                   error.message.includes('Network request failed')
+                                 ) ||
+                                 error.name === 'TypeError'
+                               ));
+        
+        // Only logout if it's an actual authentication error (401)
+        // For network/server errors, keep the session
+        if (isAuthError) {
+          // Token is invalid or expired, force logout
+          console.error('Authentication error, logging out:', error);
+          authService.logout();
+          navigate(ROUTES.LOGIN, { replace: true });
+        } else if (!isNetworkError && statusCode !== 500 && statusCode !== 502 && statusCode !== 503 && statusCode !== 504) {
+          // Only log other errors (not network/server errors) in development
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Error checking user status (non-critical):', error);
+          }
+        }
+        // For network/server errors, silently fail and keep the session
       }
     };
 
@@ -310,10 +339,10 @@ const StudentDashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-green-600 border-t-transparent mb-3 sm:mb-4"></div>
+          <p className="text-sm sm:text-base text-gray-600">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -330,23 +359,26 @@ const StudentDashboardPage = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:ml-64">
-        {/* Top Header - Mobile */}
+      <div className="flex-1 flex flex-col w-full lg:ml-64">
+        {/* Top Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30 lg:static">
-          <div className="px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+          <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+                  className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600 shrink-0"
+                  aria-label="Toggle menu"
                 >
-                  <Menu className="w-6 h-6" />
+                  <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Student Portal</h1>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    Welcome back, {user?.full_name || user?.email}
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 truncate">
+                    Student Portal
+                  </h1>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 truncate">
+                    Welcome back, {user?.full_name || user?.email || 'Student'}
                   </p>
                 </div>
               </div>
@@ -355,7 +387,7 @@ const StudentDashboardPage = () => {
                   authService.logout();
                   navigate(ROUTES.LOGIN);
                 }}
-                className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shrink-0 whitespace-nowrap cursor-pointer"
               >
                 Logout
               </button>
@@ -364,9 +396,9 @@ const StudentDashboardPage = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <main className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm sm:text-base">
               {error}
             </div>
           )}
