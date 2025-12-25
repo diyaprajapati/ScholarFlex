@@ -169,7 +169,7 @@ const AdminManagementPage = () => {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-semibold text-gray-900">Admin Management</h2>
             <button
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200"
+              className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors duration-200 cursor-pointer"
               onClick={() => {
                 resetForm();
                 setShowModal(true);
@@ -277,14 +277,14 @@ const AdminManagementPage = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex gap-2">
                               <button
-                                className="px-3 py-1.5 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
+                                className="px-3 py-1.5 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors cursor-pointer"
                                 onClick={() => handleEdit(admin)}
                               >
                                 Edit
                               </button>
                               {admin.id !== user?.id && (
                                 <button
-                                  className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
+                                  className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors cursor-pointer"
                                   onClick={() => handleDelete(admin.id, admin.email)}
                                 >
                                   Delete

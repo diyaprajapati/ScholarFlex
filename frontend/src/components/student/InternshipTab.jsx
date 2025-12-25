@@ -45,8 +45,8 @@ const InternshipTab = () => {
         description: 'Your internship has not started yet.',
       },
       ONGOING: {
-        bg: 'bg-blue-100',
-        text: 'text-blue-800',
+        bg: 'bg-green-100',
+        text: 'text-green-800',
         icon: Calendar,
         label: 'Ongoing',
         description: 'Your internship is currently in progress.',
@@ -86,7 +86,7 @@ const InternshipTab = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
       </div>
     );
   }
@@ -143,7 +143,7 @@ const InternshipTab = () => {
             {projects.map((project) => (
               <div
                 key={project.id}
-                className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                className="border border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors"
               >
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-lg font-semibold text-gray-900">{project.projectTitle}</h3>
@@ -167,10 +167,10 @@ const InternshipTab = () => {
       </div>
 
       {/* Note about Evaluations */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-800">
+          <AlertCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+          <div className="text-sm text-green-800">
             <p className="font-medium mb-1">About Evaluations</p>
             <p>
               Weekly evaluations are conducted by your supervisor during your internship. These

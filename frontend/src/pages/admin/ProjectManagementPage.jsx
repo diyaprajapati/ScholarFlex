@@ -188,12 +188,12 @@ const ProjectManagementPage = () => {
   const SortButton = ({ field, children }) => (
     <button
       onClick={() => handleSort(field)}
-      className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+      className="flex items-center gap-1 hover:text-green-600 transition-colors cursor-pointer"
     >
       {children}
-      <ArrowUpDown className={`w-4 h-4 ${sortBy === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-4 h-4 ${sortBy === field ? 'text-green-600' : 'text-gray-400'}`} />
       {sortBy === field && (
-        <span className="text-xs text-blue-600">
+        <span className="text-xs text-green-600">
           {sortOrder === 'asc' ? '↑' : '↓'}
         </span>
       )}
@@ -224,7 +224,7 @@ const ProjectManagementPage = () => {
                 placeholder="Search by name, email, or domain..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
             <div className="w-48">
@@ -234,7 +234,7 @@ const ProjectManagementPage = () => {
                   setStatusFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer"
               >
                 <option value="">All Status</option>
                 <option value="NOT_STARTED">Not Started</option>
@@ -252,7 +252,7 @@ const ProjectManagementPage = () => {
 
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
             </div>
           ) : students.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
@@ -277,7 +277,7 @@ const ProjectManagementPage = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Projects
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-10">
                           Actions
                         </th>
                       </tr>
@@ -294,11 +294,11 @@ const ProjectManagementPage = () => {
 
                         return (
                           <>
-                            <tr key={student.id} className="hover:bg-gray-50">
+                            <tr key={student.id} className="group hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100">
-                                    <User className="w-5 h-5 text-blue-600" />
+                                  <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-100">
+                                    <User className="w-5 h-5 text-green-600" />
                                   </div>
                                   <div className="ml-4">
                                     <div className="text-sm font-medium text-gray-900">
@@ -326,16 +326,16 @@ const ProjectManagementPage = () => {
                                 {student.projects && student.projects.length > 0 && (
                                   <button
                                     onClick={() => toggleStudentExpansion(student.id)}
-                                    className="text-xs text-blue-600 hover:text-blue-800 mt-1"
+                                    className="text-xs text-green-600 hover:text-green-800 mt-1 cursor-pointer"
                                   >
                                     {isExpanded ? 'Hide' : 'View'} projects
                                   </button>
                                 )}
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
+                              <td className="px-6 py-4 whitespace-nowrap sticky right-0 bg-white group-hover:bg-gray-50 z-10">
                                 <button
                                   onClick={() => toggleQuickAddForm(student.id)}
-                                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
                                 >
                                   <Plus className="w-4 h-4" />
                                   {showQuickAdd ? 'Cancel' : 'Add Project'}
@@ -346,7 +346,7 @@ const ProjectManagementPage = () => {
                             {/* Quick Add Form Row */}
                             {showQuickAdd && (
                               <tr>
-                                <td colSpan="5" className="px-6 py-4 bg-gray-50">
+                                <td colSpan="5" className="px-6 py-4 bg-gray-50 sticky right-0 z-10">
                                   <form onSubmit={(e) => handleQuickAddSubmit(student.id, e)} className="space-y-3">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                       <div>
@@ -364,7 +364,7 @@ const ProjectManagementPage = () => {
                                               projectTitle: e.target.value,
                                             },
                                           }))}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                           placeholder="Enter project title"
                                         />
                                       </div>
@@ -382,13 +382,13 @@ const ProjectManagementPage = () => {
                                               deadline: e.target.value,
                                             },
                                           }))}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         />
                                       </div>
                                       <div className="flex items-end">
                                         <button
                                           type="submit"
-                                          className="w-full px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                          className="w-full px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
                                         >
                                           Assign Project
                                         </button>
@@ -408,7 +408,7 @@ const ProjectManagementPage = () => {
                                           },
                                         }))}
                                         rows={2}
-                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         placeholder="Enter project description"
                                       />
                                     </div>
@@ -443,7 +443,7 @@ const ProjectManagementPage = () => {
                                         </div>
                                         <button
                                           onClick={() => handleDeleteProject(project.id)}
-                                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
                                           title="Delete"
                                         >
                                           <Trash2 className="w-4 h-4" />
@@ -472,7 +472,7 @@ const ProjectManagementPage = () => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1"
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       Previous
@@ -493,9 +493,9 @@ const ProjectManagementPage = () => {
                           <button
                             key={pageNum}
                             onClick={() => setCurrentPage(pageNum)}
-                            className={`px-3 py-2 border rounded-lg ${
+                            className={`px-3 py-2 border rounded-lg cursor-pointer ${
                               currentPage === pageNum
-                                ? 'bg-blue-600 text-white border-blue-600'
+                                ? 'bg-green-600 text-white border-green-600'
                                 : 'border-gray-300 hover:bg-gray-50'
                             }`}
                           >
@@ -507,7 +507,7 @@ const ProjectManagementPage = () => {
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1"
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
                     >
                       Next
                       <ChevronRight className="w-4 h-4" />

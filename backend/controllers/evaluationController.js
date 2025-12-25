@@ -5,6 +5,7 @@ const {
   getOrUpdateInternshipStatus 
 } = require('../utils/internshipStatus');
 const { InternshipStatus } = require('@prisma/client');
+const XLSX = require('xlsx');
 
 /**
  * Create evaluation for a student (Admin only)
@@ -363,6 +364,165 @@ const deleteEvaluation = async (req, res) => {
   }
 };
 
+/**
+ * Export evaluated students to Excel (Admin only)
+ * GET /api/admin/evaluations/export
+ * Returns Excel file with all evaluated students and their evaluations
+ */
+const exportEvaluatedStudents = async (req, res) => {
+  try {
+    // Get all students who have evaluations
+    const evaluations = await prisma.studentEvaluation.findMany({
+      include: {
+        student: {
+          select: {
+            id: true,
+            fullName: true,
+            phone: true,
+            email: true,
+            internshipStartDate: true,
+            internshipEndDate: true,
+            domain: {
+              select: {
+                domainName: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        { studentId: 'asc' },
+        { weekNo: 'asc' },
+      ],
+    });
+
+    if (evaluations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No evaluated students found',
+      });
+    }
+
+    // Group evaluations by student
+    const studentsMap = new Map();
+    
+    evaluations.forEach(evaluation => {
+      const studentId = evaluation.studentId;
+      
+      if (!studentsMap.has(studentId)) {
+        studentsMap.set(studentId, {
+          studentName: evaluation.student.fullName || 'N/A',
+          phoneNumber: evaluation.student.phone || 'N/A',
+          emailId: evaluation.student.email || 'N/A',
+          domain: evaluation.student.domain?.domainName || 'N/A',
+          startDate: evaluation.student.internshipStartDate 
+            ? new Date(evaluation.student.internshipStartDate).toLocaleDateString('en-US')
+            : 'N/A',
+          endDate: evaluation.student.internshipEndDate
+            ? new Date(evaluation.student.internshipEndDate).toLocaleDateString('en-US')
+            : 'N/A',
+          evaluations: [],
+        });
+      }
+      
+      const student = studentsMap.get(studentId);
+      
+      // Add evaluation data
+      const evalData = evaluation.evaluationData || {};
+      student.evaluations.push({
+        weekNo: evaluation.weekNo,
+        technicalSkills: evalData.technicalSkills || '',
+        communication: evalData.communication || '',
+        behavior: evalData.behavior || '',
+        projectProgress: evalData.projectProgress || '',
+        overallRating: evalData.overallRating || '',
+        notes: evalData.notes || '',
+        createdAt: new Date(evaluation.createdAt).toLocaleDateString('en-US'),
+      });
+    });
+
+    // Find the maximum week number to determine column count
+    let maxWeek = 0;
+    studentsMap.forEach((studentData) => {
+      studentData.evaluations.forEach(eval => {
+        if (eval.weekNo > maxWeek) {
+          maxWeek = eval.weekNo;
+        }
+      });
+    });
+
+    // Convert to Excel format - one row per student with week columns
+    const excelData = [];
+    
+    studentsMap.forEach((studentData, studentId) => {
+      const row = {
+        'Student Name': studentData.studentName,
+        'Phone Number': studentData.phoneNumber,
+        'Email ID': studentData.emailId,
+        'Domain': studentData.domain,
+        'Start Date': studentData.startDate,
+        'End Date': studentData.endDate,
+      };
+
+      // Create a map of evaluations by week number
+      const evaluationsByWeek = new Map();
+      studentData.evaluations.forEach(eval => {
+        evaluationsByWeek.set(eval.weekNo, eval);
+      });
+
+      // Add week columns - each week contains all evaluation data in one cell
+      for (let week = 1; week <= maxWeek; week++) {
+        const eval = evaluationsByWeek.get(week);
+        if (eval) {
+          // Format all evaluation data into a single cell
+          const weekData = [
+            `Week: ${eval.weekNo}`,
+            `Date: ${eval.createdAt}`,
+            `Technical Skills: ${eval.technicalSkills || 'N/A'}`,
+            `Communication: ${eval.communication || 'N/A'}`,
+            `Behavior: ${eval.behavior || 'N/A'}`,
+            `Project Progress: ${eval.projectProgress || 'N/A'}`,
+            `Overall Rating: ${eval.overallRating || 'N/A'}`,
+            `Notes: ${eval.notes || 'N/A'}`,
+          ].join('\n');
+          row[`Week ${week}`] = weekData;
+        } else {
+          row[`Week ${week}`] = '';
+        }
+      }
+
+      excelData.push(row);
+    });
+
+    // Create workbook and worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Evaluated Students');
+
+    // Generate Excel buffer
+    const excelBuffer = XLSX.write(workbook, { 
+      type: 'buffer', 
+      bookType: 'xlsx',
+      cellStyles: true,
+    });
+
+    // Set response headers
+    const fileName = `evaluated_students_${new Date().toISOString().split('T')[0]}.xlsx`;
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.setHeader('Content-Length', excelBuffer.length);
+
+    // Send the Excel file
+    res.send(excelBuffer);
+  } catch (error) {
+    console.error('Error exporting evaluated students:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
 module.exports = {
   createEvaluation,
   getStudentEvaluations,
@@ -370,5 +530,6 @@ module.exports = {
   getEvaluationById,
   updateEvaluation,
   deleteEvaluation,
+  exportEvaluatedStudents,
 };
 

@@ -264,7 +264,7 @@ const StudentAnalyticsPage = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white group-hover:bg-gray-50 z-10 border-l border-gray-200">
                             <button
                               onClick={() => setSelectedStudent(student)}
-                              className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-2 cursor-pointer"
+                              className="p-1.5 text-green-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-2 cursor-pointer"
                               title="View detailed analytics"
                             >
                               View
@@ -301,7 +301,7 @@ const StudentAnalyticsPage = () => {
                       <button
                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
-                        className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         Previous
                       </button>
@@ -312,7 +312,7 @@ const StudentAnalyticsPage = () => {
                       <button
                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         Next
                       </button>
@@ -382,7 +382,7 @@ const StudentAnalyticsPage = () => {
               <div className="flex items-center gap-2 mb-6 border-b border-gray-200 pb-4">
                 <button
                   onClick={() => setDetailViewMode('week')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center cursor-pointer gap-2 ${
                     detailViewMode === 'week'
                       ? 'bg-green-600 text-white'
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
@@ -393,7 +393,7 @@ const StudentAnalyticsPage = () => {
                 </button>
                 <button
                   onClick={() => setDetailViewMode('day')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center cursor-pointer gap-2 ${
                     detailViewMode === 'day'
                       ? 'bg-green-600 text-white'
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'

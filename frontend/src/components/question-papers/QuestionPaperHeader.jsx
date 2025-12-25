@@ -18,7 +18,7 @@ export default function QuestionPaperHeader() {
         </div>
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold text-white rounded-lg transition-colors shadow-sm hover:shadow-md w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold text-white rounded-lg transition-colors shadow-sm hover:shadow-md w-full sm:w-auto cursor-pointer"
           style={{ backgroundColor: '#4C763B' }}
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#043915'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4C763B'}

@@ -172,7 +172,7 @@ const NOCManagementPage = () => {
                   setStatusFilter(e.target.value);
                   setPagination(prev => ({ ...prev, page: 1 }));
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer"
               >
                 <option value="ALL">All</option>
                 <option value="PENDING">Pending</option>
@@ -183,7 +183,7 @@ const NOCManagementPage = () => {
             <button
               onClick={handleDownloadAll}
               disabled={downloadingAll || pagination.total === 0}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors cursor-pointer"
             >
               <Archive className="w-5 h-5" />
               {downloadingAll ? 'Downloading...' : `Download All NOC (${pagination.total})`}
@@ -291,7 +291,7 @@ const NOCManagementPage = () => {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleView(noc)}
-                                className="text-green-600 hover:text-green-900 flex items-center gap-1"
+                                className="text-green-600 hover:text-green-900 flex items-center gap-1 cursor-pointer"
                               >
                                 <Eye className="w-4 h-4" />
                                 View
@@ -301,7 +301,7 @@ const NOCManagementPage = () => {
                                   <button
                                     onClick={() => handleStatusUpdate(noc.id, 'APPROVED')}
                                     disabled={updating}
-                                    className="text-green-600 hover:text-green-900 flex items-center gap-1 disabled:opacity-50"
+                                    className="text-green-600 hover:text-green-900 flex items-center gap-1 disabled:opacity-50 cursor-pointer"
                                   >
                                     <CheckCircle className="w-4 h-4" />
                                     Approve
@@ -309,7 +309,7 @@ const NOCManagementPage = () => {
                                   <button
                                     onClick={() => handleStatusUpdate(noc.id, 'REJECTED')}
                                     disabled={updating}
-                                    className="text-red-600 hover:text-red-900 flex items-center gap-1 disabled:opacity-50"
+                                    className="text-red-600 hover:text-red-900 flex items-center gap-1 disabled:opacity-50 cursor-pointer"
                                   >
                                     <XCircle className="w-4 h-4" />
                                     Reject
@@ -335,14 +335,14 @@ const NOCManagementPage = () => {
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                       disabled={pagination.page === 1}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                       disabled={pagination.page >= pagination.totalPages}
-                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
                     >
                       Next
                     </button>
@@ -377,7 +377,7 @@ const NOCManagementPage = () => {
                     <button
                       onClick={() => handleStatusUpdate(selectedNOC.id, 'APPROVED')}
                       disabled={updating}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                     >
                       <CheckCircle className="w-4 h-4" />
                       Approve
@@ -385,7 +385,7 @@ const NOCManagementPage = () => {
                     <button
                       onClick={() => handleStatusUpdate(selectedNOC.id, 'REJECTED')}
                       disabled={updating}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                     >
                       <XCircle className="w-4 h-4" />
                       Reject
@@ -397,7 +397,7 @@ const NOCManagementPage = () => {
                     setViewerOpen(false);
                     setSelectedNOC(null);
                   }}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer"
                 >
                   Close
                 </button>

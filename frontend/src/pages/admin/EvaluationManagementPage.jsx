@@ -6,7 +6,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import StudentEvaluationsModal from '../../components/admin/StudentEvaluationsModal';
 import api from '../../services/api';
-import { Plus, Search, X, User, Mail, Building2, ChevronLeft, ChevronRight, ArrowUpDown, Eye, AlertCircle, Clock, Calendar, CheckCircle } from 'lucide-react';
+import { Plus, Search, X, User, Mail, Building2, ChevronLeft, ChevronRight, ArrowUpDown, Eye, AlertCircle, Clock, Calendar, CheckCircle, Download } from 'lucide-react';
 
 const EvaluationManagementPage = () => {
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ const EvaluationManagementPage = () => {
   const [formData, setFormData] = useState({});
   const [selectedStudentForModal, setSelectedStudentForModal] = useState(null);
   const [showEvaluationsModal, setShowEvaluationsModal] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // Debounce search term
   useEffect(() => {
@@ -178,6 +179,19 @@ const EvaluationManagementPage = () => {
     setShowEvaluationsModal(true);
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      setError('');
+      await api.evaluations.export();
+    } catch (err) {
+      console.error('Error exporting to Excel:', err);
+      setError(err.message || 'Failed to export evaluations to Excel');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       NOT_STARTED: {
@@ -187,8 +201,8 @@ const EvaluationManagementPage = () => {
         label: 'Not Started',
       },
       ONGOING: {
-        bg: 'bg-blue-100',
-        text: 'text-blue-800',
+        bg: 'bg-green-100',
+        text: 'text-green-800',
         icon: Calendar,
         label: 'Ongoing',
       },
@@ -214,12 +228,12 @@ const EvaluationManagementPage = () => {
   const SortButton = ({ field, children }) => (
     <button
       onClick={() => handleSort(field)}
-      className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+      className="flex items-center gap-1 hover:text-green-600 transition-colors cursor-pointer"
     >
       {children}
-      <ArrowUpDown className={`w-4 h-4 ${sortBy === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-4 h-4 ${sortBy === field ? 'text-green-600' : 'text-gray-400'}`} />
       {sortBy === field && (
-        <span className="text-xs text-blue-600">
+        <span className="text-xs text-green-600">
           {sortOrder === 'asc' ? '↑' : '↓'}
         </span>
       )}
@@ -236,9 +250,19 @@ const EvaluationManagementPage = () => {
       <TopNavbar user={user} />
       <main className="flex-1 lg:ml-64 overflow-y-auto pt-14 sm:pt-16">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-semibold text-gray-900 mb-2">Evaluation Management</h1>
-            <p className="text-gray-600">Create and manage weekly evaluations for selected students (ONGOING internships only)</p>
+          <div className="mb-6 flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-semibold text-gray-900 mb-2">Evaluation Management</h1>
+              <p className="text-gray-600">Create and manage weekly evaluations for selected students (ONGOING internships only)</p>
+            </div>
+            <button
+              onClick={handleExportExcel}
+              disabled={exporting || loading}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <Download className="w-5 h-5" />
+              {exporting ? 'Exporting...' : 'Export to Excel'}
+            </button>
           </div>
 
           {/* Search Bar and Status Filter */}
@@ -250,7 +274,7 @@ const EvaluationManagementPage = () => {
                 placeholder="Search by name, email, or domain..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
             <div className="w-48">
@@ -260,7 +284,7 @@ const EvaluationManagementPage = () => {
                   setStatusFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer"
               >
                 <option value="">All Status</option>
                 <option value="NOT_STARTED">Not Started</option>
@@ -279,7 +303,7 @@ const EvaluationManagementPage = () => {
 
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
             </div>
           ) : students.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
@@ -304,7 +328,7 @@ const EvaluationManagementPage = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           <SortButton field="status">Status</SortButton>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-10">
                           Actions
                         </th>
                       </tr>
@@ -328,11 +352,11 @@ const EvaluationManagementPage = () => {
 
                         return (
                           <>
-                            <tr key={item.id} className="hover:bg-gray-50">
+                            <tr key={item.id} className="group hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100">
-                                    <User className="w-5 h-5 text-blue-600" />
+                                  <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-100">
+                                    <User className="w-5 h-5 text-green-600" />
                                   </div>
                                   <div className="ml-4">
                                     <div className="text-sm font-medium text-gray-900">
@@ -356,7 +380,7 @@ const EvaluationManagementPage = () => {
                               <td className="px-6 py-4 whitespace-nowrap">
                                 {getStatusBadge(status)}
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
+                              <td className="px-6 py-4 whitespace-nowrap sticky right-0 bg-white group-hover:bg-gray-50 z-10">
                                 <div className="flex items-center gap-2">
                                   <button
                                     onClick={() => handleViewEvaluations(student)}
@@ -368,7 +392,7 @@ const EvaluationManagementPage = () => {
                                   {status === 'ONGOING' && (
                                     <button
                                       onClick={() => toggleQuickAddForm(student.id, status)}
-                                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
                                     >
                                       <Plus className="w-4 h-4" />
                                       {showQuickAdd ? 'Cancel' : 'New Evaluation'}
@@ -386,7 +410,7 @@ const EvaluationManagementPage = () => {
                             {/* Quick Add Form Row */}
                             {showQuickAdd && status === 'ONGOING' && (
                               <tr>
-                                <td colSpan="5" className="px-6 py-4 bg-gray-50">
+                                <td colSpan="5" className="px-6 py-4 bg-gray-50 sticky right-0 z-10">
                                   <form onSubmit={(e) => handleQuickAddSubmit(student.id, status, e)} className="space-y-3 w-[93%]">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                       <div>
@@ -405,7 +429,7 @@ const EvaluationManagementPage = () => {
                                               weekNo: e.target.value,
                                             },
                                           }))}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                           placeholder="Enter week number"
                                         />
                                       </div>
@@ -426,7 +450,7 @@ const EvaluationManagementPage = () => {
                                               },
                                             },
                                           }))}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                           placeholder="e.g., Excellent, Good, Needs Improvement"
                                         />
                                       </div>
@@ -449,7 +473,7 @@ const EvaluationManagementPage = () => {
                                             },
                                           }))}
                                           rows={3}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                           placeholder="Technical skills evaluation..."
                                         />
                                       </div>
@@ -470,7 +494,7 @@ const EvaluationManagementPage = () => {
                                             },
                                           }))}
                                           rows={3}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                           placeholder="Communication evaluation..."
                                         />
                                       </div>
@@ -491,7 +515,7 @@ const EvaluationManagementPage = () => {
                                             },
                                           }))}
                                           rows={3}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                           placeholder="Behavior evaluation..."
                                         />
                                       </div>
@@ -512,7 +536,7 @@ const EvaluationManagementPage = () => {
                                             },
                                           }))}
                                           rows={3}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                           placeholder="Project progress evaluation..."
                                         />
                                       </div>
@@ -534,7 +558,7 @@ const EvaluationManagementPage = () => {
                                           },
                                         }))}
                                         rows={2}
-                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         placeholder="Additional notes..."
                                       />
                                     </div>
@@ -569,7 +593,7 @@ const EvaluationManagementPage = () => {
                       <button
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1"
+                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
                       >
                         <ChevronLeft className="w-4 h-4" />
                         Previous
@@ -590,9 +614,9 @@ const EvaluationManagementPage = () => {
                             <button
                               key={pageNum}
                               onClick={() => setCurrentPage(pageNum)}
-                              className={`px-3 py-2 border rounded-lg ${
+                              className={`px-3 py-2 border rounded-lg cursor-pointer ${
                                 currentPage === pageNum
-                                  ? 'bg-blue-600 text-white border-blue-600'
+                                  ? 'bg-green-600 text-white border-green-600'
                                   : 'border-gray-300 hover:bg-gray-50'
                               }`}
                             >
@@ -604,7 +628,7 @@ const EvaluationManagementPage = () => {
                       <button
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                         disabled={currentPage === totalPages}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1"
+                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
                       >
                         Next
                         <ChevronRight className="w-4 h-4" />

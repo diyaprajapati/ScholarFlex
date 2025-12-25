@@ -750,21 +750,21 @@ const CandidatesTab = () => {
           <div className="flex gap-3 flex-wrap">
             <button
               onClick={() => handleOpenFormModal(null)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer"
             >
               Add Student Manually
             </button>
-            <button
+            {/* <button
               onClick={handleOpenImportModal}
               disabled={importing}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {importing ? 'Importing...' : 'Import from Google Sheets'}
-            </button>
+            </button> */}
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {uploading ? 'Uploading...' : 'Upload Spreadsheet'}
             </button>
@@ -812,7 +812,7 @@ const CandidatesTab = () => {
                 showFilters || hasActiveFilters
                   ? 'bg-indigo-600 text-white hover:bg-indigo-700'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              } cursor-pointer`}
             >
               <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
@@ -827,7 +827,7 @@ const CandidatesTab = () => {
             <button
               onClick={downloadExcel}
               disabled={filteredStudents.length === 0}
-              className="px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
             >
               <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -843,7 +843,7 @@ const CandidatesTab = () => {
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -891,7 +891,7 @@ const CandidatesTab = () => {
                         <div className="mt-2 pt-2 border-t border-gray-200">
                           <button
                             onClick={() => setFilters(prev => ({ ...prev, courseTaken: [] }))}
-                            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer"
                           >
                             Clear selection ({filters.courseTaken.length} selected)
                           </button>
@@ -939,7 +939,7 @@ const CandidatesTab = () => {
                         <div className="mt-2 pt-2 border-t border-gray-200">
                           <button
                             onClick={() => setFilters(prev => ({ ...prev, domain: [] }))}
-                            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer"
                           >
                             Clear selection ({filters.domain.length} selected)
                           </button>
@@ -1232,13 +1232,13 @@ const CandidatesTab = () => {
                           <div className="flex gap-3">
                             <button
                               onClick={handleViewClick}
-                              className="text-indigo-600 hover:text-indigo-900 font-medium"
+                              className="text-indigo-600 hover:text-indigo-900 font-medium cursor-pointer"
                             >
                               View
                             </button>
                             <button
                               onClick={() => handleOpenFormModal(student)}
-                              className="text-green-600 hover:text-green-900 font-medium"
+                              className="text-green-600 hover:text-green-900 font-medium cursor-pointer"
                             >
                               Edit
                             </button>
@@ -1259,7 +1259,7 @@ const CandidatesTab = () => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   aria-label="Previous page"
                 >
                   Previous
@@ -1267,7 +1267,7 @@ const CandidatesTab = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   aria-label="Next page"
                 >
                   Next
@@ -1289,7 +1289,7 @@ const CandidatesTab = () => {
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <span className="sr-only">Previous</span>
                       <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -1314,7 +1314,7 @@ const CandidatesTab = () => {
                             className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                               currentPage === page
                                 ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 cursor-pointer'
                             }`}
                           >
                             {page}
@@ -1333,7 +1333,7 @@ const CandidatesTab = () => {
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <span className="sr-only">Next</span>
                       <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

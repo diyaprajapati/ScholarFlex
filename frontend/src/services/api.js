@@ -1142,6 +1142,52 @@ export const api = {
         method: 'DELETE',
       });
     },
+
+    export: async () => {
+      const token = getToken();
+      const response = await fetch(`${API_BASE_URL}/admin/evaluations/export`, {
+        method: 'GET',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
+
+      if (!response.ok) {
+        // Try to get error message if it's JSON
+        try {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to export evaluations');
+        } catch (e) {
+          throw new Error('Failed to export evaluations');
+        }
+      }
+
+      // Get the blob from response
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Get filename from Content-Disposition header or use default
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'evaluated_students.xlsx';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      return { success: true };
+    },
   },
 };
 

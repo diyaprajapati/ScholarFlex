@@ -288,6 +288,14 @@ adminRouter.get('/evaluations', evaluationController.getAllEvaluations);
 adminRouter.post('/evaluations', evaluationController.createEvaluation);
 
 /**
+ * @route   GET /api/admin/evaluations/export
+ * @desc    Export evaluated students to Excel (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ * IMPORTANT: Must be registered BEFORE /evaluations/student/:studentId route
+ */
+adminRouter.get('/evaluations/export', evaluationController.exportEvaluatedStudents);
+
+/**
  * @route   GET /api/admin/evaluations/student/:studentId
  * @desc    Get evaluations for a student (Admin/Super Admin only)
  * @access  Private (Admin, Super Admin)
@@ -314,6 +322,14 @@ adminRouter.put('/evaluations/:id', evaluationController.updateEvaluation);
  * @access  Private (Admin, Super Admin)
  */
 adminRouter.delete('/evaluations/:id', evaluationController.deleteEvaluation);
+
+/**
+ * @route   GET /api/admin/evaluations/export
+ * @desc    Export evaluated students to Excel (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ * IMPORTANT: Must be registered BEFORE /evaluations/:id route
+ */
+adminRouter.get('/evaluations/export', evaluationController.exportEvaluatedStudents);
 
 /**
  * @route   GET /api/admin/projects/students

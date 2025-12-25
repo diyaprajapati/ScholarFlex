@@ -209,13 +209,13 @@ const PlaylistManagementPage = () => {
               <h1 className="text-3xl font-semibold text-gray-900">Playlist Management</h1>
               <div className="flex gap-3">
                 <button
-                  className="px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200"
+                  className="px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
                   onClick={() => navigate(ROUTES.PLAYLISTS.ADD_VIDEOS)}
                 >
                   Add Videos
                 </button>
                 <button
-                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200"
+                  className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors duration-200 cursor-pointer"
                   onClick={() => {
                     resetForm();
                     setShowModal(true);
@@ -242,7 +242,7 @@ const PlaylistManagementPage = () => {
           {/* Playlists List */}
           {loading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
               <p className="mt-4 text-gray-600">Loading playlists...</p>
             </div>
           ) : playlists.length === 0 ? (
@@ -271,14 +271,14 @@ const PlaylistManagementPage = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Created
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-10">
                         Actions
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {playlists.map((playlist) => (
-                      <tr key={playlist.id} className="hover:bg-gray-50">
+                      <tr key={playlist.id} className="group hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{playlist.title}</div>
                           {playlist.description && (
@@ -294,16 +294,16 @@ const PlaylistManagementPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatDate(playlist.createdAt)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium sticky right-0 bg-white group-hover:bg-gray-50 z-10">
                           <button
                             onClick={() => handleEdit(playlist)}
-                            className="text-indigo-600 hover:text-indigo-900 mr-4"
+                            className="text-green-600 hover:text-green-900 mr-4 cursor-pointer"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => setDeleteModal({ isOpen: true, playlist })}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-red-600 hover:text-red-900 cursor-pointer"
                           >
                             Delete
                           </button>
@@ -357,7 +357,7 @@ const PlaylistManagementPage = () => {
                           required
                           value={formData.title}
                           onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           placeholder="Enter playlist title"
                         />
                       </div>
@@ -372,7 +372,7 @@ const PlaylistManagementPage = () => {
                           rows="3"
                           value={formData.description}
                           onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           placeholder="Enter playlist description (optional)"
                         />
                       </div>
@@ -387,7 +387,7 @@ const PlaylistManagementPage = () => {
                           required
                           value={formData.domain}
                           onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer"
                         >
                           <option value="">Select a domain</option>
                           {domains.map((domain) => (
@@ -403,13 +403,13 @@ const PlaylistManagementPage = () => {
                       <button
                         type="button"
                         onClick={handleCloseModal}
-                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer"
                       >
                         {editingPlaylist ? 'Update' : 'Create'}
                       </button>
@@ -444,14 +444,14 @@ const PlaylistManagementPage = () => {
                   <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
                     <button
                       onClick={() => setDeleteModal({ isOpen: false, playlist: null })}
-                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isDeleting}
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleDelete}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isDeleting}
                     >
                       {isDeleting ? 'Deleting...' : 'Delete'}

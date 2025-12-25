@@ -5,7 +5,7 @@ import { ROUTES } from '../../config/paths';
 import Sidebar from '../../components/dashboard/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import api from '../../services/api';
-import { Clock, CheckCircle, Calendar, Mail, User, Search, ArrowUpDown } from 'lucide-react';
+import { Clock, CheckCircle, Calendar, Mail, User, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const InternshipStatusPage = () => {
   const navigate = useNavigate();
@@ -19,11 +19,14 @@ const InternshipStatusPage = () => {
   const [sortBy, setSortBy] = useState('name'); // name, date, status
   const [sortOrder, setSortOrder] = useState('asc'); // asc, desc
   const [allStudents, setAllStudents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
+      setCurrentPage(1); // Reset to first page on search
     }, 500);
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -84,8 +87,8 @@ const InternshipStatusPage = () => {
         label: 'Not Started',
       },
       ONGOING: {
-        bg: 'bg-blue-100',
-        text: 'text-blue-800',
+        bg: 'bg-green-100',
+        text: 'text-green-800',
         icon: Calendar,
         label: 'Ongoing',
       },
@@ -124,17 +127,18 @@ const InternshipStatusPage = () => {
       setSortBy(field);
       setSortOrder('asc');
     }
+    setCurrentPage(1); // Reset to first page on sort
   };
 
   const SortButton = ({ field, children }) => (
     <button
       onClick={() => handleSort(field)}
-      className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+      className="flex items-center gap-1 hover:text-green-600 transition-colors"
     >
       {children}
-      <ArrowUpDown className={`w-4 h-4 ${sortBy === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-4 h-4 ${sortBy === field ? 'text-green-600' : 'text-gray-400'}`} />
       {sortBy === field && (
-        <span className="text-xs text-blue-600">
+        <span className="text-xs text-green-600">
           {sortOrder === 'asc' ? '↑' : '↓'}
         </span>
       )}
@@ -190,13 +194,20 @@ const InternshipStatusPage = () => {
     });
   }
   
-  // Calculate status counts from all students
+  // Calculate status counts from all students (for accurate tab counts)
   const statusCounts = {
     all: allStudents.length,
     NOT_STARTED: allStudents.filter(s => s.status === 'NOT_STARTED').length,
     ONGOING: allStudents.filter(s => s.status === 'ONGOING').length,
     COMPLETED: allStudents.filter(s => s.status === 'COMPLETED').length,
   };
+
+  // Apply pagination to filtered students
+  const totalFiltered = filteredStudents.length;
+  const totalPages = Math.ceil(totalFiltered / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
 
   if (!user) {
     return null;
@@ -222,7 +233,7 @@ const InternshipStatusPage = () => {
                 placeholder="Search by name, email, or domain..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -237,10 +248,13 @@ const InternshipStatusPage = () => {
             ].map(({ key, label, count }) => (
               <button
                 key={key}
-                onClick={() => setFilter(key)}
+                onClick={() => {
+                  setFilter(key);
+                  setCurrentPage(1); // Reset to first page when filter changes
+                }}
                 className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                   filter === key
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -257,84 +271,132 @@ const InternshipStatusPage = () => {
 
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
             </div>
-          ) : filteredStudents.length === 0 ? (
+          ) : paginatedStudents.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
               <p className="text-gray-500">No students found</p>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="overflow-x-auto max-h-[calc(100vh-300px)]">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50 sticky top-0 z-10">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <SortButton field="name">Name</SortButton>
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Domain
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
-                      {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <SortButton field="status">Status</SortButton>
-                      </th> */}
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <SortButton field="date">Start Date</SortButton>
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        End Date
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredStudents.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100">
-                              <User className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {item.student?.fullName || 'N/A'}
+            <>
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <SortButton field="name">Name</SortButton>
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Domain
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Email
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <SortButton field="date">Start Date</SortButton>
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          End Date
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedStudents.map((item) => (
+                        <tr key={item.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-100">
+                                <User className="w-5 h-5 text-green-600" />
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {item.student?.fullName || 'N/A'}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">
-                            {item.student?.domain?.domainName || 'N/A'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500 flex items-center gap-1">
-                            <Mail className="w-3 h-3" />
-                            {item.student?.email || 'N/A'}
-                          </div>
-                        </td>
-                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                          {getStatusBadge(item.status)}
-                        </td> */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(item.student?.internshipStartDate)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(item.student?.internshipEndDate)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                <div className="text-sm text-gray-700">
-                  Showing {filteredStudents.length} of {allStudents.length} students
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500">
+                              {item.student?.domain?.domainName || 'N/A'}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500 flex items-center gap-1">
+                              <Mail className="w-3 h-3" />
+                              {item.student?.email || 'N/A'}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(item.student?.internshipStartDate)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(item.student?.internshipEndDate)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
+
+              {/* Pagination */}
+              {totalFiltered > 0 && (
+                <div className="mt-6 flex items-center justify-between">
+                  <div className="text-sm text-gray-700">
+                    Showing {startIndex + 1} to {Math.min(endIndex, totalFiltered)} of {totalFiltered} students
+                    {filter !== 'all' && ` (${allStudents.length} total)`}
+                  </div>
+                  {totalPages > 1 && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </button>
+                      <div className="flex gap-1">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          return (
+                            <button
+                              key={pageNum}
+                              onClick={() => setCurrentPage(pageNum)}
+                              className={`px-3 py-2 border rounded-lg ${
+                                currentPage === pageNum
+                                  ? 'bg-green-600 text-white border-green-600'
+                                  : 'border-gray-300 hover:bg-gray-50'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 flex items-center gap-1"
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>

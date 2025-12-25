@@ -463,7 +463,7 @@ export default function AddQuestionPaperFormPage() {
               <div className="mb-4 sm:mb-5 lg:mb-6">
                 <button
                   onClick={() => navigate(ROUTES.QUESTION_PAPERS.LIST)}
-                  className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors mb-3 sm:mb-4"
+                  className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors mb-3 sm:mb-4 cursor-pointer"
                 >
                   <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -501,7 +501,7 @@ export default function AddQuestionPaperFormPage() {
                 {!isEditMode && (
                   <button
                     onClick={handleBackToChoice}
-                    className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors mb-2 sm:mb-3"
+                    className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors mb-2 sm:mb-3 cursor-pointer"
                   >
                     <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -512,7 +512,7 @@ export default function AddQuestionPaperFormPage() {
                 {isEditMode && (
                   <button
                     onClick={() => navigate(ROUTES.QUESTION_PAPERS.LIST)}
-                    className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors mb-2 sm:mb-3"
+                    className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors mb-2 sm:mb-3 cursor-pointer"
                   >
                     <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

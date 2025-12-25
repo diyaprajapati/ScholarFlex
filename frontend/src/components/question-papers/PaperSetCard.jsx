@@ -39,7 +39,7 @@ export default function PaperSetCard({ paperSet, onEdit, onDelete, onView }) {
         </h3>
         <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-600">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#4C763B] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#4C763B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
             <span className="font-medium truncate">{paperSet.subject}</span>
@@ -58,7 +58,7 @@ export default function PaperSetCard({ paperSet, onEdit, onDelete, onView }) {
           )}
           <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs">
             <span className="flex items-center gap-1 sm:gap-1.5">
-              <svg className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {paperSet.year} • {paperSet.semester}
@@ -87,7 +87,7 @@ export default function PaperSetCard({ paperSet, onEdit, onDelete, onView }) {
       <div className="mt-3 sm:mt-4 flex items-center gap-1.5 sm:gap-2 pt-3 sm:pt-4 border-t border-gray-100">
         <button
           onClick={() => onView?.(paperSet)}
-          className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-[#4C763B] rounded-lg transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-[#4C763B] rounded-lg transition-colors cursor-pointer"
           style={{ backgroundColor: 'rgba(76, 118, 59, 0.1)' }}
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(76, 118, 59, 0.2)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(76, 118, 59, 0.1)'}
@@ -100,7 +100,7 @@ export default function PaperSetCard({ paperSet, onEdit, onDelete, onView }) {
         </button>
         <button
           onClick={() => onEdit?.(paperSet)}
-          className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+          className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
           aria-label="Edit paper set"
         >
           <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +109,7 @@ export default function PaperSetCard({ paperSet, onEdit, onDelete, onView }) {
         </button>
         <button
           onClick={() => onDelete?.(paperSet)}
-          className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+          className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"
           aria-label="Delete paper set"
         >
           <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
