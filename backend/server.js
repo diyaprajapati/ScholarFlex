@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -10,6 +11,7 @@ const logRoutes = require('./routes/logRoutes');
 const internRoutes = require('./routes/internRoutes');
 const questionPaperRoutes = require('./routes/questionPaperRoutes');
 const studentTestRoutes = require('./routes/studentTestRoutes');
+const studentProfileRoutes = require('./routes/studentProfileRoutes');
 const domainRoutes = require('./routes/domainRoutes');
 const testAttemptRoutes = require('./routes/testAttemptRoutes');
 const candidateRoutes = require('./routes/candidateRoutes');
@@ -59,6 +61,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Request logging middleware (for debugging)
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
@@ -88,6 +93,7 @@ app.use('/api/logs', logRoutes);
 app.use('/api/interns', internRoutes);
 app.use('/api/question-papers', questionPaperRoutes);
 app.use('/api/student', studentTestRoutes);
+app.use('/api/student/profile', studentProfileRoutes);
 app.use('/api/domains', domainRoutes);
 app.use('/api/test-attempts', testAttemptRoutes);
 app.use('/api/candidates', candidateRoutes);

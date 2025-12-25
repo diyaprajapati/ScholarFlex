@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, BarChart3, FileText, X, Video, Briefcase } from 'lucide-react';
+import { LayoutDashboard, BookOpen, BarChart3, FileText, X, Video, Briefcase, User } from 'lucide-react';
 import { ROUTES } from '../../config/paths';
 
 export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen }) {
@@ -8,6 +8,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
   
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD },
+    { id: 'profile', label: 'My Profile', icon: User, path: ROUTES.STUDENT.FORM },
     { id: 'playlists', label: 'Playlists', icon: BookOpen, path: ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS },
     { id: 'activity', label: 'Activity', icon: BarChart3, path: ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY },
     { id: 'internship', label: 'Internship', icon: Briefcase, path: ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP },

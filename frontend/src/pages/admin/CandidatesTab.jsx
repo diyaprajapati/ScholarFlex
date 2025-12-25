@@ -185,13 +185,29 @@ const CandidatesTab = () => {
   const getImageUrl = useCallback((url) => {
     if (!url) return null;
     
+    // If it's already a full URL (http/https), use it directly
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    
+    // If it's a Google Drive URL
     if (url.includes('thumbnail?id=')) return url;
     
     const openMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
     const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
     const fileId = openMatch ? openMatch[1] : (fileMatch ? fileMatch[1] : null);
     
-    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w400` : url;
+    if (fileId) {
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+    }
+    
+    // If it's a relative path (uploaded file), construct full URL
+    if (url.startsWith('/uploads/')) {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      return baseUrl.replace('/api', '') + url;
+    }
+    
+    return url;
   }, []);
 
   const formatDate = useCallback((dateString) => {
@@ -1512,6 +1528,193 @@ const CandidatesTab = () => {
                     </div>
                   </div>
 
+                  {/* Skills */}
+                  {selectedStudent.skills && (
+                    <div className="md:col-span-2">
+                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Skills</h3>
+                      <div className="space-y-3">
+                        {selectedStudent.skills.languages && selectedStudent.skills.languages.length > 0 && (
+                          <div>
+                            <span className="text-xs text-gray-500 block mb-1">Programming Languages</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedStudent.skills.languages.map((skill, index) => (
+                                <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {selectedStudent.skills.frameworks && selectedStudent.skills.frameworks.length > 0 && (
+                          <div>
+                            <span className="text-xs text-gray-500 block mb-1">Frameworks / Libraries</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedStudent.skills.frameworks.map((skill, index) => (
+                                <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {selectedStudent.skills.tools && selectedStudent.skills.tools.length > 0 && (
+                          <div>
+                            <span className="text-xs text-gray-500 block mb-1">Tools / Technologies</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedStudent.skills.tools.map((skill, index) => (
+                                <span key={index} className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {selectedStudent.skills.softSkills && selectedStudent.skills.softSkills.length > 0 && (
+                          <div>
+                            <span className="text-xs text-gray-500 block mb-1">Soft Skills</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedStudent.skills.softSkills.map((skill, index) => (
+                                <span key={index} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {(!selectedStudent.skills.languages || selectedStudent.skills.languages.length === 0) &&
+                         (!selectedStudent.skills.frameworks || selectedStudent.skills.frameworks.length === 0) &&
+                         (!selectedStudent.skills.tools || selectedStudent.skills.tools.length === 0) &&
+                         (!selectedStudent.skills.softSkills || selectedStudent.skills.softSkills.length === 0) && (
+                          <p className="text-xs text-gray-500">No skills added yet.</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Personal Projects */}
+                  {selectedStudent.personal_projects && selectedStudent.personal_projects.length > 0 && (
+                    <div className="md:col-span-2">
+                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Personal Projects</h3>
+                      <div className="space-y-3">
+                        {selectedStudent.personal_projects.map((project, index) => (
+                          <div key={index} className="border border-gray-200 rounded-lg p-3">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                              {project.projectTitle || project.title || `Project ${index + 1}`}
+                            </h4>
+                            {project.description && (
+                              <p className="text-xs text-gray-700 mb-2">{project.description}</p>
+                            )}
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="text-gray-500">Tech Stack: </span>
+                                <span className="text-gray-900">{project.techStack || 'N/A'}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Role: </span>
+                                <span className="text-gray-900">{project.role || 'N/A'}</span>
+                              </div>
+                              {(project.githubLink || project.github) && (
+                                <div>
+                                  <span className="text-gray-500">GitHub: </span>
+                                  <a
+                                    href={project.githubLink || project.github}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-green-600 hover:underline"
+                                  >
+                                    View
+                                  </a>
+                                </div>
+                              )}
+                              {(project.liveLink || project.live) && (
+                                <div>
+                                  <span className="text-gray-500">Live: </span>
+                                  <a
+                                    href={project.liveLink || project.live}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-green-600 hover:underline"
+                                  >
+                                    View
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Achievements */}
+                  {selectedStudent.achievements && (
+                    <div className="md:col-span-2">
+                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Achievements & Certifications</h3>
+                      <div className="space-y-3">
+                        {['hackathons', 'certifications', 'awards', 'competitions'].map((type) => (
+                          selectedStudent.achievements[type] && selectedStudent.achievements[type].length > 0 && (
+                            <div key={type}>
+                              <span className="text-xs font-medium text-gray-700 capitalize block mb-2">{type}</span>
+                              <div className="space-y-2">
+                                {selectedStudent.achievements[type].map((achievement, index) => (
+                                  <div key={index} className="border border-gray-200 rounded p-2">
+                                    <h5 className="text-xs font-semibold text-gray-900">{achievement.title}</h5>
+                                    {achievement.issuer && (
+                                      <p className="text-xs text-gray-600">Issuer: {achievement.issuer}</p>
+                                    )}
+                                    {achievement.description && (
+                                      <p className="text-xs text-gray-700 mt-1">{achievement.description}</p>
+                                    )}
+                                    {achievement.date && (
+                                      <p className="text-xs text-gray-500 mt-1">Date: {formatDate(achievement.date)}</p>
+                                    )}
+                                    {achievement.link && (
+                                      <a
+                                        href={achievement.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-green-600 hover:underline"
+                                      >
+                                        View Details
+                                      </a>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        ))}
+                        {(!selectedStudent.achievements.hackathons || selectedStudent.achievements.hackathons.length === 0) &&
+                         (!selectedStudent.achievements.certifications || selectedStudent.achievements.certifications.length === 0) &&
+                         (!selectedStudent.achievements.awards || selectedStudent.achievements.awards.length === 0) &&
+                         (!selectedStudent.achievements.competitions || selectedStudent.achievements.competitions.length === 0) && (
+                          <p className="text-xs text-gray-500">No achievements added yet.</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Resume */}
+                  {selectedStudent.resume_url && (
+                    <div className="md:col-span-2">
+                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Resume</h3>
+                      <a
+                        href={(() => {
+                          const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+                          return baseUrl.replace('/api', '') + selectedStudent.resume_url;
+                        })()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-green-600 hover:text-green-800 underline flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        View Resume (PDF)
+                      </a>
+                    </div>
+                  )}
+
                   {/* Additional Information */}
                   <div>
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">Additional Information</h3>
@@ -1519,6 +1722,18 @@ const CandidatesTab = () => {
                       <div>
                         <span className="text-xs text-gray-500">Reference Information</span>
                         <p className="text-sm text-gray-900">{selectedStudent.reference_information || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Profile Completed</span>
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ml-2 ${
+                            selectedStudent.profile_completed
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {selectedStudent.profile_completed ? 'Yes' : 'No'}
+                        </span>
                       </div>
                       <div>
                         <span className="text-xs text-gray-500">Created At</span>
@@ -1685,12 +1900,13 @@ const CandidatesTab = () => {
                   {/* Phone */}
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone
+                      Phone <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
                       id="phone"
                       name="phone"
+                      required
                       defaultValue={editingStudent?.phone || editingStudent?.mobile_number || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                     />
@@ -1699,12 +1915,13 @@ const CandidatesTab = () => {
                   {/* Domain */}
                   <div>
                     <label htmlFor="domain_id" className="block text-sm font-medium text-gray-700 mb-1">
-                      Domain
+                      Domain <span className="text-red-500">*</span>
                     </label>
                     <select
                       id="domain_id"
                       name="domain_id"
                       disabled={isLoadingDomains}
+                      required
                       defaultValue={editingStudent?.domain_id || ''}
                       className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white ${
                         isLoadingDomains ? 'opacity-50 cursor-not-allowed' : ''
@@ -1722,7 +1939,7 @@ const CandidatesTab = () => {
                   {/* Institute Name */}
                   <div>
                     <label htmlFor="institute_name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Institute Name
+                      Institute Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -1730,13 +1947,14 @@ const CandidatesTab = () => {
                       name="institute_name"
                       defaultValue={editingStudent?.institute_name || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      required
                     />
                   </div>
 
                   {/* Course Taken */}
                   <div>
                     <label htmlFor="course_taken" className="block text-sm font-medium text-gray-700 mb-1">
-                      Course Taken
+                      Course Taken <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -1744,13 +1962,14 @@ const CandidatesTab = () => {
                       name="course_taken"
                       defaultValue={editingStudent?.course_taken || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      required
                     />
                   </div>
 
                   {/* Internship Start Date */}
                   <div>
                     <label htmlFor="internship_start_date" className="block text-sm font-medium text-gray-700 mb-1">
-                      Internship Start Date
+                      Internship Start Date <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="date"
@@ -1758,18 +1977,20 @@ const CandidatesTab = () => {
                       name="internship_start_date"
                       defaultValue={editingStudent?.internship_start_date ? new Date(editingStudent.internship_start_date).toISOString().split('T')[0] : ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      required
                     />
                   </div>
 
                   {/* Internship End Date */}
                   <div>
                     <label htmlFor="internship_end_date" className="block text-sm font-medium text-gray-700 mb-1">
-                      Internship End Date
+                      Internship End Date <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="date"
                       id="internship_end_date"
                       name="internship_end_date"
+                      required
                       defaultValue={editingStudent?.internship_end_date ? new Date(editingStudent.internship_end_date).toISOString().split('T')[0] : ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                     />
@@ -1778,12 +1999,13 @@ const CandidatesTab = () => {
                   {/* Internship Duration */}
                   <div>
                     <label htmlFor="internship_duration" className="block text-sm font-medium text-gray-700 mb-1">
-                      Internship Duration
+                      Internship Duration <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       id="internship_duration"
                       name="internship_duration"
+                      required
                       defaultValue={editingStudent?.internship_duration || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                     />
@@ -1820,11 +2042,12 @@ const CandidatesTab = () => {
                   {/* Internal Faculty Name */}
                   <div>
                     <label htmlFor="internal_faculty_name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Internal Faculty Name
+                      Internal Faculty Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       id="internal_faculty_name"
+                      required
                       name="internal_faculty_name"
                       defaultValue={editingStudent?.internal_faculty_name || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
@@ -1864,7 +2087,7 @@ const CandidatesTab = () => {
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                   <button
                     type="button"
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all cursor-pointer"
                     onClick={handleCloseFormModal}
                     disabled={isSubmittingForm}
                   >
@@ -1873,7 +2096,7 @@ const CandidatesTab = () => {
                   <button
                     type="submit"
                     disabled={isSubmittingForm}
-                    className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isSubmittingForm ? 'Saving...' : editingStudent ? 'Update Student' : 'Add Student'}
                   </button>

@@ -1196,6 +1196,48 @@ export const api = {
       return { success: true };
     },
   },
+
+  // Student Profile endpoints
+  studentProfile: {
+    get: async () => {
+      return apiRequest('/student/profile', {
+        method: 'GET',
+      });
+    },
+
+    checkCompletion: async () => {
+      return apiRequest('/student/profile/check-completion', {
+        method: 'GET',
+      });
+    },
+
+    update: async (data) => {
+      return apiRequest('/student/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    uploadProfileImage: async (file) => {
+      const formData = new FormData();
+      formData.append('profileImage', file);
+      
+      return apiRequest('/student/profile/image', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+
+    uploadResume: async (file) => {
+      const formData = new FormData();
+      formData.append('resume', file);
+      
+      return apiRequest('/student/profile/resume', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+  },
 };
 
 export default api;

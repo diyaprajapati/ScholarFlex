@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { authService } from '../utils/auth'
 import { ROUTES } from '../config/paths'
@@ -8,6 +8,8 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
   const location = useLocation()
   const hasNavigated = useRef(false)
   const lastPathname = useRef(location.pathname)
+  const [profileCompletionChecked, setProfileCompletionChecked] = useState(false)
+  const [isProfileCompleted, setIsProfileCompleted] = useState(false)
 
   // Reset navigation flag when pathname changes
   useEffect(() => {
@@ -85,6 +87,34 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
     }
   }, [isAuthenticated])
 
+  // Check profile completion for selected students
+  useEffect(() => {
+    if (isAuthenticated && authService.getUserRole() === 'STUDENT') {
+      const user = authService.getUser()
+      
+      // Only check for selected students (check both when not on form and when on form)
+      if (user?.is_selected && !profileCompletionChecked) {
+        const checkProfileCompletion = async () => {
+          try {
+            const api = (await import('../services/api')).default
+            const response = await api.studentProfile.checkCompletion()
+            if (response.success) {
+              setIsProfileCompleted(response.isCompleted)
+              setProfileCompletionChecked(true)
+            }
+          } catch (error) {
+            console.error('Error checking profile completion:', error)
+            // If error, assume not completed to be safe
+            setIsProfileCompleted(false)
+            setProfileCompletionChecked(true)
+          }
+        }
+        
+        checkProfileCompletion()
+      }
+    }
+  }, [isAuthenticated, profileCompletionChecked, location.pathname])
+
   if (!isAuthenticated) {
     if (location.pathname !== ROUTES.LOGIN && !hasNavigated.current) {
       hasNavigated.current = true
@@ -121,23 +151,24 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
       }
     }
     
-    // Check if form has been completed (only for selected students and only if not already on form page)
-    if (location.pathname !== ROUTES.STUDENT.FORM && (user?.email || user?.id)) {
-      // Only selected students need to complete the form
-      if (user?.is_selected) {
-        const FORM_STORAGE_KEY = 'student_form_completed'
-        const storageKey = `${FORM_STORAGE_KEY}_${user.email || user.id}`
-        const formCompleted = localStorage.getItem(storageKey) === 'true'
-        
-        if (!formCompleted && location.pathname !== ROUTES.STUDENT.FORM) {
-          // Form not completed, redirect to form page (only for selected students)
-          if (!hasNavigated.current) {
-            hasNavigated.current = true
-            return <Navigate to={ROUTES.STUDENT.FORM} replace />
-          }
-          return null
-        }
+    // Check profile completion for selected students
+    if (user?.is_selected && (user?.email || user?.id)) {
+      // Wait for profile check to complete
+      if (!profileCompletionChecked) {
+        return null // Show loading state
       }
+      
+      // If not on form page and profile is not completed, redirect to form page
+      // (But allow access to form even after completion for viewing/editing)
+      if (location.pathname !== ROUTES.STUDENT.FORM && !isProfileCompleted) {
+        if (!hasNavigated.current) {
+          hasNavigated.current = true
+          return <Navigate to={ROUTES.STUDENT.FORM} replace />
+        }
+        return null
+      }
+      // Note: We no longer redirect away from form page if profile is completed
+      // Students can now access the form to view/edit their profile anytime
     }
     if (user?.internship_end_date) {
       const today = new Date()

@@ -14,31 +14,44 @@ export default function LoginPage() {
       return
     }
 
-    const role = authService.getUserRole()
-    if (role === 'STUDENT') {
-      const user = authService.getUser()
-      
-      // Only selected students need to complete the form
-      if (user?.is_selected) {
-        // Check if form has been completed
-        const FORM_STORAGE_KEY = 'student_form_completed'
-        const storageKey = `${FORM_STORAGE_KEY}_${user?.email || user?.id}`
-        const formCompleted = localStorage.getItem(storageKey) === 'true'
+    const checkAndRedirect = async () => {
+      const role = authService.getUserRole()
+      if (role === 'STUDENT') {
+        const user = authService.getUser()
         
-        if (!formCompleted) {
-          // Form not completed, redirect to form page (only for selected students)
-          navigate(ROUTES.STUDENT.FORM, { replace: true })
+        // Only selected students need to complete the profile form
+        if (user?.is_selected) {
+          // Check profile completion from database
+          try {
+            const api = (await import('../../services/api')).default
+            const response = await api.studentProfile.checkCompletion()
+            if (response.success) {
+              if (response.isCompleted) {
+                // Profile completed, redirect to dashboard
+                navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+              } else {
+                // Profile not completed, redirect to form page (only for selected students)
+                navigate(ROUTES.STUDENT.FORM, { replace: true })
+              }
+            } else {
+              // Error checking, redirect to form to be safe
+              navigate(ROUTES.STUDENT.FORM, { replace: true })
+            }
+          } catch (error) {
+            console.error('Error checking profile completion:', error)
+            // Error checking, redirect to form to be safe
+            navigate(ROUTES.STUDENT.FORM, { replace: true })
+          }
         } else {
-          // Form completed, redirect to dashboard
-          navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
+          // Non-selected students go directly to instructions page
+          navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
         }
       } else {
-        // Non-selected students go directly to instructions page
-        navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+        navigate(ROUTES.DASHBOARD, { replace: true })
       }
-    } else {
-      navigate(ROUTES.DASHBOARD, { replace: true })
     }
+
+    checkAndRedirect()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -1,0 +1,99 @@
+const express = require('express');
+const multer = require('multer');
+const router = express.Router();
+const { authenticate, authorize } = require('../middleware/auth');
+const studentProfileController = require('../controllers/studentProfileController');
+
+// All routes require authentication and student role
+router.use(authenticate);
+router.use(authorize('STUDENT'));
+
+/**
+ * @route   GET /api/student/profile
+ * @desc    Get student's own profile
+ * @access  Private (Student)
+ */
+router.get('/', studentProfileController.getProfile);
+
+/**
+ * @route   GET /api/student/profile/check-completion
+ * @desc    Check if student profile is completed
+ * @access  Private (Student)
+ */
+router.get('/check-completion', studentProfileController.checkProfileCompletion);
+
+/**
+ * @route   PUT /api/student/profile
+ * @desc    Update student profile
+ * @access  Private (Student)
+ */
+router.put('/', studentProfileController.updateProfile);
+
+/**
+ * @route   POST /api/student/profile/image
+ * @desc    Upload profile image
+ * @access  Private (Student)
+ */
+router.post(
+  '/image',
+  (req, res, next) => {
+    studentProfileController.uploadProfileImage(req, res, (err) => {
+      if (err) {
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+              success: false,
+              message: 'File too large. Maximum size is 5MB.',
+            });
+          }
+          return res.status(400).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'File upload error',
+        });
+      }
+      next();
+    });
+  },
+  studentProfileController.uploadProfileImageHandler
+);
+
+/**
+ * @route   POST /api/student/profile/resume
+ * @desc    Upload resume
+ * @access  Private (Student)
+ */
+router.post(
+  '/resume',
+  (req, res, next) => {
+    studentProfileController.uploadResume(req, res, (err) => {
+      if (err) {
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+              success: false,
+              message: 'File too large. Maximum size is 10MB.',
+            });
+          }
+          return res.status(400).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'File upload error',
+        });
+      }
+      next();
+    });
+  },
+  studentProfileController.uploadResumeHandler
+);
+
+module.exports = router;
+

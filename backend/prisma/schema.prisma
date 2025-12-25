@@ -101,7 +101,12 @@ model Student {
   imageUrl             String?              @map("image_url")
   instituteName        String?              @map("institute_name") @db.VarChar(255)
   courseTaken          String?              @map("course_taken") @db.VarChar(255)
+  currentYear          String?              @map("current_year") @db.VarChar(50)
+  currentSemester      String?              @map("current_semester") @db.VarChar(50)
+  graduationYear       Int?                 @map("graduation_year")
   areaOfInterests      String?              @map("area_of_interests") @db.Text
+  resumeUrl            String?              @map("resume_url") @db.VarChar(500)
+  profileCompleted     Boolean              @default(false) @map("profile_completed")
   internshipStartDate  DateTime?            @map("internship_start_date")
   internshipEndDate    DateTime?            @map("internship_end_date")
   internshipDuration   String?              @map("internship_duration") @db.VarChar(50)
@@ -128,6 +133,9 @@ model Student {
   playlistAccesses     PlaylistAccess[]
   internship           StudentInternship?
   projects             StudentProject[]
+  personalProjects     StudentPersonalProject[]
+  skills               StudentSkill[]
+  achievements         StudentAchievement[]
   evaluations          StudentEvaluation[]
 
   @@index([email])
@@ -135,6 +143,7 @@ model Student {
   @@index([statusId])
   @@index([formLinkToken])
   @@index([isActive])
+  @@index([profileCompleted])
   @@index([domainId, statusId, isActive])
   @@map("students")
 }
@@ -165,6 +174,56 @@ model StudentProject {
   @@index([studentId])
   @@index([deadline])
   @@map("student_projects")
+}
+
+model StudentPersonalProject {
+  id                 Int       @id @default(autoincrement())
+  studentId          Int       @map("student_id")
+  projectTitle       String    @map("project_title") @db.VarChar(255)
+  description       String?   @db.Text
+  techStack          String?   @map("tech_stack") @db.Text
+  role               String?   @db.VarChar(255)
+  githubLink         String?   @map("github_link") @db.VarChar(500)
+  liveLink           String?   @map("live_link") @db.VarChar(500)
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("student_personal_projects")
+}
+
+model StudentSkill {
+  id          Int      @id @default(autoincrement())
+  studentId   Int      @map("student_id")
+  skillType   String   @map("skill_type") @db.VarChar(50) // 'language', 'framework', 'tool', 'soft_skill'
+  skillName   String   @map("skill_name") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at")
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([skillType])
+  @@index([studentId, skillType])
+  @@map("student_skills")
+}
+
+model StudentAchievement {
+  id          Int      @id @default(autoincrement())
+  studentId   Int      @map("student_id")
+  achievementType String @map("achievement_type") @db.VarChar(50) // 'hackathon', 'certification', 'award', 'competition'
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  issuer      String?  @db.VarChar(255)
+  date        DateTime? @db.Date
+  link        String?  @db.VarChar(500)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([achievementType])
+  @@index([studentId, achievementType])
+  @@map("student_achievements")
 }
 
 model StudentEvaluation {

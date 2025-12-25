@@ -526,66 +526,164 @@ exports.updateCandidateSelection = async (req, res) => {
 exports.getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
+    const studentId = parseInt(id);
 
     // Ensure NOC status table exists
     await ensureNOCStatusTable();
 
-    const result = await pool.query(
-      `SELECT 
-        s.*,
-        d.domain_name,
-        ist.status_name,
-        COALESCE(BOOL_OR(sns.is_received), FALSE) as noc_received,
-        COALESCE(MAX(ta.percentage_score), 0) as marks,
-        MAX(ta.submitted_at) as last_test_date,
-        COUNT(DISTINCT ta.id) as total_attempts
-      FROM students s
-      LEFT JOIN domains d ON s.domain_id = d.id
-      LEFT JOIN intern_status ist ON s.status_id = ist.id
-      LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
-      LEFT JOIN student_noc_status sns ON sns.student_id = s.id
-      WHERE s.id = $1 AND s.is_active = TRUE
-      GROUP BY s.id, d.domain_name, ist.status_name, s.is_selected`,
-      [id]
-    );
+    // Fetch student with Prisma to get all related data
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        domain: {
+          select: {
+            id: true,
+            domainName: true,
+            domainCode: true,
+          },
+        },
+        status: {
+          select: {
+            id: true,
+            statusName: true,
+          },
+        },
+        skills: {
+          orderBy: [
+            { skillType: 'asc' },
+            { skillName: 'asc' },
+          ],
+        },
+        personalProjects: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+        achievements: {
+          orderBy: [
+            { achievementType: 'asc' },
+            { date: 'desc' },
+          ],
+        },
+        testAttempts: {
+          where: {
+            status: {
+              in: ['COMPLETED', 'AUTO_SUBMITTED'],
+            },
+          },
+          orderBy: {
+            submittedAt: 'desc',
+          },
+          take: 1,
+        },
+      },
+    });
 
-    if (result.rows.length === 0) {
+    if (!student || !student.isActive) {
       return res.status(404).json({
         success: false,
         message: 'Student not found',
       });
     }
 
-    const student = result.rows[0];
+    // Get NOC status
+    const nocResult = await pool.query(
+      'SELECT is_received FROM student_noc_status WHERE student_id = $1',
+      [studentId]
+    );
+    const nocReceived = nocResult.rows.length > 0 ? nocResult.rows[0].is_received : false;
+
+    // Get marks from test attempts
+    const marks = student.testAttempts.length > 0 
+      ? parseFloat(student.testAttempts[0].percentageScore || 0)
+      : 0;
+    const lastTestDate = student.testAttempts.length > 0 
+      ? student.testAttempts[0].submittedAt 
+      : null;
+
+    // Count total attempts
+    const totalAttemptsResult = await pool.query(
+      'SELECT COUNT(*) as count FROM test_attempts WHERE student_id = $1 AND status IN ($2, $3)',
+      [studentId, 'COMPLETED', 'AUTO_SUBMITTED']
+    );
+    const totalAttempts = parseInt(totalAttemptsResult.rows[0]?.count || 0);
+
+    // Group skills by type
+    const skillsGrouped = {
+      languages: [],
+      frameworks: [],
+      tools: [],
+      softSkills: [],
+    };
+
+    student.skills.forEach((skill) => {
+      if (skill.skillType === 'language') skillsGrouped.languages.push(skill.skillName);
+      else if (skill.skillType === 'framework') skillsGrouped.frameworks.push(skill.skillName);
+      else if (skill.skillType === 'tool') skillsGrouped.tools.push(skill.skillName);
+      else if (skill.skillType === 'soft_skill') skillsGrouped.softSkills.push(skill.skillName);
+    });
+
+    // Group achievements by type
+    const achievementsGrouped = {
+      hackathons: [],
+      certifications: [],
+      awards: [],
+      competitions: [],
+    };
+
+    student.achievements.forEach((achievement) => {
+      const achievementData = {
+        id: achievement.id,
+        title: achievement.title,
+        description: achievement.description,
+        issuer: achievement.issuer,
+        date: achievement.date,
+        link: achievement.link,
+      };
+
+      if (achievement.achievementType === 'hackathon') achievementsGrouped.hackathons.push(achievementData);
+      else if (achievement.achievementType === 'certification') achievementsGrouped.certifications.push(achievementData);
+      else if (achievement.achievementType === 'award') achievementsGrouped.awards.push(achievementData);
+      else if (achievement.achievementType === 'competition') achievementsGrouped.competitions.push(achievementData);
+    });
 
     res.status(200).json({
       success: true,
       student: {
         id: student.id,
         email: student.email,
-        full_name: student.full_name,
+        full_name: student.fullName,
         phone: student.phone,
-        image_url: student.image_url,
-        domain: student.domain_name,
-        domain_id: student.domain_id,
-        status: student.status_name,
-        noc_received: student.noc_received,
-        marks: parseFloat(student.marks || 0),
-        reference_information: student.reference_information,
-        institute_name: student.institute_name,
-        course_taken: student.course_taken,
-        internship_start_date: student.internship_start_date,
-        internship_end_date: student.internship_end_date,
-        internship_duration: student.internship_duration,
-        internal_faculty_name: student.internal_faculty_name,
-        faculty_contact: student.faculty_contact,
-        faculty_email: student.faculty_email,
-        is_selected: student.is_selected || false,
-        total_attempts: parseInt(student.total_attempts || 0),
-        last_test_date: student.last_test_date,
-        registration_date: student.registration_date,
-        created_at: student.created_at,
-        updated_at: student.updated_at,
+        image_url: student.imageUrl, // Updated field name
+        domain: student.domain?.domainName || null,
+        domain_id: student.domainId,
+        status: student.status?.statusName || null,
+        noc_received: nocReceived,
+        marks: marks,
+        reference_information: student.referenceInformation,
+        institute_name: student.instituteName,
+        course_taken: student.courseTaken,
+        current_year: student.currentYear,
+        current_semester: student.currentSemester,
+        graduation_year: student.graduationYear,
+        internship_start_date: student.internshipStartDate,
+        internship_end_date: student.internshipEndDate,
+        internship_duration: student.internshipDuration,
+        internal_faculty_name: student.internalFacultyName,
+        faculty_contact: student.facultyContact,
+        faculty_email: student.facultyEmail,
+        is_selected: student.isSelected || false,
+        total_attempts: totalAttempts,
+        last_test_date: lastTestDate,
+        registration_date: student.registrationDate,
+        created_at: student.createdAt,
+        updated_at: student.updatedAt,
+        // New profile fields
+        skills: skillsGrouped,
+        personal_projects: student.personalProjects,
+        achievements: achievementsGrouped,
+        resume_url: student.resumeUrl,
+        profile_completed: student.profileCompleted,
       },
     });
   } catch (error) {
