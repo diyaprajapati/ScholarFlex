@@ -16,6 +16,9 @@ const candidateRoutes = require('./routes/candidateRoutes');
 const activityRoutes = require('./routes/activityRoutes');
 const nocRoutes = require('./routes/nocRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const evaluationRoutes = require('./routes/evaluationRoutes');
+const projectRoutes = require('./routes/projectRoutes');
+const internshipStatusRoutes = require('./routes/internshipStatusRoutes');
 const videoTrackingRoutes = require('./routes/videoTrackingRoutes');
 const videoAnalyticsRoutes = require('./routes/videoAnalyticsRoutes');
 const errorHandler = require('./middleware/errorHandler');
@@ -90,6 +93,11 @@ app.use('/api/test-attempts', testAttemptRoutes);
 app.use('/api/candidates', candidateRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api', nocRoutes);
+app.use('/api', feedbackRoutes);
+// Note: Admin routes for evaluations, projects, and internship status are in adminRoutes.js
+// to avoid conflicts with /api/admin/:id route. Student routes are kept separate below.
+app.use('/api', projectRoutes); // Student project routes (/api/student/projects)
+app.use('/api', internshipStatusRoutes); // Student internship status route (/api/student/internship/status)
 app.use('/api/video-tracking', videoTrackingRoutes);
 app.use('/api/video-tracking', require('./routes/enhancedVideoTrackingRoutes'));
 app.use('/api/video-analytics', videoAnalyticsRoutes);

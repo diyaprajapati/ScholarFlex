@@ -1,8 +1,8 @@
 // API service for making HTTP requests to the backend
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.154.201.164:5000/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.154.201.164:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * Get JWT token from localStorage
@@ -979,6 +979,167 @@ export const api = {
     getVideoAnalytics: async (videoId) => {
       return apiRequest(`/video-analytics/admin/video/${videoId}`, {
         method: 'GET',
+      });
+    },
+  },
+
+  // Internship Status endpoints
+  internshipStatus: {
+    getStudentStatus: async () => {
+      return apiRequest('/student/internship/status', {
+        method: 'GET',
+      });
+    },
+
+    getAllStatuses: async (filters = {}, queryString = '') => {
+      let endpoint = '/admin/internship/status';
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      } else {
+        const queryParams = new URLSearchParams();
+        if (filters.studentId) queryParams.append('studentId', filters.studentId);
+        if (filters.page) queryParams.append('page', filters.page);
+        if (filters.limit) queryParams.append('limit', filters.limit);
+        if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
+        if (filters.sortOrder) queryParams.append('sortOrder', filters.sortOrder);
+        if (filters.search) queryParams.append('search', filters.search);
+        
+        const params = queryParams.toString();
+        if (params) endpoint += `?${params}`;
+      }
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+  },
+
+  // Student Projects endpoints
+  projects: {
+    // Admin endpoints
+    create: async (data) => {
+      return apiRequest('/admin/projects', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    getAll: async (filters = {}) => {
+      const queryParams = new URLSearchParams();
+      if (filters.studentId) queryParams.append('studentId', filters.studentId);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/admin/projects?${queryString}` : '/admin/projects';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+
+    getSelectedStudentsWithProjects: async (filters = {}, queryString = '') => {
+      let endpoint = '/admin/projects/students';
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      } else {
+        const queryParams = new URLSearchParams();
+        if (filters.page) queryParams.append('page', filters.page);
+        if (filters.limit) queryParams.append('limit', filters.limit);
+        if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
+        if (filters.sortOrder) queryParams.append('sortOrder', filters.sortOrder);
+        if (filters.search) queryParams.append('search', filters.search);
+        
+        const params = queryParams.toString();
+        if (params) endpoint += `?${params}`;
+      }
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+
+    getByStudentId: async (studentId) => {
+      return apiRequest(`/admin/projects/student/${studentId}`, {
+        method: 'GET',
+      });
+    },
+
+    getById: async (id) => {
+      return apiRequest(`/admin/projects/${id}`, {
+        method: 'GET',
+      });
+    },
+
+    update: async (id, data) => {
+      return apiRequest(`/admin/projects/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete: async (id) => {
+      return apiRequest(`/admin/projects/${id}`, {
+        method: 'DELETE',
+      });
+    },
+
+    // Student endpoints
+    getStudentProjects: async () => {
+      return apiRequest('/student/projects', {
+        method: 'GET',
+      });
+    },
+
+    getStudentProjectById: async (id) => {
+      return apiRequest(`/student/projects/${id}`, {
+        method: 'GET',
+      });
+    },
+  },
+
+  // Student Evaluations endpoints (Admin only)
+  evaluations: {
+    create: async (data) => {
+      return apiRequest('/admin/evaluations', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    getAll: async (filters = {}) => {
+      const queryParams = new URLSearchParams();
+      if (filters.studentId) queryParams.append('studentId', filters.studentId);
+      if (filters.weekNo) queryParams.append('weekNo', filters.weekNo);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/admin/evaluations?${queryString}` : '/admin/evaluations';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+
+    getByStudentId: async (studentId) => {
+      return apiRequest(`/admin/evaluations/student/${studentId}`, {
+        method: 'GET',
+      });
+    },
+
+    getById: async (id) => {
+      return apiRequest(`/admin/evaluations/${id}`, {
+        method: 'GET',
+      });
+    },
+
+    update: async (id, data) => {
+      return apiRequest(`/admin/evaluations/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete: async (id) => {
+      return apiRequest(`/admin/evaluations/${id}`, {
+        method: 'DELETE',
       });
     },
   },

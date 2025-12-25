@@ -267,7 +267,113 @@ const feedbackController = require('../controllers/feedbackController');
  */
 adminRouter.get('/feedback', feedbackController.getAllFeedback);
 
+// Import evaluation, project, and internship status controllers
+const evaluationController = require('../controllers/evaluationController');
+const projectController = require('../controllers/projectController');
+const internshipStatusController = require('../controllers/internshipStatusController');
+
+/**
+ * @route   GET /api/admin/evaluations
+ * @desc    Get all evaluations (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ * IMPORTANT: Must be registered BEFORE /:id route
+ */
+adminRouter.get('/evaluations', evaluationController.getAllEvaluations);
+
+/**
+ * @route   POST /api/admin/evaluations
+ * @desc    Create evaluation (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.post('/evaluations', evaluationController.createEvaluation);
+
+/**
+ * @route   GET /api/admin/evaluations/student/:studentId
+ * @desc    Get evaluations for a student (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/evaluations/student/:studentId', evaluationController.getStudentEvaluations);
+
+/**
+ * @route   GET /api/admin/evaluations/:id
+ * @desc    Get evaluation by ID (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/evaluations/:id', evaluationController.getEvaluationById);
+
+/**
+ * @route   PUT /api/admin/evaluations/:id
+ * @desc    Update evaluation (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.put('/evaluations/:id', evaluationController.updateEvaluation);
+
+/**
+ * @route   DELETE /api/admin/evaluations/:id
+ * @desc    Delete evaluation (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.delete('/evaluations/:id', evaluationController.deleteEvaluation);
+
+/**
+ * @route   GET /api/admin/projects/students
+ * @desc    Get all selected students with their projects (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ * IMPORTANT: Must be registered BEFORE /projects/:id route
+ */
+adminRouter.get('/projects/students', projectController.getSelectedStudentsWithProjects);
+
+/**
+ * @route   GET /api/admin/projects
+ * @desc    Get all projects (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/projects', projectController.getAllProjects);
+
+/**
+ * @route   POST /api/admin/projects
+ * @desc    Create project (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.post('/projects', projectController.createProject);
+
+/**
+ * @route   GET /api/admin/projects/student/:studentId
+ * @desc    Get projects for a student (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/projects/student/:studentId', projectController.getStudentProjects);
+
+/**
+ * @route   GET /api/admin/projects/:id
+ * @desc    Get project by ID (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/projects/:id', projectController.getProjectById);
+
+/**
+ * @route   PUT /api/admin/projects/:id
+ * @desc    Update project (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.put('/projects/:id', projectController.updateProject);
+
+/**
+ * @route   DELETE /api/admin/projects/:id
+ * @desc    Delete project (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.delete('/projects/:id', projectController.deleteProject);
+
+/**
+ * @route   GET /api/admin/internship/status
+ * @desc    Get all internship statuses (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/internship/status', internshipStatusController.getAllInternshipStatuses);
+
 // Mount routers
+// IMPORTANT: adminRouter (with specific routes) must be mounted BEFORE superAdminRouter (with /:id catch-all)
 // IMPORTANT: Mount adminRouter FIRST (with specific routes like /playlists)
 // BEFORE superAdminRouter (which has catch-all /:id route)
 // This ensures /playlists matches before /:id

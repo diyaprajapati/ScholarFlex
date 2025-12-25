@@ -167,6 +167,48 @@ export default function Sidebar({ user }) {
               </li>
               <li>
                 <Link
+                  to={ROUTES.INTERNSHIP_STATUS}
+                  onClick={() => handleNavClick('internship-status')}
+                  className={navItemClasses(ROUTES.INTERNSHIP_STATUS)}
+                  style={navItemStyle(ROUTES.INTERNSHIP_STATUS)}
+                  {...navItemHoverStyle(ROUTES.INTERNSHIP_STATUS)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                  Internship Status
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to={ROUTES.PROJECT_MANAGEMENT}
+                  onClick={() => handleNavClick('project-management')}
+                  className={navItemClasses(ROUTES.PROJECT_MANAGEMENT)}
+                  style={navItemStyle(ROUTES.PROJECT_MANAGEMENT)}
+                  {...navItemHoverStyle(ROUTES.PROJECT_MANAGEMENT)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  Projects
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to={ROUTES.EVALUATION_MANAGEMENT}
+                  onClick={() => handleNavClick('evaluation-management')}
+                  className={navItemClasses(ROUTES.EVALUATION_MANAGEMENT)}
+                  style={navItemStyle(ROUTES.EVALUATION_MANAGEMENT)}
+                  {...navItemHoverStyle(ROUTES.EVALUATION_MANAGEMENT)}
+                >
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  Evaluations
+                </Link>
+              </li>
+              <li>
+                <Link
                   to={ROUTES.PLAYLISTS.MANAGEMENT}
                   onClick={() => handleNavClick('playlists')}
                   className={navItemClasses(ROUTES.PLAYLISTS.MANAGEMENT)}

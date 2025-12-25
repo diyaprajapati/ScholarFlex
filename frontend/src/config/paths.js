@@ -16,6 +16,9 @@ export const ROUTES = {
   STUDENT_ANALYTICS: '/student-analytics',
   VIDEO_ANALYTICS: '/video-analytics',
   RETEST_MANAGEMENT: '/retest-management',
+  INTERNSHIP_STATUS: '/internship-status',
+  PROJECT_MANAGEMENT: '/project-management',
+  EVALUATION_MANAGEMENT: '/evaluation-management',
   
   // Question Papers Routes
   QUESTION_PAPERS: {
@@ -48,6 +51,7 @@ export const ROUTES = {
       DASHBOARD: '/student/dashboard',
       PLAYLISTS: '/student/playlists',
       ACTIVITY: '/student/activity',
+      INTERNSHIP: '/student/internship',
       NOC: '/student/noc',
     },
     INSTRUCTIONS: '/student/instructions',

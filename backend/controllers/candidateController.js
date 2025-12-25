@@ -1,10 +1,8 @@
 const multer = require('multer');
 const XLSX = require('xlsx');
-const { PrismaClient } = require('@prisma/client');
 const { logActivitySimple } = require('../middleware/activityLogger');
 const pool = require('../config/database');
-
-const prisma = new PrismaClient();
+const { prisma } = require('../config/database');
 
 /**
  * Ensure the manual NOC status table exists.

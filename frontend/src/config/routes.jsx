@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, RetestManagementPage, CandidatesPage } from '../pages'
+import { LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
 import { ROUTES } from './paths'
 
 /**
@@ -168,6 +168,36 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Internship Status Route - Admin and Super Admin */}
+      <Route
+        path={ROUTES.INTERNSHIP_STATUS}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <InternshipStatusPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Project Management Route - Admin and Super Admin */}
+      <Route
+        path={ROUTES.PROJECT_MANAGEMENT}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <ProjectManagementPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Evaluation Management Route - Admin and Super Admin */}
+      <Route
+        path={ROUTES.EVALUATION_MANAGEMENT}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <EvaluationManagementPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Student Routes */}
       <Route
         path={ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD}
@@ -187,6 +217,14 @@ export default function AppRoutes() {
       />
       <Route
         path={ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY}
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
+            <StudentDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP}
         element={
           <ProtectedRoute allowedRoles={['STUDENT']} requireSelected={true}>
             <StudentDashboardPage />

@@ -2,10 +2,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
-const { PrismaClient } = require('@prisma/client');
 const { authenticate, authorize } = require('../middleware/auth');
-
-const prisma = new PrismaClient();
+const { prisma } = require('../config/database');
 
 // Configure multer for PDF file uploads
 const storage = multer.diskStorage({

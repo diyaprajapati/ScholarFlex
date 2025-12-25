@@ -123,8 +123,12 @@ model Student {
   studentActivityLogs  StudentActivityLog[] @relation("StudentActivityLogs")
   nocLetters           NOCLetter[]          @relation("NOCLetters")
   internshipFeedbacks  InternshipFeedback[] @relation("InternshipFeedbacks")
+  nocStatus            StudentNOCStatus?    @relation("StudentNOCStatus")
   videoProgresses      VideoProgress[]
   playlistAccesses     PlaylistAccess[]
+  internship           StudentInternship?
+  projects             StudentProject[]
+  evaluations          StudentEvaluation[]
 
   @@index([email])
   @@index([domainId])
@@ -133,6 +137,49 @@ model Student {
   @@index([isActive])
   @@index([domainId, statusId, isActive])
   @@map("students")
+}
+
+model StudentInternship {
+  id        Int              @id @default(autoincrement())
+  studentId Int              @unique @map("student_id")
+  status    InternshipStatus @default(NOT_STARTED)
+  metadata  Json?
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  student   Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([status])
+  @@map("student_internship")
+}
+
+model StudentProject {
+  id                 Int       @id @default(autoincrement())
+  studentId          Int       @map("student_id")
+  projectTitle       String    @map("project_title") @db.VarChar(255)
+  projectDescription String?   @map("project_description") @db.Text
+  deadline           DateTime? @db.Date
+  projectData        Json?     @map("project_data")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([deadline])
+  @@map("student_projects")
+}
+
+model StudentEvaluation {
+  id             Int      @id @default(autoincrement())
+  studentId      Int      @map("student_id")
+  weekNo         Int      @map("week_no")
+  evaluationData Json     @map("evaluation_data")
+  createdAt      DateTime @default(now()) @map("created_at")
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, weekNo])
+  @@index([studentId])
+  @@index([weekNo])
+  @@index([studentId, weekNo])
+  @@map("student_evaluations")
 }
 
 model QuestionPaper {
@@ -425,6 +472,17 @@ model InternshipFeedback {
   @@map("internship_feedback")
 }
 
+model StudentNOCStatus {
+  id        Int       @id @default(autoincrement())
+  studentId Int       @unique @map("student_id")
+  isReceived Boolean  @default(false) @map("is_received")
+  updatedAt DateTime? @map("updated_at")
+  student   Student   @relation("StudentNOCStatus", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId], map: "idx_student_noc_status_student_id")
+  @@map("student_noc_status")
+}
+
 model VideoProgress {
   id               Int            @id @default(autoincrement())
   studentId        Int            @map("student_id")
@@ -551,4 +609,10 @@ enum NOCStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum InternshipStatus {
+  NOT_STARTED
+  ONGOING
+  COMPLETED
 }

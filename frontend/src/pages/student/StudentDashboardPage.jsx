@@ -8,6 +8,7 @@ import DashboardTab from '../../components/student/DashboardTab';
 import PlaylistsTab from '../../components/student/PlaylistsTab';
 import ActivityTab from '../../components/student/ActivityTab';
 import NOCTab from '../../components/student/NOCTab';
+import InternshipTab from '../../components/student/InternshipTab';
 import PlaylistModal from '../../components/student/PlaylistModal';
 import { Menu } from 'lucide-react';
 
@@ -22,6 +23,7 @@ const StudentDashboardPage = () => {
     if (path === ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS) return 'playlists';
     if (path === ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY) return 'activity';
     if (path === ROUTES.STUDENT.DASHBOARD_TABS.NOC) return 'noc';
+    if (path === ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP) return 'internship';
     return 'dashboard'; // Default to dashboard
   };
   
@@ -404,6 +406,7 @@ const StudentDashboardPage = () => {
           )}
 
           {/* NOC Tab */}
+          {activeTab === 'internship' && <InternshipTab />}
           {activeTab === 'noc' && <NOCTab />}
         </main>
       </div>
