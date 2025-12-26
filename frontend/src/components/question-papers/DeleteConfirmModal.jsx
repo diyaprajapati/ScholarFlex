@@ -1,11 +1,23 @@
 import React from 'react'
 
-export default function DeleteConfirmModal({ isOpen, paperSet, onConfirm, onCancel }) {
+export default function DeleteConfirmModal({ isOpen, paperSet, onConfirm, onCancel, isDeleting = false }) {
   if (!isOpen) return null
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget && !isDeleting) {
+      onCancel()
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
-      <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl max-w-md w-full mx-2 sm:mx-4 p-4 sm:p-5 lg:p-6">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4"
+      onClick={handleBackdropClick}
+    >
+      <div 
+        className="bg-white rounded-xl sm:rounded-2xl shadow-xl max-w-md w-full mx-2 sm:mx-4 p-4 sm:p-5 lg:p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center">
             <svg className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,15 +42,27 @@ export default function DeleteConfirmModal({ isOpen, paperSet, onConfirm, onCanc
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+            disabled={isDeleting}
+            className="flex-1 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
+            disabled={isDeleting}
+            className="flex-1 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
-            Delete
+            {isDeleting ? (
+              <>
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Deleting...
+              </>
+            ) : (
+              'Delete'
+            )}
           </button>
         </div>
       </div>

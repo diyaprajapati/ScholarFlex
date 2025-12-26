@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Calendar, FileText, Edit, Trash2, Save } from 'lucide-react';
+import { X, Calendar, FileText, Edit, Trash2, Save, User } from 'lucide-react';
 import api from '../../services/api';
 
 const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
@@ -9,6 +9,7 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [savingId, setSavingId] = useState(null); // Track which evaluation is being saved
 
   useEffect(() => {
     if (isOpen && student) {
@@ -58,9 +59,15 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
   };
 
   const handleSaveEdit = async (evaluationId) => {
+    if (savingId === evaluationId) return; // Prevent double submission
+    
     try {
+      setSavingId(evaluationId);
       setError('');
-      if (!editFormData) return;
+      if (!editFormData) {
+        setSavingId(null);
+        return;
+      }
 
       await api.evaluations.update(evaluationId, {
         evaluationData: editFormData.evaluationData,
@@ -73,6 +80,8 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
     } catch (err) {
       console.error('Error updating evaluation:', err);
       setError(err.message || 'Failed to update evaluation');
+    } finally {
+      setSavingId(null);
     }
   };
 
@@ -109,11 +118,42 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
     <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              Evaluations for {student.fullName}
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">{student.email}</p>
+          <div className="flex items-center gap-4">
+            {student.imageUrl ? (
+              <img
+                src={(() => {
+                  if (!student.imageUrl) return null;
+                  if (student.imageUrl.startsWith('http://') || student.imageUrl.startsWith('https://')) {
+                    return student.imageUrl;
+                  }
+                  if (student.imageUrl.includes('thumbnail?id=')) return student.imageUrl;
+                  const openMatch = student.imageUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                  const fileMatch = student.imageUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                  const fileId = openMatch ? openMatch[1] : (fileMatch ? fileMatch[1] : null);
+                  if (fileId) {
+                    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+                  }
+                  if (student.imageUrl.startsWith('/uploads/')) {
+                    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+                    return baseUrl.replace('/api', '') + student.imageUrl;
+                  }
+                  return student.imageUrl;
+                })()}
+                alt={student.fullName}
+                className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                <User className="w-8 h-8 text-green-600" />
+              </div>
+            )}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Evaluations for {student.fullName}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">{student.email}</p>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -172,11 +212,15 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
                             </button>
                             <button
                               onClick={() => handleDelete(evaluation.id)}
-                              disabled={isDeleting}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer disabled:opacity-50"
+                              disabled={deletingId === evaluation.id}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Delete"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              {deletingId === evaluation.id ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
                             </button>
                           </div>
                         )}
@@ -316,10 +360,20 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
                           </button>
                           <button
                             onClick={() => handleSaveEdit(evaluation.id)}
-                            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center gap-1"
+                            disabled={savingId === evaluation.id}
+                            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                           >
-                            <Save className="w-4 h-4" />
-                            Save Changes
+                            {savingId === evaluation.id ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                Saving...
+                              </>
+                            ) : (
+                              <>
+                                <Save className="w-4 h-4" />
+                                Save Changes
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>

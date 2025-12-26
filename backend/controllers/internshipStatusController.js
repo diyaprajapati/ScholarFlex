@@ -150,6 +150,7 @@ const getAllInternshipStatuses = async (req, res) => {
           email: true,
           fullName: true,
           phone: true,
+          imageUrl: true,
           internshipStartDate: true,
           internshipEndDate: true,
           domain: {
@@ -221,6 +222,7 @@ const getAllInternshipStatuses = async (req, res) => {
             email: student.email,
             fullName: student.fullName,
             phone: student.phone,
+            imageUrl: student.imageUrl,
             internshipStartDate: student.internshipStartDate,
             internshipEndDate: student.internshipEndDate,
             domain: student.domain,
@@ -239,6 +241,7 @@ const getAllInternshipStatuses = async (req, res) => {
             email: student.email,
             fullName: student.fullName,
             phone: student.phone,
+            imageUrl: student.imageUrl,
             internshipStartDate: student.internshipStartDate,
             internshipEndDate: student.internshipEndDate,
             domain: student.domain,

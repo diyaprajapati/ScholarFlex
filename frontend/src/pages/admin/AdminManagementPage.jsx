@@ -15,6 +15,8 @@ const AdminManagementPage = () => {
   const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState({
     email: '',
     full_name: '',
@@ -62,10 +64,13 @@ const AdminManagementPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // Prevent double submission
+    
     setError('');
     setSuccess('');
 
     try {
+      setIsSubmitting(true);
       if (editingAdmin) {
         // Update admin
         const updateData = {
@@ -99,6 +104,8 @@ const AdminManagementPage = () => {
     } catch (err) {
       setError(err.message || 'Operation failed');
       console.error('Error saving admin:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -118,7 +125,10 @@ const AdminManagementPage = () => {
       return;
     }
 
+    if (deletingId === id) return; // Prevent double deletion
+
     try {
+      setDeletingId(id);
       await api.admin.delete(id);
       setSuccess('Admin deleted successfully!');
       fetchAdmins();
@@ -126,6 +136,8 @@ const AdminManagementPage = () => {
     } catch (err) {
       setError(err.message || 'Failed to delete admin');
       console.error('Error deleting admin:', err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -284,10 +296,18 @@ const AdminManagementPage = () => {
                               </button>
                               {admin.id !== user?.id && (
                                 <button
-                                  className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors cursor-pointer"
+                                  className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                   onClick={() => handleDelete(admin.id, admin.email)}
+                                  disabled={deletingId === admin.id}
                                 >
-                                  Delete
+                                  {deletingId === admin.id ? (
+                                    <>
+                                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                      Deleting...
+                                    </>
+                                  ) : (
+                                    'Delete'
+                                  )}
                                 </button>
                               )}
                             </div>
@@ -437,9 +457,17 @@ const AdminManagementPage = () => {
                       </button>
                       <button
                         type="submit"
-                        className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm"
+                        disabled={isSubmitting}
+                        className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
-                        {editingAdmin ? 'Update Admin' : 'Create Admin'}
+                        {isSubmitting ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            {editingAdmin ? 'Updating...' : 'Creating...'}
+                          </>
+                        ) : (
+                          editingAdmin ? 'Update Admin' : 'Create Admin'
+                        )}
                       </button>
                     </div>
                   </form>

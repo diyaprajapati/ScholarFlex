@@ -234,6 +234,7 @@ const getSelectedStudentsWithProjects = async (req, res) => {
           email: true,
           fullName: true,
           phone: true,
+          imageUrl: true,
           internshipStartDate: true,
           internshipEndDate: true,
           domain: {

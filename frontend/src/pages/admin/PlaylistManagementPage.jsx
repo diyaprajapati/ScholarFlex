@@ -23,6 +23,7 @@ const PlaylistManagementPage = () => {
   });
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, playlist: null });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -105,10 +106,13 @@ const PlaylistManagementPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // Prevent double submission
+    
     setError('');
     setSuccess('');
 
     try {
+      setIsSubmitting(true);
       if (editingPlaylist) {
         // Update playlist
         const response = await api.playlists.update(editingPlaylist.id, formData);
@@ -137,6 +141,8 @@ const PlaylistManagementPage = () => {
     } catch (err) {
       setError(err.message || 'Failed to save playlist');
       console.error('Error saving playlist:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -409,9 +415,17 @@ const PlaylistManagementPage = () => {
                       </button>
                       <button
                         type="submit"
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer"
+                        disabled={isSubmitting}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
-                        {editingPlaylist ? 'Update' : 'Create'}
+                        {isSubmitting ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            {editingPlaylist ? 'Updating...' : 'Creating...'}
+                          </>
+                        ) : (
+                          editingPlaylist ? 'Update' : 'Create'
+                        )}
                       </button>
                     </div>
                   </form>

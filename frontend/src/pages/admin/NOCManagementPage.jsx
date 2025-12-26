@@ -18,6 +18,7 @@ const NOCManagementPage = () => {
   const [selectedNOC, setSelectedNOC] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [updatingId, setUpdatingId] = useState(null); // Track which NOC is being updated
   const [downloadingAll, setDownloadingAll] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -80,8 +81,11 @@ const NOCManagementPage = () => {
   };
 
   const handleStatusUpdate = async (nocId, newStatus) => {
+    if (updatingId === nocId) return; // Prevent double update
+    
     try {
       setUpdating(true);
+      setUpdatingId(nocId);
       setError('');
       setSuccess('');
       
@@ -99,6 +103,7 @@ const NOCManagementPage = () => {
       setError(err.message || 'Failed to update NOC status');
     } finally {
       setUpdating(false);
+      setUpdatingId(null);
     }
   };
 
@@ -300,19 +305,37 @@ const NOCManagementPage = () => {
                                 <>
                                   <button
                                     onClick={() => handleStatusUpdate(noc.id, 'APPROVED')}
-                                    disabled={updating}
-                                    className="text-green-600 hover:text-green-900 flex items-center gap-1 disabled:opacity-50 cursor-pointer"
+                                    disabled={updatingId === noc.id || updating}
+                                    className="text-green-600 hover:text-green-900 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                   >
-                                    <CheckCircle className="w-4 h-4" />
-                                    Approve
+                                    {updatingId === noc.id ? (
+                                      <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-green-600 border-t-transparent"></div>
+                                        Updating...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <CheckCircle className="w-4 h-4" />
+                                        Approve
+                                      </>
+                                    )}
                                   </button>
                                   <button
                                     onClick={() => handleStatusUpdate(noc.id, 'REJECTED')}
-                                    disabled={updating}
-                                    className="text-red-600 hover:text-red-900 flex items-center gap-1 disabled:opacity-50 cursor-pointer"
+                                    disabled={updatingId === noc.id || updating}
+                                    className="text-red-600 hover:text-red-900 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                   >
-                                    <XCircle className="w-4 h-4" />
-                                    Reject
+                                    {updatingId === noc.id ? (
+                                      <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+                                        Updating...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <XCircle className="w-4 h-4" />
+                                        Reject
+                                      </>
+                                    )}
                                   </button>
                                 </>
                               )}
@@ -376,19 +399,37 @@ const NOCManagementPage = () => {
                   <>
                     <button
                       onClick={() => handleStatusUpdate(selectedNOC.id, 'APPROVED')}
-                      disabled={updating}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                      disabled={updatingId === selectedNOC.id || updating}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
                     >
-                      <CheckCircle className="w-4 h-4" />
-                      Approve
+                      {updatingId === selectedNOC.id ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          Approve
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => handleStatusUpdate(selectedNOC.id, 'REJECTED')}
-                      disabled={updating}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                      disabled={updatingId === selectedNOC.id || updating}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
                     >
-                      <XCircle className="w-4 h-4" />
-                      Reject
+                      {updatingId === selectedNOC.id ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-4 h-4" />
+                          Reject
+                        </>
+                      )}
                     </button>
                   </>
                 )}

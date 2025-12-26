@@ -15,6 +15,7 @@ export default function QuestionPapersListPage() {
   const [paperSets, setPaperSets] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, paperSet: null })
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -65,8 +66,11 @@ export default function QuestionPapersListPage() {
   }
 
   const handleDeleteConfirm = async () => {
+    if (deleteModal.paperSet || isDeleting) return // Prevent double deletion
+    
     if (deleteModal.paperSet) {
       try {
+        setIsDeleting(true)
         const response = await api.questionPapers.delete(deleteModal.paperSet.id)
         // Check if the response indicates success
         if (response && response.success !== false) {
@@ -79,6 +83,8 @@ export default function QuestionPapersListPage() {
       } catch (error) {
         console.error('Error deleting question paper:', error)
         alert(error.message || 'Failed to delete question paper. Please try again.')
+      } finally {
+        setIsDeleting(false)
       }
     }
   }
@@ -112,6 +118,7 @@ export default function QuestionPapersListPage() {
         paperSet={deleteModal.paperSet}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
+        isDeleting={isDeleting}
       />
     </div>
   )

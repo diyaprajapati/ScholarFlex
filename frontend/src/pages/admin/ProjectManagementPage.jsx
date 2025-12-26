@@ -24,6 +24,43 @@ const ProjectManagementPage = () => {
   const [expandedStudents, setExpandedStudents] = useState(new Set());
   const [quickAddForms, setQuickAddForms] = useState({});
   const [formData, setFormData] = useState({});
+  const [submittingForms, setSubmittingForms] = useState(new Set()); // Track which student's form is submitting
+  const [deletingProjects, setDeletingProjects] = useState(new Set()); // Track which projects are being deleted
+  const [failedImages, setFailedImages] = useState(new Set());
+
+  // Helper function to get image URL
+  const getImageUrl = (url) => {
+    if (!url) return null;
+    
+    // If it's already a full URL (http/https), use it directly
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    
+    // If it's a Google Drive URL
+    if (url.includes('thumbnail?id=')) return url;
+    
+    const openMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    const fileId = openMatch ? openMatch[1] : (fileMatch ? fileMatch[1] : null);
+    
+    if (fileId) {
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+    }
+    
+    // If it's a relative path (uploaded file), construct full URL
+    if (url.startsWith('/uploads/')) {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      return baseUrl.replace('/api', '') + url;
+    }
+    
+    return url;
+  };
+
+  const handleImageError = (imageKey) => (e) => {
+    setFailedImages(prev => new Set([...prev, imageKey]));
+    e.target.style.display = 'none';
+  };
 
   // Debounce search term
   useEffect(() => {
@@ -70,7 +107,10 @@ const ProjectManagementPage = () => {
 
       const response = await api.projects.getSelectedStudentsWithProjects({}, params.toString());
       if (response.success) {
-        setStudents(response.data || []);
+        const studentsData = response.data || [];
+        console.log('Projects API Response - Sample student:', studentsData[0]);
+        console.log('Projects API Response - Student imageUrl:', studentsData[0]?.imageUrl);
+        setStudents(studentsData);
         if (response.pagination) {
           setTotalPages(response.pagination.totalPages || 1);
           setTotal(response.pagination.total || 0);
@@ -127,11 +167,19 @@ const ProjectManagementPage = () => {
 
   const handleQuickAddSubmit = async (studentId, e) => {
     e.preventDefault();
+    if (submittingForms.has(studentId)) return; // Prevent double submission
+    
     try {
+      setSubmittingForms(prev => new Set([...prev, studentId]));
       setError('');
       const data = formData[studentId];
       if (!data || !data.projectTitle) {
         setError('Project title is required');
+        setSubmittingForms(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(studentId);
+          return newSet;
+        });
         return;
       }
 
@@ -160,6 +208,12 @@ const ProjectManagementPage = () => {
       fetchStudents();
     } catch (err) {
       setError(err.message || 'Failed to create project');
+    } finally {
+      setSubmittingForms(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(studentId);
+        return newSet;
+      });
     }
   };
 
@@ -168,11 +222,20 @@ const ProjectManagementPage = () => {
       return;
     }
 
+    if (deletingProjects.has(projectId)) return; // Prevent double deletion
+
     try {
+      setDeletingProjects(prev => new Set([...prev, projectId]));
       await api.projects.delete(projectId);
       fetchStudents();
     } catch (err) {
       setError(err.message || 'Failed to delete project');
+    } finally {
+      setDeletingProjects(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(projectId);
+        return newSet;
+      });
     }
   };
 
@@ -297,9 +360,31 @@ const ProjectManagementPage = () => {
                             <tr key={student.id} className="group hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-100">
-                                    <User className="w-5 h-5 text-green-600" />
-                                  </div>
+                                  {(() => {
+                                    const imageUrl = student.imageUrl;
+                                    const imageKey = `project-${student.id}`;
+                                    const hasFailed = failedImages.has(imageKey);
+                                    
+                                    if (imageUrl && !hasFailed) {
+                                      const url = getImageUrl(imageUrl);
+                                      console.log('Project page - Student image:', { studentId: student.id, imageUrl, constructedUrl: url });
+                                      return (
+                                        <img
+                                          src={url}
+                                          alt={student.fullName}
+                                          className="shrink-0 h-10 w-10 rounded-full object-cover border-2 border-gray-200"
+                                          onError={handleImageError(imageKey)}
+                                          onLoad={() => console.log('Image loaded successfully:', url)}
+                                          loading="lazy"
+                                        />
+                                      );
+                                    }
+                                    return (
+                                      <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-100">
+                                        <User className="w-5 h-5 text-green-600" />
+                                      </div>
+                                    );
+                                  })()}
                                   <div className="ml-4">
                                     <div className="text-sm font-medium text-gray-900">
                                       {student.fullName || 'N/A'}
@@ -388,9 +473,17 @@ const ProjectManagementPage = () => {
                                       <div className="flex items-end">
                                         <button
                                           type="submit"
-                                          className="w-full px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
+                                          disabled={submittingForms.has(student.id)}
+                                          className="w-full px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                         >
-                                          Assign Project
+                                          {submittingForms.has(student.id) ? (
+                                            <>
+                                              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                              Assigning...
+                                            </>
+                                          ) : (
+                                            'Assign Project'
+                                          )}
                                         </button>
                                       </div>
                                     </div>
@@ -443,10 +536,15 @@ const ProjectManagementPage = () => {
                                         </div>
                                         <button
                                           onClick={() => handleDeleteProject(project.id)}
-                                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
+                                          disabled={deletingProjects.has(project.id)}
+                                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                           title="Delete"
                                         >
-                                          <Trash2 className="w-4 h-4" />
+                                          {deletingProjects.has(project.id) ? (
+                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+                                          ) : (
+                                            <Trash2 className="w-4 h-4" />
+                                          )}
                                         </button>
                                       </div>
                                     ))}
