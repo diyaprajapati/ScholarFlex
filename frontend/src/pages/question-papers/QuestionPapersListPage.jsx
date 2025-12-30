@@ -66,26 +66,24 @@ export default function QuestionPapersListPage() {
   }
 
   const handleDeleteConfirm = async () => {
-    if (deleteModal.paperSet || isDeleting) return // Prevent double deletion
+    if (!deleteModal.paperSet || isDeleting) return // Prevent double deletion
     
-    if (deleteModal.paperSet) {
-      try {
-        setIsDeleting(true)
-        const response = await api.questionPapers.delete(deleteModal.paperSet.id)
-        // Check if the response indicates success
-        if (response && response.success !== false) {
-          setPaperSets((prev) => prev.filter((p) => p.id !== deleteModal.paperSet.id))
-          setDeleteModal({ isOpen: false, paperSet: null })
-          alert('Question paper deleted successfully!')
-        } else {
-          throw new Error(response?.message || 'Failed to delete question paper')
-        }
-      } catch (error) {
-        console.error('Error deleting question paper:', error)
-        alert(error.message || 'Failed to delete question paper. Please try again.')
-      } finally {
-        setIsDeleting(false)
+    try {
+      setIsDeleting(true)
+      const response = await api.questionPapers.delete(deleteModal.paperSet.id)
+      // Check if the response indicates success
+      if (response && response.success !== false) {
+        setPaperSets((prev) => prev.filter((p) => p.id !== deleteModal.paperSet.id))
+        setDeleteModal({ isOpen: false, paperSet: null })
+        alert('Question paper deleted successfully!')
+      } else {
+        throw new Error(response?.message || 'Failed to delete question paper')
       }
+    } catch (error) {
+      console.error('Error deleting question paper:', error)
+      alert(error.message || 'Failed to delete question paper. Please try again.')
+    } finally {
+      setIsDeleting(false)
     }
   }
 

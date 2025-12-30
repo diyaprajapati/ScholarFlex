@@ -123,10 +123,10 @@ const getAllInternshipStatuses = async (req, res) => {
     // Add search filter
     if (search) {
       where.OR = [
-        { fullName: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
-        { phone: { contains: search, mode: 'insensitive' } },
-        { domain: { domainName: { contains: search, mode: 'insensitive' } } },
+        { fullName: { contains: search } },
+        { email: { contains: search } },
+        { phone: { contains: search } },
+        { domain: { domainName: { contains: search } } },
       ];
     }
 

@@ -21,6 +21,9 @@ const InternshipStatusPage = () => {
   const [allStudents, setAllStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [domains, setDomains] = useState([]);
+  const [selectedDomain, setSelectedDomain] = useState('');
+  const [isLoadingDomains, setIsLoadingDomains] = useState(false);
 
   // Debounce search term
   useEffect(() => {
@@ -46,8 +49,21 @@ const InternshipStatusPage = () => {
       return;
     }
 
+    fetchDomains();
     fetchAllStatuses();
   }, [navigate, sortBy, sortOrder, debouncedSearch]);
+
+  const fetchDomains = async () => {
+    try {
+      setIsLoadingDomains(true);
+      const response = await api.domains.getAll();
+      setDomains(response.domains || response.data || []);
+    } catch (err) {
+      console.error('Error fetching domains:', err);
+    } finally {
+      setIsLoadingDomains(false);
+    }
+  };
 
   const fetchAllStatuses = async () => {
     try {
@@ -153,6 +169,14 @@ const InternshipStatusPage = () => {
     filteredStudents = allStudents.filter(s => s.status === filter);
   }
   
+  // Apply domain filter
+  if (selectedDomain) {
+    filteredStudents = filteredStudents.filter(s => {
+      const domainId = s.student?.domain?.id;
+      return domainId && domainId.toString() === selectedDomain;
+    });
+  }
+  
   // Apply search filter
   if (debouncedSearch) {
     const searchLower = debouncedSearch.toLowerCase();
@@ -224,17 +248,39 @@ const InternshipStatusPage = () => {
             <p className="text-gray-600">View and monitor all selected students' internship statuses</p>
           </div>
 
-          {/* Search Bar */}
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by name, email, or domain..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
+          {/* Search Bar and Domain Filter */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or domain..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <select
+                value={selectedDomain}
+                onChange={(e) => {
+                  setSelectedDomain(e.target.value);
+                  setCurrentPage(1); // Reset to first page when domain filter changes
+                }}
+                disabled={isLoadingDomains}
+                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
+                  isLoadingDomains ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white'
+                }`}
+              >
+                <option value="">All Domains</option>
+                {domains.map((domain) => (
+                  <option key={domain.id} value={domain.id}>
+                    {domain.domain_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

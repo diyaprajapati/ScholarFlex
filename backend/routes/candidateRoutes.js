@@ -99,6 +99,13 @@ router.post('/', candidateController.createStudent);
 router.put('/:id', candidateController.updateStudent);
 
 /**
+ * @route   DELETE /api/candidates/:id
+ * @desc    Delete a student (soft delete)
+ * @access  Private (Admin, Super Admin)
+ */
+router.delete('/:id', candidateController.deleteStudent);
+
+/**
  * @route   POST /api/candidates/migrate-area-of-interests
  * @desc    Migrate area_of_interests data to domain_id for existing students
  * @access  Private (Admin, Super Admin)

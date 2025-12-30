@@ -13,7 +13,7 @@ const RetestManagementPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedFilter, setSelectedFilter] = useState('all') // 'all' | 'selected' | 'not_selected'
+  const [selectedFilter, setSelectedFilter] = useState('all') // 'all' | 'selected' | 'not_selected' | 'in_progress'
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
 
@@ -41,11 +41,12 @@ const RetestManagementPage = () => {
       const response = await api.candidates.getAll()
       const list = response.candidates || []
 
-      // Focus on students who have given at least one test OR already have retest access
+      // Focus on students who have given at least one test, have retest access, OR have IN_PROGRESS tests
       const filtered = list.filter(
         (s) =>
           (typeof s.marks === 'number' && s.marks > 0) ||
-          s.can_retest === true
+          s.can_retest === true ||
+          s.has_in_progress_test === true
       )
 
       setStudents(filtered)
@@ -100,11 +101,13 @@ const RetestManagementPage = () => {
       })
     }
 
-    // Filter by selection status
+    // Filter by selection status or test status
     if (selectedFilter === 'selected') {
       result = result.filter((s) => s.is_selected)
     } else if (selectedFilter === 'not_selected') {
       result = result.filter((s) => !s.is_selected)
+    } else if (selectedFilter === 'in_progress') {
+      result = result.filter((s) => s.has_in_progress_test === true)
     }
 
     // Sort alphabetically by name/email for stable order
@@ -177,6 +180,7 @@ const RetestManagementPage = () => {
                   className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="all">All students</option>
+                  <option value="in_progress">Tests In Progress</option>
                   <option value="selected">Selected only</option>
                   <option value="not_selected">Not selected only</option>
                 </select>
@@ -202,7 +206,7 @@ const RetestManagementPage = () => {
                 No students available for retest management
               </h2>
               <p className="text-sm text-gray-600">
-                Retest management shows only students who have already completed a test.
+                Retest management shows students who have completed a test, have retest access, or have a test in progress.
               </p>
             </div>
           ) : (
@@ -216,6 +220,9 @@ const RetestManagementPage = () => {
                       </th>
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Email
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        Test Status
                       </th>
                       <th className="px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Last Test %
@@ -244,9 +251,26 @@ const RetestManagementPage = () => {
                         <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-sm text-gray-900">
                           {student.email}
                         </td>
+                        <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-center text-sm">
+                          {student.has_in_progress_test ? (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                              In Progress
+                            </span>
+                          ) : typeof student.marks === 'number' && student.marks > 0 ? (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
+                              Completed
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200">
+                              Not Started
+                            </span>
+                          )}
+                        </td>
                         <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-center text-sm text-gray-900">
-                          {typeof student.marks === 'number'
+                          {typeof student.marks === 'number' && student.marks > 0
                             ? `${student.marks.toFixed(2)}%`
+                            : student.has_in_progress_test
+                            ? '—'
                             : 'N/A'}
                         </td>
                         <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-center text-sm">

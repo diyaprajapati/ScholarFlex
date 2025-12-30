@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const { prisma } = require('../config/database');
 const QuestionPaper = require('../models/QuestionPaper');
 
 const SECTION_REQUIREMENTS = {
@@ -80,12 +80,17 @@ const shuffleArray = (input = []) => {
 };
 
 const buildQuestionPoolForPaper = async (questionPaperId) => {
-  const questionsResult = await pool.query(
-    `SELECT id, weightage, section
-     FROM questions
-     WHERE question_paper_id = $1 AND is_active = TRUE`,
-    [questionPaperId]
-  );
+  const questions = await prisma.question.findMany({
+    where: {
+      questionPaperId: parseInt(questionPaperId),
+      isActive: true,
+    },
+    select: {
+      id: true,
+      weightage: true,
+      section: true,
+    },
+  });
 
   // Initialize sections map with all 4 required sections
   const sectionsMap = {
@@ -96,16 +101,16 @@ const buildQuestionPoolForPaper = async (questionPaperId) => {
   };
 
   // Group questions by normalized section name
-  questionsResult.rows.forEach((row) => {
-    const normalizedSection = normalizeSectionName(row.section);
+  questions.forEach((question) => {
+    const normalizedSection = normalizeSectionName(question.section);
     if (!normalizedSection) {
-      console.warn(`Question ${row.id} has invalid section: ${row.section}`);
+      console.warn(`Question ${question.id} has invalid section: ${question.section}`);
       return;
     }
     if (sectionsMap[normalizedSection]) {
       sectionsMap[normalizedSection].push({
-        question_id: row.id,
-        weightage: row.weightage || 1,
+        question_id: question.id,
+        weightage: question.weightage || 1,
         section: normalizedSection,
       });
     }
@@ -170,12 +175,14 @@ const ensureAttemptQuestionPool = async (attemptId, questionPaperId, existingPoo
     // Max possible score is always 100 for 50 questions
     const maxScore = 100;
 
-    await pool.query(
-      `UPDATE test_attempts 
-       SET question_pool = $1::jsonb, total_questions = $2, max_possible_score = $3
-       WHERE id = $4`,
-      [JSON.stringify(poolData), poolData.length, maxScore, attemptId]
-    );
+    await prisma.testAttempt.update({
+      where: { id: parseInt(attemptId) },
+      data: {
+        questionPool: poolData,
+        totalQuestions: poolData.length,
+        maxPossibleScore: maxScore,
+      },
+    });
   }
   return poolData;
 };
@@ -206,20 +213,20 @@ exports.getAvailableTests = async (req, res) => {
       });
     }
 
-    // Get student's domain
-    const studentResult = await pool.query(
-      'SELECT domain_id FROM students WHERE id = $1 AND is_active = TRUE',
-      [studentId]
-    );
+    // Get student's domain using Prisma
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, isActive: true },
+      select: { domainId: true },
+    });
 
-    if (studentResult.rows.length === 0) {
+    if (!student) {
       return res.status(404).json({
         success: false,
         message: 'Student not found',
       });
     }
 
-    const domainId = studentResult.rows[0].domain_id;
+    const domainId = student.domainId;
     if (!domainId) {
       return res.status(200).json({
         success: true,
@@ -228,50 +235,110 @@ exports.getAvailableTests = async (req, res) => {
       });
     }
 
-    // Get tests assigned to this domain (published only)
-    const testsResult = await pool.query(
-      `SELECT DISTINCT
-        qp.id, qp.paper_name, qp.description, qp.subject, qp.year, qp.semester,
-        qp.total_questions, qp.total_weightage, qp.duration_minutes, qp.status,
-        qp.created_at,
-        -- Check if student has already attempted this test
-        CASE WHEN ta.id IS NOT NULL THEN true ELSE false END as is_attempted,
-        ta.id as attempt_id,
-        ta.status as attempt_status,
-        ta.percentage_score as attempt_score
-      FROM question_papers qp
-      INNER JOIN question_paper_domains qpd ON qp.id = qpd.question_paper_id
-      LEFT JOIN test_attempts ta ON qp.id = ta.question_paper_id AND ta.student_id = $1
-      WHERE qpd.domain_id = $2
-        AND qp.status = 'published'
-        AND qp.is_active = TRUE
-      ORDER BY qp.created_at DESC`,
-      [studentId, domainId]
-    );
+    // Get tests assigned to this domain (published only) using Prisma
+    const domainTests = await prisma.questionPaper.findMany({
+      where: {
+        domains: {
+          some: {
+            domainId: domainId,
+          },
+        },
+        status: 'published',
+        isActive: true,
+      },
+      include: {
+        testAttempts: {
+          where: {
+            studentId: studentId,
+          },
+          select: {
+            id: true,
+            status: true,
+            percentageScore: true,
+          },
+          take: 1,
+          orderBy: {
+            submittedAt: 'desc',
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    // Also get manually assigned tests
-    const manualAssignmentsResult = await pool.query(
-      `SELECT DISTINCT
-        qp.id, qp.paper_name, qp.description, qp.subject, qp.year, qp.semester,
-        qp.total_questions, qp.total_weightage, qp.duration_minutes, qp.status,
-        qp.created_at,
-        CASE WHEN ta.id IS NOT NULL THEN true ELSE false END as is_attempted,
-        ta.id as attempt_id,
-        ta.status as attempt_status,
-        ta.percentage_score as attempt_score
-      FROM question_papers qp
-      INNER JOIN test_assignments ta_assign ON qp.id = ta_assign.question_paper_id
-      LEFT JOIN test_attempts ta ON qp.id = ta.question_paper_id AND ta.student_id = $1
-      WHERE ta_assign.student_id = $1
-        AND ta_assign.is_active = TRUE
-        AND qp.status = 'published'
-        AND qp.is_active = TRUE
-      ORDER BY qp.created_at DESC`,
-      [studentId]
-    );
+    // Get manually assigned tests using Prisma
+    const manualAssignments = await prisma.testAssignment.findMany({
+      where: {
+        studentId: studentId,
+        isActive: true,
+        questionPaper: {
+          status: 'published',
+          isActive: true,
+        },
+      },
+      include: {
+        questionPaper: {
+          include: {
+            testAttempts: {
+              where: {
+                studentId: studentId,
+              },
+              select: {
+                id: true,
+                status: true,
+                percentageScore: true,
+              },
+              take: 1,
+              orderBy: {
+                submittedAt: 'desc',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Transform domain tests
+    const domainTestsFormatted = domainTests.map(qp => ({
+      id: qp.id,
+      paper_name: qp.paperName,
+      description: qp.description,
+      subject: qp.subject,
+      year: qp.year,
+      semester: qp.semester,
+      total_questions: qp.totalQuestions,
+      total_weightage: qp.totalWeightage,
+      duration_minutes: qp.durationMinutes,
+      status: qp.status,
+      created_at: qp.createdAt,
+      is_attempted: qp.testAttempts.length > 0,
+      attempt_id: qp.testAttempts[0]?.id || null,
+      attempt_status: qp.testAttempts[0]?.status || null,
+      attempt_score: qp.testAttempts[0]?.percentageScore ? parseFloat(qp.testAttempts[0].percentageScore) : null,
+    }));
+
+    // Transform manually assigned tests
+    const manualTestsFormatted = manualAssignments.map(ta => ({
+      id: ta.questionPaper.id,
+      paper_name: ta.questionPaper.paperName,
+      description: ta.questionPaper.description,
+      subject: ta.questionPaper.subject,
+      year: ta.questionPaper.year,
+      semester: ta.questionPaper.semester,
+      total_questions: ta.questionPaper.totalQuestions,
+      total_weightage: ta.questionPaper.totalWeightage,
+      duration_minutes: ta.questionPaper.durationMinutes,
+      status: ta.questionPaper.status,
+      created_at: ta.questionPaper.createdAt,
+      is_attempted: ta.questionPaper.testAttempts.length > 0,
+      attempt_id: ta.questionPaper.testAttempts[0]?.id || null,
+      attempt_status: ta.questionPaper.testAttempts[0]?.status || null,
+      attempt_score: ta.questionPaper.testAttempts[0]?.percentageScore ? parseFloat(ta.questionPaper.testAttempts[0].percentageScore) : null,
+    }));
 
     // Combine and deduplicate
-    const allTests = [...testsResult.rows, ...manualAssignmentsResult.rows];
+    const allTests = [...domainTestsFormatted, ...manualTestsFormatted];
     const uniqueTests = Array.from(
       new Map(allTests.map(test => [test.id, test])).values()
     );
@@ -294,24 +361,57 @@ exports.getAvailableTests = async (req, res) => {
  * Helper to verify student access to test
  */
 const verifyTestAccess = async (testId, studentId) => {
-  const result = await pool.query(
-    `SELECT qp.id, qp.duration_minutes
-     FROM question_papers qp
-     JOIN students s ON s.id = $2
-     LEFT JOIN question_paper_domains qpd 
-       ON qpd.question_paper_id = qp.id AND qpd.domain_id = s.domain_id
-     LEFT JOIN test_assignments ta_assign 
-       ON ta_assign.question_paper_id = qp.id 
-       AND ta_assign.student_id = $2 
-       AND ta_assign.is_active = TRUE
-     WHERE qp.id = $1
-       AND qp.status = 'published'
-       AND qp.is_active = TRUE
-       AND (qpd.domain_id IS NOT NULL OR ta_assign.id IS NOT NULL)`,
-    [testId, studentId]
-  );
+  // Get student with domain
+  const student = await prisma.student.findUnique({
+    where: { id: parseInt(studentId) },
+    select: { domainId: true },
+  });
 
-  return result.rows[0] || null;
+  if (!student) {
+    return null;
+  }
+
+  // Get question paper with domains and test assignments
+  const questionPaper = await prisma.questionPaper.findFirst({
+    where: {
+      id: parseInt(testId),
+      status: 'published',
+      isActive: true,
+      OR: [
+        // Check if paper is assigned to student's domain
+        {
+          domains: {
+            some: {
+              domainId: student.domainId,
+            },
+          },
+        },
+        // Check if paper is manually assigned to student
+        {
+          testAssignments: {
+            some: {
+              studentId: parseInt(studentId),
+              isActive: true,
+            },
+          },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      durationMinutes: true,
+    },
+  });
+
+  if (!questionPaper) {
+    return null;
+  }
+
+  // Return in the expected format (snake_case for compatibility)
+  return {
+    id: questionPaper.id,
+    duration_minutes: questionPaper.durationMinutes,
+  };
 };
 
 /**
@@ -331,28 +431,45 @@ exports.getNextQuestion = async (req, res) => {
     }
 
     // Get test attempt and verify ownership
-    const attemptResult = await pool.query(
-      `SELECT ta.*, qp.total_weightage, qp.duration_minutes
-       FROM test_attempts ta
-       JOIN question_papers qp ON ta.question_paper_id = qp.id
-       WHERE ta.id = $1 AND ta.student_id = $2 AND ta.status = 'IN_PROGRESS'`,
-      [testAttemptId, studentId]
-    );
+    const attempt = await prisma.testAttempt.findFirst({
+      where: {
+        id: parseInt(testAttemptId),
+        studentId: parseInt(studentId),
+        status: 'IN_PROGRESS',
+      },
+      include: {
+        questionPaper: {
+          select: {
+            totalWeightage: true,
+            durationMinutes: true,
+          },
+        },
+      },
+    });
 
-    if (attemptResult.rows.length === 0) {
+    if (!attempt) {
       return res.status(404).json({
         success: false,
         message: 'Test attempt not found or already completed',
       });
     }
 
-    const attempt = attemptResult.rows[0];
+    // Transform to match expected format
+    const attemptData = {
+      id: attempt.id,
+      student_id: attempt.studentId,
+      question_paper_id: attempt.questionPaperId,
+      status: attempt.status,
+      question_pool: attempt.questionPool,
+      total_weightage: attempt.questionPaper.totalWeightage,
+      duration_minutes: attempt.questionPaper.durationMinutes,
+    };
 
     // Get question pool with scaled weightages
     const questionPool = await ensureAttemptQuestionPool(
       testAttemptId,
-      attempt.question_paper_id,
-      attempt.question_pool
+      attemptData.question_paper_id,
+      attemptData.question_pool
     );
 
     if (!questionPool || questionPool.length === 0) {
@@ -365,13 +482,26 @@ exports.getNextQuestion = async (req, res) => {
     const questionIds = questionPool.map((item) => item.question_id);
 
     // Get all questions from the pool, sorted by scaled weightage (marks)
-    const questionsResult = await pool.query(
-      `SELECT q.id, q.question_text, q.question_type, q.weightage, q.correct_answer
-       FROM questions q
-       WHERE q.id = ANY($1::int[]) AND q.is_active = TRUE
-       ORDER BY q.weightage ASC, q.display_order ASC`,
-      [questionIds]
-    );
+    const questions = await prisma.question.findMany({
+      where: {
+        id: {
+          in: questionIds,
+        },
+        isActive: true,
+      },
+      select: {
+        id: true,
+        questionText: true,
+        questionType: true,
+        weightage: true,
+        correctAnswer: true,
+        displayOrder: true,
+      },
+      orderBy: [
+        { weightage: 'asc' },
+        { displayOrder: 'asc' },
+      ],
+    });
 
     // Create a map of question_id -> scaled weightage from pool
     const poolWeightageMap = new Map();
@@ -380,33 +510,47 @@ exports.getNextQuestion = async (req, res) => {
     });
 
     // Get answered questions with timestamps - ensure we get ALL answered questions
-    const answeredResult = await pool.query(
-      `SELECT DISTINCT question_id, is_correct, score_obtained, answered_at
-       FROM student_answers
-       WHERE test_attempt_id = $1
-       ORDER BY answered_at DESC`,
-      [testAttemptId]
-    );
+    const answeredQuestions = await prisma.studentAnswer.findMany({
+      where: {
+        testAttemptId: parseInt(testAttemptId),
+      },
+      select: {
+        questionId: true,
+        isCorrect: true,
+        scoreObtained: true,
+        answeredAt: true,
+      },
+      orderBy: {
+        answeredAt: 'desc',
+      },
+      distinct: ['questionId'],
+    });
 
     // Create a Set for faster lookup and a Map for details
     const answeredQuestionIds = new Set();
-    const answeredQuestions = new Map();
-    answeredResult.rows.forEach(row => {
-      answeredQuestionIds.add(row.question_id);
-      answeredQuestions.set(row.question_id, {
-        is_correct: row.is_correct,
-        score_obtained: parseFloat(row.score_obtained),
-        answered_at: new Date(row.answered_at),
+    const answeredQuestionsMap = new Map();
+    answeredQuestions.forEach(answer => {
+      answeredQuestionIds.add(answer.questionId);
+      answeredQuestionsMap.set(answer.questionId, {
+        is_correct: answer.isCorrect,
+        score_obtained: parseFloat(answer.scoreObtained || 0),
+        answered_at: answer.answeredAt,
       });
     });
 
     // Calculate current total marks obtained
-    const currentMarks = Array.from(answeredQuestions.values())
+    const currentMarks = Array.from(answeredQuestionsMap.values())
       .reduce((sum, ans) => sum + ans.score_obtained, 0);
 
     // Adaptive logic: Find next question based on time taken
     let nextQuestion = null;
-    const allQuestions = questionsResult.rows;
+    const allQuestions = questions.map(q => ({
+      id: q.id,
+      question_text: q.questionText,
+      question_type: q.questionType,
+      weightage: q.weightage,
+      correct_answer: q.correctAnswer,
+    }));
 
     // Sort questions by scaled weightage (ascending - easier to harder)
     const sortedQuestions = [...allQuestions].sort((a, b) => {
@@ -432,22 +576,22 @@ exports.getNextQuestion = async (req, res) => {
       nextQuestion = minWeightQuestion || sortedQuestions[0]; // Always use easiest question first
     } else {
       // Get last answered question and calculate time taken
-      const lastAnsweredId = answeredResult.rows[0].question_id;
+      const lastAnsweredId = answeredQuestions[0]?.questionId;
       const lastAnswered = allQuestions.find(q => q.id === lastAnsweredId);
-      const lastAnswer = answeredQuestions.get(lastAnsweredId);
+      const lastAnswer = answeredQuestionsMap.get(lastAnsweredId);
       
       // Calculate time taken for last question (in seconds)
       let timeTakenSeconds = 0;
-      if (answeredResult.rows.length > 1) {
+      if (answeredQuestions.length > 1) {
         // Time between last two answers
-        const lastAnswerTime = new Date(answeredResult.rows[0].answered_at);
-        const previousAnswerTime = new Date(answeredResult.rows[1].answered_at);
-        timeTakenSeconds = (lastAnswerTime - previousAnswerTime) / 1000;
+        const lastAnswerTime = answeredQuestions[0].answeredAt;
+        const previousAnswerTime = answeredQuestions[1].answeredAt;
+        timeTakenSeconds = (lastAnswerTime.getTime() - previousAnswerTime.getTime()) / 1000;
       } else {
         // First answer - use time from test start
-        const lastAnswerTime = new Date(answeredResult.rows[0].answered_at);
-        const testStartTime = new Date(attempt.started_at);
-        timeTakenSeconds = (lastAnswerTime - testStartTime) / 1000;
+        const lastAnswerTime = answeredQuestions[0].answeredAt;
+        const testStartTime = attempt.startedAt;
+        timeTakenSeconds = (lastAnswerTime.getTime() - testStartTime.getTime()) / 1000;
       }
 
       const currentWeightage = poolWeightageMap.get(lastAnswered.id) || lastAnswered.weightage || 1;
@@ -508,14 +652,17 @@ exports.getNextQuestion = async (req, res) => {
     }
 
     // Double-check: Verify this question hasn't been answered (robust check)
-    const alreadyAnsweredCheck = await pool.query(
-      `SELECT id FROM student_answers 
-       WHERE test_attempt_id = $1 AND question_id = $2 
-       LIMIT 1`,
-      [testAttemptId, nextQuestion.id]
-    );
+    const alreadyAnsweredCheck = await prisma.studentAnswer.findFirst({
+      where: {
+        testAttemptId: parseInt(testAttemptId),
+        questionId: nextQuestion.id,
+      },
+      select: {
+        id: true,
+      },
+    });
 
-    if (alreadyAnsweredCheck.rows.length > 0) {
+    if (alreadyAnsweredCheck) {
       // This question was already answered - find another one
       const availableQuestions = sortedQuestions.filter(q => !answeredQuestionIds.has(q.id));
       
@@ -539,13 +686,21 @@ exports.getNextQuestion = async (req, res) => {
     }
 
     // Get options for this question
-    const optionsResult = await pool.query(
-      `SELECT id, option_text, option_label, is_correct, display_order
-       FROM question_options
-       WHERE question_id = $1
-       ORDER BY display_order`,
-      [nextQuestion.id]
-    );
+    const options = await prisma.questionOption.findMany({
+      where: {
+        questionId: nextQuestion.id,
+      },
+      select: {
+        id: true,
+        optionText: true,
+        optionLabel: true,
+        isCorrect: true,
+        displayOrder: true,
+      },
+      orderBy: {
+        displayOrder: 'asc',
+      },
+    });
 
     // Get scaled weightage from pool
     const scaledWeightage = poolWeightageMap.get(nextQuestion.id) || nextQuestion.weightage || 1;
@@ -557,7 +712,7 @@ exports.getNextQuestion = async (req, res) => {
       type: mapQuestionTypeFromDB(nextQuestion.question_type),
       weightage: scaledWeightage,
       correctAnswer: nextQuestion.correct_answer || null,
-      options: optionsResult.rows.map(opt => ({
+      options: options.map(opt => ({
         id: opt.id,
         text: opt.option_text,
         label: opt.option_label,
@@ -609,38 +764,44 @@ exports.startTest = async (req, res) => {
       });
     }
 
-    const existingAttempt = await pool.query(
-      `SELECT id, status, started_at 
-       FROM test_attempts 
-       WHERE student_id = $1 AND question_paper_id = $2 AND status = 'IN_PROGRESS'
-       ORDER BY started_at DESC LIMIT 1`,
-      [studentId, testId]
-    );
+    const existingAttempt = await prisma.testAttempt.findFirst({
+      where: {
+        studentId: parseInt(studentId),
+        questionPaperId: parseInt(testId),
+        status: 'IN_PROGRESS',
+      },
+      orderBy: {
+        startedAt: 'desc',
+      },
+    });
 
-    if (existingAttempt.rows.length > 0) {
+    if (existingAttempt) {
       return res.status(200).json({
         success: true,
         message: 'Resumed existing test attempt',
         data: {
-          attempt_id: existingAttempt.rows[0].id,
+          attempt_id: existingAttempt.id,
           duration_minutes: testAccess.duration_minutes || 60,
         },
       });
     }
 
     // Check if student has completed this test before
-    const completedAttemptResult = await pool.query(
-      `SELECT id, status
-       FROM test_attempts
-       WHERE student_id = $1 
-         AND question_paper_id = $2
-         AND status IN ('COMPLETED', 'AUTO_SUBMITTED')
-       ORDER BY started_at DESC LIMIT 1`,
-      [studentId, testId]
-    );
+    const completedAttempt = await prisma.testAttempt.findFirst({
+      where: {
+        studentId: parseInt(studentId),
+        questionPaperId: parseInt(testId),
+        status: {
+          in: ['COMPLETED', 'AUTO_SUBMITTED'],
+        },
+      },
+      orderBy: {
+        startedAt: 'desc',
+      },
+    });
 
     // If student has completed the test, deny access unless they have explicit retest access
-    if (completedAttemptResult.rows.length > 0 && req.user?.can_retest !== true) {
+    if (completedAttempt && req.user?.can_retest !== true) {
       return res.status(403).json({
         success: false,
         message: 'You have already attempted this test. You cannot attempt it again.',
@@ -660,20 +821,26 @@ exports.startTest = async (req, res) => {
     // Max possible score is always 100 for 50 questions
     const maxScore = 100;
 
-    const attemptResult = await pool.query(
-      `INSERT INTO test_attempts (
-         student_id, question_paper_id, status, total_questions, max_possible_score, started_at, updated_at, question_pool
-       )
-       VALUES ($1, $2, 'IN_PROGRESS', $3, $4, NOW(), NOW(), $5::jsonb)
-       RETURNING id, started_at`,
-      [studentId, testId, questionPool.length, maxScore, JSON.stringify(questionPool)]
-    );
+    const attemptResult = await prisma.testAttempt.create({
+      data: {
+        studentId: parseInt(studentId),
+        questionPaperId: parseInt(testId),
+        status: 'IN_PROGRESS',
+        totalQuestions: questionPool.length,
+        maxPossibleScore: maxScore,
+        questionPool: questionPool,
+      },
+      select: {
+        id: true,
+        startedAt: true,
+      },
+    });
 
     res.status(201).json({
       success: true,
       message: 'Test attempt started successfully',
       data: {
-        attempt_id: attemptResult.rows[0].id,
+        attempt_id: attemptResult.id,
         duration_minutes: testAccess.duration_minutes || 60,
       },
     });
@@ -702,22 +869,37 @@ exports.submitTest = async (req, res) => {
       });
     }
 
-    const attemptResult = await pool.query(
-      `SELECT ta.*, qp.paper_name
-       FROM test_attempts ta
-       JOIN question_papers qp ON ta.question_paper_id = qp.id
-       WHERE ta.id = $1 AND ta.student_id = $2`,
-      [attemptId, studentId]
-    );
+    const attempt = await prisma.testAttempt.findFirst({
+      where: {
+        id: parseInt(attemptId),
+        studentId: parseInt(studentId),
+      },
+      include: {
+        questionPaper: {
+          select: {
+            id: true,
+            paperName: true,
+          },
+        },
+      },
+    });
 
-    if (attemptResult.rows.length === 0) {
+    if (!attempt) {
       return res.status(404).json({
         success: false,
         message: 'Test attempt not found',
       });
     }
 
-    const attempt = attemptResult.rows[0];
+    // Transform to match expected format
+    const attemptData = {
+      id: attempt.id,
+      student_id: attempt.studentId,
+      question_paper_id: attempt.questionPaperId,
+      status: attempt.status,
+      question_pool: attempt.questionPool,
+      paper_name: attempt.questionPaper.paperName,
+    };
     if (attempt.status !== 'IN_PROGRESS') {
       return res.status(400).json({
         success: false,
@@ -731,8 +913,8 @@ exports.submitTest = async (req, res) => {
         // Get question pool to use scaled weightages
         const questionPool = await ensureAttemptQuestionPool(
           attemptId,
-          attempt.question_paper_id,
-          attempt.question_pool
+          attemptData.question_paper_id,
+          attemptData.question_pool
         );
         
         // Create a map of question_id -> scaled weightage from pool
@@ -743,32 +925,62 @@ exports.submitTest = async (req, res) => {
           });
         }
 
-        const questionsResult = await pool.query(
-          `SELECT q.id, q.question_type, q.weightage, q.correct_answer
-           FROM questions q
-           WHERE q.question_paper_id = $1 AND q.id = ANY($2::int[])`,
-          [attempt.question_paper_id, questionIds]
-        );
+        const questions = await prisma.question.findMany({
+          where: {
+            questionPaperId: attemptData.question_paper_id,
+            id: {
+              in: questionIds,
+            },
+          },
+          select: {
+            id: true,
+            questionType: true,
+            weightage: true,
+            correctAnswer: true,
+          },
+        });
 
-        const optionsResult = await pool.query(
-          `SELECT question_id, id, option_text, is_correct, display_order
-           FROM question_options
-           WHERE question_id = ANY($1::int[])
-           ORDER BY question_id, display_order`,
-          [questionIds]
-        );
+        const options = await prisma.questionOption.findMany({
+          where: {
+            questionId: {
+              in: questionIds,
+            },
+          },
+          select: {
+            id: true,
+            questionId: true,
+            optionText: true,
+            isCorrect: true,
+            displayOrder: true,
+          },
+          orderBy: [
+            { questionId: 'asc' },
+            { displayOrder: 'asc' },
+          ],
+        });
 
         const questionMap = new Map();
-        questionsResult.rows.forEach((row) => {
-          questionMap.set(row.id, row);
+        questions.forEach((question) => {
+          questionMap.set(question.id, {
+            id: question.id,
+            question_type: question.questionType,
+            weightage: question.weightage,
+            correct_answer: question.correctAnswer,
+          });
         });
 
         const optionMap = new Map();
-        optionsResult.rows.forEach((row) => {
-          if (!optionMap.has(row.question_id)) {
-            optionMap.set(row.question_id, []);
+        options.forEach((option) => {
+          if (!optionMap.has(option.questionId)) {
+            optionMap.set(option.questionId, []);
           }
-          optionMap.get(row.question_id).push(row);
+          optionMap.get(option.questionId).push({
+            question_id: option.questionId,
+            id: option.id,
+            option_text: option.optionText,
+            is_correct: option.isCorrect,
+            display_order: option.displayOrder,
+          });
         });
 
         for (const answer of answers) {
@@ -818,75 +1030,124 @@ exports.submitTest = async (req, res) => {
             }
           }
 
-          await pool.query(
-            `INSERT INTO student_answers (
-              test_attempt_id, question_id, selected_option_id, selected_option_ids,
-              answer_text, is_correct, score_obtained, answered_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
-            ON CONFLICT (test_attempt_id, question_id)
-            DO UPDATE SET 
-              selected_option_id = EXCLUDED.selected_option_id,
-              selected_option_ids = EXCLUDED.selected_option_ids,
-              answer_text = EXCLUDED.answer_text,
-              is_correct = EXCLUDED.is_correct,
-              score_obtained = EXCLUDED.score_obtained,
-              answered_at = NOW()`,
-            [
-              attemptId,
-              question.id,
-              selectedOptionId,
-              selectedOptionIds,
-              answerText,
-              isCorrect,
-              score,
-            ]
-          );
+          // Use Prisma upsert for MySQL compatibility
+          await prisma.studentAnswer.upsert({
+            where: {
+              testAttemptId_questionId: {
+                testAttemptId: parseInt(attemptId),
+                questionId: question.id,
+              },
+            },
+            update: {
+              selectedOptionId: selectedOptionId,
+              selectedOptionIds: selectedOptionIds,
+              answerText: answerText,
+              isCorrect: isCorrect,
+              scoreObtained: score,
+              answeredAt: new Date(),
+            },
+            create: {
+              testAttemptId: parseInt(attemptId),
+              questionId: question.id,
+              selectedOptionId: selectedOptionId,
+              selectedOptionIds: selectedOptionIds,
+              answerText: answerText,
+              isCorrect: isCorrect,
+              scoreObtained: score,
+              answeredAt: new Date(),
+            },
+          });
         }
       }
     }
 
-    await pool.query('SELECT sp_calculate_test_score($1)', [attemptId]);
+    // Calculate test score manually (since stored procedures may not work in MySQL)
+    const studentAnswers = await prisma.studentAnswer.findMany({
+      where: {
+        testAttemptId: parseInt(attemptId),
+      },
+      select: {
+        scoreObtained: true,
+      },
+    });
+
+    const totalScore = studentAnswers.reduce((sum, answer) => sum + parseFloat(answer.scoreObtained || 0), 0);
+    const maxPossibleScore = attempt.maxPossibleScore || 100;
+    const percentageScore = maxPossibleScore > 0 ? (totalScore / maxPossibleScore) * 100 : 0;
+
+    // Update test attempt with final scores and status
+    await prisma.testAttempt.update({
+      where: { id: parseInt(attemptId) },
+      data: {
+        status: 'COMPLETED',
+        submittedAt: new Date(),
+        totalScore: totalScore,
+        percentageScore: percentageScore,
+        questionsAttempted: studentAnswers.length,
+      },
+    });
 
     // If this student was granted retest access, consume it after this submission
     // so future logins and access behave like a normal post-test student again.
     try {
-      await pool.query(
-        'UPDATE students SET can_retest = FALSE, updated_at = NOW() WHERE id = $1 AND can_retest = TRUE',
-        [attempt.student_id]
-      );
+      await prisma.student.updateMany({
+        where: {
+          id: parseInt(attemptData.student_id),
+          canRetest: true,
+        },
+        data: {
+          canRetest: false,
+        },
+      });
     } catch (consumeError) {
       console.error('Error consuming student can_retest flag after submission:', consumeError);
       // Do not fail the submission because of this; just log it.
     }
 
-    const summaryResult = await pool.query(
-      `SELECT 
-        ta.id,
-        ta.student_id,
-        ta.question_paper_id,
-        ta.status,
-        ta.total_score,
-        ta.max_possible_score,
-        ta.percentage_score,
-        ta.started_at,
-        ta.submitted_at,
-        qp.paper_name,
-        qp.total_questions,
-        s.full_name AS student_name,
-        s.email AS student_email,
-        d.domain_name
-      FROM test_attempts ta
-      JOIN question_papers qp ON ta.question_paper_id = qp.id
-      JOIN students s ON ta.student_id = s.id
-      LEFT JOIN domains d ON s.domain_id = d.id
-      WHERE ta.id = $1`,
-      [attemptId]
-    );
+    // Get summary with all related data
+    const summary = await prisma.testAttempt.findUnique({
+      where: { id: parseInt(attemptId) },
+      include: {
+        questionPaper: {
+          select: {
+            paperName: true,
+            totalQuestions: true,
+          },
+        },
+        student: {
+          include: {
+            domain: {
+              select: {
+                domainName: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Transform to match expected format
+    const summaryData = {
+      id: summary.id,
+      student_id: summary.studentId,
+      question_paper_id: summary.questionPaperId,
+      status: summary.status,
+      total_score: parseFloat(summary.totalScore || 0),
+      max_possible_score: parseFloat(summary.maxPossibleScore || 0),
+      percentage_score: parseFloat(summary.percentageScore || 0),
+      started_at: summary.startedAt,
+      submitted_at: summary.submittedAt,
+      paper_name: summary.questionPaper.paperName,
+      total_questions: summary.questionPaper.totalQuestions,
+      student_name: summary.student.fullName,
+      student_email: summary.student.email,
+      domain_name: summary.student.domain?.domainName || null,
+    };
 
     res.status(200).json({
       success: true,
       message: 'Test submitted successfully',
-      data: summaryResult.rows[0],
+      data: summaryData,
     });
   } catch (error) {
     console.error('Error submitting test:', error);
@@ -920,33 +1181,46 @@ exports.getTestDetails = async (req, res) => {
       });
     }
 
-    const attemptResult = await pool.query(
-      `SELECT 
-         ta.id,
-         ta.student_id,
-         ta.question_paper_id,
-         ta.status,
-         ta.question_pool,
-         qp.paper_name,
-         qp.description,
-         qp.subject,
-         qp.duration_minutes,
-         qp.total_weightage
-       FROM test_attempts ta
-       JOIN question_papers qp ON ta.question_paper_id = qp.id
-       WHERE ta.id = $1 AND ta.student_id = $2`,
-      [attemptId, studentId]
-    );
+    const attempt = await prisma.testAttempt.findFirst({
+      where: {
+        id: attemptId,
+        studentId: parseInt(studentId),
+      },
+      include: {
+        questionPaper: {
+          select: {
+            id: true,
+            paperName: true,
+            description: true,
+            subject: true,
+            durationMinutes: true,
+            totalWeightage: true,
+          },
+        },
+      },
+    });
 
-    if (attemptResult.rows.length === 0) {
+    if (!attempt) {
       return res.status(404).json({
         success: false,
         message: 'Test attempt not found',
       });
     }
 
-    const attempt = attemptResult.rows[0];
-    if (attempt.question_paper_id !== Number(testId)) {
+    // Transform to match expected format
+    const attemptData = {
+      id: attempt.id,
+      student_id: attempt.studentId,
+      question_paper_id: attempt.questionPaperId,
+      status: attempt.status,
+      question_pool: attempt.questionPool,
+      paper_name: attempt.questionPaper.paperName,
+      description: attempt.questionPaper.description,
+      subject: attempt.questionPaper.subject,
+      duration_minutes: attempt.questionPaper.durationMinutes,
+      total_weightage: attempt.questionPaper.totalWeightage,
+    };
+    if (attemptData.question_paper_id !== Number(testId)) {
       return res.status(400).json({
         success: false,
         message: 'Attempt does not belong to the requested test',
@@ -954,9 +1228,9 @@ exports.getTestDetails = async (req, res) => {
     }
 
     const questionPool = await ensureAttemptQuestionPool(
-      attempt.id,
-      attempt.question_paper_id,
-      attempt.question_pool
+      attemptData.id,
+      attemptData.question_paper_id,
+      attemptData.question_pool
     );
 
     if (!questionPool || questionPool.length === 0) {
@@ -967,34 +1241,65 @@ exports.getTestDetails = async (req, res) => {
     }
 
     const questionIds = questionPool.map((item) => item.question_id);
-    const questionsResult = await pool.query(
-      `SELECT id, question_text, question_type, weightage, section
-       FROM questions
-       WHERE question_paper_id = $1
-         AND id = ANY($2::int[])
-         AND is_active = TRUE`,
-      [testId, questionIds]
-    );
+    const questions = await prisma.question.findMany({
+      where: {
+        questionPaperId: parseInt(testId),
+        id: {
+          in: questionIds,
+        },
+        isActive: true,
+      },
+      select: {
+        id: true,
+        questionText: true,
+        questionType: true,
+        weightage: true,
+        section: true,
+      },
+    });
 
-    const optionsResult = await pool.query(
-      `SELECT id, question_id, option_text, option_label
-       FROM question_options
-       WHERE question_id = ANY($1::int[])
-       ORDER BY question_id, display_order`,
-      [questionIds]
-    );
+    const options = await prisma.questionOption.findMany({
+      where: {
+        questionId: {
+          in: questionIds,
+        },
+      },
+      select: {
+        id: true,
+        questionId: true,
+        optionText: true,
+        optionLabel: true,
+        displayOrder: true,
+      },
+      orderBy: [
+        { questionId: 'asc' },
+        { displayOrder: 'asc' },
+      ],
+    });
 
     const questionMap = new Map();
-    questionsResult.rows.forEach((row) => {
-      questionMap.set(row.id, row);
+    questions.forEach((question) => {
+      questionMap.set(question.id, {
+        id: question.id,
+        question_text: question.questionText,
+        question_type: question.questionType,
+        weightage: question.weightage,
+        section: question.section,
+      });
     });
 
     const optionMap = new Map();
-    optionsResult.rows.forEach((row) => {
-      if (!optionMap.has(row.question_id)) {
-        optionMap.set(row.question_id, []);
+    options.forEach((option) => {
+      if (!optionMap.has(option.questionId)) {
+        optionMap.set(option.questionId, []);
       }
-      optionMap.get(row.question_id).push(row);
+      optionMap.get(option.questionId).push({
+        id: option.id,
+        question_id: option.questionId,
+        option_text: option.optionText,
+        option_label: option.optionLabel,
+        display_order: option.displayOrder,
+      });
     });
 
     const sanitizedQuestions = questionPool
@@ -1023,11 +1328,11 @@ exports.getTestDetails = async (req, res) => {
       success: true,
       message: 'Test details retrieved successfully',
       data: {
-        id: attempt.question_paper_id,
-        paper_name: attempt.paper_name,
-        description: attempt.description,
-        subject: attempt.subject,
-        duration_minutes: attempt.duration_minutes,
+        id: attemptData.question_paper_id,
+        paper_name: attemptData.paper_name,
+        description: attemptData.description,
+        subject: attemptData.subject,
+        duration_minutes: attemptData.duration_minutes,
         total_questions: sanitizedQuestions.length,
         total_weightage: 100, // Always 100 for 50 questions
         questions: sanitizedQuestions,

@@ -3,7 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
+  // provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -90,45 +91,45 @@ model OtpVerification {
 }
 
 model Student {
-  id                   Int                  @id @default(autoincrement())
-  email                String               @unique @db.VarChar(255)
-  fullName             String               @map("full_name") @db.VarChar(255)
-  phone                String?              @db.VarChar(20)
-  domainId             Int?                 @map("domain_id")
-  statusId             Int                  @default(1) @map("status_id")
-  registrationDate     DateTime             @default(now()) @map("registration_date")
-  formLinkToken        String?              @unique @map("form_link_token") @db.VarChar(100)
-  imageUrl             String?              @map("image_url")
-  instituteName        String?              @map("institute_name") @db.VarChar(255)
-  courseTaken          String?              @map("course_taken") @db.VarChar(255)
-  currentYear          String?              @map("current_year") @db.VarChar(50)
-  currentSemester      String?              @map("current_semester") @db.VarChar(50)
-  graduationYear       Int?                 @map("graduation_year")
-  areaOfInterests      String?              @map("area_of_interests") @db.Text
-  resumeUrl            String?              @map("resume_url") @db.VarChar(500)
-  profileCompleted     Boolean              @default(false) @map("profile_completed")
-  internshipStartDate  DateTime?            @map("internship_start_date")
-  internshipEndDate    DateTime?            @map("internship_end_date")
-  internshipDuration   String?              @map("internship_duration") @db.VarChar(50)
-  referenceInformation String?              @map("reference_information") @db.Text
-  internalFacultyName  String?              @map("internal_faculty_name") @db.VarChar(255)
-  facultyContact       String?              @map("faculty_contact") @db.VarChar(20)
-  facultyEmail         String?              @map("faculty_email") @db.VarChar(255)
-  isActive             Boolean              @default(true) @map("is_active")
-  isSelected           Boolean              @default(false) @map("is_selected")
-  canRetest            Boolean              @default(false) @map("can_retest")
-  createdAt            DateTime             @default(now()) @map("created_at")
-  updatedAt            DateTime             @updatedAt @map("updated_at")
-  createdBy            Int?                 @map("created_by")
-  creator              User?                @relation("StudentCreator", fields: [createdBy], references: [id])
-  domain               Domain?              @relation(fields: [domainId], references: [id])
-  status               InternStatus         @relation(fields: [statusId], references: [id])
+  id                   Int                      @id @default(autoincrement())
+  email                String                   @unique @db.VarChar(255)
+  fullName             String                   @map("full_name") @db.VarChar(255)
+  phone                String?                  @db.VarChar(20)
+  domainId             Int?                     @map("domain_id")
+  statusId             Int                      @default(1) @map("status_id")
+  registrationDate     DateTime                 @default(now()) @map("registration_date")
+  formLinkToken        String?                  @unique @map("form_link_token") @db.VarChar(100)
+  imageUrl             String?                  @map("image_url")
+  instituteName        String?                  @map("institute_name") @db.VarChar(255)
+  courseTaken          String?                  @map("course_taken") @db.VarChar(255)
+  currentYear          String?                  @map("current_year") @db.VarChar(50)
+  currentSemester      String?                  @map("current_semester") @db.VarChar(50)
+  graduationYear       Int?                     @map("graduation_year")
+  areaOfInterests      String?                  @map("area_of_interests") @db.Text
+  resumeUrl            String?                  @map("resume_url") @db.VarChar(500)
+  profileCompleted     Boolean                  @default(false) @map("profile_completed")
+  internshipStartDate  DateTime?                @map("internship_start_date")
+  internshipEndDate    DateTime?                @map("internship_end_date")
+  internshipDuration   String?                  @map("internship_duration") @db.VarChar(50)
+  referenceInformation String?                  @map("reference_information") @db.Text
+  internalFacultyName  String?                  @map("internal_faculty_name") @db.VarChar(255)
+  facultyContact       String?                  @map("faculty_contact") @db.VarChar(20)
+  facultyEmail         String?                  @map("faculty_email") @db.VarChar(255)
+  isActive             Boolean                  @default(true) @map("is_active")
+  isSelected           Boolean                  @default(false) @map("is_selected")
+  canRetest            Boolean                  @default(false) @map("can_retest")
+  createdAt            DateTime                 @default(now()) @map("created_at")
+  updatedAt            DateTime                 @updatedAt @map("updated_at")
+  createdBy            Int?                     @map("created_by")
+  creator              User?                    @relation("StudentCreator", fields: [createdBy], references: [id])
+  domain               Domain?                  @relation(fields: [domainId], references: [id])
+  status               InternStatus             @relation(fields: [statusId], references: [id])
   testAssignments      TestAssignment[]
   testAttempts         TestAttempt[]
-  studentActivityLogs  StudentActivityLog[] @relation("StudentActivityLogs")
-  nocLetters           NOCLetter[]          @relation("NOCLetters")
-  internshipFeedbacks  InternshipFeedback[] @relation("InternshipFeedbacks")
-  nocStatus            StudentNOCStatus?    @relation("StudentNOCStatus")
+  studentActivityLogs  StudentActivityLog[]     @relation("StudentActivityLogs")
+  nocLetters           NOCLetter[]              @relation("NOCLetters")
+  internshipFeedbacks  InternshipFeedback[]     @relation("InternshipFeedbacks")
+  nocStatus            StudentNOCStatus?        @relation("StudentNOCStatus")
   videoProgresses      VideoProgress[]
   playlistAccesses     PlaylistAccess[]
   internship           StudentInternship?
@@ -177,29 +178,29 @@ model StudentProject {
 }
 
 model StudentPersonalProject {
-  id                 Int       @id @default(autoincrement())
-  studentId          Int       @map("student_id")
-  projectTitle       String    @map("project_title") @db.VarChar(255)
-  description       String?   @db.Text
-  techStack          String?   @map("tech_stack") @db.Text
-  role               String?   @db.VarChar(255)
-  githubLink         String?   @map("github_link") @db.VarChar(500)
-  liveLink           String?   @map("live_link") @db.VarChar(500)
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @updatedAt @map("updated_at")
-  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id           Int      @id @default(autoincrement())
+  studentId    Int      @map("student_id")
+  projectTitle String   @map("project_title") @db.VarChar(255)
+  description  String?  @db.Text
+  techStack    String?  @map("tech_stack") @db.Text
+  role         String?  @db.VarChar(255)
+  githubLink   String?  @map("github_link") @db.VarChar(500)
+  liveLink     String?  @map("live_link") @db.VarChar(500)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@map("student_personal_projects")
 }
 
 model StudentSkill {
-  id          Int      @id @default(autoincrement())
-  studentId   Int      @map("student_id")
-  skillType   String   @map("skill_type") @db.VarChar(50) // 'language', 'framework', 'tool', 'soft_skill'
-  skillName   String   @map("skill_name") @db.VarChar(255)
-  createdAt   DateTime @default(now()) @map("created_at")
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  studentId Int      @map("student_id")
+  skillType String   @map("skill_type") @db.VarChar(50) // 'language', 'framework', 'tool', 'soft_skill'
+  skillName String   @map("skill_name") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([skillType])
@@ -208,17 +209,17 @@ model StudentSkill {
 }
 
 model StudentAchievement {
-  id          Int      @id @default(autoincrement())
-  studentId   Int      @map("student_id")
-  achievementType String @map("achievement_type") @db.VarChar(50) // 'hackathon', 'certification', 'award', 'competition'
-  title       String   @db.VarChar(255)
-  description String?  @db.Text
-  issuer      String?  @db.VarChar(255)
-  date        DateTime? @db.Date
-  link        String?  @db.VarChar(500)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id              Int       @id @default(autoincrement())
+  studentId       Int       @map("student_id")
+  achievementType String    @map("achievement_type") @db.VarChar(50) // 'hackathon', 'certification', 'award', 'competition'
+  title           String    @db.VarChar(255)
+  description     String?   @db.Text
+  issuer          String?   @db.VarChar(255)
+  date            DateTime? @db.Date
+  link            String?   @db.VarChar(500)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([achievementType])
@@ -532,11 +533,11 @@ model InternshipFeedback {
 }
 
 model StudentNOCStatus {
-  id        Int       @id @default(autoincrement())
-  studentId Int       @unique @map("student_id")
-  isReceived Boolean  @default(false) @map("is_received")
-  updatedAt DateTime? @map("updated_at")
-  student   Student   @relation("StudentNOCStatus", fields: [studentId], references: [id], onDelete: Cascade)
+  id         Int       @id @default(autoincrement())
+  studentId  Int       @unique @map("student_id")
+  isReceived Boolean   @default(false) @map("is_received")
+  updatedAt  DateTime? @map("updated_at")
+  student    Student   @relation("StudentNOCStatus", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId], map: "idx_student_noc_status_student_id")
   @@map("student_noc_status")

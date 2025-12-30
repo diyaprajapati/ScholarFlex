@@ -1,5 +1,4 @@
 const { validationResult } = require('express-validator');
-const pool = require('../config/database');
 const { prisma } = require('../config/database');
 const User = require('../models/User');
 const { logActivitySimple } = require('../middleware/activityLogger');
@@ -30,19 +29,19 @@ const createAdmin = async (req, res) => {
     }
 
     // Get role_id based on role_code (ADMIN or SUPER_ADMIN)
-    const roleResult = await pool.query(
-      "SELECT id FROM roles WHERE role_code = $1",
-      [role_code]
-    );
+    const role = await prisma.role.findUnique({
+      where: { roleCode: role_code },
+      select: { id: true },
+    });
 
-    if (roleResult.rows.length === 0) {
+    if (!role) {
       return res.status(400).json({
         success: false,
         message: 'Invalid role code',
       });
     }
 
-    const role_id = roleResult.rows[0].id;
+    const role_id = role.id;
 
     // Create admin user
     const newAdmin = await User.create({
@@ -207,19 +206,19 @@ const updateAdmin = async (req, res) => {
     
     // If role_code is provided, get role_id
     if (role_code) {
-      const roleResult = await pool.query(
-        "SELECT id FROM roles WHERE role_code = $1",
-        [role_code]
-      );
+      const role = await prisma.role.findUnique({
+        where: { roleCode: role_code },
+        select: { id: true },
+      });
       
-      if (roleResult.rows.length === 0) {
+      if (!role) {
         return res.status(400).json({
           success: false,
           message: 'Invalid role code',
         });
       }
       
-      updateData.role_id = roleResult.rows[0].id;
+      updateData.role_id = role.id;
     }
 
     // Update admin
@@ -311,26 +310,44 @@ const deleteAdmin = async (req, res) => {
  */
 const getStudentAnalytics = async (req, res) => {
   try {
-    // Get all selected students
-    const selectedStudentsResult = await pool.query(
-      `SELECT 
-        s.id,
-        s.email,
-        s.full_name,
-        s.phone,
-        s.domain_id,
-        d.domain_name,
-        s.is_selected,
-        s.created_at,
-        s.updated_at
-      FROM students s
-      LEFT JOIN domains d ON s.domain_id = d.id
-      WHERE s.is_active = TRUE
-      AND s.is_selected = TRUE
-      ORDER BY s.full_name ASC`
-    );
+    // Get all selected students using Prisma
+    const studentsData = await prisma.student.findMany({
+      where: {
+        isActive: true,
+        isSelected: true,
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        phone: true,
+        domainId: true,
+        isSelected: true,
+        createdAt: true,
+        updatedAt: true,
+        domain: {
+          select: {
+            domainName: true,
+          },
+        },
+      },
+      orderBy: {
+        fullName: 'asc',
+      },
+    });
 
-    const students = selectedStudentsResult.rows;
+    // Transform to match expected format
+    const students = studentsData.map(s => ({
+      id: s.id,
+      email: s.email,
+      full_name: s.fullName,
+      phone: s.phone,
+      domain_id: s.domainId,
+      domain_name: s.domain?.domainName || null,
+      is_selected: s.isSelected,
+      created_at: s.createdAt,
+      updated_at: s.updatedAt,
+    }));
     
     // Get all student IDs
     const studentIds = students.map(s => s.id);

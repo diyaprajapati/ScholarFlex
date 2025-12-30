@@ -140,6 +140,7 @@ exports.createQuestionPaper = async (req, res) => {
 
     // Validate minimum question counts per section
     // Expected distribution: 20 Technical, 10 Theory, 10 Coding, 10 Maths & Logical Reasoning
+    // Only enforce minimums when status is "published" - allow drafts to have fewer questions
     const SECTION_MINIMUMS = {
       'Technical section': 20,
       'Theory section': 10,
@@ -147,21 +148,26 @@ exports.createQuestionPaper = async (req, res) => {
       'Maths & Logical Reasoning': 10,
     };
 
-    const insufficientSections = [];
-    for (const [sectionName, minimumCount] of Object.entries(SECTION_MINIMUMS)) {
-      const actualCount = sectionCounts[sectionName] || 0;
-      if (actualCount < minimumCount) {
-        insufficientSections.push(`${sectionName} (need at least ${minimumCount}, have ${actualCount})`);
+    // Only validate minimum counts if the paper is being published
+    const paperStatus = status || 'draft';
+    if (paperStatus === 'published') {
+      const insufficientSections = [];
+      for (const [sectionName, minimumCount] of Object.entries(SECTION_MINIMUMS)) {
+        const actualCount = sectionCounts[sectionName] || 0;
+        if (actualCount < minimumCount) {
+          insufficientSections.push(`${sectionName} (need at least ${minimumCount}, have ${actualCount})`);
+        }
       }
-    }
 
-    if (insufficientSections.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: `Insufficient questions in some sections. Expected distribution: 20 Technical section, 10 Theory section, 10 Coding, 10 Maths & Logical Reasoning. Issues: ${insufficientSections.join('; ')}.`,
-        sectionCounts,
-        requiredMinimums: SECTION_MINIMUMS,
-      });
+      if (insufficientSections.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient questions in some sections. Expected distribution: 20 Technical section, 10 Theory section, 10 Coding, 10 Maths & Logical Reasoning. Issues: ${insufficientSections.join('; ')}.`,
+          sectionCounts,
+          requiredMinimums: SECTION_MINIMUMS,
+          note: 'Minimum question counts are only enforced when publishing a paper. You can save as draft with fewer questions.',
+        });
+      }
     }
 
     // Validate required fields

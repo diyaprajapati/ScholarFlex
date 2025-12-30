@@ -1,122 +1,109 @@
-const pool = require('../config/database');
+const { prisma } = require('../config/database');
+const { Prisma } = require('@prisma/client');
 
 class QuestionPaper {
   /**
    * Create a new question paper with questions
    */
   static async create(paperData, questionsData, userId) {
-    const client = await pool.connect();
     try {
-      await client.query('BEGIN');
+      // Calculate total weightage
+      const totalWeightage = questionsData.reduce((sum, q) => sum + (q.weightage || 1), 0);
 
-      // Insert question paper
-      const paperResult = await client.query(
-        `INSERT INTO question_papers (
-          paper_name, description, subject, year, semester,
-          total_questions, total_weightage, duration_minutes, status, created_by, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW()) RETURNING id`,
-        [
-          paperData.paper_name,
-          paperData.description || null,
-          paperData.subject || null,
-          paperData.year || null,
-          paperData.semester || null,
-          paperData.total_questions || 0,
-          paperData.total_weightage || 0,
-          paperData.duration_minutes || 60,
-          paperData.status || 'draft',
-          userId,
-        ]
-      );
+      // Use Prisma transaction to create question paper with all related data
+      const result = await prisma.$transaction(async (tx) => {
+        // Create question paper
+        const questionPaper = await tx.questionPaper.create({
+          data: {
+            paperName: paperData.paper_name,
+            description: paperData.description || null,
+            subject: paperData.subject || null,
+            year: paperData.year || null,
+            semester: paperData.semester || null,
+            totalQuestions: paperData.total_questions || questionsData.length,
+            totalWeightage: paperData.total_weightage || totalWeightage,
+            durationMinutes: paperData.duration_minutes || 60,
+            status: paperData.status || 'draft',
+            createdBy: userId,
+          },
+        });
 
-      const questionPaperId = paperResult.rows[0].id;
+        const questionPaperId = questionPaper.id;
 
-      // Insert questions
-      const insertedQuestions = [];
-      let displayOrder = 0;
+        // Create questions with options
+        let displayOrder = 0;
+        for (const questionData of questionsData) {
+          // Map question type from JSON format to database enum
+          const questionType = this.mapQuestionType(questionData.type);
 
-      for (const questionData of questionsData) {
-        // Map question type from JSON format to database enum
-        const questionType = this.mapQuestionType(questionData.type);
+          // Create question
+          const question = await tx.question.create({
+            data: {
+              questionPaperId: questionPaperId,
+              questionText: questionData.text,
+              questionType: questionType,
+              weightage: questionData.weightage || 1,
+              section: questionData.section || null,
+              displayOrder: displayOrder++,
+              createdBy: userId,
+            },
+          });
 
-        // Insert question
-        const questionResult = await client.query(
-          `INSERT INTO questions (
-            question_paper_id, question_text, question_type, weightage,
-            correct_answer, section, display_order, created_by, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING id`,
-          [
-            questionPaperId,
-            questionData.text,
-            questionType,
-            questionData.weightage || 1,
-            null, // correct_answer is no longer used
-            questionData.section || null,
-            displayOrder++,
-            userId,
-          ]
-        );
+          // Create options for multiple-choice, single-choice, and true-false questions
+          if (questionData.options && questionData.options.length > 0) {
+            const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            const correctOptions = questionData.correctOptions || [];
 
-        const questionId = questionResult.rows[0].id;
+            const optionsData = questionData.options.map((optionText, i) => ({
+              questionId: question.id,
+              optionText: optionText,
+              optionLabel: optionLabels[i] || String.fromCharCode(65 + i),
+              isCorrect: correctOptions.includes(i),
+              displayOrder: i,
+            }));
 
-        // Insert options for multiple-choice, single-choice, and true-false questions
-        if (questionData.options && questionData.options.length > 0) {
-          const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-          const correctOptions = questionData.correctOptions || [];
-
-          for (let i = 0; i < questionData.options.length; i++) {
-            const isCorrect = correctOptions.includes(i);
-            const optionLabel = optionLabels[i] || String.fromCharCode(65 + i); // A, B, C, etc.
-
-            await client.query(
-              `INSERT INTO question_options (
-                question_id, option_text, option_label, is_correct, display_order
-              ) VALUES ($1, $2, $3, $4, $5)`,
-              [questionId, questionData.options[i], optionLabel, isCorrect, i]
-            );
+            await tx.questionOption.createMany({
+              data: optionsData,
+            });
           }
         }
 
-        insertedQuestions.push({
-          id: questionId,
-          text: questionData.text,
-          type: questionType,
+        // Update total_questions and total_weightage (in case they were calculated)
+        await tx.questionPaper.update({
+          where: { id: questionPaperId },
+          data: {
+            totalQuestions: questionsData.length,
+            totalWeightage: totalWeightage,
+          },
         });
-      }
 
-      // Update total_questions and total_weightage in question_paper
-      const totalWeightage = questionsData.reduce((sum, q) => sum + (q.weightage || 1), 0);
-      await client.query(
-        `UPDATE question_papers 
-         SET total_questions = $1, total_weightage = $2 
-         WHERE id = $3`,
-        [questionsData.length, totalWeightage, questionPaperId]
-      );
+        // Assign domains to question paper if provided
+        if (paperData.domain_ids && Array.isArray(paperData.domain_ids) && paperData.domain_ids.length > 0) {
+          // Remove duplicates
+          const uniqueDomainIds = [...new Set(paperData.domain_ids)];
+          
+          const domainConnections = uniqueDomainIds.map(domainId => ({
+            questionPaperId: questionPaperId,
+            domainId: domainId,
+          }));
 
-      // Assign domains to question paper if provided
-      if (paperData.domain_ids && Array.isArray(paperData.domain_ids) && paperData.domain_ids.length > 0) {
-        for (const domainId of paperData.domain_ids) {
-          await client.query(
-            `INSERT INTO question_paper_domains (question_paper_id, domain_id)
-             VALUES ($1, $2)
-             ON CONFLICT (question_paper_id, domain_id) DO NOTHING`,
-            [questionPaperId, domainId]
-          );
+          // Use createMany with skipDuplicates for MySQL (equivalent to ON CONFLICT DO NOTHING)
+          await tx.questionPaperDomain.createMany({
+            data: domainConnections,
+            skipDuplicates: true,
+          });
         }
-      }
 
-      await client.query('COMMIT');
+        return questionPaperId;
+      });
 
       // Fetch the created question paper with all details
-      const createdPaper = await this.findById(questionPaperId);
+      const createdPaper = await this.findById(result);
 
       return createdPaper;
     } catch (error) {
-      await client.query('ROLLBACK');
       console.error('Error creating question paper:', error);
       throw error;
-    } finally {
-      client.release();
     }
   }
 
@@ -152,7 +139,27 @@ class QuestionPaper {
    */
   static async findAll(filters = {}) {
     try {
-      let query = `
+      // Build WHERE conditions using Prisma.sql
+      const whereParts = [Prisma.sql`qp.is_active = TRUE`];
+
+      if (filters.status) {
+        whereParts.push(Prisma.sql`qp.status = ${filters.status}`);
+      }
+
+      if (filters.subject) {
+        whereParts.push(Prisma.sql`qp.subject = ${filters.subject}`);
+      }
+
+      if (filters.year) {
+        whereParts.push(Prisma.sql`qp.year = ${filters.year}`);
+      }
+
+      if (filters.semester) {
+        whereParts.push(Prisma.sql`qp.semester = ${filters.semester}`);
+      }
+
+      // Build the main query
+      let query = Prisma.sql`
         SELECT 
           qp.id, qp.paper_name, qp.description, qp.subject, qp.year, qp.semester,
           qp.total_questions, qp.total_weightage, qp.duration_minutes, qp.status,
@@ -160,84 +167,69 @@ class QuestionPaper {
           u.email as created_by_email, u.full_name as created_by_name
         FROM question_papers qp
         LEFT JOIN users u ON qp.created_by = u.id
-        WHERE qp.is_active = TRUE
+        WHERE ${Prisma.join(whereParts, Prisma.sql` AND `)}
+        ORDER BY qp.created_at DESC
       `;
-      
-      const params = [];
-      let paramCount = 1;
-
-      // Add filters
-      if (filters.status) {
-        query += ` AND qp.status = $${paramCount}`;
-        params.push(filters.status);
-        paramCount++;
-      }
-
-      if (filters.subject) {
-        query += ` AND qp.subject = $${paramCount}`;
-        params.push(filters.subject);
-        paramCount++;
-      }
-
-      if (filters.year) {
-        query += ` AND qp.year = $${paramCount}`;
-        params.push(filters.year);
-        paramCount++;
-      }
-
-      if (filters.semester) {
-        query += ` AND qp.semester = $${paramCount}`;
-        params.push(filters.semester);
-        paramCount++;
-      }
-
-      // Order by created_at descending (newest first)
-      query += ` ORDER BY qp.created_at DESC`;
 
       // Add pagination if provided
       if (filters.limit) {
-        query += ` LIMIT $${paramCount}`;
-        params.push(filters.limit);
-        paramCount++;
+        query = Prisma.sql`${query} LIMIT ${filters.limit}`;
       }
 
       if (filters.offset) {
-        query += ` OFFSET $${paramCount}`;
-        params.push(filters.offset);
-        paramCount++;
+        query = Prisma.sql`${query} OFFSET ${filters.offset}`;
       }
 
-      const result = await pool.query(query, params);
-      const papers = result.rows;
+      const papers = await prisma.$queryRaw(query);
 
       if (papers.length === 0) {
         return [];
       }
 
       const paperIds = papers.map((paper) => paper.id);
-      const domainsResult = await pool.query(
-        `SELECT qpd.question_paper_id, d.id, d.domain_name, d.domain_code
-         FROM question_paper_domains qpd
-         JOIN domains d ON qpd.domain_id = d.id
-         WHERE qpd.question_paper_id = ANY($1::int[])`,
-        [paperIds]
-      );
-
-      const domainMap = new Map();
-      domainsResult.rows.forEach((row) => {
-        if (!domainMap.has(row.question_paper_id)) {
-          domainMap.set(row.question_paper_id, []);
-        }
-        domainMap.get(row.question_paper_id).push({
-          id: row.id,
-          domain_name: row.domain_name,
-          domain_code: row.domain_code,
+      
+      // Fetch domains for all papers (MySQL uses IN instead of ANY)
+      if (paperIds.length > 0) {
+        // Use Prisma ORM to fetch domains - more reliable than raw SQL with IN clause
+        const domainsResult = await prisma.questionPaperDomain.findMany({
+          where: {
+            questionPaperId: {
+              in: paperIds,
+            },
+          },
+          include: {
+            domain: {
+              select: {
+                id: true,
+                domainName: true,
+                domainCode: true,
+              },
+            },
+          },
         });
-      });
+
+        const domainMap = new Map();
+        domainsResult.forEach((row) => {
+          const paperId = row.questionPaperId;
+          if (!domainMap.has(paperId)) {
+            domainMap.set(paperId, []);
+          }
+          domainMap.get(paperId).push({
+            id: row.domain.id,
+            domain_name: row.domain.domainName,
+            domain_code: row.domain.domainCode,
+          });
+        });
+
+        return papers.map((paper) => ({
+          ...paper,
+          domains: domainMap.get(paper.id) || [],
+        }));
+      }
 
       return papers.map((paper) => ({
         ...paper,
-        domains: domainMap.get(paper.id) || [],
+        domains: [],
       }));
     } catch (error) {
       console.error('Error finding all question papers:', error);
@@ -250,77 +242,99 @@ class QuestionPaper {
    */
   static async findById(id) {
     try {
-      const result = await pool.query(
-        `SELECT 
-          qp.id, qp.paper_name, qp.description, qp.subject, qp.year, qp.semester,
-          qp.total_questions, qp.total_weightage, qp.duration_minutes, qp.status,
-          qp.is_active, qp.created_at, qp.updated_at,
-          u.email as created_by_email, u.full_name as created_by_name
-        FROM question_papers qp
-        LEFT JOIN users u ON qp.created_by = u.id
-        WHERE qp.id = $1`,
-        [id]
-      );
+      // Fetch question paper with creator info using Prisma
+      const questionPaper = await prisma.questionPaper.findUnique({
+        where: { id: parseInt(id) },
+        include: {
+          creator: {
+            select: {
+              email: true,
+              fullName: true,
+            },
+          },
+          domains: {
+            include: {
+              domain: {
+                select: {
+                  id: true,
+                  domainName: true,
+                  domainCode: true,
+                },
+              },
+            },
+          },
+          questions: {
+            where: {
+              isActive: true,
+            },
+            include: {
+              options: {
+                orderBy: {
+                  displayOrder: 'asc',
+                },
+              },
+            },
+            orderBy: [
+              { section: 'asc' },
+              { displayOrder: 'asc' },
+            ],
+          },
+        },
+      });
 
-      if (result.rows.length === 0) {
+      if (!questionPaper) {
         return null;
       }
 
-      const paper = result.rows[0];
+      // Transform to match expected format
+      const paper = {
+        id: questionPaper.id,
+        paper_name: questionPaper.paperName,
+        description: questionPaper.description,
+        subject: questionPaper.subject,
+        year: questionPaper.year,
+        semester: questionPaper.semester,
+        total_questions: questionPaper.totalQuestions,
+        total_weightage: questionPaper.totalWeightage,
+        duration_minutes: questionPaper.durationMinutes,
+        status: questionPaper.status,
+        is_active: questionPaper.isActive,
+        created_at: questionPaper.createdAt,
+        updated_at: questionPaper.updatedAt,
+        created_by_email: questionPaper.creator?.email || null,
+        created_by_name: questionPaper.creator?.fullName || null,
+      };
 
-      // Fetch domains
-      const domainsResult = await pool.query(
-        `SELECT d.id, d.domain_name, d.domain_code
-         FROM question_paper_domains qpd
-         JOIN domains d ON qpd.domain_id = d.id
-         WHERE qpd.question_paper_id = $1`,
-        [id]
-      );
+      // Transform domains
+      const domains = questionPaper.domains.map(qpd => ({
+        id: qpd.domain.id,
+        domain_name: qpd.domain.domainName,
+        domain_code: qpd.domain.domainCode,
+      }));
 
-      // Fetch questions with options
-      const questionsResult = await pool.query(
-        `SELECT 
-          q.id, q.question_text, q.question_type, q.weightage, q.correct_answer,
-          q.section, q.display_order
-        FROM questions q
-        WHERE q.question_paper_id = $1 AND q.is_active = TRUE
-        ORDER BY q.section, q.display_order`,
-        [id]
-      );
-
-      const questions = [];
-      for (const question of questionsResult.rows) {
-        // Fetch options for this question
-        const optionsResult = await pool.query(
-          `SELECT id, option_text, option_label, is_correct, display_order
-           FROM question_options
-           WHERE question_id = $1
-           ORDER BY display_order`,
-          [question.id]
-        );
-
-        // Transform question data to frontend format
+      // Transform questions
+      const questions = questionPaper.questions.map(question => {
         const transformedQuestion = {
           id: question.id,
-          text: question.question_text,
-          type: this.mapQuestionTypeFromDB(question.question_type),
+          text: question.questionText,
+          type: this.mapQuestionTypeFromDB(question.questionType),
           weightage: question.weightage,
           section: question.section || null,
         };
 
         // Transform options for choice-based questions
-        if (optionsResult.rows.length > 0) {
-          const options = optionsResult.rows.map(opt => opt.option_text);
-          const correctOptions = optionsResult.rows
-            .map((opt, index) => opt.is_correct ? index : null)
+        if (question.options && question.options.length > 0) {
+          const options = question.options.map(opt => opt.optionText);
+          const correctOptions = question.options
+            .map((opt, index) => opt.isCorrect ? index : null)
             .filter(index => index !== null);
 
           transformedQuestion.options = options;
           transformedQuestion.correctOptions = correctOptions;
         }
 
-        questions.push(transformedQuestion);
-      }
+        return transformedQuestion;
+      });
 
       // Group questions by section for frontend
       const questionsBySection = {};
@@ -342,7 +356,7 @@ class QuestionPaper {
         ...paper,
         questions, // Keep flat array for backward compatibility
         sections, // New format: grouped by sections
-        domains: domainsResult.rows || [],
+        domains: domains,
       };
     } catch (error) {
       console.error('Error finding question paper:', error);
@@ -354,244 +368,221 @@ class QuestionPaper {
    * Update question paper and its questions
    */
   static async update(id, paperData, questionsData, userId) {
-    const client = await pool.connect();
     try {
-      await client.query('BEGIN');
-
       const domainIds = paperData.domain_ids || null;
-      if (paperData.domain_ids !== undefined) {
-        delete paperData.domain_ids;
-      }
+      const paperId = parseInt(id);
 
-      // Check if paper exists
-      const existingPaper = await client.query(
-        'SELECT id FROM question_papers WHERE id = $1 AND is_active = TRUE',
-        [id]
-      );
+      // Use Prisma transaction to update question paper with all related data
+      await prisma.$transaction(async (tx) => {
+        // Check if paper exists
+        const existingPaper = await tx.questionPaper.findFirst({
+          where: { id: paperId, isActive: true },
+          select: { id: true },
+        });
 
-      if (existingPaper.rows.length === 0) {
-        throw new Error('Question paper not found');
-      }
-
-      // Update question paper
-      const updateFields = [];
-      const updateValues = [];
-      let paramCount = 1;
-
-      if (paperData.paper_name !== undefined) {
-        updateFields.push(`paper_name = $${paramCount++}`);
-        updateValues.push(paperData.paper_name);
-      }
-      if (paperData.description !== undefined) {
-        updateFields.push(`description = $${paramCount++}`);
-        updateValues.push(paperData.description);
-      }
-      if (paperData.subject !== undefined) {
-        updateFields.push(`subject = $${paramCount++}`);
-        updateValues.push(paperData.subject);
-      }
-      if (paperData.year !== undefined) {
-        updateFields.push(`year = $${paramCount++}`);
-        updateValues.push(paperData.year);
-      }
-      if (paperData.semester !== undefined) {
-        updateFields.push(`semester = $${paramCount++}`);
-        updateValues.push(paperData.semester);
-      }
-      if (paperData.duration_minutes !== undefined) {
-        updateFields.push(`duration_minutes = $${paramCount++}`);
-        updateValues.push(paperData.duration_minutes);
-      }
-      if (paperData.status !== undefined) {
-        updateFields.push(`status = $${paramCount++}`);
-        updateValues.push(paperData.status);
-      }
-      if (paperData.total_questions !== undefined) {
-        updateFields.push(`total_questions = $${paramCount++}`);
-        updateValues.push(paperData.total_questions);
-      }
-      if (paperData.total_weightage !== undefined) {
-        updateFields.push(`total_weightage = $${paramCount++}`);
-        updateValues.push(paperData.total_weightage);
-      }
-
-      updateFields.push(`updated_by = $${paramCount++}`);
-      updateValues.push(userId);
-      updateFields.push(`updated_at = NOW()`);
-      updateValues.push(id);
-
-      if (updateFields.length > 2) { // More than just updated_by and updated_at
-        await client.query(
-          `UPDATE question_papers SET ${updateFields.join(', ')} WHERE id = $${paramCount}`,
-          updateValues
-        );
-      }
-
-      // If questions are provided, update them
-      if (questionsData && Array.isArray(questionsData)) {
-        // Get existing question IDs
-        const existingQuestions = await client.query(
-          'SELECT id FROM questions WHERE question_paper_id = $1 AND is_active = TRUE',
-          [id]
-        );
-        const existingQuestionIds = existingQuestions.rows.map(row => row.id);
-
-        // Get question IDs from the update data (questions with IDs are existing, without IDs are new)
-        const providedQuestionIds = questionsData
-          .filter(q => q.id)
-          .map(q => q.id);
-
-        // Questions to delete (exist in DB but not in provided data)
-        const questionsToDelete = existingQuestionIds.filter(
-          id => !providedQuestionIds.includes(id)
-        );
-
-        // Soft delete removed questions
-        if (questionsToDelete.length > 0) {
-          await client.query(
-            `UPDATE questions SET is_active = FALSE WHERE id = ANY($1::int[])`,
-            [questionsToDelete]
-          );
-          // Delete their options (question_options doesn't have is_active, so we delete them)
-          await client.query(
-            `DELETE FROM question_options 
-             WHERE question_id = ANY($1::int[])`,
-            [questionsToDelete]
-          );
+        if (!existingPaper) {
+          throw new Error('Question paper not found');
         }
 
-        // Update or insert questions
-        let displayOrder = 0;
-        for (const questionData of questionsData) {
-          const questionType = this.mapQuestionType(questionData.type);
+        // Build update data for question paper
+        const updateData = {
+          updatedBy: userId,
+        };
 
-          if (questionData.id && existingQuestionIds.includes(questionData.id)) {
-            // Update existing question
-            await client.query(
-              `UPDATE questions 
-               SET question_text = $1, question_type = $2, weightage = $3, 
-                   section = $4, display_order = $5, updated_at = NOW()
-               WHERE id = $6`,
-              [
-                questionData.text,
-                questionType,
-                questionData.weightage || 1,
-                questionData.section || null,
-                displayOrder++,
-                questionData.id,
-              ]
-            );
+        if (paperData.paper_name !== undefined) {
+          updateData.paperName = paperData.paper_name;
+        }
+        if (paperData.description !== undefined) {
+          updateData.description = paperData.description;
+        }
+        if (paperData.subject !== undefined) {
+          updateData.subject = paperData.subject;
+        }
+        if (paperData.year !== undefined) {
+          updateData.year = paperData.year;
+        }
+        if (paperData.semester !== undefined) {
+          updateData.semester = paperData.semester;
+        }
+        if (paperData.duration_minutes !== undefined) {
+          updateData.durationMinutes = paperData.duration_minutes;
+        }
+        if (paperData.status !== undefined) {
+          updateData.status = paperData.status;
+        }
+        if (paperData.total_questions !== undefined) {
+          updateData.totalQuestions = paperData.total_questions;
+        }
+        if (paperData.total_weightage !== undefined) {
+          updateData.totalWeightage = paperData.total_weightage;
+        }
 
-            const questionId = questionData.id;
+        // Update question paper
+        await tx.questionPaper.update({
+          where: { id: paperId },
+          data: updateData,
+        });
 
-            // Delete existing options (question_options doesn't have is_active, so we delete them)
-            await client.query(
-              'DELETE FROM question_options WHERE question_id = $1',
-              [questionId]
-            );
+        // If questions are provided, update them
+        if (questionsData && Array.isArray(questionsData)) {
+          // Get existing question IDs
+          const existingQuestions = await tx.question.findMany({
+            where: { questionPaperId: paperId, isActive: true },
+            select: { id: true },
+          });
+          const existingQuestionIds = existingQuestions.map(q => q.id);
 
-            // Insert new options
-            if (questionData.options && questionData.options.length > 0) {
-              const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-              const correctOptions = questionData.correctOptions || [];
+          // Get question IDs from the update data (questions with IDs are existing, without IDs are new)
+          const providedQuestionIds = questionsData
+            .filter(q => q.id)
+            .map(q => q.id);
 
-              for (let i = 0; i < questionData.options.length; i++) {
-                const isCorrect = correctOptions.includes(i);
-                const optionLabel = optionLabels[i] || String.fromCharCode(65 + i);
+          // Questions to delete (exist in DB but not in provided data)
+          const questionsToDelete = existingQuestionIds.filter(
+            qId => !providedQuestionIds.includes(qId)
+          );
 
-                await client.query(
-                  `INSERT INTO question_options (
-                    question_id, option_text, option_label, is_correct, display_order
-                  ) VALUES ($1, $2, $3, $4, $5)`,
-                  [questionId, questionData.options[i], optionLabel, isCorrect, i]
-                );
+          // Soft delete removed questions
+          if (questionsToDelete.length > 0) {
+            await tx.question.updateMany({
+              where: { id: { in: questionsToDelete } },
+              data: { isActive: false },
+            });
+            
+            // Delete their options
+            await tx.questionOption.deleteMany({
+              where: { questionId: { in: questionsToDelete } },
+            });
+          }
+
+          // Update or insert questions
+          let displayOrder = 0;
+          for (const questionData of questionsData) {
+            const questionType = this.mapQuestionType(questionData.type);
+
+            if (questionData.id && existingQuestionIds.includes(questionData.id)) {
+              // Update existing question
+              await tx.question.update({
+                where: { id: questionData.id },
+                data: {
+                  questionText: questionData.text,
+                  questionType: questionType,
+                  weightage: questionData.weightage || 1,
+                  section: questionData.section || null,
+                  displayOrder: displayOrder++,
+                  updatedBy: userId,
+                },
+              });
+
+              const questionId = questionData.id;
+
+              // Delete existing options
+              await tx.questionOption.deleteMany({
+                where: { questionId: questionId },
+              });
+
+              // Insert new options
+              if (questionData.options && questionData.options.length > 0) {
+                const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+                const correctOptions = questionData.correctOptions || [];
+
+                const optionsData = questionData.options.map((optionText, i) => ({
+                  questionId: questionId,
+                  optionText: optionText,
+                  optionLabel: optionLabels[i] || String.fromCharCode(65 + i),
+                  isCorrect: correctOptions.includes(i),
+                  displayOrder: i,
+                }));
+
+                await tx.questionOption.createMany({
+                  data: optionsData,
+                });
               }
-            }
-          } else {
-            // Insert new question
-            const questionResult = await client.query(
-              `INSERT INTO questions (
-                question_paper_id, question_text, question_type, weightage,
-                section, display_order, created_by, updated_at
-              ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING id`,
-              [
-                id,
-                questionData.text,
-                questionType,
-                questionData.weightage || 1,
-                questionData.section || null,
-                displayOrder++,
-                userId,
-              ]
-            );
+            } else {
+              // Insert new question
+              const question = await tx.question.create({
+                data: {
+                  questionPaperId: paperId,
+                  questionText: questionData.text,
+                  questionType: questionType,
+                  weightage: questionData.weightage || 1,
+                  section: questionData.section || null,
+                  displayOrder: displayOrder++,
+                  createdBy: userId,
+                },
+              });
 
-            const questionId = questionResult.rows[0].id;
+              const questionId = question.id;
 
-            // Insert options
-            if (questionData.options && questionData.options.length > 0) {
-              const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-              const correctOptions = questionData.correctOptions || [];
+              // Insert options
+              if (questionData.options && questionData.options.length > 0) {
+                const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+                const correctOptions = questionData.correctOptions || [];
 
-              for (let i = 0; i < questionData.options.length; i++) {
-                const isCorrect = correctOptions.includes(i);
-                const optionLabel = optionLabels[i] || String.fromCharCode(65 + i);
+                const optionsData = questionData.options.map((optionText, i) => ({
+                  questionId: questionId,
+                  optionText: optionText,
+                  optionLabel: optionLabels[i] || String.fromCharCode(65 + i),
+                  isCorrect: correctOptions.includes(i),
+                  displayOrder: i,
+                }));
 
-                await client.query(
-                  `INSERT INTO question_options (
-                    question_id, option_text, option_label, is_correct, display_order
-                  ) VALUES ($1, $2, $3, $4, $5)`,
-                  [questionId, questionData.options[i], optionLabel, isCorrect, i]
-                );
+                await tx.questionOption.createMany({
+                  data: optionsData,
+                });
               }
             }
           }
+
+          // Update total_questions and total_weightage
+          const activeQuestions = await tx.question.aggregate({
+            where: { questionPaperId: paperId, isActive: true },
+            _count: { id: true },
+            _sum: { weightage: true },
+          });
+          
+          const totalQuestions = activeQuestions._count.id || 0;
+          const totalWeightage = activeQuestions._sum.weightage || 0;
+
+          await tx.questionPaper.update({
+            where: { id: paperId },
+            data: {
+              totalQuestions: totalQuestions,
+              totalWeightage: totalWeightage,
+            },
+          });
         }
 
-        // Update total_questions and total_weightage
-        const activeQuestions = await client.query(
-          'SELECT COUNT(*) as count, COALESCE(SUM(weightage), 0) as total FROM questions WHERE question_paper_id = $1 AND is_active = TRUE',
-          [id]
-        );
-        const totalQuestions = parseInt(activeQuestions.rows[0].count);
-        const totalWeightage = parseInt(activeQuestions.rows[0].total);
+        // Update domain assignments if provided
+        if (domainIds && Array.isArray(domainIds)) {
+          const uniqueDomainIds = [...new Set(domainIds)].filter((domainId) => Number.isInteger(domainId));
+          
+          // Delete existing domain assignments
+          await tx.questionPaperDomain.deleteMany({
+            where: { questionPaperId: paperId },
+          });
 
-        await client.query(
-          `UPDATE question_papers 
-           SET total_questions = $1, total_weightage = $2, updated_at = NOW()
-           WHERE id = $3`,
-          [totalQuestions, totalWeightage, id]
-        );
-      }
+          // Create new domain assignments
+          if (uniqueDomainIds.length > 0) {
+            const domainConnections = uniqueDomainIds.map(domainId => ({
+              questionPaperId: paperId,
+              domainId: domainId,
+            }));
 
-      // Update domain assignments if provided
-      if (domainIds && Array.isArray(domainIds)) {
-        const uniqueDomainIds = [...new Set(domainIds)].filter((domainId) => Number.isInteger(domainId));
-        await client.query(
-          'DELETE FROM question_paper_domains WHERE question_paper_id = $1',
-          [id]
-        );
-
-        for (const domainId of uniqueDomainIds) {
-          await client.query(
-            `INSERT INTO question_paper_domains (question_paper_id, domain_id)
-             VALUES ($1, $2)
-             ON CONFLICT (question_paper_id, domain_id) DO NOTHING`,
-            [id, domainId]
-          );
+            await tx.questionPaperDomain.createMany({
+              data: domainConnections,
+              skipDuplicates: true,
+            });
+          }
         }
-      }
-
-      await client.query('COMMIT');
+      });
 
       // Fetch and return updated question paper
       const updatedPaper = await this.findById(id);
       return updatedPaper;
     } catch (error) {
-      await client.query('ROLLBACK');
       console.error('Error updating question paper:', error);
       throw error;
-    } finally {
-      client.release();
     }
   }
 
@@ -600,27 +591,39 @@ class QuestionPaper {
    */
   static async delete(id) {
     try {
-      const result = await pool.query(
-        'UPDATE question_papers SET is_active = FALSE, updated_at = NOW() WHERE id = $1 RETURNING id',
-        [id]
-      );
+      // Use Prisma transaction to soft delete question paper and related questions
+      await prisma.$transaction(async (tx) => {
+        // Soft delete question paper
+        const updatedPaper = await tx.questionPaper.update({
+          where: { id: parseInt(id) },
+          data: { isActive: false },
+        });
 
-      if (result.rows.length === 0) {
-        return false;
-      }
+        if (!updatedPaper) {
+          throw new Error('Question paper not found');
+        }
 
-      // Also soft delete all questions
-      await pool.query(
-        'UPDATE questions SET is_active = FALSE WHERE question_paper_id = $1',
-        [id]
-      );
+        // Soft delete all questions
+        await tx.question.updateMany({
+          where: { questionPaperId: parseInt(id) },
+          data: { isActive: false },
+        });
 
-      // Delete all options (question_options doesn't have is_active, so we delete them)
-      await pool.query(
-        `DELETE FROM question_options 
-         WHERE question_id IN (SELECT id FROM questions WHERE question_paper_id = $1)`,
-        [id]
-      );
+        // Delete all options (question_options doesn't have is_active, so we delete them)
+        // First get all question IDs for this paper
+        const questions = await tx.question.findMany({
+          where: { questionPaperId: parseInt(id) },
+          select: { id: true },
+        });
+
+        const questionIds = questions.map(q => q.id);
+        
+        if (questionIds.length > 0) {
+          await tx.questionOption.deleteMany({
+            where: { questionId: { in: questionIds } },
+          });
+        }
+      });
 
       return true;
     } catch (error) {

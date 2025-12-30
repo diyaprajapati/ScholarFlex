@@ -396,6 +396,17 @@ const exportEvaluatedStudents = async (req, res) => {
                 domainName: true,
               },
             },
+            projects: {
+              select: {
+                projectTitle: true,
+                projectDescription: true,
+                deadline: true,
+                createdAt: true,
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
           },
         },
       },
@@ -419,6 +430,19 @@ const exportEvaluatedStudents = async (req, res) => {
       const studentId = evaluation.studentId;
       
       if (!studentsMap.has(studentId)) {
+        // Format project details
+        const projectDetails = evaluation.student.projects && evaluation.student.projects.length > 0
+          ? evaluation.student.projects.map((project, index) => {
+              const projectInfo = [
+                `Project ${index + 1}: ${project.projectTitle || 'N/A'}`,
+                `Description: ${project.projectDescription || 'N/A'}`,
+                `Deadline: ${project.deadline ? new Date(project.deadline).toLocaleDateString('en-US') : 'N/A'}`,
+                `Created: ${new Date(project.createdAt).toLocaleDateString('en-US')}`,
+              ].join('\n');
+              return projectInfo;
+            }).join('\n\n')
+          : 'No projects assigned';
+
         studentsMap.set(studentId, {
           studentName: evaluation.student.fullName || 'N/A',
           phoneNumber: evaluation.student.phone || 'N/A',
@@ -430,6 +454,7 @@ const exportEvaluatedStudents = async (req, res) => {
           endDate: evaluation.student.internshipEndDate
             ? new Date(evaluation.student.internshipEndDate).toLocaleDateString('en-US')
             : 'N/A',
+          projectDetails: projectDetails,
           evaluations: [],
         });
       }
@@ -471,6 +496,7 @@ const exportEvaluatedStudents = async (req, res) => {
         'Domain': studentData.domain,
         'Start Date': studentData.startDate,
         'End Date': studentData.endDate,
+        'Project Details': studentData.projectDetails,
       };
 
       // Create a map of evaluations by week number

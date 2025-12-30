@@ -135,10 +135,28 @@ const prisma = new PrismaClient({
 });
 
 // Test database connection (pool) with retry logic
+// NOTE: This pool test is disabled for MySQL databases since pg (PostgreSQL) client
+// cannot connect to MySQL. Prisma handles all database connections.
+// If you need raw SQL queries, consider using mysql2 instead of pg for MySQL databases.
 let poolConnectionAttempts = 0;
 const maxPoolAttempts = 3;
 
+// Check if we're using MySQL (Prisma schema indicates MySQL)
+// Skip pool connection test for MySQL since pg client won't work
+const isMySQL = process.env.DATABASE_URL && (
+  process.env.DATABASE_URL.includes('mysql://') || 
+  process.env.DATABASE_URL.includes('mysql2://') ||
+  process.env.DATABASE_URL.includes('mariadb://')
+);
+
 function testPoolConnection() {
+  // Skip pool test for MySQL databases
+  if (isMySQL) {
+    console.log('ℹ️  Skipping PostgreSQL pool connection test (MySQL database detected)');
+    console.log('ℹ️  Prisma Client will handle all database connections');
+    return;
+  }
+
   pool.query('SELECT NOW()', (err, res) => {
     if (err) {
       poolConnectionAttempts++;
@@ -156,7 +174,10 @@ function testPoolConnection() {
   });
 }
 
-testPoolConnection();
+// Only test pool connection if not MySQL and not in CLI mode
+if (!isMySQL && !isCLI) {
+  testPoolConnection();
+}
 
 // Test Prisma connection with retry logic (only in server context, not during CLI commands)
 // Skip connection test if this is being imported by Prisma CLI or migration scripts

@@ -36,6 +36,7 @@ const CandidatesTab = () => {
     endDate: '',
     testDateStart: '', // Test date filter start
     testDateEnd: '', // Test date filter end
+    internshipStatus: '', // 'NOT_STARTED', 'ONGOING', 'COMPLETED', or ''
   });
   const itemsPerPage = 10;
   const fileInputRef = useRef(null);
@@ -433,6 +434,13 @@ const CandidatesTab = () => {
       });
     }
 
+    // Apply internship status filter
+    if (filters.internshipStatus) {
+      result = result.filter(student => {
+        return student.internship_status === filters.internshipStatus;
+      });
+    }
+
     return result;
   }, [students, searchQuery, filters, domains, compareDates]);
 
@@ -555,6 +563,37 @@ const CandidatesTab = () => {
     []
   );
 
+  const handleDeleteStudent = useCallback(
+    async (studentId, studentName) => {
+      // Confirm deletion
+      const confirmed = window.confirm(
+        `Are you sure you want to delete "${studentName}"? This action cannot be undone.`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        // Delete student
+        await api.candidates.delete(studentId);
+
+        // Remove from local state
+        setStudents(prevStudents =>
+          prevStudents.filter(student => student.id !== studentId)
+        );
+
+        setSuccess(`Student "${studentName}" deleted successfully`);
+        setTimeout(() => setSuccess(''), 3000);
+      } catch (err) {
+        console.error('Error deleting student:', err);
+        setError(err.message || 'Failed to delete student');
+        setTimeout(() => setError(''), 3000);
+      }
+    },
+    []
+  );
+
   const handleNOCStatusChange = useCallback(
     async (studentId, nocReceived) => {
       try {
@@ -621,6 +660,7 @@ const CandidatesTab = () => {
       endDate: '',
       testDateStart: '',
       testDateEnd: '',
+      internshipStatus: '',
     });
     setSearchQuery('');
   }, []);
@@ -1011,6 +1051,21 @@ const CandidatesTab = () => {
                   </select>
                 </div>
 
+                {/* Internship Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Internship Status</label>
+                  <select
+                    value={filters.internshipStatus}
+                    onChange={(e) => handleFilterChange('internshipStatus', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  >
+                    <option value="">All</option>
+                    <option value="NOT_STARTED">Not Started</option>
+                    <option value="ONGOING">Ongoing</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
+                </div>
+
                 {/* Reference Information */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Reference</label>
@@ -1257,6 +1312,12 @@ const CandidatesTab = () => {
                               className="text-green-600 hover:text-green-900 font-medium cursor-pointer"
                             >
                               Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteStudent(student.id, student.full_name)}
+                              className="text-red-600 hover:text-red-900 font-medium cursor-pointer"
+                            >
+                              Delete
                             </button>
                           </div>
                         </td>

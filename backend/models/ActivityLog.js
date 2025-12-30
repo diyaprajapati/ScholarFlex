@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const { prisma } = require('../config/database');
 
 class ActivityLog {
   /**
@@ -21,30 +21,40 @@ class ActivityLog {
         user_agent,
       } = logData;
 
-      const result = await pool.query(
-        `INSERT INTO activity_logs (
-          user_id, user_type, action, entity_type, entity_id, description,
-          request_method, request_path, request_body, response_status,
-          ip_address, user_agent
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11, $12)
-        RETURNING *`,
-        [
-          user_id,
-          user_type,
-          action,
-          entity_type,
-          entity_id,
-          description,
-          request_method,
-          request_path,
-          request_body ? JSON.stringify(request_body) : null,
-          response_status,
-          ip_address,
-          user_agent,
-        ]
-      );
+      const result = await prisma.activityLog.create({
+        data: {
+          userId: user_id || null,
+          userType: user_type || 'USER',
+          action: action,
+          entityType: entity_type || null,
+          entityId: entity_id || null,
+          description: description || null,
+          requestMethod: request_method || null,
+          requestPath: request_path || null,
+          requestBody: request_body || null,
+          responseStatus: response_status || null,
+          ipAddress: ip_address || null,
+          userAgent: user_agent || null,
+        },
+      });
 
-      return result.rows[0];
+      // Convert Prisma result to match expected format
+      return {
+        id: result.id,
+        user_id: result.userId,
+        user_type: result.userType,
+        action: result.action,
+        entity_type: result.entityType,
+        entity_id: result.entityId,
+        description: result.description,
+        request_method: result.requestMethod,
+        request_path: result.requestPath,
+        request_body: result.requestBody,
+        response_status: result.responseStatus,
+        ip_address: result.ipAddress,
+        user_agent: result.userAgent,
+        created_at: result.createdAt,
+      };
     } catch (error) {
       console.error('Error creating activity log:', error);
       throw error;
@@ -68,67 +78,81 @@ class ActivityLog {
         exclude_super_admin = false, // For admin users - exclude super admin logs
       } = filters;
 
-      let query = `
-        SELECT 
-          al.*,
-          u.email as user_email,
-          u.full_name as user_name,
-          r.role_name,
-          r.role_code
-        FROM activity_logs al
-        LEFT JOIN users u ON al.user_id = u.id
-        LEFT JOIN roles r ON u.role_id = r.id
-        WHERE 1=1
-      `;
-      const params = [];
-      let paramCount = 0;
-
-      // Exclude super admin logs if requested (for admin users)
-      if (exclude_super_admin) {
-        query += ` AND (r.role_code != 'SUPER_ADMIN' OR r.role_code IS NULL)`;
-      }
+      // Build where clause
+      const where = {};
 
       if (user_id) {
-        paramCount++;
-        query += ` AND al.user_id = $${paramCount}`;
-        params.push(user_id);
+        where.userId = user_id;
       }
 
       if (user_type) {
-        paramCount++;
-        query += ` AND al.user_type = $${paramCount}`;
-        params.push(user_type);
+        where.userType = user_type;
       }
 
       if (action) {
-        paramCount++;
-        query += ` AND al.action = $${paramCount}`;
-        params.push(action);
+        where.action = action;
       }
 
       if (entity_type) {
-        paramCount++;
-        query += ` AND al.entity_type = $${paramCount}`;
-        params.push(entity_type);
+        where.entityType = entity_type;
       }
 
-      if (start_date) {
-        paramCount++;
-        query += ` AND al.created_at >= $${paramCount}`;
-        params.push(start_date);
+      if (start_date || end_date) {
+        where.createdAt = {};
+        if (start_date) {
+          where.createdAt.gte = new Date(start_date);
+        }
+        if (end_date) {
+          where.createdAt.lte = new Date(end_date);
+        }
       }
 
-      if (end_date) {
-        paramCount++;
-        query += ` AND al.created_at <= $${paramCount}`;
-        params.push(end_date);
+      const results = await prisma.activityLog.findMany({
+        where: where,
+        include: {
+          user: {
+            include: {
+              role: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: limit,
+        skip: offset,
+      });
+
+      // Format results to match expected format and filter out super admin if needed
+      let formattedResults = results.map((log) => ({
+        id: log.id,
+        user_id: log.userId,
+        user_type: log.userType,
+        action: log.action,
+        entity_type: log.entityType,
+        entity_id: log.entityId,
+        description: log.description,
+        request_method: log.requestMethod,
+        request_path: log.requestPath,
+        request_body: log.requestBody,
+        response_status: log.responseStatus,
+        ip_address: log.ipAddress,
+        user_agent: log.userAgent,
+        created_at: log.createdAt,
+        user_email: log.user?.email || null,
+        user_name: log.user?.fullName || null,
+        role_name: log.user?.role?.roleName || null,
+        role_code: log.user?.role?.roleCode || null,
+      }));
+
+      // Filter out super admin logs if requested
+      if (exclude_super_admin) {
+        formattedResults = formattedResults.filter(
+          (log) => log.role_code !== 'SUPER_ADMIN'
+        );
       }
 
-      query += ` ORDER BY al.created_at DESC LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
-      params.push(limit, offset);
-
-      const result = await pool.query(query, params);
-      return result.rows;
+      return formattedResults;
     } catch (error) {
       console.error('Error getting activity logs:', error);
       throw error;
@@ -150,58 +174,57 @@ class ActivityLog {
         exclude_super_admin = false,
       } = filters;
 
-      let query = `
-        SELECT COUNT(*) as total
-        FROM activity_logs al
-        LEFT JOIN users u ON al.user_id = u.id
-        LEFT JOIN roles r ON u.role_id = r.id
-        WHERE 1=1
-      `;
-      const params = [];
-      let paramCount = 0;
-
-      if (exclude_super_admin) {
-        query += ` AND (r.role_code != 'SUPER_ADMIN' OR r.role_code IS NULL)`;
-      }
+      // Build where clause
+      const where = {};
 
       if (user_id) {
-        paramCount++;
-        query += ` AND al.user_id = $${paramCount}`;
-        params.push(user_id);
+        where.userId = user_id;
       }
 
       if (user_type) {
-        paramCount++;
-        query += ` AND al.user_type = $${paramCount}`;
-        params.push(user_type);
+        where.userType = user_type;
       }
 
       if (action) {
-        paramCount++;
-        query += ` AND al.action = $${paramCount}`;
-        params.push(action);
+        where.action = action;
       }
 
       if (entity_type) {
-        paramCount++;
-        query += ` AND al.entity_type = $${paramCount}`;
-        params.push(entity_type);
+        where.entityType = entity_type;
       }
 
-      if (start_date) {
-        paramCount++;
-        query += ` AND al.created_at >= $${paramCount}`;
-        params.push(start_date);
+      if (start_date || end_date) {
+        where.createdAt = {};
+        if (start_date) {
+          where.createdAt.gte = new Date(start_date);
+        }
+        if (end_date) {
+          where.createdAt.lte = new Date(end_date);
+        }
       }
 
-      if (end_date) {
-        paramCount++;
-        query += ` AND al.created_at <= $${paramCount}`;
-        params.push(end_date);
+      const allLogs = await prisma.activityLog.findMany({
+        where: where,
+        include: {
+          user: {
+            include: {
+              role: true,
+            },
+          },
+        },
+      });
+
+      // Filter out super admin logs if requested
+      let filteredLogs = allLogs;
+      if (exclude_super_admin) {
+        filteredLogs = allLogs.filter(
+          (log) => log.user?.role?.roleCode !== 'SUPER_ADMIN'
+        );
       }
 
-      const result = await pool.query(query, params);
-      return parseInt(result.rows[0].total);
+      return filteredLogs.length;
+
+      return count;
     } catch (error) {
       console.error('Error getting log count:', error);
       throw error;
@@ -213,20 +236,42 @@ class ActivityLog {
    */
   static async getById(id) {
     try {
-      const result = await pool.query(
-        `SELECT 
-          al.*,
-          u.email as user_email,
-          u.full_name as user_name,
-          r.role_name,
-          r.role_code
-        FROM activity_logs al
-        LEFT JOIN users u ON al.user_id = u.id
-        LEFT JOIN roles r ON u.role_id = r.id
-        WHERE al.id = $1`,
-        [id]
-      );
-      return result.rows[0] || null;
+      const result = await prisma.activityLog.findUnique({
+        where: { id: id },
+        include: {
+          user: {
+            include: {
+              role: true,
+            },
+          },
+        },
+      });
+
+      if (!result) {
+        return null;
+      }
+
+      // Format result to match expected format
+      return {
+        id: result.id,
+        user_id: result.userId,
+        user_type: result.userType,
+        action: result.action,
+        entity_type: result.entityType,
+        entity_id: result.entityId,
+        description: result.description,
+        request_method: result.requestMethod,
+        request_path: result.requestPath,
+        request_body: result.requestBody,
+        response_status: result.responseStatus,
+        ip_address: result.ipAddress,
+        user_agent: result.userAgent,
+        created_at: result.createdAt,
+        user_email: result.user?.email || null,
+        user_name: result.user?.fullName || null,
+        role_name: result.user?.role?.roleName || null,
+        role_code: result.user?.role?.roleCode || null,
+      };
     } catch (error) {
       console.error('Error getting activity log by ID:', error);
       throw error;
@@ -235,4 +280,3 @@ class ActivityLog {
 }
 
 module.exports = ActivityLog;
-

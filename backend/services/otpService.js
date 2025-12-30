@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const { prisma } = require('../config/database');
 const transporter = require('../config/email');
 
 class OTPService {
@@ -23,17 +23,18 @@ class OTPService {
 
     try {
       // Delete any existing OTP for this email
-      await pool.query(
-        'DELETE FROM otp_verifications WHERE email = $1',
-        [email]
-      );
+      await prisma.otpVerification.deleteMany({
+        where: { email },
+      });
 
-      // Insert new OTP
-      await pool.query(
-        `INSERT INTO otp_verifications (email, otp, expires_at, created_at) 
-         VALUES ($1, $2, $3, NOW())`,
-        [email, otp, expiresAt]
-      );
+      // Insert new OTP using Prisma ORM
+      await prisma.otpVerification.create({
+        data: {
+          email,
+          otp,
+          expiresAt,
+        },
+      });
 
       return true;
     } catch (error) {
@@ -47,22 +48,34 @@ class OTPService {
    */
   static async verifyOTP(email, otp) {
     try {
-      const result = await pool.query(
-        `SELECT * FROM otp_verifications 
-         WHERE email = $1 AND otp = $2 AND expires_at > NOW() AND is_used = FALSE
-         ORDER BY created_at DESC LIMIT 1`,
-        [email, otp]
-      );
+      // Use Prisma ORM to find valid OTP
+      const otpRecord = await prisma.otpVerification.findFirst({
+        where: {
+          email,
+          otp,
+          expiresAt: {
+            gt: new Date(), // expires_at > NOW()
+          },
+          isUsed: false,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
 
-      if (result.rows.length === 0) {
+      if (!otpRecord) {
         return { valid: false, message: 'Invalid or expired OTP' };
       }
 
       // Mark OTP as used
-      await pool.query(
-        'UPDATE otp_verifications SET is_used = TRUE WHERE email = $1 AND otp = $2',
-        [email, otp]
-      );
+      await prisma.otpVerification.update({
+        where: {
+          id: otpRecord.id,
+        },
+        data: {
+          isUsed: true,
+        },
+      });
 
       return { valid: true, message: 'OTP verified successfully' };
     } catch (error) {
@@ -134,9 +147,15 @@ class OTPService {
    */
   static async cleanupExpiredOTPs() {
     try {
-      await pool.query(
-        'DELETE FROM otp_verifications WHERE expires_at < NOW() OR is_used = TRUE'
-      );
+      // Delete expired or used OTPs using Prisma ORM
+      await prisma.otpVerification.deleteMany({
+        where: {
+          OR: [
+            { expiresAt: { lt: new Date() } },
+            { isUsed: true },
+          ],
+        },
+      });
     } catch (error) {
       console.error('Error cleaning up OTPs:', error);
     }

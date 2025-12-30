@@ -1,27 +1,18 @@
 const multer = require('multer');
 const XLSX = require('xlsx');
 const { logActivitySimple } = require('../middleware/activityLogger');
-const pool = require('../config/database');
 const { prisma } = require('../config/database');
+const { calculateInternshipStatus } = require('../utils/internshipStatus');
 
 /**
  * Ensure the manual NOC status table exists.
  * This table is used to track whether NOC has been received manually for each student.
  */
 const ensureNOCStatusTable = async () => {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS student_noc_status (
-      id SERIAL PRIMARY KEY,
-      student_id INT NOT NULL UNIQUE,
-      is_received BOOLEAN NOT NULL DEFAULT FALSE,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT fk_student_noc_status_student
-        FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_student_noc_status_student_id
-      ON student_noc_status(student_id);
-  `);
+  // Table should already exist from Prisma migrations, but we can check
+  // For MySQL, we use Prisma's schema to manage tables
+  // This function is kept for backward compatibility but doesn't need to do anything
+  // as Prisma handles table creation via migrations
 };
 
 // Configure multer for file uploads (memory storage)
@@ -411,9 +402,10 @@ exports.getAllCandidates = async (req, res) => {
     // Ensure NOC status table exists
     await ensureNOCStatusTable();
 
-    // Fetch students with their marks from test attempts
-    const result = await pool.query(
-      `SELECT 
+    // Fetch students with their marks from test attempts using Prisma
+    // MySQL version - using MAX() for boolean aggregation instead of BOOL_OR()
+    const result = await prisma.$queryRaw`
+      SELECT 
         s.id,
         s.email,
         s.full_name,
@@ -439,14 +431,18 @@ exports.getAllCandidates = async (req, res) => {
         s.updated_at,
         d.domain_name,
         ist.status_name,
-        COALESCE(BOOL_OR(sns.is_received), FALSE) as noc_received,
-        COALESCE(MAX(ta.percentage_score), 0) as marks,
-        MAX(ta.submitted_at) as last_test_date,
-        COUNT(DISTINCT ta.id) as total_attempts
+        COALESCE(MAX(CASE WHEN sns.is_received = 1 THEN 1 ELSE 0 END), 0) as noc_received,
+        COALESCE(MAX(CASE WHEN ta.status IN ('COMPLETED', 'AUTO_SUBMITTED') THEN ta.percentage_score ELSE 0 END), 0) as marks,
+        MAX(CASE WHEN ta.status IN ('COMPLETED', 'AUTO_SUBMITTED') THEN ta.submitted_at ELSE NULL END) as last_test_date,
+        COUNT(DISTINCT CASE WHEN ta.status IN ('COMPLETED', 'AUTO_SUBMITTED') THEN ta.id ELSE NULL END) as total_attempts,
+        MAX(CASE WHEN ta_in_progress.status = 'IN_PROGRESS' THEN 1 ELSE 0 END) as has_in_progress_test,
+        MAX(CASE WHEN ta_in_progress.status = 'IN_PROGRESS' THEN ta_in_progress.id ELSE NULL END) as in_progress_attempt_id,
+        MAX(CASE WHEN ta_in_progress.status = 'IN_PROGRESS' THEN ta_in_progress.started_at ELSE NULL END) as in_progress_started_at
       FROM students s
       LEFT JOIN domains d ON s.domain_id = d.id
       LEFT JOIN intern_status ist ON s.status_id = ist.id
       LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
+      LEFT JOIN test_attempts ta_in_progress ON ta_in_progress.student_id = s.id AND ta_in_progress.status = 'IN_PROGRESS'
       LEFT JOIN student_noc_status sns ON sns.student_id = s.id
       WHERE s.is_active = TRUE
       GROUP BY s.id, s.email, s.full_name, s.phone, s.image_url, 
@@ -454,39 +450,51 @@ exports.getAllCandidates = async (req, res) => {
                s.area_of_interests, s.internship_start_date, s.internship_end_date, s.internship_duration,
                s.reference_information, s.internal_faculty_name, s.faculty_contact, s.faculty_email,
                s.is_active, s.is_selected, s.can_retest, s.created_at, s.updated_at, d.domain_name, ist.status_name
-      ORDER BY s.created_at DESC`
-    );
+      ORDER BY s.created_at DESC
+    `;
 
-    const students = result.rows.map(s => ({
-      id: s.id,
-      email: s.email,
-      full_name: s.full_name,
-      mobile_number: s.mobile_number,
-      phone: s.mobile_number,
-      image_url: s.image_url,
-      noc_received: s.noc_received,
-      marks: parseFloat(s.marks || 0),
-      reference_information: s.reference_information,
-      status: s.status_name,
-      domain: s.domain_name,
-      domain_id: s.domain_id,
-      institute_name: s.institute_name,
-      course_taken: s.course_taken,
-      internship_start_date: s.internship_start_date,
-      internship_end_date: s.internship_end_date,
-      internship_duration: s.internship_duration,
-      internal_faculty_name: s.internal_faculty_name,
-      faculty_contact: s.faculty_contact,
-      faculty_email: s.faculty_email,
-      is_selected: s.is_selected || false,
-      can_retest: s.can_retest || false,
-      total_attempts: parseInt(s.total_attempts || 0),
-      last_test_date: s.last_test_date,
-      registration_date: s.registration_date,
-      is_active: s.is_active,
-      created_at: s.created_at,
-      updated_at: s.updated_at,
-    }));
+    const students = result.map(s => {
+      // Calculate internship status based on dates
+      const internshipStatus = calculateInternshipStatus(
+        s.internship_start_date,
+        s.internship_end_date
+      );
+
+      return {
+        id: s.id,
+        email: s.email,
+        full_name: s.full_name,
+        mobile_number: s.mobile_number,
+        phone: s.mobile_number,
+        image_url: s.image_url,
+        noc_received: s.noc_received ? true : false,
+        marks: parseFloat(s.marks || 0),
+        reference_information: s.reference_information,
+        status: s.status_name,
+        domain: s.domain_name,
+        domain_id: s.domain_id,
+        institute_name: s.institute_name,
+        course_taken: s.course_taken,
+        internship_start_date: s.internship_start_date,
+        internship_end_date: s.internship_end_date,
+        internship_duration: s.internship_duration,
+        internal_faculty_name: s.internal_faculty_name,
+        faculty_contact: s.faculty_contact,
+        faculty_email: s.faculty_email,
+        is_selected: s.is_selected ? true : false,
+        can_retest: s.can_retest ? true : false,
+        total_attempts: parseInt(s.total_attempts || 0),
+        last_test_date: s.last_test_date,
+        registration_date: s.registration_date,
+        is_active: s.is_active ? true : false,
+        created_at: s.created_at,
+        updated_at: s.updated_at,
+        has_in_progress_test: s.has_in_progress_test ? true : false,
+        in_progress_attempt_id: s.in_progress_attempt_id || null,
+        in_progress_started_at: s.in_progress_started_at || null,
+        internship_status: String(internshipStatus), // Convert enum to string: 'NOT_STARTED', 'ONGOING', or 'COMPLETED'
+      };
+    });
 
     // Log activity
     await logActivitySimple(
@@ -586,12 +594,12 @@ exports.getStudentById = async (req, res) => {
       });
     }
 
-    // Get NOC status
-    const nocResult = await pool.query(
-      'SELECT is_received FROM student_noc_status WHERE student_id = $1',
-      [studentId]
-    );
-    const nocReceived = nocResult.rows.length > 0 ? nocResult.rows[0].is_received : false;
+    // Get NOC status using Prisma
+    const nocStatus = await prisma.studentNOCStatus.findUnique({
+      where: { studentId: studentId },
+      select: { isReceived: true },
+    });
+    const nocReceived = nocStatus?.isReceived || false;
 
     // Get marks from test attempts
     const marks = student.testAttempts.length > 0 
@@ -601,12 +609,15 @@ exports.getStudentById = async (req, res) => {
       ? student.testAttempts[0].submittedAt 
       : null;
 
-    // Count total attempts
-    const totalAttemptsResult = await pool.query(
-      'SELECT COUNT(*) as count FROM test_attempts WHERE student_id = $1 AND status IN ($2, $3)',
-      [studentId, 'COMPLETED', 'AUTO_SUBMITTED']
-    );
-    const totalAttempts = parseInt(totalAttemptsResult.rows[0]?.count || 0);
+    // Count total attempts using Prisma
+    const totalAttempts = await prisma.testAttempt.count({
+      where: {
+        studentId: studentId,
+        status: {
+          in: ['COMPLETED', 'AUTO_SUBMITTED'],
+        },
+      },
+    });
 
     // Group skills by type
     const skillsGrouped = {
@@ -710,31 +721,32 @@ exports.updateStudentSelection = async (req, res) => {
       });
     }
 
-    // Check if student exists
-    const studentResult = await pool.query(
-      'SELECT id, email, full_name FROM students WHERE id = $1 AND is_active = TRUE',
-      [id]
-    );
+    // Check if student exists using Prisma
+    const student = await prisma.student.findFirst({
+      where: { id: parseInt(id), isActive: true },
+      select: { id: true, email: true, fullName: true },
+    });
 
-    if (studentResult.rows.length === 0) {
+    if (!student) {
       return res.status(404).json({
         success: false,
         message: 'Student not found',
       });
     }
 
-    // Update selection status (and optionally can_retest if provided)
+    // Update selection status (and optionally can_retest if provided) using Prisma
+    const updateData = {
+      isSelected: is_selected,
+    };
+    
     if (typeof can_retest === 'boolean') {
-      await pool.query(
-        'UPDATE students SET is_selected = $1, can_retest = $2, updated_at = NOW() WHERE id = $3',
-        [is_selected, can_retest, id]
-      );
-    } else {
-      await pool.query(
-        'UPDATE students SET is_selected = $1, updated_at = NOW() WHERE id = $2',
-        [is_selected, id]
-      );
+      updateData.canRetest = can_retest;
     }
+
+    await prisma.student.update({
+      where: { id: parseInt(id) },
+      data: updateData,
+    });
 
     // Log activity
     await logActivitySimple(
@@ -742,7 +754,7 @@ exports.updateStudentSelection = async (req, res) => {
       'UPDATE_STUDENT_SELECTION',
       'STUDENT',
       id,
-      `${req.user.email} ${is_selected ? 'selected' : 'deselected'} student: ${studentResult.rows[0].email}`
+      `${req.user.email} ${is_selected ? 'selected' : 'deselected'} student: ${student.email}`
     );
 
     res.status(200).json({
@@ -782,35 +794,36 @@ exports.updateNOCReceivedStatus = async (req, res) => {
     // Ensure NOC status table exists
     await ensureNOCStatusTable();
 
-    // Check if student exists
-    const studentResult = await pool.query(
-      'SELECT id, email, full_name FROM students WHERE id = $1 AND is_active = TRUE',
-      [id]
-    );
+    // Check if student exists using Prisma
+    const student = await prisma.student.findFirst({
+      where: { id: parseInt(id), isActive: true },
+      select: { id: true, email: true, fullName: true },
+    });
 
-    if (studentResult.rows.length === 0) {
+    if (!student) {
       return res.status(404).json({
         success: false,
         message: 'Student not found',
       });
     }
 
-    // Upsert manual NOC status
-    const updateResult = await pool.query(
-      `
-      INSERT INTO student_noc_status (student_id, is_received, updated_at)
-      VALUES ($1, $2, NOW())
-      ON CONFLICT (student_id)
-      DO UPDATE SET is_received = EXCLUDED.is_received, updated_at = NOW()
-      RETURNING student_id, is_received, updated_at
-      `,
-      [id, noc_received]
-    );
+    // Upsert manual NOC status using Prisma
+    // MySQL equivalent of ON CONFLICT DO UPDATE
+    const nocStatus = await prisma.studentNOCStatus.upsert({
+      where: { studentId: parseInt(id) },
+      update: {
+        isReceived: noc_received,
+      },
+      create: {
+        studentId: parseInt(id),
+        isReceived: noc_received,
+      },
+    });
 
     console.log('✅ NOC status saved to database:', {
       student_id: id,
       noc_received: noc_received,
-      saved_data: updateResult.rows[0],
+      saved_data: nocStatus,
     });
 
     // Log activity
@@ -819,7 +832,7 @@ exports.updateNOCReceivedStatus = async (req, res) => {
       'UPDATE_STUDENT_NOC_STATUS',
       'STUDENT',
       id,
-      `${req.user.email} set NOC received = ${noc_received ? 'YES' : 'NO'} for student: ${studentResult.rows[0].email}`
+      `${req.user.email} set NOC received = ${noc_received ? 'YES' : 'NO'} for student: ${student.email}`
     );
 
     res.status(200).json({
@@ -1212,6 +1225,62 @@ exports.updateStudent = async (req, res) => {
       });
     }
 
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Delete a student (soft delete - sets isActive to false)
+ */
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const studentId = parseInt(id);
+
+    // Check if student exists
+    const existingStudent = await prisma.student.findUnique({
+      where: { id: studentId },
+      select: { id: true, email: true, fullName: true, isActive: true },
+    });
+
+    if (!existingStudent) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    if (!existingStudent.isActive) {
+      return res.status(400).json({
+        success: false,
+        message: 'Student is already deleted',
+      });
+    }
+
+    // Soft delete: set isActive to false
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { isActive: false },
+    });
+
+    // Log activity
+    await logActivitySimple(
+      req,
+      'DELETE_STUDENT',
+      'STUDENT',
+      studentId,
+      `Deleted student: ${existingStudent.fullName} (${existingStudent.email})`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Student deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting student:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',

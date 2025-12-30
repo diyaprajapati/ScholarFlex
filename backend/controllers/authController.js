@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const OTPService = require('../services/otpService');
 const { logActivitySimple } = require('../middleware/activityLogger');
-const pool = require('../config/database');
 const { prisma } = require('../config/database');
 
 /**
@@ -141,16 +140,15 @@ const verifyOTP = async (req, res) => {
     // AND they do not have explicit retest access, block login.
     if (user.source === 'students' && user.is_selected === false && user.can_retest !== true) {
       try {
-        const result = await pool.query(
-          `SELECT 1
-           FROM test_attempts
-           WHERE student_id = $1
-             AND status IN ('COMPLETED', 'AUTO_SUBMITTED')
-           LIMIT 1`,
-          [user.id]
-        );
+        const result = await prisma.$queryRaw`
+          SELECT 1 as exists
+          FROM test_attempts
+          WHERE student_id = ${user.id}
+            AND status IN ('COMPLETED', 'AUTO_SUBMITTED')
+          LIMIT 1
+        `;
 
-        if (result.rows.length > 0) {
+        if (result.length > 0) {
           return res.status(403).json({
             success: false,
             message:
