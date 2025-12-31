@@ -24,6 +24,8 @@ const internshipStatusRoutes = require('./routes/internshipStatusRoutes');
 const videoTrackingRoutes = require('./routes/videoTrackingRoutes');
 const videoAnalyticsRoutes = require('./routes/videoAnalyticsRoutes');
 const errorHandler = require('./middleware/errorHandler');
+const securityHeaders = require('./middleware/securityHeaders');
+const { sanitizeInput, validateParams } = require('./middleware/inputValidation');
 const pool = require('./config/database');
 const { prisma } = require('./config/database');
 
@@ -56,10 +58,19 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
+// Security headers - Add security headers to all responses
+app.use(securityHeaders);
+
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+// Input sanitization - AFTER body parsing to sanitize parsed data
+app.use(sanitizeInput);
+
+// Input validation - AFTER sanitization to validate clean data
+app.use(validateParams);
 
 // Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

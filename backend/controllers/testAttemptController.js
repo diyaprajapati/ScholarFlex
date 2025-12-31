@@ -1,12 +1,12 @@
-const pool = require('../config/database');
+const { prisma } = require('../config/database');
 
 /**
  * Get all test attempts (Admin/Super Admin)
  */
 exports.getAllTestAttempts = async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT 
+    const result = await prisma.$queryRaw`
+      SELECT 
         ta.id,
         ta.student_id,
         s.full_name AS student_name,
@@ -26,14 +26,14 @@ exports.getAllTestAttempts = async (req, res) => {
       JOIN students s ON ta.student_id = s.id
       LEFT JOIN domains d ON s.domain_id = d.id
       JOIN question_papers qp ON ta.question_paper_id = qp.id
-      ORDER BY ta.submitted_at DESC NULLS LAST, ta.started_at DESC`
-    );
+      ORDER BY ta.submitted_at DESC, ta.started_at DESC
+    `;
 
     res.status(200).json({
       success: true,
       message: 'Test attempts retrieved successfully',
-      data: result.rows,
-      count: result.rows.length,
+      data: result,
+      count: result.length,
     });
   } catch (error) {
     console.error('Error fetching test attempts:', error);
@@ -43,4 +43,3 @@ exports.getAllTestAttempts = async (req, res) => {
     });
   }
 };
-
