@@ -5,55 +5,31 @@
  * using the updated stored procedure that considers only attempted questions
  */
 
-const { Pool } = require('pg');
+const { prisma } = require('../config/database');
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
-const fs = require('fs');
-const path = require('path');
-
-// Configure SSL
-const sslConfig = { rejectUnauthorized: false };
-const caCertPath = path.join(__dirname, '..', 'config', 'certs', 'aiven-ca.pem');
-if (fs.existsSync(caCertPath)) {
-  try {
-    sslConfig.ca = fs.readFileSync(caCertPath).toString();
-    sslConfig.rejectUnauthorized = true;
-  } catch (error) {
-    // Ignore
-  }
-}
-
-function cleanDatabaseUrl(url) {
-  if (!url) return url;
-  try {
-    const urlObj = new URL(url);
-    urlObj.searchParams.delete('sslmode');
-    urlObj.searchParams.delete('ssl');
-    return urlObj.toString();
-  } catch (error) {
-    return url;
-  }
-}
-
-const pool = new Pool({
-  connectionString: cleanDatabaseUrl(process.env.DATABASE_URL),
-  ssl: sslConfig,
-});
 
 async function recalculateScores() {
-  const client = await pool.connect();
-  
   try {
     console.log('🔄 Recalculating test scores for all completed attempts...\n');
 
     // Get all completed test attempts
-    const attemptsResult = await client.query(
-      `SELECT id, student_id, question_paper_id 
-       FROM test_attempts 
-       WHERE status IN ('COMPLETED', 'AUTO_SUBMITTED')
-       ORDER BY id`
-    );
+    const attempts = await prisma.testAttempt.findMany({
+      where: {
+        status: {
+          in: ['COMPLETED', 'AUTO_SUBMITTED'],
+        },
+      },
+      select: {
+        id: true,
+        studentId: true,
+        questionPaperId: true,
+        maxPossibleScore: true,
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    });
 
-    const attempts = attemptsResult.rows;
     console.log(`Found ${attempts.length} test attempts to recalculate.\n`);
 
     let successCount = 0;
@@ -61,7 +37,33 @@ async function recalculateScores() {
 
     for (const attempt of attempts) {
       try {
-        await client.query('SELECT sp_calculate_test_score($1)', [attempt.id]);
+        // Calculate score manually (MySQL doesn't use stored procedures the same way)
+        const studentAnswers = await prisma.studentAnswer.findMany({
+          where: {
+            testAttemptId: attempt.id,
+          },
+          select: {
+            scoreObtained: true,
+          },
+        });
+
+        const totalScore = studentAnswers.reduce(
+          (sum, answer) => sum + parseFloat(answer.scoreObtained || 0),
+          0
+        );
+        const maxPossibleScore = attempt.maxPossibleScore || 100;
+        const percentageScore = maxPossibleScore > 0 ? (totalScore / maxPossibleScore) * 100 : 0;
+
+        // Update the test attempt
+        await prisma.testAttempt.update({
+          where: { id: attempt.id },
+          data: {
+            totalScore: totalScore,
+            percentageScore: percentageScore,
+            questionsAttempted: studentAnswers.length,
+          },
+        });
+
         successCount++;
         if (successCount % 10 === 0) {
           console.log(`✅ Recalculated ${successCount} attempts...`);
@@ -80,8 +82,7 @@ async function recalculateScores() {
     console.error('❌ Error during recalculation:', error.message);
     throw error;
   } finally {
-    client.release();
-    await pool.end();
+    await prisma.$disconnect();
   }
 }
 

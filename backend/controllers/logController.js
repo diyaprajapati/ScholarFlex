@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const { prisma } = require('../config/database');
 const ActivityLog = require('../models/ActivityLog');
 const { logActivitySimple } = require('../middleware/activityLogger');
 
@@ -179,24 +179,48 @@ const getLogStats = async (req, res) => {
       exclude_super_admin: excludeSuperAdmin,
     });
 
-    // Get logs by action (top 10)
-    const actionStatsQuery = `
-      SELECT 
-        al.action,
-        COUNT(*) as count
-      FROM activity_logs al
-      LEFT JOIN users u ON al.user_id = u.id
-      LEFT JOIN roles r ON u.role_id = r.id
-      WHERE 1=1
-      ${excludeSuperAdmin ? "AND (r.role_code != 'SUPER_ADMIN' OR r.role_code IS NULL)" : ''}
-      ${start_date ? `AND al.created_at >= '${start_date}'` : ''}
-      ${end_date ? `AND al.created_at <= '${end_date}'` : ''}
-      GROUP BY al.action
-      ORDER BY count DESC
-      LIMIT 10
-    `;
+    // Get logs by action (top 10) using Prisma
+    const whereClause = {};
+    if (start_date) {
+      whereClause.createdAt = { gte: new Date(start_date) };
+    }
+    if (end_date) {
+      whereClause.createdAt = { ...whereClause.createdAt, lte: new Date(end_date) };
+    }
+    if (excludeSuperAdmin) {
+      whereClause.OR = [
+        {
+          user: {
+            role: {
+              roleCode: { not: 'SUPER_ADMIN' },
+            },
+          },
+        },
+        {
+          user: null,
+        },
+      ];
+    }
 
-    const actionStatsResult = await pool.query(actionStatsQuery);
+    const actionStatsResult = await prisma.activityLog.groupBy({
+      by: ['action'],
+      where: whereClause,
+      _count: {
+        id: true,
+      },
+      orderBy: {
+        _count: {
+          id: 'desc',
+        },
+      },
+      take: 10,
+    });
+
+    // Transform to match expected format
+    const actionStats = actionStatsResult.map(stat => ({
+      action: stat.action,
+      count: stat._count.id,
+    }));
 
     // Log the activity
     await logActivitySimple(
@@ -211,7 +235,7 @@ const getLogStats = async (req, res) => {
       success: true,
       stats: {
         total_logs: totalLogs,
-        action_breakdown: actionStatsResult.rows,
+        action_breakdown: actionStats,
       },
     });
   } catch (error) {

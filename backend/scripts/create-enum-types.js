@@ -4,69 +4,27 @@
  * This script creates the enum types needed for the database
  */
 
-const { Pool } = require('pg');
+const { prisma } = require('../config/database');
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
-const fs = require('fs');
-const path = require('path');
-
-// Configure SSL
-const sslConfig = { rejectUnauthorized: false };
-const caCertPath = path.join(__dirname, '..', 'config', 'certs', 'aiven-ca.pem');
-if (fs.existsSync(caCertPath)) {
-  try {
-    sslConfig.ca = fs.readFileSync(caCertPath).toString();
-    sslConfig.rejectUnauthorized = true;
-  } catch (error) {
-    // Ignore
-  }
-}
-
-function cleanDatabaseUrl(url) {
-  if (!url) return url;
-  try {
-    const urlObj = new URL(url);
-    urlObj.searchParams.delete('sslmode');
-    urlObj.searchParams.delete('ssl');
-    return urlObj.toString();
-  } catch (error) {
-    return url;
-  }
-}
-
-const pool = new Pool({
-  connectionString: cleanDatabaseUrl(process.env.DATABASE_URL),
-  ssl: sslConfig,
-});
 
 async function createEnumTypes() {
-  const client = await pool.connect();
-  
   try {
-    await client.query('BEGIN');
+    console.log('🔄 Checking enum types...\n');
 
-    console.log('🔄 Creating enum types...\n');
-
-    // Create test_attempt_status enum if it doesn't exist
-    await client.query(`
-      DO $$ BEGIN
-        CREATE TYPE test_attempt_status AS ENUM ('IN_PROGRESS', 'COMPLETED', 'AUTO_SUBMITTED');
-      EXCEPTION
-        WHEN duplicate_object THEN null;
-      END $$;
-    `);
-    console.log('✅ test_attempt_status enum created/verified\n');
-
-    await client.query('COMMIT');
-    console.log('✅ All enum types created successfully!');
+    // MySQL doesn't use ENUM types the same way as PostgreSQL
+    // Prisma handles enum types through the schema, so this script
+    // is mainly for verification. The enums are defined in schema.prisma
+    // and Prisma will handle the MySQL ENUM creation during migrations.
+    
+    console.log('ℹ️  Enum types are managed by Prisma schema.');
+    console.log('ℹ️  Run "npm run prisma:migrate" to apply enum types to the database.');
+    console.log('✅ Enum types are defined in schema.prisma and will be created during migration.\n');
     
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ Error creating enum types:', error.message);
-    console.error('   Error code:', error.code);
+    console.error('❌ Error:', error.message);
     throw error;
   } finally {
-    client.release();
-    await pool.end();
+    await prisma.$disconnect();
   }
 }
 

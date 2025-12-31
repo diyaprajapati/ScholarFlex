@@ -913,32 +913,40 @@ exports.migrateAreaOfInterestsToDomain = async (req, res) => {
     const Student = require('../models/Student');
     
     // Get all students with area_of_interests but no domain_id
-    const result = await pool.query(
-      `SELECT id, area_of_interests, domain_id 
-       FROM students 
-       WHERE area_of_interests IS NOT NULL 
-       AND area_of_interests != '' 
-       AND (domain_id IS NULL OR domain_id = 0)
-       AND is_active = TRUE`
-    );
+    const students = await prisma.student.findMany({
+      where: {
+        areaOfInterests: { not: null },
+        areaOfInterests: { not: '' },
+        OR: [
+          { domainId: null },
+          { domainId: 0 },
+        ],
+        isActive: true,
+      },
+      select: {
+        id: true,
+        areaOfInterests: true,
+        domainId: true,
+      },
+    });
 
     let migrated = 0;
     let failed = 0;
     const errors = [];
 
-    for (const student of result.rows) {
+    for (const student of students) {
       try {
-        const areaOfInterest = student.area_of_interests.trim();
+        const areaOfInterest = student.areaOfInterests?.trim();
         if (areaOfInterest) {
           // Get or create domain from area_of_interests
           const domainId = await Student.getOrCreateDomain(areaOfInterest);
           
           if (domainId) {
             // Update student with domain_id
-            await pool.query(
-              'UPDATE students SET domain_id = $1, updated_at = NOW() WHERE id = $2',
-              [domainId, student.id]
-            );
+            await prisma.student.update({
+              where: { id: student.id },
+              data: { domainId: domainId },
+            });
             migrated++;
           } else {
             failed++;

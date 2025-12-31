@@ -62,7 +62,7 @@ async function main() {
     const runNow = await question('\nDo you want to run it now using Node.js? (y/n): ');
     
     if (runNow.toLowerCase() === 'y') {
-      const { Pool } = require('pg');
+      const { prisma } = require('../config/database');
       require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
       
       if (!process.env.DATABASE_URL) {
@@ -70,27 +70,21 @@ async function main() {
         process.exit(1);
       }
       
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-      });
-      
       try {
         console.log('\n📖 Reading SQL file...');
         const sql = fs.readFileSync(sqlPath, 'utf8');
         
         console.log('🔌 Connecting to database...');
-        const client = await pool.connect();
         
         console.log('⚙️  Executing SQL...');
-        await client.query(sql);
+        await prisma.$executeRawUnsafe(sql);
         
-        client.release();
-        await pool.end();
+        await prisma.$disconnect();
         
         console.log('\n✅ Database tables created successfully from SQL file!');
       } catch (error) {
         console.error('\n❌ Error executing SQL:', error.message);
+        await prisma.$disconnect();
         process.exit(1);
       }
     }

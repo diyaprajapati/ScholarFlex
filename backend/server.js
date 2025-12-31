@@ -26,7 +26,6 @@ const videoAnalyticsRoutes = require('./routes/videoAnalyticsRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const securityHeaders = require('./middleware/securityHeaders');
 const { sanitizeInput, validateParams } = require('./middleware/inputValidation');
-const pool = require('./config/database');
 const { prisma } = require('./config/database');
 
 const app = express();
@@ -154,9 +153,6 @@ const gracefulShutdown = async (signal) => {
   try {
     await prisma.$disconnect();
     console.log('✅ Prisma disconnected');
-    
-    await pool.end();
-    console.log('✅ Database pool closed');
     
     process.exit(0);
   } catch (error) {

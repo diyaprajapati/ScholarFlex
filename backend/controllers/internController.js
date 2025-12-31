@@ -2,7 +2,7 @@ const multer = require('multer');
 const XLSX = require('xlsx');
 const Student = require('../models/Student');
 const { logActivitySimple } = require('../middleware/activityLogger');
-const pool = require('../config/database');
+const { prisma } = require('../config/database');
 
 // Configure multer for file uploads (memory storage)
 const storage = multer.memoryStorage();
@@ -505,12 +505,17 @@ exports.updateIntern = async (req, res) => {
       updateData.status_id = status_id;
     } else if (status_name !== undefined) {
       // Get status_id from status_name
-      const statusResult = await pool.query(
-        "SELECT id FROM intern_status WHERE status_name = $1 AND is_active = TRUE LIMIT 1",
-        [status_name]
-      );
-      if (statusResult.rows.length > 0) {
-        updateData.status_id = statusResult.rows[0].id;
+      const status = await prisma.internStatus.findFirst({
+        where: {
+          statusName: status_name,
+          isActive: true,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (status) {
+        updateData.status_id = status.id;
       }
     }
 
