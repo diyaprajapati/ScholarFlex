@@ -240,10 +240,13 @@ const trackEvent = async (req, res) => {
     });
 
     // Update session max progress
-    if (parseFloat(progressPercent) > parseFloat(session.maxProgress)) {
+    // Convert Decimal to number for comparison
+    const currentMaxProgress = parseFloat(session.maxProgress || 0);
+    const newProgress = parseFloat(progressPercent);
+    if (newProgress > currentMaxProgress) {
       await prisma.videoSession.update({
         where: { id: session.id },
-        data: { maxProgress: parseFloat(progressPercent) },
+        data: { maxProgress: newProgress },
       });
     }
 
@@ -470,7 +473,9 @@ async function updateVideoProgressFromSession(sessionId) {
 
   // Calculate totals
   const totalWatchTime = allSessions.reduce((sum, s) => sum + (s.watchTimeSeconds || 0), 0);
-  const maxProgress = Math.max(...allSessions.map(s => parseFloat(s.maxProgress || 0)));
+  // Convert Decimal to number for maxProgress
+  const maxProgressValues = allSessions.map(s => parseFloat(s.maxProgress || 0));
+  const maxProgress = maxProgressValues.length > 0 ? Math.max(...maxProgressValues) : 0;
   const replayCount = allSessions.length - 1; // First session is not a replay
   const isCompleted = allSessions.some(s => s.isCompleted);
 

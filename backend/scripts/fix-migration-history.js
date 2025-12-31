@@ -13,11 +13,22 @@ async function fixMigrationHistory() {
     
     if (columnCheck.length === 0) {
       console.log('⚠️  is_selected column does not exist. Adding it...');
-      await prisma.$executeRawUnsafe(`
-        ALTER TABLE students ADD COLUMN IF NOT EXISTS is_selected BOOLEAN DEFAULT FALSE;
-        CREATE INDEX IF NOT EXISTS idx_students_is_selected ON students(is_selected);
-      `);
-      console.log('✅ is_selected column added');
+      try {
+        // MySQL doesn't support IF NOT EXISTS for ADD COLUMN, so we check first
+        await prisma.$executeRawUnsafe(`
+          ALTER TABLE students ADD COLUMN is_selected BOOLEAN DEFAULT FALSE;
+        `);
+        await prisma.$executeRawUnsafe(`
+          CREATE INDEX idx_students_is_selected ON students(is_selected);
+        `);
+        console.log('✅ is_selected column added');
+      } catch (error) {
+        if (error.code === 'ER_DUP_FIELDNAME') {
+          console.log('✅ is_selected column already exists');
+        } else {
+          throw error;
+        }
+      }
     } else {
       console.log('✅ is_selected column already exists');
     }

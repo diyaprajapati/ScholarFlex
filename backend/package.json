@@ -48,7 +48,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^6.9.15",
     "prisma": "^6.19.0",
-    "uuid": "^13.0.0",
+    "uuid": "^8.3.2",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const { prisma } = require('../config/database');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Track video opened
@@ -156,7 +157,6 @@ const trackVideoStarted = async (req, res) => {
     if (!session) {
       // Create new session for today
       // Store the current watchTimeSeconds as baseline for calculating today's watch time
-      const { v4: uuidv4 } = require('uuid');
       const baselineWatchTime = videoProgress.watchTimeSeconds || 0;
       session = await prisma.videoSession.create({
         data: {
