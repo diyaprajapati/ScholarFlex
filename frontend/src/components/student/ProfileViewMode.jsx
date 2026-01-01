@@ -18,8 +18,15 @@ export default function ProfileViewMode({ formData, domains, getDomainName, form
                   if (formData.imageUrl.startsWith('http') || formData.imageUrl.startsWith('blob:')) {
                     return formData.imageUrl
                   }
+                  // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+                  let filePath = formData.imageUrl;
+                  if (formData.imageUrl.startsWith('/scholarflex/') || formData.imageUrl.startsWith('/students/')) {
+                    filePath = `/uploads${formData.imageUrl}`;
+                  } else if (!formData.imageUrl.startsWith('/uploads/')) {
+                    filePath = `/uploads${formData.imageUrl}`;
+                  }
                   const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace('/api', '')
-                  return `${baseUrl}${formData.imageUrl}`
+                  return `${baseUrl}${filePath}`
                 })()}
                 alt="Profile"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
@@ -248,8 +255,15 @@ export default function ProfileViewMode({ formData, domains, getDomainName, form
           {formData.resumeUrl ? (
             <a
               href={(() => {
+                // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+                let filePath = formData.resumeUrl;
+                if (formData.resumeUrl.startsWith('/scholarflex/') || formData.resumeUrl.startsWith('/students/')) {
+                  filePath = `/uploads${formData.resumeUrl}`;
+                } else if (!formData.resumeUrl.startsWith('/uploads/')) {
+                  filePath = `/uploads${formData.resumeUrl}`;
+                }
                 const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace('/api', '')
-                return `${baseUrl}${formData.resumeUrl}`
+                return `${baseUrl}${filePath}`
               })()}
               target="_blank"
               rel="noopener noreferrer"

@@ -157,7 +157,24 @@ export default function StudentProfileFormPage() {
             internshipEndDate: profile.internshipEndDate ? profile.internshipEndDate.split('T')[0] : '',
             skills: profile.skills || { languages: [], frameworks: [], tools: [], softSkills: [] },
             personalProjects: profile.personalProjects || [],
-            achievements: profile.achievements || { hackathons: [], certifications: [], awards: [], competitions: [] },
+            achievements: profile.achievements ? {
+              hackathons: (profile.achievements.hackathons || []).map(a => ({
+                ...a,
+                date: a.date ? a.date.split('T')[0] : ''
+              })),
+              certifications: (profile.achievements.certifications || []).map(a => ({
+                ...a,
+                date: a.date ? a.date.split('T')[0] : ''
+              })),
+              awards: (profile.achievements.awards || []).map(a => ({
+                ...a,
+                date: a.date ? a.date.split('T')[0] : ''
+              })),
+              competitions: (profile.achievements.competitions || []).map(a => ({
+                ...a,
+                date: a.date ? a.date.split('T')[0] : ''
+              }))
+            } : { hackathons: [], certifications: [], awards: [], competitions: [] },
             resumeUrl: profile.resumeUrl || '',
             resumeFile: null,
             profileCompleted: completed,
@@ -654,9 +671,16 @@ export default function StudentProfileFormPage() {
                               return formData.imageUrl
                             }
                             // Otherwise, construct the full URL for server-hosted images
+                            // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+                            let filePath = formData.imageUrl;
+                            if (formData.imageUrl.startsWith('/scholarflex/') || formData.imageUrl.startsWith('/students/')) {
+                              filePath = `/uploads${formData.imageUrl}`;
+                            } else if (!formData.imageUrl.startsWith('/uploads/')) {
+                              filePath = `/uploads${formData.imageUrl}`;
+                            }
                             // Remove /api from base URL if present, as static files are served from root
                             const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace('/api', '')
-                            return `${baseUrl}${formData.imageUrl}`
+                            return `${baseUrl}${filePath}`
                           })()}
                           alt="Profile"
                           className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 bg-gray-100"
@@ -1075,9 +1099,16 @@ export default function StudentProfileFormPage() {
                   <div className="flex items-center gap-2">
                     <a
                       href={(() => {
+                        // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+                        let filePath = formData.resumeUrl;
+                        if (formData.resumeUrl.startsWith('/scholarflex/') || formData.resumeUrl.startsWith('/students/')) {
+                          filePath = `/uploads${formData.resumeUrl}`;
+                        } else if (!formData.resumeUrl.startsWith('/uploads/')) {
+                          filePath = `/uploads${formData.resumeUrl}`;
+                        }
                         // Remove /api from base URL if present, as static files are served from root
                         const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace('/api', '')
-                        return `${baseUrl}${formData.resumeUrl}`
+                        return `${baseUrl}${filePath}`
                       })()}
                       target="_blank"
                       rel="noopener noreferrer"

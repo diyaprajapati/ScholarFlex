@@ -37,9 +37,13 @@ router.put('/', studentProfileController.updateProfile);
 router.post(
   '/image',
   (req, res, next) => {
+    console.log('🔄 Multer middleware called for profile image');
     studentProfileController.uploadProfileImage(req, res, (err) => {
       if (err) {
+        console.error('❌ Multer error:', err);
+        console.error('   Error type:', err.constructor.name);
         if (err instanceof multer.MulterError) {
+          console.error('   Multer error code:', err.code);
           if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
               success: false,
@@ -56,6 +60,17 @@ router.post(
           message: err.message || 'File upload error',
         });
       }
+      console.log('✅ Multer middleware completed successfully');
+      console.log('   req.file:', req.file ? {
+        fieldname: req.file.fieldname,
+        originalname: req.file.originalname,
+        encoding: req.file.encoding,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        destination: req.file.destination,
+        filename: req.file.filename,
+        path: req.file.path,
+      } : 'null');
       next();
     });
   },
@@ -70,6 +85,7 @@ router.post(
 router.post(
   '/resume',
   (req, res, next) => {
+    console.log('🔄 Multer middleware called for resume');
     studentProfileController.uploadResume(req, res, (err) => {
       if (err) {
         if (err instanceof multer.MulterError) {

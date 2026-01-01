@@ -133,11 +133,15 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
                   if (fileId) {
                     return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
                   }
-                  if (student.imageUrl.startsWith('/uploads/')) {
-                    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-                    return baseUrl.replace('/api', '') + student.imageUrl;
+                  // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+                  let filePath = student.imageUrl;
+                  if (student.imageUrl.startsWith('/scholarflex/') || student.imageUrl.startsWith('/students/')) {
+                    filePath = `/uploads${student.imageUrl}`;
+                  } else if (!student.imageUrl.startsWith('/uploads/')) {
+                    filePath = `/uploads${student.imageUrl}`;
                   }
-                  return student.imageUrl;
+                  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+                  return baseUrl.replace('/api', '') + filePath;
                 })()}
                 alt={student.fullName}
                 className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"

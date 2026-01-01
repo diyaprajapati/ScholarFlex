@@ -203,12 +203,16 @@ const CandidatesTab = () => {
     }
     
     // If it's a relative path (uploaded file), construct full URL
-    if (url.startsWith('/uploads/')) {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-      return baseUrl.replace('/api', '') + url;
+    // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+    let filePath = url;
+    if (url.startsWith('/scholarflex/') || url.startsWith('/students/')) {
+      filePath = `/uploads${url}`;
+    } else if (!url.startsWith('/uploads/')) {
+      filePath = `/uploads${url}`;
     }
     
-    return url;
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    return baseUrl.replace('/api', '') + filePath;
   }, []);
 
   const formatDate = useCallback((dateString) => {
@@ -1761,8 +1765,15 @@ const CandidatesTab = () => {
                       <h3 className="text-sm font-semibold text-gray-700 mb-3">Resume</h3>
                       <a
                         href={(() => {
+                          // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+                          let filePath = selectedStudent.resume_url;
+                          if (selectedStudent.resume_url.startsWith('/scholarflex/') || selectedStudent.resume_url.startsWith('/students/')) {
+                            filePath = `/uploads${selectedStudent.resume_url}`;
+                          } else if (!selectedStudent.resume_url.startsWith('/uploads/')) {
+                            filePath = `/uploads${selectedStudent.resume_url}`;
+                          }
                           const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-                          return baseUrl.replace('/api', '') + selectedStudent.resume_url;
+                          return baseUrl.replace('/api', '') + filePath;
                         })()}
                         target="_blank"
                         rel="noopener noreferrer"

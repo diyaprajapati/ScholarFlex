@@ -49,12 +49,16 @@ const ProjectManagementPage = () => {
     }
     
     // If it's a relative path (uploaded file), construct full URL
-    if (url.startsWith('/uploads/')) {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-      return baseUrl.replace('/api', '') + url;
+    // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+    let filePath = url;
+    if (url.startsWith('/scholarflex/') || url.startsWith('/students/')) {
+      filePath = `/uploads${url}`;
+    } else if (!url.startsWith('/uploads/')) {
+      filePath = `/uploads${url}`;
     }
     
-    return url;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    return baseUrl.replace('/api', '') + filePath;
   };
 
   const handleImageError = (imageKey) => (e) => {

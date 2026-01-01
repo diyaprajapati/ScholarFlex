@@ -5,22 +5,122 @@ const archiver = require('archiver');
 const { authenticate, authorize } = require('../middleware/auth');
 const { prisma } = require('../config/database');
 
+/**
+ * Normalize string for directory name (lowercase, remove special chars, spaces to underscores)
+ */
+const normalizeDirectoryName = (str) => {
+  if (!str) return 'unknown';
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+    .replace(/\s+/g, '_') // Replace spaces with underscores
+    .replace(/_+/g, '_') // Replace multiple underscores with single
+    .replace(/^_|_$/g, ''); // Remove leading/trailing underscores
+};
+
+/**
+ * Calculate academic year from internship start and end dates
+ * Returns format: "2024-2024" or "2024-2025"
+ */
+const calculateAcademicYear = (internshipStartDate, internshipEndDate) => {
+  let startYear, endYear;
+  
+  if (internshipStartDate && internshipEndDate) {
+    // Use internship start and end dates
+    const startDate = new Date(internshipStartDate);
+    const endDate = new Date(internshipEndDate);
+    startYear = startDate.getFullYear();
+    endYear = endDate.getFullYear();
+  } else if (internshipStartDate) {
+    // Only start date available, assume same year or next year
+    const startDate = new Date(internshipStartDate);
+    startYear = startDate.getFullYear();
+    endYear = startYear + 1;
+  } else {
+    // Default to current academic year
+    const now = new Date();
+    startYear = now.getFullYear();
+    endYear = startYear + 1;
+  }
+  
+  return `${startYear}-${endYear}`;
+};
+
+/**
+ * Get student upload directory path based on hierarchical structure
+ * Structure: scholarflex/<start_year><end_year>/<institute_name>/<course_taken>/<domain>/<student_id>/
+ * All directories are created automatically if they don't exist
+ */
+const getStudentUploadDir = async (studentId) => {
+  // Fetch student data with domain relation
+  const student = await prisma.student.findUnique({
+    where: { id: studentId },
+    select: {
+      internshipStartDate: true,
+      internshipEndDate: true,
+      instituteName: true,
+      courseTaken: true,
+      domain: {
+        select: {
+          domainName: true,
+        },
+      },
+    },
+  });
+
+  if (!student) {
+    throw new Error('Student not found');
+  }
+
+  // Calculate academic year from internship dates
+  const academicYear = calculateAcademicYear(
+    student.internshipStartDate,
+    student.internshipEndDate
+  );
+
+  // Normalize directory names (case-insensitive matching)
+  const normalizedInstitute = normalizeDirectoryName(student.instituteName);
+  const normalizedCourse = normalizeDirectoryName(student.courseTaken);
+  const normalizedDomain = normalizeDirectoryName(
+    student.domain?.domainName || 'unknown'
+  );
+
+  // Build the full path
+  const dirPath = path.join(
+    __dirname,
+    '../uploads',
+    'scholarflex',
+    academicYear,
+    normalizedInstitute,
+    normalizedCourse,
+    normalizedDomain,
+    studentId.toString()
+  );
+
+  // Create directory structure automatically if it doesn't exist
+  // This works even after deployment - directories are created on-demand
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+
+  return dirPath;
+};
+
 // Configure multer for PDF file uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../uploads/noc');
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+  destination: async (req, file, cb) => {
+    try {
+      const studentId = req.user.id;
+      const uploadDir = await getStudentUploadDir(studentId);
+      cb(null, uploadDir);
+    } catch (error) {
+      cb(error);
     }
-    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    // Generate unique filename: studentId_timestamp.pdf
-    const studentId = req.user.id;
-    const timestamp = Date.now();
-    const filename = `noc_${studentId}_${timestamp}${path.extname(file.originalname)}`;
-    cb(null, filename);
+    // Always store as 'noc.pdf'
+    cb(null, 'noc.pdf');
   },
 });
 
@@ -73,7 +173,11 @@ const uploadNOC = async (req, res) => {
     if (existingNOC) {
       // Delete the uploaded file if there's already an existing NOC
       if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch (unlinkError) {
+          console.warn('Could not delete uploaded file:', unlinkError.message);
+        }
       }
       return res.status(400).json({
         success: false,
@@ -81,12 +185,67 @@ const uploadNOC = async (req, res) => {
       });
     }
 
+    // Check for rejected NOC that can be replaced
+    const rejectedNOC = await prisma.nOCLetter.findFirst({
+      where: {
+        studentId: studentId,
+        status: 'REJECTED',
+      },
+      orderBy: {
+        uploadedAt: 'desc',
+      },
+    });
+
+    // Delete old rejected NOC file if exists (handle both old and new path formats)
+    if (rejectedNOC && rejectedNOC.filePath) {
+      let oldNocPath;
+      
+      // Check if it's the new hierarchical path format
+      if (rejectedNOC.filePath.includes('/scholarflex/')) {
+        oldNocPath = path.join(__dirname, '../uploads', rejectedNOC.filePath.replace(/^\//, ''));
+      } else if (rejectedNOC.filePath.includes(`/students/${studentId}/`)) {
+        oldNocPath = path.join(__dirname, '../uploads', rejectedNOC.filePath.replace(/^\//, ''));
+      } else {
+        // Old flat structure path (absolute or relative)
+        if (path.isAbsolute(rejectedNOC.filePath)) {
+          oldNocPath = rejectedNOC.filePath;
+        } else {
+          oldNocPath = path.join(__dirname, '../uploads/noc', path.basename(rejectedNOC.filePath));
+        }
+      }
+      
+      if (fs.existsSync(oldNocPath)) {
+        try {
+          fs.unlinkSync(oldNocPath);
+        } catch (unlinkError) {
+          console.warn('Could not delete old rejected NOC file:', unlinkError.message);
+        }
+      }
+      
+      // Delete the rejected NOC record from database
+      try {
+        await prisma.nOCLetter.delete({
+          where: { id: rejectedNOC.id },
+        });
+      } catch (deleteError) {
+        console.warn('Could not delete rejected NOC record:', deleteError.message);
+      }
+    }
+
+    // Build the relative path for storage in database
+    const uploadDir = await getStudentUploadDir(studentId);
+    const relativePath = path.relative(
+      path.join(__dirname, '../uploads'),
+      uploadDir
+    );
+    const filePath = `/${path.join(relativePath, req.file.filename).replace(/\\/g, '/')}`;
+
     // Create NOC letter record
     const nocLetter = await prisma.nOCLetter.create({
       data: {
         studentId: studentId,
         fileName: req.file.originalname,
-        filePath: req.file.path,
+        filePath: filePath, // Store relative path
         fileSize: BigInt(req.file.size),
         status: 'PENDING',
       },
@@ -115,8 +274,12 @@ const uploadNOC = async (req, res) => {
     console.error('Error uploading NOC letter:', error);
     
     // Delete uploaded file if there was an error
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        console.warn('Could not delete uploaded file on error:', unlinkError.message);
+      }
     }
 
     res.status(500).json({
@@ -217,10 +380,26 @@ const deleteStudentNOC = async (req, res) => {
       });
     }
 
-    // Delete the file from filesystem
-    if (fs.existsSync(nocLetter.filePath)) {
+    // Delete the file from filesystem (handle both old and new path formats)
+    let filePathToDelete;
+    
+    if (nocLetter.filePath.includes('/scholarflex/')) {
+      // New hierarchical path format (relative)
+      filePathToDelete = path.join(__dirname, '../uploads', nocLetter.filePath.replace(/^\//, ''));
+    } else if (nocLetter.filePath.includes(`/students/${studentId}/`)) {
+      // Alternative hierarchical path format
+      filePathToDelete = path.join(__dirname, '../uploads', nocLetter.filePath.replace(/^\//, ''));
+    } else if (path.isAbsolute(nocLetter.filePath)) {
+      // Old absolute path format
+      filePathToDelete = nocLetter.filePath;
+    } else {
+      // Old relative path format
+      filePathToDelete = path.join(__dirname, '../uploads/noc', path.basename(nocLetter.filePath));
+    }
+    
+    if (fs.existsSync(filePathToDelete)) {
       try {
-        fs.unlinkSync(nocLetter.filePath);
+        fs.unlinkSync(filePathToDelete);
       } catch (fileError) {
         console.error('Error deleting file:', fileError);
         // Continue with database deletion even if file deletion fails
@@ -348,7 +527,26 @@ const downloadNOC = async (req, res) => {
       });
     }
 
-    if (!fs.existsSync(nocLetter.filePath)) {
+    // Resolve file path (handle both old and new path formats)
+    let filePath;
+    
+    if (nocLetter.filePath.includes('/scholarflex/')) {
+      // New hierarchical path format (relative)
+      filePath = path.join(__dirname, '../uploads', nocLetter.filePath.replace(/^\//, ''));
+    } else if (nocLetter.filePath.includes(`/students/${nocLetter.student.id}/`)) {
+      // Alternative hierarchical path format
+      filePath = path.join(__dirname, '../uploads', nocLetter.filePath.replace(/^\//, ''));
+    } else if (path.isAbsolute(nocLetter.filePath)) {
+      // Old absolute path format
+      filePath = nocLetter.filePath;
+    } else {
+      // Old relative path format
+      filePath = path.join(__dirname, '../uploads/noc', path.basename(nocLetter.filePath));
+    }
+    
+    const resolvedPath = path.resolve(filePath);
+    
+    if (!fs.existsSync(resolvedPath)) {
       return res.status(404).json({
         success: false,
         message: 'NOC letter file not found',
@@ -357,7 +555,7 @@ const downloadNOC = async (req, res) => {
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="${nocLetter.fileName}"`);
-    res.sendFile(path.resolve(nocLetter.filePath));
+    res.sendFile(resolvedPath);
   } catch (error) {
     console.error('Error downloading NOC letter:', error);
     res.status(500).json({
@@ -424,7 +622,26 @@ const downloadAllNOC = async (req, res) => {
     // Add each NOC file to the archive
     let addedCount = 0;
     for (const noc of nocLetters) {
-      if (fs.existsSync(noc.filePath)) {
+      // Resolve file path (handle both old and new path formats)
+      let filePath;
+      
+      if (noc.filePath.includes('/scholarflex/')) {
+        // New hierarchical path format (relative)
+        filePath = path.join(__dirname, '../uploads', noc.filePath.replace(/^\//, ''));
+      } else if (noc.filePath.includes(`/students/${noc.student?.id}/`)) {
+        // Alternative hierarchical path format
+        filePath = path.join(__dirname, '../uploads', noc.filePath.replace(/^\//, ''));
+      } else if (path.isAbsolute(noc.filePath)) {
+        // Old absolute path format
+        filePath = noc.filePath;
+      } else {
+        // Old relative path format
+        filePath = path.join(__dirname, '../uploads/noc', path.basename(noc.filePath));
+      }
+      
+      const resolvedPath = path.resolve(filePath);
+      
+      if (fs.existsSync(resolvedPath)) {
         // Create a safe filename: StudentName_Email_NOCID.pdf
         const studentName = (noc.student?.fullName || 'Unknown')
           .replace(/[^a-zA-Z0-9]/g, '_')
@@ -435,10 +652,10 @@ const downloadAllNOC = async (req, res) => {
         const safeFileName = `${studentName}_${studentEmail}_${noc.id}.pdf`;
         
         // Add file to archive
-        archive.file(noc.filePath, { name: safeFileName });
+        archive.file(resolvedPath, { name: safeFileName });
         addedCount++;
       } else {
-        console.warn(`NOC file not found: ${noc.filePath} (ID: ${noc.id})`);
+        console.warn(`NOC file not found: ${resolvedPath} (ID: ${noc.id}, stored path: ${noc.filePath})`);
       }
     }
 

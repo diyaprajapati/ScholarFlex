@@ -75,9 +75,36 @@ async function logActivity(req, res, responseData, action, entityType, getEntity
       req.headers['x-forwarded-for']?.split(',')[0] ||
       'unknown';
 
+    // Determine user_id and user_type based on user source
+    // Students are in the 'students' table, not 'users' table
+    // So we set userId to null for students to avoid foreign key constraint violations
+    let userId = null;
+    let userType = 'USER';
+    
+    if (req.user.source === 'users') {
+      // User is from users table (admin/super_admin) - use their user ID
+      userId = req.user.id;
+      userType = 'USER'; // Admins are logged as USER type
+    } else if (req.user.source === 'students') {
+      // Student is from students table - no corresponding user record
+      // Set userId to null to avoid foreign key constraint violation
+      userId = null;
+      userType = 'STUDENT';
+    } else {
+      // Fallback: if source is not set, check role_code
+      if (req.user.role_code === 'STUDENT') {
+        userId = null;
+        userType = 'STUDENT';
+      } else {
+        // Admin or other user from users table
+        userId = req.user.id;
+        userType = 'USER';
+      }
+    }
+
     await ActivityLog.create({
-      user_id: req.user.id,
-      user_type: 'USER',
+      user_id: userId,
+      user_type: userType,
       action: action,
       entity_type: entityType,
       entity_id: entityId,
@@ -134,9 +161,34 @@ const logActivitySimple = async (req, action, entityType, entityId = null, descr
       req.headers['x-forwarded-for']?.split(',')[0] ||
       'unknown';
 
+    // Determine user_id and user_type based on user source
+    // Students are in the 'students' table, not 'users' table
+    let userId = null;
+    let userType = 'USER';
+    
+    if (req.user.source === 'users') {
+      // User is from users table (admin/super_admin) - use their user ID
+      userId = req.user.id;
+      userType = 'USER'; // Admins are logged as USER type
+    } else if (req.user.source === 'students') {
+      // Student is from students table - no corresponding user record
+      userId = null;
+      userType = 'STUDENT';
+    } else {
+      // Fallback: if source is not set, check role_code
+      if (req.user.role_code === 'STUDENT') {
+        userId = null;
+        userType = 'STUDENT';
+      } else {
+        // Admin or other user from users table
+        userId = req.user.id;
+        userType = 'USER';
+      }
+    }
+
     await ActivityLog.create({
-      user_id: req.user.id,
-      user_type: 'USER',
+      user_id: userId,
+      user_type: userType,
       action: action,
       entity_type: entityType,
       entity_id: entityId,
