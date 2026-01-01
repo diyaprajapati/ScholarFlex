@@ -169,16 +169,35 @@ const verifyOTP = async (req, res) => {
       await User.updateLastLogin(user.id);
     }
 
-    // Log login activity
-    await logActivitySimple(
-      { user, method: 'POST', path: '/api/auth/verify-otp', headers: req.headers, ip: req.ip },
-      'LOGIN',
-      'USER',
-      user.id,
-      `${user.email} logged in successfully`
-    );
+    // Log login activity (don't fail login if logging fails)
+    // Temporarily attach user to req for logging (since verify-otp is a public route)
+    const originalUser = req.user;
+    req.user = user;
+    try {
+      await logActivitySimple(
+        req,
+        'LOGIN',
+        'USER',
+        user.id,
+        `${user.email} logged in successfully`
+      );
+    } catch (logError) {
+      // Log the error but don't fail the login
+      console.error('Error logging login activity (non-fatal):', logError);
+    } finally {
+      // Restore original req.user (or remove it if it didn't exist)
+      req.user = originalUser;
+    }
 
     // Generate JWT token
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET is not set in environment variables');
+      return res.status(500).json({
+        success: false,
+        message: 'Server configuration error',
+      });
+    }
+
     const token = jwt.sign(
       {
         userId: user.id,
@@ -229,9 +248,16 @@ const verifyOTP = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in verifyOTP:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+    });
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message }),
     });
   }
 };

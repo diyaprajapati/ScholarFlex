@@ -7,6 +7,15 @@ const { prisma } = require('../config/database');
  */
 const authenticate = async (req, res, next) => {
   try {
+    // Check if JWT_SECRET is configured
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET is not set in environment variables');
+      return res.status(500).json({
+        success: false,
+        message: 'Server configuration error',
+      });
+    }
+
     // Get token from header or cookie
     const token = req.headers.authorization?.split(' ')[1] || req.cookies?.token;
 
@@ -18,7 +27,25 @@ const authenticate = async (req, res, next) => {
     }
 
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (jwtError) {
+      // JWT verification failed - return appropriate error
+      if (jwtError.name === 'JsonWebTokenError') {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid token. Please login again.',
+        });
+      }
+      if (jwtError.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          success: false,
+          message: 'Token expired. Please login again.',
+        });
+      }
+      throw jwtError; // Re-throw if it's an unexpected error
+    }
 
     // Get user from database
     const user = await User.findById(decoded.userId);
@@ -86,6 +113,15 @@ const authenticate = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    // Log unexpected errors for debugging
+    console.error('Authentication middleware error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+    });
+    
+    // JWT errors should already be handled above, but catch any edge cases
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
@@ -101,6 +137,7 @@ const authenticate = async (req, res, next) => {
     return res.status(500).json({
       success: false,
       message: 'Authentication error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message }),
     });
   }
 };
