@@ -4,6 +4,10 @@ node_modules/
 .DS_Store
 dist/
 build/
+# Uploads folder - contains user-uploaded files
+uploads/
+uploads/**
+!uploads/.gitkeep
 
 
 /generated/prisma
