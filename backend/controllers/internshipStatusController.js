@@ -109,7 +109,7 @@ const getStudentInternshipStatus = async (req, res) => {
  */
 const getAllInternshipStatuses = async (req, res) => {
   try {
-    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc', search = '', status = '', domainId = '' } = req.query;
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc', search = '', status = '', domainId } = req.query;
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const offset = (pageNum - 1) * limitNum;
@@ -120,9 +120,17 @@ const getAllInternshipStatuses = async (req, res) => {
       isActive: true,
     };
 
-    // Add domain filter
+    // Add domain filter - handle both single and multiple domainIds
     if (domainId) {
-      where.domainId = parseInt(domainId);
+      // domainId can be a single value or multiple values (array from query params)
+      const domainIds = Array.isArray(domainId) ? domainId : [domainId];
+      const parsedDomainIds = domainIds.map(id => parseInt(id)).filter(id => !isNaN(id));
+      
+      if (parsedDomainIds.length > 0) {
+        where.domainId = {
+          in: parsedDomainIds,
+        };
+      }
     }
 
     // Add search filter

@@ -17,7 +17,7 @@ const EvaluationManagementPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(''); // '', 'NOT_STARTED', 'ONGOING', 'COMPLETED'
-  const [domainFilter, setDomainFilter] = useState(''); // Domain ID filter
+  const [domainFilter, setDomainFilter] = useState([]); // Array of Domain IDs for multi-select
   const [domains, setDomains] = useState([]); // List of all domains
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
@@ -125,8 +125,8 @@ const EvaluationManagementPage = () => {
       if (statusFilter) {
         params.append('status', statusFilter);
       }
-      if (domainFilter) {
-        params.append('domainId', domainFilter);
+      if (domainFilter.length > 0) {
+        domainFilter.forEach(id => params.append('domainId', id));
       }
 
       const response = await api.internshipStatus.getAllStatuses({}, params.toString());
@@ -258,7 +258,7 @@ const EvaluationManagementPage = () => {
     try {
       setExporting(true);
       setError('');
-      await api.evaluations.export(domainFilter || null);
+      await api.evaluations.export(domainFilter.length > 0 ? domainFilter : null);
     } catch (err) {
       console.error('Error exporting to Excel:', err);
       setError(err.message || 'Failed to export evaluations to Excel');
@@ -388,25 +388,61 @@ const EvaluationManagementPage = () => {
                     <option value="COMPLETED">Completed</option>
                   </select>
                 </div>
-                <div className="w-48">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Domain
+                <div className="flex-1 min-w-[300px]">
+                  <label className="block text-xs font-medium text-gray-700 mb-2">
+                    Domains (Select Multiple)
                   </label>
-                  <select
-                    value={domainFilter}
-                    onChange={(e) => {
-                      setDomainFilter(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer text-sm"
-                  >
-                    <option value="">All Domains</option>
-                    {domains.map((domain) => (
-                      <option key={domain.id} value={domain.id}>
-                        {domain.domain_name || domain.domainName}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-2 bg-gray-50">
+                    {domains.length === 0 ? (
+                      <p className="text-sm text-gray-500 py-2">Loading domains...</p>
+                    ) : (
+                      <>
+                        <label className="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={domainFilter.length === 0}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setDomainFilter([]);
+                              }
+                              setCurrentPage(1);
+                            }}
+                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                          />
+                          <span className="text-sm text-gray-700">All Domains</span>
+                        </label>
+                        <div className="border-t border-gray-300 my-1"></div>
+                        {domains.map((domain) => (
+                          <label
+                            key={domain.id}
+                            className="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={domainFilter.includes(domain.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setDomainFilter([...domainFilter, domain.id]);
+                                } else {
+                                  setDomainFilter(domainFilter.filter(id => id !== domain.id));
+                                }
+                                setCurrentPage(1);
+                              }}
+                              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                            />
+                            <span className="text-sm text-gray-700">
+                              {domain.domain_name || domain.domainName}
+                            </span>
+                          </label>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                  {domainFilter.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {domainFilter.length} domain{domainFilter.length === 1 ? '' : 's'} selected
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

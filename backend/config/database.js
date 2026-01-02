@@ -1,5 +1,19 @@
 const { PrismaClient } = require('@prisma/client');
-require('dotenv').config();
+// dotenv is already loaded in server.js, but load it here too for standalone scripts
+if (!process.env.DATABASE_URL) {
+  const path = require('path');
+  const fs = require('fs');
+  const rootEnvPath = path.join(__dirname, '..', '..', '.env');
+  const backendEnvPath = path.join(__dirname, '..', '.env');
+  
+  if (fs.existsSync(rootEnvPath)) {
+    require('dotenv').config({ path: rootEnvPath });
+  } else if (fs.existsSync(backendEnvPath)) {
+    require('dotenv').config({ path: backendEnvPath });
+  } else {
+    require('dotenv').config();
+  }
+}
 
 // Check if DATABASE_URL is set
 const dbUrl = process.env.DATABASE_URL;

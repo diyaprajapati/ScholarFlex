@@ -1157,11 +1157,11 @@ export const api = {
       });
     },
 
-    export: async (domainId = null) => {
+    export: async (domainIds = null) => {
       const token = getToken();
       const queryParams = new URLSearchParams();
-      if (domainId) {
-        queryParams.append('domainId', domainId);
+      if (domainIds && Array.isArray(domainIds) && domainIds.length > 0) {
+        domainIds.forEach(id => queryParams.append('domainId', id));
       }
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/admin/evaluations/export?${queryString}` : '/admin/evaluations/export';

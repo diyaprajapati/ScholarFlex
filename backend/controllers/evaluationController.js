@@ -383,11 +383,20 @@ const exportEvaluatedStudents = async (req, res) => {
     const { domainId } = req.query;
     
     // Build where clause for domain filter
+    // domainId can be a single value or multiple values (array)
     const where = {};
     if (domainId) {
-      where.student = {
-        domainId: parseInt(domainId),
-      };
+      // Handle both single domainId and multiple domainIds
+      const domainIds = Array.isArray(domainId) ? domainId : [domainId];
+      const parsedDomainIds = domainIds.map(id => parseInt(id)).filter(id => !isNaN(id));
+      
+      if (parsedDomainIds.length > 0) {
+        where.student = {
+          domainId: {
+            in: parsedDomainIds,
+          },
+        };
+      }
     }
     
     // Get all students who have evaluations
