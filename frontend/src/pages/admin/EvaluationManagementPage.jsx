@@ -6,7 +6,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import StudentEvaluationsModal from '../../components/admin/StudentEvaluationsModal';
 import api from '../../services/api';
-import { Plus, Search, X, User, Mail, Building2, ChevronLeft, ChevronRight, ArrowUpDown, Eye, AlertCircle, Clock, Calendar, CheckCircle, Download } from 'lucide-react';
+import { Plus, Search, X, User, Mail, Building2, ChevronLeft, ChevronRight, ArrowUpDown, Eye, AlertCircle, Clock, Calendar, CheckCircle, Download, Star, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 
 const EvaluationManagementPage = () => {
   const navigate = useNavigate();
@@ -17,6 +17,8 @@ const EvaluationManagementPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(''); // '', 'NOT_STARTED', 'ONGOING', 'COMPLETED'
+  const [domainFilter, setDomainFilter] = useState(''); // Domain ID filter
+  const [domains, setDomains] = useState([]); // List of all domains
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +31,7 @@ const EvaluationManagementPage = () => {
   const [exporting, setExporting] = useState(false);
   const [failedImages, setFailedImages] = useState(new Set());
   const [submittingForms, setSubmittingForms] = useState(new Set()); // Track which student's form is submitting
+  const [showFilters, setShowFilters] = useState(false); // Toggle filter panel visibility
 
   // Helper function to get image URL
   const getImageUrl = (url) => {
@@ -92,8 +95,20 @@ const EvaluationManagementPage = () => {
       return;
     }
 
+    fetchDomains();
     fetchStudents();
-  }, [navigate, currentPage, sortBy, sortOrder, debouncedSearch, statusFilter]);
+  }, [navigate, currentPage, sortBy, sortOrder, debouncedSearch, statusFilter, domainFilter]);
+
+  const fetchDomains = async () => {
+    try {
+      const response = await api.domains.getAll();
+      if (response.success) {
+        setDomains(response.domains || response.data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching domains:', err);
+    }
+  };
 
   const fetchStudents = async () => {
     try {
@@ -109,6 +124,9 @@ const EvaluationManagementPage = () => {
       }
       if (statusFilter) {
         params.append('status', statusFilter);
+      }
+      if (domainFilter) {
+        params.append('domainId', domainFilter);
       }
 
       const response = await api.internshipStatus.getAllStatuses({}, params.toString());
@@ -240,7 +258,7 @@ const EvaluationManagementPage = () => {
     try {
       setExporting(true);
       setError('');
-      await api.evaluations.export();
+      await api.evaluations.export(domainFilter || null);
     } catch (err) {
       console.error('Error exporting to Excel:', err);
       setError(err.message || 'Failed to export evaluations to Excel');
@@ -322,8 +340,8 @@ const EvaluationManagementPage = () => {
             </button>
           </div>
 
-          {/* Search Bar and Status Filter */}
-          <div className="mb-6 flex gap-4">
+          {/* Search Bar and Filter Button */}
+          <div className="mb-4 flex gap-3">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -334,22 +352,65 @@ const EvaluationManagementPage = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
-            <div className="w-48">
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer"
-              >
-                <option value="">All Status</option>
-                <option value="NOT_STARTED">Not Started</option>
-                <option value="ONGOING">Ongoing</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
-            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+              <Filter className="w-4 h-4 text-gray-600" />
+              <span className="text-sm font-medium text-gray-700">Filters</span>
+              {showFilters ? (
+                <ChevronUp className="w-4 h-4 text-gray-600" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-gray-600" />
+              )}
+            </button>
           </div>
+
+          {/* Collapsible Filters Section */}
+          {showFilters && (
+            <div className="mb-6 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex gap-4 flex-wrap">
+                <div className="w-48">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setStatusFilter(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer text-sm"
+                  >
+                    <option value="">All Status</option>
+                    <option value="NOT_STARTED">Not Started</option>
+                    <option value="ONGOING">Ongoing</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
+                </div>
+                <div className="w-48">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Domain
+                  </label>
+                  <select
+                    value={domainFilter}
+                    onChange={(e) => {
+                      setDomainFilter(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer text-sm"
+                  >
+                    <option value="">All Domains</option>
+                    {domains.map((domain) => (
+                      <option key={domain.id} value={domain.id}>
+                        {domain.domain_name || domain.domainName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
@@ -515,24 +576,43 @@ const EvaluationManagementPage = () => {
                                       </div>
                                       <div>
                                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                                          Overall Rating
+                                          Overall Rating (Stars)
                                         </label>
-                                        <input
-                                          type="text"
-                                          value={studentFormData.evaluationData.overallRating}
-                                          onChange={(e) => setFormData(prev => ({
-                                            ...prev,
-                                            [student.id]: {
-                                              ...studentFormData,
-                                              evaluationData: {
-                                                ...studentFormData.evaluationData,
-                                                overallRating: e.target.value,
-                                              },
-                                            },
-                                          }))}
-                                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                          placeholder="e.g., Excellent, Good, Needs Improvement"
-                                        />
+                                        <div className="flex items-center gap-2">
+                                          {[1, 2, 3, 4, 5].map((star) => {
+                                            const rating = parseInt(studentFormData.evaluationData.overallRating) || 0;
+                                            return (
+                                              <button
+                                                key={star}
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({
+                                                  ...prev,
+                                                  [student.id]: {
+                                                    ...studentFormData,
+                                                    evaluationData: {
+                                                      ...studentFormData.evaluationData,
+                                                      overallRating: star.toString(),
+                                                    },
+                                                  },
+                                                }))}
+                                                className="focus:outline-none"
+                                              >
+                                                <Star
+                                                  className={`w-6 h-6 transition-colors ${
+                                                    star <= rating
+                                                      ? 'text-yellow-400 fill-yellow-400'
+                                                      : 'text-gray-300'
+                                                  }`}
+                                                />
+                                              </button>
+                                            );
+                                          })}
+                                          {studentFormData.evaluationData.overallRating && (
+                                            <span className="text-sm text-gray-600 ml-2">
+                                              ({studentFormData.evaluationData.overallRating} {parseInt(studentFormData.evaluationData.overallRating) === 1 ? 'star' : 'stars'})
+                                            </span>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

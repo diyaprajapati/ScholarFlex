@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Calendar, FileText, Edit, Trash2, Save, User } from 'lucide-react';
+import { X, Calendar, FileText, Edit, Trash2, Save, User, Star } from 'lucide-react';
 import api from '../../services/api';
 
 const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
@@ -317,23 +317,42 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Overall Rating
+                            Overall Rating (Stars)
                           </label>
-                          <input
-                            type="text"
-                            value={formData.evaluationData.overallRating}
-                            onChange={(e) =>
-                              setEditFormData({
-                                ...formData,
-                                evaluationData: {
-                                  ...formData.evaluationData,
-                                  overallRating: e.target.value,
-                                },
-                              })
-                            }
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="e.g., Excellent, Good, Needs Improvement"
-                          />
+                          <div className="flex items-center gap-2">
+                            {[1, 2, 3, 4, 5].map((star) => {
+                              const rating = parseInt(formData.evaluationData.overallRating) || 0;
+                              return (
+                                <button
+                                  key={star}
+                                  type="button"
+                                  onClick={() =>
+                                    setEditFormData({
+                                      ...formData,
+                                      evaluationData: {
+                                        ...formData.evaluationData,
+                                        overallRating: star.toString(),
+                                      },
+                                    })
+                                  }
+                                  className="focus:outline-none"
+                                >
+                                  <Star
+                                    className={`w-6 h-6 transition-colors ${
+                                      star <= rating
+                                        ? 'text-yellow-400 fill-yellow-400'
+                                        : 'text-gray-300'
+                                    }`}
+                                  />
+                                </button>
+                              );
+                            })}
+                            {formData.evaluationData.overallRating && (
+                              <span className="text-sm text-gray-600 ml-2">
+                                ({formData.evaluationData.overallRating} {parseInt(formData.evaluationData.overallRating) === 1 ? 'star' : 'stars'})
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -431,9 +450,39 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
                             <label className="text-xs font-medium text-gray-700 mb-1 block">
                               Overall Rating
                             </label>
-                            <p className="text-sm font-semibold text-gray-900 bg-white p-2 rounded border border-gray-200">
-                              {evaluation.evaluationData.overallRating}
-                            </p>
+                            <div className="flex items-center gap-2 bg-white p-2 rounded border border-gray-200">
+                              {(() => {
+                                const rating = parseInt(evaluation.evaluationData.overallRating);
+                                const isNumeric = !isNaN(rating) && rating >= 1 && rating <= 5;
+                                
+                                if (isNumeric) {
+                                  return (
+                                    <>
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                          key={star}
+                                          className={`w-5 h-5 ${
+                                            star <= rating
+                                              ? 'text-yellow-400 fill-yellow-400'
+                                              : 'text-gray-300'
+                                          }`}
+                                        />
+                                      ))}
+                                      <span className="text-sm font-semibold text-gray-900 ml-2">
+                                        ({rating} {rating === 1 ? 'star' : 'stars'})
+                                      </span>
+                                    </>
+                                  );
+                                } else {
+                                  // Fallback for non-numeric ratings (backward compatibility)
+                                  return (
+                                    <span className="text-sm font-semibold text-gray-900">
+                                      {evaluation.evaluationData.overallRating}
+                                    </span>
+                                  );
+                                }
+                              })()}
+                            </div>
                           </div>
                         )}
 

@@ -109,7 +109,7 @@ const getStudentInternshipStatus = async (req, res) => {
  */
 const getAllInternshipStatuses = async (req, res) => {
   try {
-    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc', search = '', status = '' } = req.query;
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc', search = '', status = '', domainId = '' } = req.query;
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const offset = (pageNum - 1) * limitNum;
@@ -119,6 +119,11 @@ const getAllInternshipStatuses = async (req, res) => {
       isSelected: true,
       isActive: true,
     };
+
+    // Add domain filter
+    if (domainId) {
+      where.domainId = parseInt(domainId);
+    }
 
     // Add search filter
     if (search) {

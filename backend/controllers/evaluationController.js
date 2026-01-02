@@ -380,8 +380,19 @@ const deleteEvaluation = async (req, res) => {
  */
 const exportEvaluatedStudents = async (req, res) => {
   try {
+    const { domainId } = req.query;
+    
+    // Build where clause for domain filter
+    const where = {};
+    if (domainId) {
+      where.student = {
+        domainId: parseInt(domainId),
+      };
+    }
+    
     // Get all students who have evaluations
     const evaluations = await prisma.studentEvaluation.findMany({
+      where,
       include: {
         student: {
           select: {

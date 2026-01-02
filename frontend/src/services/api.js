@@ -1,9 +1,9 @@
 // API service for making HTTP requests to the backend
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.105.149.164:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.105.149.164:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sfapi.techelecon.in/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * Get JWT token from localStorage
@@ -1157,9 +1157,16 @@ export const api = {
       });
     },
 
-    export: async () => {
+    export: async (domainId = null) => {
       const token = getToken();
-      const response = await fetch(`${API_BASE_URL}/admin/evaluations/export`, {
+      const queryParams = new URLSearchParams();
+      if (domainId) {
+        queryParams.append('domainId', domainId);
+      }
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/admin/evaluations/export?${queryString}` : '/admin/evaluations/export';
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'GET',
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
