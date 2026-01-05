@@ -110,6 +110,14 @@ const getStudentInternshipStatus = async (req, res) => {
 const getAllInternshipStatuses = async (req, res) => {
   try {
     const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc', search = '', status = '', domainId } = req.query;
+    
+    // Handle evaluationFilter as array (can be multiple weeks or "never_done")
+    let evaluationFilters = [];
+    if (req.query.evaluationFilter) {
+      evaluationFilters = Array.isArray(req.query.evaluationFilter) 
+        ? req.query.evaluationFilter 
+        : [req.query.evaluationFilter];
+    }
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const offset = (pageNum - 1) * limitNum;
@@ -202,6 +210,53 @@ const getAllInternshipStatuses = async (req, res) => {
       },
     });
 
+    // Fetch evaluation counts for all students
+    const evaluationCounts = await prisma.studentEvaluation.groupBy({
+      by: ['studentId'],
+      where: {
+        studentId: { in: allStudentIds },
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    // Create a map of evaluation counts by studentId
+    const evaluationCountMap = new Map();
+    evaluationCounts.forEach(item => {
+      evaluationCountMap.set(item.studentId, item._count.id);
+    });
+
+    // Fetch all evaluations to get week numbers for each student
+    const allEvaluations = await prisma.studentEvaluation.findMany({
+      where: {
+        studentId: { in: allStudentIds },
+      },
+      select: {
+        studentId: true,
+        weekNo: true,
+      },
+    });
+
+    // Create a map of evaluation weeks by studentId
+    const evaluationWeeksMap = new Map();
+    allEvaluations.forEach(eval => {
+      if (!evaluationWeeksMap.has(eval.studentId)) {
+        evaluationWeeksMap.set(eval.studentId, []);
+      }
+      evaluationWeeksMap.get(eval.studentId).push(eval.weekNo);
+    });
+
+    // Helper function to calculate expected weeks
+    const calculateExpectedWeeks = (startDate, endDate) => {
+      if (!startDate || !endDate) return 0;
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.ceil(diffDays / 7);
+    };
+
     // Create a map of existing internships by studentId
     const internshipMap = new Map();
     existingInternships.forEach(internship => {
@@ -220,6 +275,42 @@ const getAllInternshipStatuses = async (req, res) => {
       );
 
       const existing = internshipMap.get(student.id);
+      const evaluationCount = evaluationCountMap.get(student.id) || 0;
+      const evaluationWeeks = evaluationWeeksMap.get(student.id) || [];
+      const expectedWeeks = calculateExpectedWeeks(
+        student.internshipStartDate,
+        student.internshipEndDate
+      );
+
+      // Apply evaluation filter if provided
+      if (evaluationFilters.length > 0) {
+        let shouldInclude = false;
+        
+        for (const filter of evaluationFilters) {
+          if (filter === 'never_done') {
+            // Check if student has no evaluations
+            if (evaluationCount === 0) {
+              shouldInclude = true;
+              break;
+            }
+          } else {
+            // Filter is a week number (e.g., "1", "2", "3")
+            const weekNo = parseInt(filter);
+            if (!isNaN(weekNo)) {
+              // Check if student is missing this specific week
+              if (!evaluationWeeks.includes(weekNo)) {
+                shouldInclude = true;
+                break;
+              }
+            }
+          }
+        }
+        
+        // Skip this student if they don't match any of the selected filters
+        if (!shouldInclude) {
+          continue;
+        }
+      }
       
       if (existing) {
         // Only update if status changed
@@ -240,6 +331,9 @@ const getAllInternshipStatuses = async (req, res) => {
             internshipEndDate: student.internshipEndDate,
             domain: student.domain,
           },
+          evaluationCount,
+          evaluationWeeks,
+          expectedWeeks,
           updatedAt: existing.updatedAt,
         });
       } else {
@@ -259,6 +353,9 @@ const getAllInternshipStatuses = async (req, res) => {
             internshipEndDate: student.internshipEndDate,
             domain: student.domain,
           },
+          evaluationCount,
+          evaluationWeeks,
+          expectedWeeks,
           updatedAt: new Date(),
         });
       }

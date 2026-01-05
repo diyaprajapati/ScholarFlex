@@ -17,6 +17,7 @@ const EvaluationManagementPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(''); // '', 'NOT_STARTED', 'ONGOING', 'COMPLETED'
+  const [evaluationFilter, setEvaluationFilter] = useState([]); // Array of week numbers as strings or 'never_done'
   const [domainFilter, setDomainFilter] = useState([]); // Array of Domain IDs for multi-select
   const [domains, setDomains] = useState([]); // List of all domains
   const [sortBy, setSortBy] = useState('name');
@@ -97,7 +98,7 @@ const EvaluationManagementPage = () => {
 
     fetchDomains();
     fetchStudents();
-  }, [navigate, currentPage, sortBy, sortOrder, debouncedSearch, statusFilter, domainFilter]);
+  }, [navigate, currentPage, sortBy, sortOrder, debouncedSearch, statusFilter, domainFilter, evaluationFilter]);
 
   const fetchDomains = async () => {
     try {
@@ -127,6 +128,9 @@ const EvaluationManagementPage = () => {
       }
       if (domainFilter.length > 0) {
         domainFilter.forEach(id => params.append('domainId', id));
+      }
+      if (evaluationFilter.length > 0) {
+        evaluationFilter.forEach(filter => params.append('evaluationFilter', filter));
       }
 
       const response = await api.internshipStatus.getAllStatuses({}, params.toString());
@@ -387,6 +391,73 @@ const EvaluationManagementPage = () => {
                     <option value="ONGOING">Ongoing</option>
                     <option value="COMPLETED">Completed</option>
                   </select>
+                </div>
+                <div className="flex-1 min-w-[300px]">
+                  <label className="block text-xs font-medium text-gray-700 mb-2">
+                    Missing Evaluations (Select Multiple)
+                  </label>
+                  <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-2 bg-gray-50">
+                    <label className="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={evaluationFilter.length === 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEvaluationFilter([]);
+                          }
+                          setCurrentPage(1);
+                        }}
+                        className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">All Evaluations</span>
+                    </label>
+                    <div className="border-t border-gray-300 my-1"></div>
+                    <label className="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={evaluationFilter.includes('never_done')}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEvaluationFilter([...evaluationFilter, 'never_done']);
+                          } else {
+                            setEvaluationFilter(evaluationFilter.filter(f => f !== 'never_done'));
+                          }
+                          setCurrentPage(1);
+                        }}
+                        className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">Never Done</span>
+                    </label>
+                    <div className="border-t border-gray-300 my-1"></div>
+                    <div className="grid grid-cols-4 gap-1">
+                      {Array.from({ length: 20 }, (_, i) => i + 1).map((week) => (
+                        <label
+                          key={week}
+                          className="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={evaluationFilter.includes(week.toString())}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setEvaluationFilter([...evaluationFilter, week.toString()]);
+                              } else {
+                                setEvaluationFilter(evaluationFilter.filter(f => f !== week.toString()));
+                              }
+                              setCurrentPage(1);
+                            }}
+                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                          />
+                          <span className="text-sm text-gray-700">Week {week}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  {evaluationFilter.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {evaluationFilter.length} filter{evaluationFilter.length === 1 ? '' : 's'} selected
+                    </p>
+                  )}
                 </div>
                 <div className="flex-1 min-w-[300px]">
                   <label className="block text-xs font-medium text-gray-700 mb-2">

@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import api from '../../services/api';
+import { 
+  X, User, Mail, Phone, Building2, GraduationCap, Calendar, 
+  Award, Briefcase, FileText, Link as LinkIcon, CheckCircle, 
+  XCircle, Clock, Star, Code, Wrench, Users, Trophy, ExternalLink
+} from 'lucide-react';
 
 const CandidatesTab = () => {
   const [students, setStudents] = useState([]);
@@ -1433,90 +1438,127 @@ const CandidatesTab = () => {
       {showDetailsModal && selectedStudent && (
         <>
           <div 
-            className="fixed inset-0 z-100 bg-gray-900/20 backdrop-blur-md"
+            className="fixed inset-0 z-100 bg-gray-900/50 backdrop-blur-sm"
             onClick={handleCloseDetailsModal}
           ></div>
           
           <div className="fixed inset-0 z-110 overflow-y-auto flex items-center justify-center p-4 pointer-events-none">
             <div
-              className="relative bg-white rounded-lg shadow-2xl border border-gray-200 w-full max-w-4xl transform transition-all pointer-events-auto max-h-[90vh] overflow-y-auto"
+              className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-5xl transform transition-all pointer-events-auto max-h-[95vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-                <h2 className="text-xl font-semibold text-gray-900">Student Details</h2>
+              <div className="flex justify-between items-center px-8 py-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+                <div className="flex items-center gap-4">
+                  {selectedStudent.image_url && !failedImages.has(`modal-${selectedStudent.id}`) ? (
+                    <img
+                      src={getImageUrl(selectedStudent.image_url)}
+                      alt={selectedStudent.full_name}
+                      className="w-16 h-16 object-cover rounded-full border-2 border-gray-200 shadow-md"
+                      onError={handleImageError(`modal-${selectedStudent.id}`)}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center border-2 border-green-200 shadow-md">
+                      <User className="w-8 h-8 text-white" />
+                    </div>
+                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">{selectedStudent.full_name}</h2>
+                    <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {selectedStudent.email}
+                    </p>
+                  </div>
+                </div>
                 <button
-                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1.5 transition-all duration-200"
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition-all duration-200"
                   onClick={handleCloseDetailsModal}
                   aria-label="Close"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
               {/* Modal Content */}
-              <div className="px-6 py-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Image */}
-                  <div className="md:col-span-2 flex justify-center">
-                    {selectedStudent.image_url && !failedImages.has(`modal-${selectedStudent.id}`) ? (
-                      <img
-                        src={getImageUrl(selectedStudent.image_url)}
-                        alt={selectedStudent.full_name}
-                        className="w-32 h-32 object-cover rounded-lg"
-                        onError={handleImageError(`modal-${selectedStudent.id}`)}
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
-                        <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+              <div className="px-8 py-6">
+                <div className="space-y-6">
+                  {/* Personal Information Card */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-green-600 rounded-lg">
+                        <User className="w-5 h-5 text-white" />
                       </div>
-                    )}
-                  </div>
-
-                  {/* Personal Information */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Personal Information</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-xs text-gray-500">Full Name</span>
-                        <p className="text-sm font-medium text-gray-900">{selectedStudent.full_name}</p>
+                      <h3 className="text-lg font-bold text-gray-900">Personal Information</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <User className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Full Name</span>
+                        </div>
+                        <p className="text-base font-semibold text-gray-900">{selectedStudent.full_name}</p>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Email</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.email}</p>
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Mail className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</span>
+                        </div>
+                        <p className="text-base text-gray-900 break-all">{selectedStudent.email}</p>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Mobile Number</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.phone || selectedStudent.mobile_number || 'N/A'}</p>
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Phone className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Mobile Number</span>
+                        </div>
+                        <p className="text-base text-gray-900">{selectedStudent.phone || selectedStudent.mobile_number || 'N/A'}</p>
+                      </div>
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Calendar className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Registration Date</span>
+                        </div>
+                        <p className="text-base text-gray-900">{formatDate(selectedStudent.registration_date)}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Academic Information */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Academic Information</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-xs text-gray-500">Institute Name</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.institute_name || 'N/A'}</p>
+                  {/* Academic Information Card */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-green-600 rounded-lg">
+                        <GraduationCap className="w-5 h-5 text-white" />
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Course Taken</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.course_taken || 'N/A'}</p>
+                      <h3 className="text-lg font-bold text-gray-900">Academic Information</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Building2 className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Institute Name</span>
+                        </div>
+                        <p className="text-base font-medium text-gray-900">{selectedStudent.institute_name || 'N/A'}</p>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Domain</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.domain || 'N/A'}</p>
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <GraduationCap className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Course Taken</span>
+                        </div>
+                        <p className="text-base font-medium text-gray-900">{selectedStudent.course_taken || 'N/A'}</p>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Status</span>
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Briefcase className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Domain</span>
+                        </div>
+                        <p className="text-base font-medium text-gray-900">{selectedStudent.domain || 'N/A'}</p>
+                      </div>
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</span>
+                        </div>
                         <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
                             selectedStudent.status === 'Active' || selectedStudent.is_active
                               ? 'bg-green-100 text-green-800'
                               : 'bg-gray-100 text-gray-800'
@@ -1525,85 +1567,134 @@ const CandidatesTab = () => {
                           {selectedStudent.status || (selectedStudent.is_active ? 'Active' : 'Inactive')}
                         </span>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Registration Date</span>
-                        <p className="text-sm text-gray-900">{formatDate(selectedStudent.registration_date)}</p>
+                    </div>
+                  </div>
+
+                  {/* Internship & Faculty Information - Side by Side */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Internship Information Card */}
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-600 rounded-lg">
+                          <Briefcase className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">Internship Information</h3>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Calendar className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Start Date</span>
+                          </div>
+                          <p className="text-base font-medium text-gray-900">{formatDate(selectedStudent.internship_start_date)}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Calendar className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">End Date</span>
+                          </div>
+                          <p className="text-base font-medium text-gray-900">{formatDate(selectedStudent.internship_end_date)}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Clock className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Duration</span>
+                          </div>
+                          <p className="text-base font-medium text-gray-900">{selectedStudent.internship_duration || 'N/A'}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Faculty Information Card */}
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-600 rounded-lg">
+                          <Users className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">Faculty Information</h3>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <User className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Faculty Name</span>
+                          </div>
+                          <p className="text-base font-medium text-gray-900">{selectedStudent.internal_faculty_name || 'N/A'}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Phone className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Contact</span>
+                          </div>
+                          <p className="text-base font-medium text-gray-900">{selectedStudent.faculty_contact || 'N/A'}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Mail className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</span>
+                          </div>
+                          <p className="text-base text-gray-900 break-all">{selectedStudent.faculty_email || 'N/A'}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Internship Information */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Internship Information</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-xs text-gray-500">Start Date</span>
-                        <p className="text-sm text-gray-900">{formatDate(selectedStudent.internship_start_date)}</p>
+                  {/* Test Performance Card */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-green-600 rounded-lg">
+                        <Star className="w-5 h-5 text-white" />
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">End Date</span>
-                        <p className="text-sm text-gray-900">{formatDate(selectedStudent.internship_end_date)}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Duration</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.internship_duration || 'N/A'}</p>
-                      </div>
+                      <h3 className="text-lg font-bold text-gray-900">Test Performance</h3>
                     </div>
-                  </div>
-
-                  {/* Faculty Information */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Faculty Information</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-xs text-gray-500">Internal Faculty Name</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.internal_faculty_name || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Faculty Contact</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.faculty_contact || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Faculty Email</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.faculty_email || 'N/A'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Test Performance */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Test Performance</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-xs text-gray-500">Marks</span>
-                        <p className="text-sm font-semibold text-gray-900">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-white rounded-lg p-5 border border-gray-200 text-center">
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          <Trophy className="w-5 h-5 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Marks</span>
+                        </div>
+                        <p className="text-3xl font-bold text-gray-900">
                           {selectedStudent.marks !== null && selectedStudent.marks !== undefined 
-                            ? `${selectedStudent.marks.toFixed(2)}%` 
+                            ? `${selectedStudent.marks.toFixed(1)}%` 
                             : 'N/A'}
                         </p>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Total Attempts</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.total_attempts || 0}</p>
+                      <div className="bg-white rounded-lg p-5 border border-gray-200 text-center">
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          <FileText className="w-5 h-5 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Attempts</span>
+                        </div>
+                        <p className="text-3xl font-bold text-gray-900">{selectedStudent.total_attempts || 0}</p>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Last Test Date</span>
-                        <p className="text-sm text-gray-900">{formatDate(selectedStudent.last_test_date)}</p>
+                      <div className="bg-white rounded-lg p-5 border border-gray-200 text-center">
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          <Calendar className="w-5 h-5 text-green-600" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Last Test Date</span>
+                        </div>
+                        <p className="text-base font-medium text-gray-900">{formatDate(selectedStudent.last_test_date)}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Skills */}
+                  {/* Skills Card */}
                   {selectedStudent.skills && (
-                    <div className="md:col-span-2">
-                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Skills</h3>
-                      <div className="space-y-3">
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-600 rounded-lg">
+                          <Code className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">Skills</h3>
+                      </div>
+                      <div className="space-y-4">
                         {selectedStudent.skills.languages && selectedStudent.skills.languages.length > 0 && (
-                          <div>
-                            <span className="text-xs text-gray-500 block mb-1">Programming Languages</span>
+                          <div className="bg-white rounded-lg p-4 border border-gray-200">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Code className="w-4 h-4 text-green-600" />
+                              <span className="text-sm font-semibold text-gray-700">Programming Languages</span>
+                            </div>
                             <div className="flex flex-wrap gap-2">
                               {selectedStudent.skills.languages.map((skill, index) => (
-                                <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                                <span key={index} className="px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
                                   {skill}
                                 </span>
                               ))}
@@ -1611,11 +1702,14 @@ const CandidatesTab = () => {
                           </div>
                         )}
                         {selectedStudent.skills.frameworks && selectedStudent.skills.frameworks.length > 0 && (
-                          <div>
-                            <span className="text-xs text-gray-500 block mb-1">Frameworks / Libraries</span>
+                          <div className="bg-white rounded-lg p-4 border border-gray-200">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Code className="w-4 h-4 text-green-600" />
+                              <span className="text-sm font-semibold text-gray-700">Frameworks / Libraries</span>
+                            </div>
                             <div className="flex flex-wrap gap-2">
                               {selectedStudent.skills.frameworks.map((skill, index) => (
-                                <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">
+                                <span key={index} className="px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
                                   {skill}
                                 </span>
                               ))}
@@ -1623,11 +1717,14 @@ const CandidatesTab = () => {
                           </div>
                         )}
                         {selectedStudent.skills.tools && selectedStudent.skills.tools.length > 0 && (
-                          <div>
-                            <span className="text-xs text-gray-500 block mb-1">Tools / Technologies</span>
+                          <div className="bg-white rounded-lg p-4 border border-gray-200">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Wrench className="w-4 h-4 text-green-600" />
+                              <span className="text-sm font-semibold text-gray-700">Tools / Technologies</span>
+                            </div>
                             <div className="flex flex-wrap gap-2">
                               {selectedStudent.skills.tools.map((skill, index) => (
-                                <span key={index} className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
+                                <span key={index} className="px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
                                   {skill}
                                 </span>
                               ))}
@@ -1635,11 +1732,14 @@ const CandidatesTab = () => {
                           </div>
                         )}
                         {selectedStudent.skills.softSkills && selectedStudent.skills.softSkills.length > 0 && (
-                          <div>
-                            <span className="text-xs text-gray-500 block mb-1">Soft Skills</span>
+                          <div className="bg-white rounded-lg p-4 border border-gray-200">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Users className="w-4 h-4 text-green-600" />
+                              <span className="text-sm font-semibold text-gray-700">Soft Skills</span>
+                            </div>
                             <div className="flex flex-wrap gap-2">
                               {selectedStudent.skills.softSkills.map((skill, index) => (
-                                <span key={index} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">
+                                <span key={index} className="px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
                                   {skill}
                                 </span>
                               ))}
@@ -1650,60 +1750,77 @@ const CandidatesTab = () => {
                          (!selectedStudent.skills.frameworks || selectedStudent.skills.frameworks.length === 0) &&
                          (!selectedStudent.skills.tools || selectedStudent.skills.tools.length === 0) &&
                          (!selectedStudent.skills.softSkills || selectedStudent.skills.softSkills.length === 0) && (
-                          <p className="text-xs text-gray-500">No skills added yet.</p>
+                          <div className="bg-white rounded-lg p-6 border border-gray-200 text-center">
+                            <p className="text-sm text-gray-500">No skills added yet.</p>
+                          </div>
                         )}
                       </div>
                     </div>
                   )}
 
-                  {/* Personal Projects */}
+                  {/* Personal Projects Card */}
                   {selectedStudent.personal_projects && selectedStudent.personal_projects.length > 0 && (
-                    <div className="md:col-span-2">
-                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Personal Projects</h3>
-                      <div className="space-y-3">
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-600 rounded-lg">
+                          <Briefcase className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">Personal Projects</h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {selectedStudent.personal_projects.map((project, index) => (
-                          <div key={index} className="border border-gray-200 rounded-lg p-3">
-                            <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                          <div key={index} className="bg-white rounded-lg p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                            <h4 className="text-base font-bold text-gray-900 mb-2">
                               {project.projectTitle || project.title || `Project ${index + 1}`}
                             </h4>
                             {project.description && (
-                              <p className="text-xs text-gray-700 mb-2">{project.description}</p>
+                              <p className="text-sm text-gray-700 mb-4 line-clamp-3">{project.description}</p>
                             )}
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                              <div>
-                                <span className="text-gray-500">Tech Stack: </span>
-                                <span className="text-gray-900">{project.techStack || 'N/A'}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-500">Role: </span>
-                                <span className="text-gray-900">{project.role || 'N/A'}</span>
-                              </div>
-                              {(project.githubLink || project.github) && (
-                                <div>
-                                  <span className="text-gray-500">GitHub: </span>
+                            <div className="space-y-2">
+                              {project.techStack && (
+                                <div className="flex items-start gap-2">
+                                  <Code className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                                  <div>
+                                    <span className="text-xs font-semibold text-gray-500">Tech Stack: </span>
+                                    <span className="text-sm text-gray-900">{project.techStack}</span>
+                                  </div>
+                                </div>
+                              )}
+                              {project.role && (
+                                <div className="flex items-start gap-2">
+                                  <User className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                                  <div>
+                                    <span className="text-xs font-semibold text-gray-500">Role: </span>
+                                    <span className="text-sm text-gray-900">{project.role}</span>
+                                  </div>
+                                </div>
+                              )}
+                              <div className="flex gap-3 pt-2">
+                                {(project.githubLink || project.github) && (
                                   <a
                                     href={project.githubLink || project.github}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-green-600 hover:underline"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm font-medium transition-colors"
                                   >
-                                    View
+                                    <LinkIcon className="w-4 h-4" />
+                                    GitHub
+                                    <ExternalLink className="w-3 h-3" />
                                   </a>
-                                </div>
-                              )}
-                              {(project.liveLink || project.live) && (
-                                <div>
-                                  <span className="text-gray-500">Live: </span>
+                                )}
+                                {(project.liveLink || project.live) && (
                                   <a
                                     href={project.liveLink || project.live}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-green-600 hover:underline"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm font-medium transition-colors"
                                   >
-                                    View
+                                    <LinkIcon className="w-4 h-4" />
+                                    Live Demo
+                                    <ExternalLink className="w-3 h-3" />
                                   </a>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1711,38 +1828,54 @@ const CandidatesTab = () => {
                     </div>
                   )}
 
-                  {/* Achievements */}
+                  {/* Achievements Card */}
                   {selectedStudent.achievements && (
-                    <div className="md:col-span-2">
-                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Achievements & Certifications</h3>
-                      <div className="space-y-3">
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-600 rounded-lg">
+                          <Trophy className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">Achievements & Certifications</h3>
+                      </div>
+                      <div className="space-y-4">
                         {['hackathons', 'certifications', 'awards', 'competitions'].map((type) => (
                           selectedStudent.achievements[type] && selectedStudent.achievements[type].length > 0 && (
-                            <div key={type}>
-                              <span className="text-xs font-medium text-gray-700 capitalize block mb-2">{type}</span>
-                              <div className="space-y-2">
+                            <div key={type} className="bg-white rounded-lg p-4 border border-gray-200">
+                              <div className="flex items-center gap-2 mb-3">
+                                <Award className="w-4 h-4 text-green-600" />
+                                <span className="text-sm font-bold text-gray-900 capitalize">{type}</span>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {selectedStudent.achievements[type].map((achievement, index) => (
-                                  <div key={index} className="border border-gray-200 rounded p-2">
-                                    <h5 className="text-xs font-semibold text-gray-900">{achievement.title}</h5>
+                                  <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <h5 className="text-sm font-bold text-gray-900 mb-2">{achievement.title}</h5>
                                     {achievement.issuer && (
-                                      <p className="text-xs text-gray-600">Issuer: {achievement.issuer}</p>
+                                      <p className="text-xs text-gray-600 mb-1">
+                                        <span className="font-semibold">Issuer:</span> {achievement.issuer}
+                                      </p>
                                     )}
                                     {achievement.description && (
-                                      <p className="text-xs text-gray-700 mt-1">{achievement.description}</p>
+                                      <p className="text-xs text-gray-700 mb-2 line-clamp-2">{achievement.description}</p>
                                     )}
-                                    {achievement.date && (
-                                      <p className="text-xs text-gray-500 mt-1">Date: {formatDate(achievement.date)}</p>
-                                    )}
-                                    {achievement.link && (
-                                      <a
-                                        href={achievement.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-xs text-green-600 hover:underline"
-                                      >
-                                        View Details
-                                      </a>
-                                    )}
+                                    <div className="flex items-center justify-between mt-3">
+                                      {achievement.date && (
+                                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                                          <Calendar className="w-3 h-3" />
+                                          {formatDate(achievement.date)}
+                                        </div>
+                                      )}
+                                      {achievement.link && (
+                                        <a
+                                          href={achievement.link}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 font-medium"
+                                        >
+                                          View
+                                          <ExternalLink className="w-3 h-3" />
+                                        </a>
+                                      )}
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -1753,67 +1886,102 @@ const CandidatesTab = () => {
                          (!selectedStudent.achievements.certifications || selectedStudent.achievements.certifications.length === 0) &&
                          (!selectedStudent.achievements.awards || selectedStudent.achievements.awards.length === 0) &&
                          (!selectedStudent.achievements.competitions || selectedStudent.achievements.competitions.length === 0) && (
-                          <p className="text-xs text-gray-500">No achievements added yet.</p>
+                          <div className="bg-white rounded-lg p-6 border border-gray-200 text-center">
+                            <p className="text-sm text-gray-500">No achievements added yet.</p>
+                          </div>
                         )}
                       </div>
                     </div>
                   )}
 
-                  {/* Resume */}
-                  {selectedStudent.resume_url && (
-                    <div className="md:col-span-2">
-                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Resume</h3>
-                      <a
-                        href={(() => {
-                          // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
-                          let filePath = selectedStudent.resume_url;
-                          if (selectedStudent.resume_url.startsWith('/scholarflex/') || selectedStudent.resume_url.startsWith('/students/')) {
-                            filePath = `/uploads${selectedStudent.resume_url}`;
-                          } else if (!selectedStudent.resume_url.startsWith('/uploads/')) {
-                            filePath = `/uploads${selectedStudent.resume_url}`;
-                          }
-                          const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-                          return baseUrl.replace('/api', '') + filePath;
-                        })()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-green-600 hover:text-green-800 underline flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                        View Resume (PDF)
-                      </a>
-                    </div>
-                  )}
-
-                  {/* Additional Information */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Additional Information</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-xs text-gray-500">Reference Information</span>
-                        <p className="text-sm text-gray-900">{selectedStudent.reference_information || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Profile Completed</span>
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ml-2 ${
-                            selectedStudent.profile_completed
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
+                  {/* Resume & Additional Information - Side by Side */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Resume Card */}
+                    {selectedStudent.resume_url && (
+                      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="p-2 bg-green-600 rounded-lg">
+                            <FileText className="w-5 h-5 text-white" />
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900">Resume</h3>
+                        </div>
+                        <a
+                          href={(() => {
+                            // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
+                            let filePath = selectedStudent.resume_url;
+                            if (selectedStudent.resume_url.startsWith('/scholarflex/') || selectedStudent.resume_url.startsWith('/students/')) {
+                              filePath = `/uploads${selectedStudent.resume_url}`;
+                            } else if (!selectedStudent.resume_url.startsWith('/uploads/')) {
+                              filePath = `/uploads${selectedStudent.resume_url}`;
+                            }
+                            const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+                            return baseUrl.replace('/api', '') + filePath;
+                          })()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-3 bg-white hover:bg-green-50 border border-green-300 rounded-lg text-sm font-semibold text-gray-900 transition-colors w-full justify-center"
                         >
-                          {selectedStudent.profile_completed ? 'Yes' : 'No'}
-                        </span>
+                          <FileText className="w-5 h-5 text-green-600" />
+                          View Resume (PDF)
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Created At</span>
-                        <p className="text-sm text-gray-900">{formatDate(selectedStudent.created_at)}</p>
+                    )}
+
+                    {/* Additional Information Card */}
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-600 rounded-lg">
+                          <FileText className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">Additional Information</h3>
                       </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Updated At</span>
-                        <p className="text-sm text-gray-900">{formatDate(selectedStudent.updated_at)}</p>
+                      <div className="space-y-4">
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <FileText className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Reference Information</span>
+                          </div>
+                          <p className="text-sm text-gray-900">{selectedStudent.reference_information || 'N/A'}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Profile Completed</span>
+                          </div>
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
+                              selectedStudent.profile_completed
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
+                            {selectedStudent.profile_completed ? (
+                              <>
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                Yes
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="w-4 h-4 mr-1" />
+                                No
+                              </>
+                            )}
+                          </span>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Calendar className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Created At</span>
+                          </div>
+                          <p className="text-sm text-gray-900">{formatDate(selectedStudent.created_at)}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Calendar className="w-4 h-4 text-green-600" />
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Updated At</span>
+                          </div>
+                          <p className="text-sm text-gray-900">{formatDate(selectedStudent.updated_at)}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1821,10 +1989,10 @@ const CandidatesTab = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 sticky bottom-0 bg-white">
+              <div className="flex justify-end gap-3 px-8 py-4 border-t border-gray-200 sticky bottom-0 bg-white">
                 <button
                   type="button"
-                  className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                  className="px-6 py-2.5 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all shadow-md hover:shadow-lg"
                   onClick={handleCloseDetailsModal}
                 >
                   Close
