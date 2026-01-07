@@ -41,11 +41,46 @@ const StudentAnalyticsPage = () => {
     try {
       setLoading(true);
       setError('');
-      const response = await api.admin.getStudentAnalytics();
-      if (response.success) {
-        setAnalytics(response.analytics || []);
+      
+      // Fetch both video analytics and time tracking data in parallel
+      const [analyticsResponse, timeTrackingResponse] = await Promise.all([
+        api.admin.getStudentAnalytics(),
+        api.adminTimeTracking.getDayWiseStudentsHours()
+      ]);
+      
+      if (analyticsResponse.success) {
+        let analyticsData = analyticsResponse.analytics || [];
+        
+        // Merge time tracking data with analytics
+        if (timeTrackingResponse.success && timeTrackingResponse.students) {
+          const timeTrackingMap = new Map();
+          timeTrackingResponse.students.forEach((student) => {
+            timeTrackingMap.set(student.studentId, {
+              totalMinutes: student.totalMinutes,
+              totalHours: parseFloat(student.totalHours),
+              totalDays: student.totalDays,
+              dailyData: student.dailyData,
+            });
+          });
+          
+          // Merge time tracking data into analytics
+          analyticsData = analyticsData.map((student) => {
+            const timeData = timeTrackingMap.get(student.studentId);
+            return {
+              ...student,
+              timeTracking: timeData || {
+                totalMinutes: 0,
+                totalHours: 0,
+                totalDays: 0,
+                dailyData: [],
+              },
+            };
+          });
+        }
+        
+        setAnalytics(analyticsData);
       } else {
-        setError(response.message || 'Failed to fetch student analytics');
+        setError(analyticsResponse.message || 'Failed to fetch student analytics');
       }
     } catch (err) {
       setError(err.message || 'Failed to fetch student analytics');
@@ -225,6 +260,9 @@ const StudentAnalyticsPage = () => {
                         <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                           Total Watch Time
                         </th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                          Time Tracked
+                        </th>
                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider sticky right-0 bg-gray-50 z-10 border-l border-gray-200">
                           Actions
                         </th>
@@ -259,6 +297,16 @@ const StudentAnalyticsPage = () => {
                             </div>
                             <div className="text-xs text-gray-500">
                               ({student.totalWatchTimeHours.toFixed(2)} hrs)
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <div className="text-base font-semibold text-purple-600">
+                              {student.timeTracking?.totalHours 
+                                ? `${student.timeTracking.totalHours.toFixed(2)}h`
+                                : '0h'}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {student.timeTracking?.totalDays || 0} days
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white group-hover:bg-gray-50 z-10 border-l border-gray-200">
@@ -349,7 +397,7 @@ const StudentAnalyticsPage = () => {
             {/* Modal Content */}
             <div className="flex-1 overflow-y-auto p-6">
               {/* Summary Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                 <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                   <div className="text-sm text-blue-600 mb-1">Videos Watched</div>
                   <div className="text-2xl font-bold text-blue-900">{selectedStudent.videosWatched}</div>
@@ -370,11 +418,22 @@ const StudentAnalyticsPage = () => {
                   </div>
                 </div>
                 <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                  <div className="text-sm text-purple-600 mb-1">Active Days</div>
+                  <div className="text-sm text-purple-600 mb-1">Time Tracked</div>
                   <div className="text-2xl font-bold text-purple-900">
+                    {selectedStudent.timeTracking?.totalHours 
+                      ? `${selectedStudent.timeTracking.totalHours.toFixed(2)}h`
+                      : '0h'}
+                  </div>
+                  <div className="text-xs text-purple-600 mt-1">
+                    {selectedStudent.timeTracking?.totalDays || 0} days tracked
+                  </div>
+                </div>
+                <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                  <div className="text-sm text-orange-600 mb-1">Active Days</div>
+                  <div className="text-2xl font-bold text-orange-900">
                     {selectedStudent.dailyWatchTime.length}
                   </div>
-                  <div className="text-xs text-purple-600 mt-1">days with activity</div>
+                  <div className="text-xs text-orange-600 mt-1">days with activity</div>
                 </div>
               </div>
 
@@ -455,76 +514,159 @@ const StudentAnalyticsPage = () => {
               {detailViewMode === 'day' && (
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Activity Breakdown</h3>
-                  {selectedStudent.dailyWatchTime.length > 0 ? (
-                    <div className="space-y-4">
-                      {selectedStudent.dailyWatchTime.map((day, idx) => (
-                        <div
-                          key={idx}
-                          className="border border-gray-200 rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex-1">
-                              <span className="text-sm font-semibold text-gray-900">
-                                {formatDate(day.date)}
-                              </span>
-                              <span className="text-xs text-gray-500 ml-2">
-                                ({day.hours.toFixed(2)} hours)
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <div className="w-48 bg-gray-200 rounded-full h-3">
-                                <div
-                                  className="bg-green-600 h-3 rounded-full transition-all"
-                                  style={{
-                                    width: `${Math.min((day.seconds / 3600) * 5, 100)}%`,
-                                  }}
-                                ></div>
+                  
+                  {/* Combine video watch time and time tracking data */}
+                  {(() => {
+                    // Create a map of all dates with both video and time tracking data
+                    const dateMap = new Map();
+                    
+                    // Add video watch time data
+                    selectedStudent.dailyWatchTime.forEach((day) => {
+                      dateMap.set(day.date, {
+                        date: day.date,
+                        videoSeconds: day.seconds,
+                        videoHours: day.hours,
+                        timeTrackingMinutes: 0,
+                        timeTrackingHours: 0,
+                      });
+                    });
+                    
+                    // Add time tracking data
+                    if (selectedStudent.timeTracking?.dailyData) {
+                      selectedStudent.timeTracking.dailyData.forEach((day) => {
+                        const existing = dateMap.get(day.date);
+                        if (existing) {
+                          existing.timeTrackingMinutes = day.totalMinutes;
+                          existing.timeTrackingHours = parseFloat(day.totalHours);
+                        } else {
+                          dateMap.set(day.date, {
+                            date: day.date,
+                            videoSeconds: 0,
+                            videoHours: 0,
+                            timeTrackingMinutes: day.totalMinutes,
+                            timeTrackingHours: parseFloat(day.totalHours),
+                          });
+                        }
+                      });
+                    }
+                    
+                    const allDays = Array.from(dateMap.values())
+                      .sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    return allDays.length > 0 ? (
+                      <div className="space-y-4">
+                        {allDays.map((day, idx) => (
+                          <div
+                            key={idx}
+                            className="border border-gray-200 rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex-1">
+                                <span className="text-sm font-semibold text-gray-900">
+                                  {formatDate(day.date)}
+                                </span>
                               </div>
-                              <span className="text-sm font-bold text-gray-900 min-w-[80px] text-right">
-                                {formatTime(day.seconds)}
-                              </span>
+                              <div className="flex items-center gap-6">
+                                {/* Video Watch Time */}
+                                {day.videoSeconds > 0 && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500">Video:</span>
+                                    <span className="text-sm font-bold text-green-600">
+                                      {formatTime(day.videoSeconds)}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Time Tracking */}
+                                {day.timeTrackingMinutes > 0 && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500">Tracked:</span>
+                                    <span className="text-sm font-bold text-purple-600">
+                                      {day.timeTrackingHours.toFixed(2)}h
+                                    </span>
+                                  </div>
+                                )}
+                                {day.videoSeconds === 0 && day.timeTrackingMinutes === 0 && (
+                                  <span className="text-xs text-gray-400">No activity</span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-
-                          {/* Video-wise breakdown for this day */}
-                          {selectedStudent.dailyVideoWatch && (
-                            (() => {
-                              const dayVideos = selectedStudent.dailyVideoWatch.find(
-                                (d) => d.date === day.date
-                              );
-                              if (!dayVideos || !dayVideos.videos || dayVideos.videos.length === 0) {
-                                return null;
-                              }
-                              return (
-                                <div className="mt-3 pt-3 border-t border-gray-100">
-                                  <h4 className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                                    <span>Videos watched this day</span>
-                                  </h4>
-                                  <div className="space-y-1">
-                                    {dayVideos.videos.map((video, vIdx) => (
-                                      <div
-                                        key={vIdx}
-                                        className="flex items-center justify-between text-xs text-gray-700"
-                                      >
-                                        <span className="flex-1 truncate pr-2">{video.videoTitle}</span>
-                                        <span className="font-semibold text-gray-900">
-                                          {formatTime(video.seconds)}
-                                        </span>
-                                      </div>
-                                    ))}
+                            
+                            {/* Progress bars */}
+                            <div className="space-y-2">
+                              {day.videoSeconds > 0 && (
+                                <div>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-gray-600">Video Watch Time</span>
+                                    <span className="text-xs text-gray-600">{day.videoHours.toFixed(2)}h</span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-green-600 h-2 rounded-full transition-all"
+                                      style={{
+                                        width: `${Math.min((day.videoSeconds / 3600) * 10, 100)}%`,
+                                      }}
+                                    ></div>
                                   </div>
                                 </div>
-                              );
-                            })()
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-                      <p className="text-gray-500">No activity recorded</p>
-                    </div>
-                  )}
+                              )}
+                              {day.timeTrackingMinutes > 0 && (
+                                <div>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-gray-600">Time Tracked</span>
+                                    <span className="text-xs text-gray-600">{day.timeTrackingHours.toFixed(2)}h</span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-purple-600 h-2 rounded-full transition-all"
+                                      style={{
+                                        width: `${Math.min((day.timeTrackingHours / 8) * 100, 100)}%`,
+                                      }}
+                                    ></div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Video-wise breakdown for this day */}
+                            {selectedStudent.dailyVideoWatch && (
+                              (() => {
+                                const dayVideos = selectedStudent.dailyVideoWatch.find(
+                                  (d) => d.date === day.date
+                                );
+                                if (!dayVideos || !dayVideos.videos || dayVideos.videos.length === 0) {
+                                  return null;
+                                }
+                                return (
+                                  <div className="mt-3 pt-3 border-t border-gray-100">
+                                    <h4 className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                                      <span>Videos watched this day</span>
+                                    </h4>
+                                    <div className="space-y-1">
+                                      {dayVideos.videos.map((video, vIdx) => (
+                                        <div
+                                          key={vIdx}
+                                          className="flex items-center justify-between text-xs text-gray-700"
+                                        >
+                                          <span className="flex-1 truncate pr-2">{video.videoTitle}</span>
+                                          <span className="font-semibold text-gray-900">
+                                            {formatTime(video.seconds)}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="text-gray-500">No activity recorded</p>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>

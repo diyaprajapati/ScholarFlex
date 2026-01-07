@@ -10,6 +10,7 @@ import ActivityTab from '../../components/student/ActivityTab';
 import NOCTab from '../../components/student/NOCTab';
 import InternshipTab from '../../components/student/InternshipTab';
 import PlaylistModal from '../../components/student/PlaylistModal';
+import TimeTracking from '../../components/student/TimeTracking';
 import { Menu } from 'lucide-react';
 
 const StudentDashboardPage = () => {
@@ -405,16 +406,21 @@ const StudentDashboardPage = () => {
 
           {/* Dashboard Tab */}
           {activeTab === 'dashboard' && (
-            <DashboardTab
-              loadingDashboard={loadingDashboard}
-              continueWatching={continueWatching}
-              recentActivity={recentActivity}
-              recommendedPlaylists={recommendedPlaylists}
-              recommendedTests={recommendedTests}
-              getThumbnailUrl={getThumbnailUrl}
-              handlePlaylistClick={handlePlaylistClick}
-              handleVideoClick={handleVideoClick}
-            />
+            <div className="space-y-6 sm:space-y-8">
+              {/* Time Tracking Component */}
+              <TimeTracking />
+              
+              <DashboardTab
+                loadingDashboard={loadingDashboard}
+                continueWatching={continueWatching}
+                recentActivity={recentActivity}
+                recommendedPlaylists={recommendedPlaylists}
+                recommendedTests={recommendedTests}
+                getThumbnailUrl={getThumbnailUrl}
+                handlePlaylistClick={handlePlaylistClick}
+                handleVideoClick={handleVideoClick}
+              />
+            </div>
           )}
 
           {/* Playlists Tab */}

@@ -12,6 +12,8 @@ const internRoutes = require('./routes/internRoutes');
 const questionPaperRoutes = require('./routes/questionPaperRoutes');
 const studentTestRoutes = require('./routes/studentTestRoutes');
 const studentProfileRoutes = require('./routes/studentProfileRoutes');
+const timeTrackingRoutes = require('./routes/timeTrackingRoutes');
+const adminTimeTrackingRoutes = require('./routes/adminTimeTrackingRoutes');
 const domainRoutes = require('./routes/domainRoutes');
 const testAttemptRoutes = require('./routes/testAttemptRoutes');
 const candidateRoutes = require('./routes/candidateRoutes');
@@ -104,6 +106,8 @@ app.use('/api/interns', internRoutes);
 app.use('/api/question-papers', questionPaperRoutes);
 app.use('/api/student', studentTestRoutes);
 app.use('/api/student/profile', studentProfileRoutes);
+app.use('/api/student/time-tracking', timeTrackingRoutes);
+app.use('/api/admin/time-tracking', adminTimeTrackingRoutes);
 app.use('/api/domains', domainRoutes);
 app.use('/api/test-attempts', testAttemptRoutes);
 app.use('/api/candidates', candidateRoutes);
@@ -132,11 +136,19 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
   console.log(`🌍 Server accessible on: http://0.0.0.0:${PORT} and http://localhost:${PORT}`);
+});
+
+// Keep server reference to prevent garbage collection
+server.on('error', (error) => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+  console.error('❌ Server error:', error);
 });
 
 // Graceful shutdown
@@ -150,15 +162,21 @@ const gracefulShutdown = async (signal) => {
   
   console.log(`${signal} signal received: closing HTTP server`);
   
-  try {
-    await prisma.$disconnect();
-    console.log('✅ Prisma disconnected');
-    
-    process.exit(0);
-  } catch (error) {
-    console.error('Error during shutdown:', error);
-    process.exit(1);
-  }
+  return new Promise((resolve) => {
+    server.close(async () => {
+      console.log('HTTP server closed');
+      try {
+        await prisma.$disconnect();
+        console.log('✅ Prisma disconnected');
+        resolve();
+        process.exit(0);
+      } catch (error) {
+        console.error('Error during shutdown:', error);
+        resolve();
+        process.exit(1);
+      }
+    });
+  });
 };
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));

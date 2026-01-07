@@ -138,6 +138,7 @@ model Student {
   skills               StudentSkill[]
   achievements         StudentAchievement[]
   evaluations          StudentEvaluation[]
+  timeTrackingSessions TimeTrackingSession[]
 
   @@index([email])
   @@index([domainId])
@@ -628,6 +629,52 @@ model PlaylistAccess {
   @@index([studentId, playlistId])
   @@index([openedAt])
   @@map("playlist_access")
+}
+
+model TimeTrackingSession {
+  id                  Int                  @id @default(autoincrement())
+  studentId           Int                  @map("student_id")
+  startTime           DateTime             @map("start_time")
+  finishTime          DateTime?            @map("finish_time")
+  totalMinutes        Int?                 @map("total_minutes")
+  pausedMinutes       Int                  @default(0) @map("paused_minutes")
+  status              TimeTrackingStatus   @default(ACTIVE)
+  lastPausedAt        DateTime?            @map("last_paused_at")
+  pauseCount          Int                  @default(0) @map("pause_count")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  student             Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  attendanceQuestions AttendanceQuestion[]
+
+  @@index([studentId])
+  @@index([status])
+  @@index([startTime])
+  @@index([studentId, status])
+  @@index([studentId, startTime])
+  @@map("time_tracking_sessions")
+}
+
+model AttendanceQuestion {
+  id                  Int                 @id @default(autoincrement())
+  sessionId           Int                 @map("session_id")
+  questionText        String              @map("question_text") @db.Text
+  correctAnswer       String              @map("correct_answer") @db.VarChar(255)
+  studentAnswer       String?             @map("student_answer") @db.VarChar(255)
+  isCorrect           Boolean?            @map("is_correct")
+  askedAt             DateTime            @map("asked_at")
+  answeredAt          DateTime?           @map("answered_at")
+  timeTrackingSession TimeTrackingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([askedAt])
+  @@map("attendance_questions")
+}
+
+enum TimeTrackingStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
 }
 
 enum QuestionPaperStatus {

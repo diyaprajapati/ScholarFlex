@@ -1,9 +1,9 @@
 // API service for making HTTP requests to the backend
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.105.149.164:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.105.149.164:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sfapi.techelecon.in/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 /**
  * Get JWT token from localStorage
@@ -1249,6 +1249,91 @@ export const api = {
       return apiRequest('/student/profile/resume', {
         method: 'POST',
         body: formData,
+      });
+    },
+  },
+
+  // Time Tracking endpoints
+  timeTracking: {
+    start: async () => {
+      return apiRequest('/student/time-tracking/start', {
+        method: 'POST',
+      });
+    },
+
+    finish: async () => {
+      return apiRequest('/student/time-tracking/finish', {
+        method: 'POST',
+      });
+    },
+
+    getActive: async () => {
+      return apiRequest('/student/time-tracking/active', {
+        method: 'GET',
+      });
+    },
+
+    askQuestion: async () => {
+      return apiRequest('/student/time-tracking/ask-question', {
+        method: 'POST',
+      });
+    },
+
+    answerQuestion: async (questionId, answer) => {
+      return apiRequest('/student/time-tracking/answer-question', {
+        method: 'POST',
+        body: JSON.stringify({ questionId, answer }),
+      });
+    },
+
+    pause: async () => {
+      return apiRequest('/student/time-tracking/pause', {
+        method: 'POST',
+      });
+    },
+
+    resume: async () => {
+      return apiRequest('/student/time-tracking/resume', {
+        method: 'POST',
+      });
+    },
+
+    getToday: async () => {
+      return apiRequest('/student/time-tracking/today', {
+        method: 'GET',
+      });
+    },
+  },
+
+  // Admin Time Tracking endpoints
+  adminTimeTracking: {
+    getStudentsHours: async (date, studentId) => {
+      const queryParams = new URLSearchParams();
+      if (date) queryParams.append('date', date);
+      if (studentId) queryParams.append('studentId', studentId);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString 
+        ? `/admin/time-tracking/students?${queryString}` 
+        : '/admin/time-tracking/students';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+    getDayWiseStudentsHours: async (studentId, startDate, endDate) => {
+      const queryParams = new URLSearchParams();
+      if (studentId) queryParams.append('studentId', studentId);
+      if (startDate) queryParams.append('startDate', startDate);
+      if (endDate) queryParams.append('endDate', endDate);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString 
+        ? `/admin/time-tracking/students/day-wise?${queryString}` 
+        : '/admin/time-tracking/students/day-wise';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
       });
     },
   },
