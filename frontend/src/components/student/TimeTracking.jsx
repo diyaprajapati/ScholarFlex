@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Square, Pause, Clock, AlertCircle, X } from 'lucide-react';
 import api from '../../services/api';
-import { 
-  registerServiceWorker, 
-  requestNotificationPermission, 
-  showBackgroundNotification 
+import {
+  registerServiceWorker,
+  requestNotificationPermission,
+  showBackgroundNotification
 } from '../../utils/notificationService';
 
 const TimeTracking = () => {
@@ -18,7 +18,7 @@ const TimeTracking = () => {
   const [nextQuestionTime, setNextQuestionTime] = useState(null);
   const [todayHours, setTodayHours] = useState(null);
   const [loadingToday, setLoadingToday] = useState(false);
-  
+
   const intervalRef = useRef(null);
   const questionIntervalRef = useRef(null);
   const timeUpdateRef = useRef(null);
@@ -63,7 +63,7 @@ const TimeTracking = () => {
         const questionTime = new Date(questionData.askedAt);
         const now = new Date();
         const minutesSinceAsked = Math.floor((now - questionTime) / (1000 * 60));
-        
+
         // If question was asked less than 30 minutes ago, show it
         if (minutesSinceAsked < 30) {
           setCurrentQuestion(questionData);
@@ -86,7 +86,7 @@ const TimeTracking = () => {
   useEffect(() => {
     // Register service worker (but don't request permission yet)
     registerServiceWorker();
-    
+
     // Listen for Service Worker messages (for notification clicks)
     if ('serviceWorker' in navigator) {
       const handleServiceWorkerMessage = (event) => {
@@ -95,18 +95,18 @@ const TimeTracking = () => {
           checkForPendingQuestion();
         }
       };
-      
+
       navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-      
+
       // Also listen for when service worker becomes ready
       navigator.serviceWorker.ready.then((registration) => {
         registration.addEventListener('message', handleServiceWorkerMessage);
       });
     }
-    
+
     loadActiveSession();
     loadTodayHours();
-    
+
     // Check for pending questions when tab becomes visible
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -114,16 +114,16 @@ const TimeTracking = () => {
         checkForPendingQuestion();
       }
     };
-    
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     // Also check periodically for pending questions (in case tab was closed)
     const pendingCheckInterval = setInterval(() => {
       if (!document.hidden) {
         checkForPendingQuestion();
       }
     }, 30000); // Check every 30 seconds
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(pendingCheckInterval);
@@ -141,7 +141,7 @@ const TimeTracking = () => {
         const now = new Date();
         const elapsed = Math.floor((now - startTime) / 1000);
         setElapsedTime(elapsed);
-        
+
         // Only start tracking if session is active (not paused)
         if (response.session.status === 'ACTIVE') {
           // Calculate next question time (every 10 minutes)
@@ -151,11 +151,11 @@ const TimeTracking = () => {
           const minutesSinceLastQuestion = Math.floor((now - lastQuestionTime) / (1000 * 60));
           const minutesUntilNext = 10 - (minutesSinceLastQuestion % 10);
           setNextQuestionTime(minutesUntilNext);
-          
+
           startTimeTracking();
         }
       }
-      
+
       // Also load today's hours
       loadTodayHours();
     } catch (error) {
@@ -170,9 +170,14 @@ const TimeTracking = () => {
     if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
 
     // Update elapsed time every second (always, regardless of tab focus)
+    // Update elapsed time by calculating difference from start time
+    // This prevents drift when the tab is inactive/throttled
     timeUpdateRef.current = setInterval(() => {
       if (sessionRef.current && sessionRef.current.status === 'ACTIVE') {
-        setElapsedTime((prev) => prev + 1);
+        const startTime = new Date(sessionRef.current.startTime);
+        const now = new Date();
+        const elapsed = Math.floor((now - startTime) / 1000);
+        setElapsedTime(elapsed);
       }
     }, 1000);
 
@@ -224,31 +229,48 @@ const TimeTracking = () => {
           ...response.question,
           askedAt: new Date().toISOString(),
         };
-        
+
         setCurrentQuestion(questionData);
         setShowQuestion(true);
         setAnswer('');
         setQuestionError('');
-        
+
         // Store question in localStorage so it persists even if tab is closed
         localStorage.setItem('pendingAttendanceQuestion', JSON.stringify(questionData));
-        
+
         // Show background notification with generic message (works even when tab/window is closed)
         // Pass callback to show modal when notification is clicked
         console.log('Attempting to show notification...');
-        const notificationShown = await showBackgroundNotification(() => {
-          // This callback will be called when notification is clicked
-          setShowQuestion(true);
-          setCurrentQuestion(questionData);
-          window.focus();
-        });
-        console.log('Notification result:', notificationShown);
-        
+        try {
+          const notificationShown = await showBackgroundNotification(() => {
+            // This callback will be called when notification is clicked
+            setShowQuestion(true);
+            setCurrentQuestion(questionData);
+            window.focus();
+          });
+          console.log('Notification result:', notificationShown);
+
+          // If notification failed, try again after ensuring Service Worker is ready
+          if (!notificationShown && 'serviceWorker' in navigator) {
+            console.log('Retrying notification after Service Worker ready...');
+            const registration = await navigator.serviceWorker.ready;
+            setTimeout(async () => {
+              await showBackgroundNotification(() => {
+                setShowQuestion(true);
+                setCurrentQuestion(questionData);
+                window.focus();
+              });
+            }, 500);
+          }
+        } catch (error) {
+          console.error('Error showing notification:', error);
+        }
+
         // Focus the window to bring attention (if tab is open)
         if (!document.hidden) {
           window.focus();
         }
-        
+
         // Set timeout: if no answer within 2 minutes, stop the session automatically
         if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
         questionTimeoutRef.current = setTimeout(async () => {
@@ -302,19 +324,25 @@ const TimeTracking = () => {
   const handleStart = async () => {
     try {
       setLoading(true);
-      
+
       // Request notification permission when Start is clicked
       const hasPermission = await requestNotificationPermission();
       if (!hasPermission) {
         alert('Please allow notifications to receive attendance check reminders.');
         // Continue anyway - they can still track time
       }
-      
+
       const response = await api.timeTracking.start();
       if (response.success) {
         setSession(response.session);
         sessionRef.current = response.session;
-        setElapsedTime(0);
+
+        // Calculate initial elapsed time based on server response
+        const startTime = new Date(response.session.startTime);
+        const now = new Date();
+        const elapsed = Math.floor((now - startTime) / 1000);
+        setElapsedTime(elapsed);
+
         setNextQuestionTime(10);
         startTimeTracking();
       }
@@ -405,17 +433,17 @@ const TimeTracking = () => {
         // Clear intervals
         if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
         if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
-        
+
         setSession(null);
         sessionRef.current = null;
         setElapsedTime(0);
         setShowQuestion(false);
         setCurrentQuestion(null);
         setNextQuestionTime(null);
-        
+
         // Reload today's hours
         loadTodayHours();
-        
+
         const totalMinutes = response.session.totalMinutes || 0;
         alert(`Session stopped! Total time: ${formatTimeReadable(totalMinutes * 60)}`);
       }
@@ -430,7 +458,7 @@ const TimeTracking = () => {
   // Handle answer submission
   const handleAnswerSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!answer.trim()) {
       setQuestionError('Please enter an answer');
       return;
@@ -440,13 +468,13 @@ const TimeTracking = () => {
       setLoading(true);
       setQuestionError('');
       const response = await api.timeTracking.answerQuestion(currentQuestion.id, answer.trim());
-      
+
       if (response.success) {
         const isCorrect = response.question.isCorrect;
         setShowQuestion(false);
         setCurrentQuestion(null);
         setAnswer('');
-        
+
         // Update session state with new question
         setSession((prevSession) => {
           if (!prevSession) return prevSession;
@@ -460,19 +488,19 @@ const TimeTracking = () => {
           sessionRef.current = updatedSession;
           return updatedSession;
         });
-        
+
         // Clear timeout
         if (questionTimeoutRef.current) {
           clearTimeout(questionTimeoutRef.current);
           questionTimeoutRef.current = null;
         }
-        
+
         // Remove pending question from localStorage
         localStorage.removeItem('pendingAttendanceQuestion');
-        
+
         // Reset next question timer
         setNextQuestionTime(10);
-        
+
         if (isCorrect) {
           // Show brief success message
           setTimeout(() => {
@@ -498,7 +526,7 @@ const TimeTracking = () => {
       if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
     };
   }, []);
-  
+
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
@@ -515,9 +543,8 @@ const TimeTracking = () => {
                   ⏸️ Paused
                 </span>
               )}
-              <div className={`text-2xl sm:text-3xl font-bold ${
-                session.status === 'PAUSED' ? 'text-yellow-600' : 'text-green-600'
-              }`}>
+              <div className={`text-2xl sm:text-3xl font-bold ${session.status === 'PAUSED' ? 'text-yellow-600' : 'text-green-600'
+                }`}>
                 {formatTime(elapsedTime)}
               </div>
             </div>
@@ -595,7 +622,7 @@ const TimeTracking = () => {
               {loading ? 'Stopping...' : 'Stop'}
             </button>
           </div>
-          
+
           <div className="text-center text-sm text-gray-600">
             {session.status === 'PAUSED' ? (
               <span className="text-yellow-600 font-medium">⏸️ Session Paused</span>
@@ -626,11 +653,11 @@ const TimeTracking = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <p className="text-gray-600 mb-4 text-sm">
               Just verifying you're still here! 😊
             </p>
-            
+
             <div className="mb-4 bg-blue-50 p-4 rounded-lg">
               <p className="font-medium text-gray-900 text-lg">
                 {currentQuestion.questionText}
@@ -655,11 +682,11 @@ const TimeTracking = () => {
                   }
                 }}
               />
-              
+
               {questionError && (
                 <p className="text-red-600 text-sm mb-2">{questionError}</p>
               )}
-              
+
               <div className="flex gap-2">
                 <button
                   type="submit"
@@ -670,7 +697,7 @@ const TimeTracking = () => {
                 </button>
               </div>
             </form>
-            
+
             <p className="text-xs text-gray-500 mt-3 text-center">
               💡 Tip: You can press Enter to submit
             </p>

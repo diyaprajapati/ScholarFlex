@@ -308,6 +308,16 @@ const StudentAnalyticsPage = () => {
                             <div className="text-xs text-gray-500">
                               {student.timeTracking?.totalDays || 0} days
                             </div>
+                            {student.timeTracking?.dailyTargetHours && (
+                              <div className="text-xs mt-1">
+                                <span className={`font-semibold ${
+                                  student.timeTracking.metTarget ? 'text-green-600' : 'text-orange-600'
+                                }`}>
+                                  {student.timeTracking.metTarget ? '✓' : '○'} 
+                                  {student.timeTracking.targetProgress}% of {student.timeTracking.dailyTargetHours}h
+                                </span>
+                              </div>
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white group-hover:bg-gray-50 z-10 border-l border-gray-200">
                             <button
@@ -427,6 +437,30 @@ const StudentAnalyticsPage = () => {
                   <div className="text-xs text-purple-600 mt-1">
                     {selectedStudent.timeTracking?.totalDays || 0} days tracked
                   </div>
+                  {selectedStudent.timeTracking?.dailyTargetHours && (
+                    <div className="text-xs mt-2 pt-2 border-t border-purple-200">
+                      <div className="flex items-center justify-between mb-1">
+                        <span>Daily Target:</span>
+                        <span className="font-semibold">{selectedStudent.timeTracking.dailyTargetHours}h</span>
+                      </div>
+                      <div className="mt-1">
+                        <div className="w-full bg-purple-200 rounded-full h-1.5">
+                          <div
+                            className={`h-1.5 rounded-full ${
+                              selectedStudent.timeTracking.metTarget ? 'bg-green-600' : 'bg-orange-500'
+                            }`}
+                            style={{
+                              width: `${Math.min(parseFloat(selectedStudent.timeTracking.targetProgress || 0), 100)}%`,
+                            }}
+                          ></div>
+                        </div>
+                        <div className="text-xs mt-1 text-center">
+                          {selectedStudent.timeTracking.targetProgress}% 
+                          {selectedStudent.timeTracking.metTarget ? ' ✓ Target Met' : ' - Target Not Met'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
                   <div className="text-sm text-orange-600 mb-1">Active Days</div>
@@ -538,6 +572,9 @@ const StudentAnalyticsPage = () => {
                         if (existing) {
                           existing.timeTrackingMinutes = day.totalMinutes;
                           existing.timeTrackingHours = parseFloat(day.totalHours);
+                          existing.dailyTargetHours = day.dailyTargetHours || 7;
+                          existing.targetProgress = day.targetProgress;
+                          existing.metTarget = day.metTarget;
                         } else {
                           dateMap.set(day.date, {
                             date: day.date,
@@ -545,6 +582,9 @@ const StudentAnalyticsPage = () => {
                             videoHours: 0,
                             timeTrackingMinutes: day.totalMinutes,
                             timeTrackingHours: parseFloat(day.totalHours),
+                            dailyTargetHours: day.dailyTargetHours || 7,
+                            targetProgress: day.targetProgress,
+                            metTarget: day.metTarget,
                           });
                         }
                       });
@@ -583,6 +623,13 @@ const StudentAnalyticsPage = () => {
                                     <span className="text-sm font-bold text-purple-600">
                                       {day.timeTrackingHours.toFixed(2)}h
                                     </span>
+                                    {day.dailyTargetHours && (
+                                      <span className={`text-xs font-semibold ${
+                                        day.metTarget ? 'text-green-600' : 'text-orange-600'
+                                      }`}>
+                                        ({day.metTarget ? '✓' : '○'} {day.targetProgress}% of {day.dailyTargetHours}h)
+                                      </span>
+                                    )}
                                   </div>
                                 )}
                                 {day.videoSeconds === 0 && day.timeTrackingMinutes === 0 && (
@@ -613,13 +660,29 @@ const StudentAnalyticsPage = () => {
                                 <div>
                                   <div className="flex items-center justify-between mb-1">
                                     <span className="text-xs text-gray-600">Time Tracked</span>
-                                    <span className="text-xs text-gray-600">{day.timeTrackingHours.toFixed(2)}h</span>
+                                    <span className="text-xs text-gray-600">
+                                      {day.timeTrackingHours.toFixed(2)}h
+                                      {day.dailyTargetHours && (
+                                        <span className={`ml-1 font-semibold ${
+                                          day.metTarget ? 'text-green-600' : 'text-orange-600'
+                                        }`}>
+                                          ({day.metTarget ? '✓' : '○'} {day.targetProgress}% of {day.dailyTargetHours}h)
+                                        </span>
+                                      )}
+                                    </span>
                                   </div>
                                   <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
-                                      className="bg-purple-600 h-2 rounded-full transition-all"
+                                      className={`h-2 rounded-full transition-all ${
+                                        day.metTarget ? 'bg-green-600' : 'bg-purple-600'
+                                      }`}
                                       style={{
-                                        width: `${Math.min((day.timeTrackingHours / 8) * 100, 100)}%`,
+                                        width: `${Math.min(
+                                          day.dailyTargetHours 
+                                            ? (day.timeTrackingHours / day.dailyTargetHours) * 100 
+                                            : (day.timeTrackingHours / 8) * 100, 
+                                          100
+                                        )}%`,
                                       }}
                                     ></div>
                                   </div>

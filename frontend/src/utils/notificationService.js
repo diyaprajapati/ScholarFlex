@@ -54,9 +54,9 @@ export const showBackgroundNotification = async (onClickCallback) => {
     setNotificationClickHandler(onClickCallback);
   }
 
-  // Try Service Worker first (works even when tab is closed)
+  // Try Service Worker first (works even when tab is closed or not focused)
   try {
-    // Ensure Service Worker is registered and ready
+    // Get or wait for Service Worker registration
     let registration = serviceWorkerRegistration;
     if (!registration && 'serviceWorker' in navigator) {
       // Wait for Service Worker to be ready
@@ -66,30 +66,24 @@ export const showBackgroundNotification = async (onClickCallback) => {
     }
 
     if (registration) {
-      // Wait for Service Worker to be active (it might be installing/activating)
-      let activeWorker = registration.active;
-      
-      if (!activeWorker) {
-        // Wait a bit for Service Worker to activate
-        console.log('Waiting for Service Worker to activate...');
-        await new Promise(resolve => setTimeout(resolve, 500));
-        activeWorker = registration.active;
-      }
-      
-      if (activeWorker) {
-        // Send message to Service Worker to show notification
-        console.log('Sending notification message to Service Worker...');
-        activeWorker.postMessage({
-          type: 'SHOW_NOTIFICATION',
-          title: 'Quick Check!',
-          body: 'Answer this question to continue',
-          tag: 'attendance-question'
-        });
-        console.log('Notification message sent to Service Worker');
-        return true;
-      } else {
-        console.warn('Service Worker is not active yet');
-      }
+      // Use registration.showNotification directly - this works even when tab is not focused
+      console.log('Showing notification via Service Worker registration...');
+      await registration.showNotification('Quick Check!', {
+        body: 'Answer this question to continue',
+        tag: 'attendance-question',
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
+        actions: [
+          {
+            action: 'open',
+            title: 'Open & Answer'
+          }
+        ]
+      });
+      console.log('Service Worker notification shown successfully');
+      return true;
     } else {
       console.warn('Service Worker registration not available');
     }
@@ -98,7 +92,7 @@ export const showBackgroundNotification = async (onClickCallback) => {
     // Fall through to regular notification
   }
   
-  // Fallback to regular notification (works when tab is open but not focused)
+  // Fallback to regular notification (only works when tab is focused)
   if ('Notification' in window && Notification.permission === 'granted') {
     try {
       const notification = new Notification('Quick Check!', {
@@ -120,7 +114,7 @@ export const showBackgroundNotification = async (onClickCallback) => {
         notification.close();
       };
       
-      console.log('Regular notification shown');
+      console.log('Regular notification shown (fallback)');
       return true;
     } catch (error) {
       console.error('Notification failed:', error);

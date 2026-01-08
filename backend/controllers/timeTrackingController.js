@@ -755,13 +755,26 @@ const getAllStudentsWorkingHours = async (req, res) => {
       studentHours[sid].totalMinutes += activeMinutes;
     });
 
-    const result = Object.values(studentHours).map((data) => ({
-      student: data.student,
-      totalMinutes: data.totalMinutes,
-      totalHours: (data.totalMinutes / 60).toFixed(2),
-      sessionsCount: data.sessionsCount,
-      sessions: data.sessions,
-    }));
+    const DAILY_TARGET_HOURS = 7;
+    const DAILY_TARGET_MINUTES = DAILY_TARGET_HOURS * 60;
+
+    const result = Object.values(studentHours).map((data) => {
+      const totalHours = parseFloat((data.totalMinutes / 60).toFixed(2));
+      const targetProgress = Math.min((data.totalMinutes / DAILY_TARGET_MINUTES) * 100, 100);
+      const metTarget = data.totalMinutes >= DAILY_TARGET_MINUTES;
+      
+      return {
+        student: data.student,
+        totalMinutes: data.totalMinutes,
+        totalHours: totalHours.toFixed(2),
+        sessionsCount: data.sessionsCount,
+        sessions: data.sessions,
+        dailyTargetHours: DAILY_TARGET_HOURS,
+        targetProgress: targetProgress.toFixed(1),
+        metTarget: metTarget,
+        remainingMinutes: Math.max(0, DAILY_TARGET_MINUTES - data.totalMinutes),
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -922,23 +935,44 @@ const getDayWiseStudentsWorkingHours = async (req, res) => {
       }
     });
 
+    const DAILY_TARGET_HOURS = 7;
+    const DAILY_TARGET_MINUTES = DAILY_TARGET_HOURS * 60;
+
     // Convert to array format
     const result = Object.values(studentDayWiseData).map((data) => {
       const dailyArray = Object.values(data.dailyData)
         .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .map((day) => ({
-          ...day,
-          totalHours: (day.totalMinutes / 60).toFixed(2),
-          seconds: day.totalMinutes * 60, // For consistency with video analytics format
-        }));
+        .map((day) => {
+          const dayHours = parseFloat((day.totalMinutes / 60).toFixed(2));
+          const targetProgress = Math.min((day.totalMinutes / DAILY_TARGET_MINUTES) * 100, 100);
+          const metTarget = day.totalMinutes >= DAILY_TARGET_MINUTES;
+          
+          return {
+            ...day,
+            totalHours: dayHours.toFixed(2),
+            seconds: day.totalMinutes * 60, // For consistency with video analytics format
+            dailyTargetHours: DAILY_TARGET_HOURS,
+            targetProgress: targetProgress.toFixed(1),
+            metTarget: metTarget,
+            remainingMinutes: Math.max(0, DAILY_TARGET_MINUTES - day.totalMinutes),
+          };
+        });
+      
+      const totalHours = parseFloat((data.totalMinutes / 60).toFixed(2));
+      const avgDailyMinutes = data.totalDays > 0 ? data.totalMinutes / data.totalDays : 0;
+      const avgTargetProgress = Math.min((avgDailyMinutes / DAILY_TARGET_MINUTES) * 100, 100);
+      const daysMetTarget = dailyArray.filter(day => day.metTarget).length;
       
       return {
         studentId: data.student.id,
         student: data.student,
         totalMinutes: data.totalMinutes,
-        totalHours: (data.totalMinutes / 60).toFixed(2),
+        totalHours: totalHours.toFixed(2),
         totalDays: data.totalDays,
         dailyData: dailyArray,
+        dailyTargetHours: DAILY_TARGET_HOURS,
+        daysMetTarget: daysMetTarget,
+        avgTargetProgress: avgTargetProgress.toFixed(1),
       };
     });
 
