@@ -1,3 +1,4 @@
+export { default as LandingPage } from './LandingPage'
 export { default as LoginPage } from './login/LoginPage'
 export { default as DashboardPage } from './dashboard/DashboardPage'
 export { default as QuestionPapersListPage } from './question-papers/QuestionPapersListPage'

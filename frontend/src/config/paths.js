@@ -5,8 +5,9 @@
 
 export const ROUTES = {
   // Public Routes
-  LOGIN: '/',
-  
+  LANDING: '/',
+  LOGIN: '/login',
+
   // Protected Routes
   DASHBOARD: '/dashboard',
   TEST_ATTEMPTS: '/test-attempts',
@@ -19,7 +20,7 @@ export const ROUTES = {
   INTERNSHIP_STATUS: '/internship-status',
   PROJECT_MANAGEMENT: '/project-management',
   EVALUATION_MANAGEMENT: '/evaluation-management',
-  
+
   // Question Papers Routes
   QUESTION_PAPERS: {
     BASE: '/question-papers',
@@ -28,21 +29,21 @@ export const ROUTES = {
     EDIT: (id) => `/question-papers/edit/${id}`,
     VIEW: (id) => `/question-papers/view/${id}`,
   },
-  
+
   // Interns Routes
   INTERNS: {
     BASE: '/interns',
     ADD: '/interns/add',
     VIEW: '/interns/view',
   },
-  
+
   // Playlist Routes
   PLAYLISTS: {
     BASE: '/playlists',
     MANAGEMENT: '/playlists/management',
     ADD_VIDEOS: '/playlists/add-videos',
   },
-  
+
   // Student Routes
   STUDENT: {
     BASE: '/student',

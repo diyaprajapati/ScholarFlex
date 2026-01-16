@@ -1,8 +1,8 @@
 const { prisma } = require('../config/database');
-const { 
-  calculateInternshipStatus, 
+const {
+  calculateInternshipStatus,
   isInternshipOngoing,
-  getOrUpdateInternshipStatus 
+  getOrUpdateInternshipStatus
 } = require('../utils/internshipStatus');
 const { InternshipStatus } = require('@prisma/client');
 const XLSX = require('xlsx');
@@ -381,15 +381,19 @@ const deleteEvaluation = async (req, res) => {
 const exportEvaluatedStudents = async (req, res) => {
   try {
     const { domainId } = req.query;
-    
+
     // Build where clause for domain filter
     // domainId can be a single value or multiple values (array)
+    // Build where clause for domain filter and date filter
+    // domainId can be a single value or multiple values (array)
     const where = {};
+    const evaluationWhere = {}; // Additional filter on the included evaluations
+
     if (domainId) {
       // Handle both single domainId and multiple domainIds
       const domainIds = Array.isArray(domainId) ? domainId : [domainId];
       const parsedDomainIds = domainIds.map(id => parseInt(id)).filter(id => !isNaN(id));
-      
+
       if (parsedDomainIds.length > 0) {
         where.student = {
           domainId: {
@@ -398,10 +402,28 @@ const exportEvaluatedStudents = async (req, res) => {
         };
       }
     }
-    
-    // Get all students who have evaluations
+
+    // Add date range filter
+    const { startDate, endDate } = req.query;
+    if (startDate || endDate) {
+      evaluationWhere.createdAt = {};
+
+      if (startDate) {
+        evaluationWhere.createdAt.gte = new Date(`${startDate}T00:00:00`);
+      }
+
+      if (endDate) {
+        evaluationWhere.createdAt.lte = new Date(`${endDate}T23:59:59.999`);
+      }
+    }
+
+    // Get all students who have evaluations matching the criteria
+    // improved query to filter evaluations directly
     const evaluations = await prisma.studentEvaluation.findMany({
-      where,
+      where: {
+        ...where,
+        ...evaluationWhere
+      },
       include: {
         student: {
           select: {
@@ -445,22 +467,22 @@ const exportEvaluatedStudents = async (req, res) => {
 
     // Group evaluations by student
     const studentsMap = new Map();
-    
+
     evaluations.forEach(evaluation => {
       const studentId = evaluation.studentId;
-      
+
       if (!studentsMap.has(studentId)) {
         // Format project details
         const projectDetails = evaluation.student.projects && evaluation.student.projects.length > 0
           ? evaluation.student.projects.map((project, index) => {
-              const projectInfo = [
-                `Project ${index + 1}: ${project.projectTitle || 'N/A'}`,
-                `Description: ${project.projectDescription || 'N/A'}`,
-                `Deadline: ${project.deadline ? new Date(project.deadline).toLocaleDateString('en-US') : 'N/A'}`,
-                `Created: ${new Date(project.createdAt).toLocaleDateString('en-US')}`,
-              ].join('\n');
-              return projectInfo;
-            }).join('\n\n')
+            const projectInfo = [
+              `Project ${index + 1}: ${project.projectTitle || 'N/A'}`,
+              `Description: ${project.projectDescription || 'N/A'}`,
+              `Deadline: ${project.deadline ? new Date(project.deadline).toLocaleDateString('en-US') : 'N/A'}`,
+              `Created: ${new Date(project.createdAt).toLocaleDateString('en-US')}`,
+            ].join('\n');
+            return projectInfo;
+          }).join('\n\n')
           : 'No projects assigned';
 
         studentsMap.set(studentId, {
@@ -468,7 +490,7 @@ const exportEvaluatedStudents = async (req, res) => {
           phoneNumber: evaluation.student.phone || 'N/A',
           emailId: evaluation.student.email || 'N/A',
           domain: evaluation.student.domain?.domainName || 'N/A',
-          startDate: evaluation.student.internshipStartDate 
+          startDate: evaluation.student.internshipStartDate
             ? new Date(evaluation.student.internshipStartDate).toLocaleDateString('en-US')
             : 'N/A',
           endDate: evaluation.student.internshipEndDate
@@ -478,9 +500,9 @@ const exportEvaluatedStudents = async (req, res) => {
           evaluations: [],
         });
       }
-      
+
       const student = studentsMap.get(studentId);
-      
+
       // Add evaluation data
       const evalData = evaluation.evaluationData || {};
       student.evaluations.push({
@@ -507,7 +529,7 @@ const exportEvaluatedStudents = async (req, res) => {
 
     // Convert to Excel format - one row per student with week columns
     const excelData = [];
-    
+
     studentsMap.forEach((studentData, studentId) => {
       const row = {
         'Student Name': studentData.studentName,
@@ -555,8 +577,8 @@ const exportEvaluatedStudents = async (req, res) => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Evaluated Students');
 
     // Generate Excel buffer
-    const excelBuffer = XLSX.write(workbook, { 
-      type: 'buffer', 
+    const excelBuffer = XLSX.write(workbook, {
+      type: 'buffer',
       bookType: 'xlsx',
       cellStyles: true,
     });

@@ -54,6 +54,54 @@ const TimeTracking = () => {
     currentQuestionRef.current = currentQuestion;
   }, [currentQuestion]);
 
+  // Helper to clear session state locally
+  const stopSessionLocally = () => {
+    // Clear intervals
+    if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
+    if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
+    if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
+
+    // Clear question and session state
+    setSession(null);
+    sessionRef.current = null;
+    setElapsedTime(0);
+    setShowQuestion(false);
+    showQuestionRef.current = false;
+    setCurrentQuestion(null);
+    currentQuestionRef.current = null;
+    setNextQuestionTime(null);
+    localStorage.removeItem('pendingAttendanceQuestion');
+
+    // Reload today's hours
+    loadTodayHours();
+  };
+
+  // Handle auto-stop session when question is not answered
+  const handleAutoStopSession = async () => {
+    console.log('Auto-stopping session due to unanswered question...');
+
+    // 1. Attempt to show notification (non-blocking)
+    try {
+      showBackgroundNotification(() => {
+        window.focus();
+      }).catch(err => console.error('Background notification failed:', err));
+    } catch (error) {
+      console.error('Error initiating notification:', error);
+    }
+
+    // 2. Stop the session on the backend
+    try {
+      const response = await api.timeTracking.finish();
+      if (response.success) {
+        stopSessionLocally();
+      }
+    } catch (error) {
+      console.error('Error auto-stopping session API:', error);
+      // Fallback: stop locally anyway so the user sees the timer stop
+      stopSessionLocally();
+    }
+  };
+
   // Check for pending questions stored in localStorage
   const checkForPendingQuestion = async () => {
     try {
@@ -62,19 +110,26 @@ const TimeTracking = () => {
         const questionData = JSON.parse(pendingQuestion);
         const questionTime = new Date(questionData.askedAt);
         const now = new Date();
-        const minutesSinceAsked = Math.floor((now - questionTime) / (1000 * 60));
+        const elapsedMs = now - questionTime;
+        const TIMEOUT_MS = 120000; // 2 minutes
 
-        // If question was asked less than 30 minutes ago, show it
-        if (minutesSinceAsked < 30) {
+        // If question was asked less than 2 minutes ago (plus minimal grace), show it and resume timer
+        if (elapsedMs < TIMEOUT_MS) {
           setCurrentQuestion(questionData);
           setShowQuestion(true);
           setAnswer('');
           setQuestionError('');
+
+          // Restore timeout for remaining time
+          const remainingTime = TIMEOUT_MS - elapsedMs;
+          if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
+          questionTimeoutRef.current = setTimeout(handleAutoStopSession, remainingTime);
+
           // Focus window to bring attention
           window.focus();
         } else {
-          // Question is too old, remove it
-          localStorage.removeItem('pendingAttendanceQuestion');
+          // Time expired while away/refreshed - stop session
+          handleAutoStopSession();
         }
       }
     } catch (error) {
@@ -104,7 +159,11 @@ const TimeTracking = () => {
       });
     }
 
-    loadActiveSession();
+
+    loadActiveSession().then(() => {
+      // Check for pending questions after session load to ensure correct state ordering
+      checkForPendingQuestion();
+    });
     loadTodayHours();
 
     // Check for pending questions when tab becomes visible
@@ -199,7 +258,8 @@ const TimeTracking = () => {
   // Check if it's time to ask a question (every 10 minutes)
   const checkForQuestion = async () => {
     const currentSession = sessionRef.current;
-    if (!currentSession || showQuestion || currentSession.status !== 'ACTIVE') return;
+    // Use ref for showQuestion to verify current state inside interval closure
+    if (!currentSession || showQuestionRef.current || currentSession.status !== 'ACTIVE') return;
 
     const startTime = new Date(currentSession.startTime);
     const now = new Date();
@@ -273,44 +333,7 @@ const TimeTracking = () => {
 
         // Set timeout: if no answer within 2 minutes, stop the session automatically
         if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
-        questionTimeoutRef.current = setTimeout(async () => {
-          try {
-            // Use refs to get the latest values
-            const hasUnansweredQuestion = showQuestionRef.current && currentQuestionRef.current;
-            const activeSession = sessionRef.current;
-
-            if (hasUnansweredQuestion && activeSession) {
-              // Notify the user that the session was stopped due to no response
-              await showBackgroundNotification(() => {
-                window.focus();
-              });
-
-              // Stop the session without asking for confirmation
-              const response = await api.timeTracking.finish();
-              if (response.success) {
-                // Clear intervals
-                if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
-                if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
-
-                // Clear question and session state
-                setSession(null);
-                sessionRef.current = null;
-                setElapsedTime(0);
-                setShowQuestion(false);
-                showQuestionRef.current = false;
-                setCurrentQuestion(null);
-                currentQuestionRef.current = null;
-                setNextQuestionTime(null);
-                localStorage.removeItem('pendingAttendanceQuestion');
-
-                // Reload today's hours
-                loadTodayHours();
-              }
-            }
-          } catch (error) {
-            console.error('Error auto-stopping session after unanswered question:', error);
-          }
-        }, 120000); // 2 minutes
+        questionTimeoutRef.current = setTimeout(handleAutoStopSession, 120000); // 2 minutes
       }
     } catch (error) {
       console.error('Error asking question:', error);
@@ -430,20 +453,7 @@ const TimeTracking = () => {
       setLoading(true);
       const response = await api.timeTracking.finish();
       if (response.success) {
-        // Clear intervals
-        if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
-        if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
-
-        setSession(null);
-        sessionRef.current = null;
-        setElapsedTime(0);
-        setShowQuestion(false);
-        setCurrentQuestion(null);
-        setNextQuestionTime(null);
-
-        // Reload today's hours
-        loadTodayHours();
-
+        stopSessionLocally();
         const totalMinutes = response.session.totalMinutes || 0;
         alert(`Session stopped! Total time: ${formatTimeReadable(totalMinutes * 60)}`);
       }

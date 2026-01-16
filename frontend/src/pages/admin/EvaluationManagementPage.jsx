@@ -19,6 +19,8 @@ const EvaluationManagementPage = () => {
   const [statusFilter, setStatusFilter] = useState(''); // '', 'NOT_STARTED', 'ONGOING', 'COMPLETED'
   const [evaluationFilter, setEvaluationFilter] = useState([]); // Array of week numbers as strings or 'never_done'
   const [domainFilter, setDomainFilter] = useState([]); // Array of Domain IDs for multi-select
+  const [exportStartDate, setExportStartDate] = useState('');
+  const [exportEndDate, setExportEndDate] = useState('');
   const [domains, setDomains] = useState([]); // List of all domains
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
@@ -37,23 +39,23 @@ const EvaluationManagementPage = () => {
   // Helper function to get image URL
   const getImageUrl = (url) => {
     if (!url) return null;
-    
+
     // If it's already a full URL (http/https), use it directly
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    
+
     // If it's a Google Drive URL
     if (url.includes('thumbnail?id=')) return url;
-    
+
     const openMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
     const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
     const fileId = openMatch ? openMatch[1] : (fileMatch ? fileMatch[1] : null);
-    
+
     if (fileId) {
       return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
     }
-    
+
     // If it's a relative path (uploaded file), construct full URL
     // Handle both /uploads/ prefix and /scholarflex/ or /students/ paths (which need /uploads/ prepended)
     let filePath = url;
@@ -62,7 +64,7 @@ const EvaluationManagementPage = () => {
     } else if (!url.startsWith('/uploads/')) {
       filePath = `/uploads${url}`;
     }
-    
+
     const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
     return baseUrl.replace('/api', '') + filePath;
   };
@@ -194,7 +196,7 @@ const EvaluationManagementPage = () => {
   const handleQuickAddSubmit = async (studentId, status, e) => {
     e.preventDefault();
     if (submittingForms.has(studentId)) return; // Prevent double submission
-    
+
     if (status !== 'ONGOING') {
       setError('Evaluations can only be created for ONGOING internships');
       return;
@@ -262,7 +264,11 @@ const EvaluationManagementPage = () => {
     try {
       setExporting(true);
       setError('');
-      await api.evaluations.export(domainFilter.length > 0 ? domainFilter : null);
+      await api.evaluations.export(
+        domainFilter.length > 0 ? domainFilter : null,
+        exportStartDate || null,
+        exportEndDate || null
+      );
     } catch (err) {
       console.error('Error exporting to Excel:', err);
       setError(err.message || 'Failed to export evaluations to Excel');
@@ -516,6 +522,52 @@ const EvaluationManagementPage = () => {
                   )}
                 </div>
               </div>
+
+              {/* Date Filter for Export */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wider">
+                  Filter by Evaluation Date
+                </p>
+                <div className="flex flex-wrap gap-4 items-end">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      From Date
+                    </label>
+                    <input
+                      type="date"
+                      value={exportStartDate}
+                      onChange={(e) => setExportStartDate(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      To Date
+                    </label>
+                    <input
+                      type="date"
+                      value={exportEndDate}
+                      onChange={(e) => setExportEndDate(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                  <div className="pb-1 text-xs text-info-600 italic flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    Downloads evaluations submitted in this range
+                  </div>
+                  {(exportStartDate || exportEndDate) && (
+                    <button
+                      onClick={() => {
+                        setExportStartDate('');
+                        setExportEndDate('');
+                      }}
+                      className="pb-1.5 text-xs text-red-600 hover:text-red-800 underline cursor-pointer"
+                    >
+                      Clear Dates
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -584,7 +636,7 @@ const EvaluationManagementPage = () => {
                                     const imageUrl = student.imageUrl;
                                     const imageKey = `eval-${student.id}`;
                                     const hasFailed = failedImages.has(imageKey);
-                                    
+
                                     if (imageUrl && !hasFailed) {
                                       const url = getImageUrl(imageUrl);
                                       console.log('Evaluation page - Student image:', { studentId: student.id, imageUrl, constructedUrl: url });
@@ -654,7 +706,7 @@ const EvaluationManagementPage = () => {
                                 </div>
                               </td>
                             </tr>
-                            
+
                             {/* Quick Add Form Row */}
                             {showQuickAdd && status === 'ONGOING' && (
                               <tr>
@@ -705,11 +757,10 @@ const EvaluationManagementPage = () => {
                                                 className="focus:outline-none"
                                               >
                                                 <Star
-                                                  className={`w-6 h-6 transition-colors ${
-                                                    star <= rating
-                                                      ? 'text-yellow-400 fill-yellow-400'
-                                                      : 'text-gray-300'
-                                                  }`}
+                                                  className={`w-6 h-6 transition-colors ${star <= rating
+                                                    ? 'text-yellow-400 fill-yellow-400'
+                                                    : 'text-gray-300'
+                                                    }`}
                                                 />
                                               </button>
                                             );
@@ -889,11 +940,10 @@ const EvaluationManagementPage = () => {
                             <button
                               key={pageNum}
                               onClick={() => setCurrentPage(pageNum)}
-                              className={`px-3 py-2 border rounded-lg cursor-pointer ${
-                                currentPage === pageNum
-                                  ? 'bg-green-600 text-white border-green-600'
-                                  : 'border-gray-300 hover:bg-gray-50'
-                              }`}
+                              className={`px-3 py-2 border rounded-lg cursor-pointer ${currentPage === pageNum
+                                ? 'bg-green-600 text-white border-green-600'
+                                : 'border-gray-300 hover:bg-gray-50'
+                                }`}
                             >
                               {pageNum}
                             </button>

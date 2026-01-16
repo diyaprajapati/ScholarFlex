@@ -1,7 +1,7 @@
 // API service for making HTTP requests to the backend
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.105.149.164:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.32.82.164:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sfapi.techelecon.in/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -17,10 +17,10 @@ const getToken = () => {
  */
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
-  
+
   // Don't set Content-Type for FormData (let browser set it with boundary)
   const isFormData = options.body instanceof FormData;
-  
+
   const config = {
     ...options,
     headers: {
@@ -32,7 +32,7 @@ const apiRequest = async (endpoint, options = {}) => {
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    
+
     // Handle non-JSON responses
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
@@ -45,12 +45,12 @@ const apiRequest = async (endpoint, options = {}) => {
     if (!response.ok) {
       // Check if this is a 403 error for /auth/me endpoint (non-selected student access denied)
       // This is expected behavior, so we'll suppress logging for it
-      const isAccessDeniedForNonSelected = response.status === 403 && 
-                                           endpoint === '/auth/me' &&
-                                           data.message &&
-                                           data.message.includes('Access denied') &&
-                                           (data.message.includes('not selected') || data.message.includes('evaluated'));
-      
+      const isAccessDeniedForNonSelected = response.status === 403 &&
+        endpoint === '/auth/me' &&
+        data.message &&
+        data.message.includes('Access denied') &&
+        (data.message.includes('not selected') || data.message.includes('evaluated'));
+
       // If there are detailed validation errors, include them in the error message
       if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
         const errorDetails = data.errors
@@ -67,7 +67,7 @@ const apiRequest = async (endpoint, options = {}) => {
           })
           .slice(0, 10) // Limit to first 10 errors
           .join('\n');
-        
+
         const errorMessage = data.message || 'Validation errors';
         const moreErrors = data.errors.length > 10 ? `\n... and ${data.errors.length - 10} more errors.` : '';
         const error = new Error(`${errorMessage}\n\n${errorDetails}${moreErrors}`);
@@ -91,15 +91,15 @@ const apiRequest = async (endpoint, options = {}) => {
   } catch (error) {
     // Check if this is an access denied error that we should suppress
     const errorMessage = error.message || error.toString() || '';
-    const isAccessDeniedForNonSelected = endpoint === '/auth/me' && 
-                                         errorMessage.includes('Access denied') &&
-                                         (errorMessage.includes('not selected') || errorMessage.includes('evaluated'));
-    
+    const isAccessDeniedForNonSelected = endpoint === '/auth/me' &&
+      errorMessage.includes('Access denied') &&
+      (errorMessage.includes('not selected') || errorMessage.includes('evaluated'));
+
     // Mark network errors (fetch failed before getting response)
     if (error.name === 'TypeError' && (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError'))) {
       error.isNetworkError = true;
     }
-    
+
     // Only log if it's not an access denied error for non-selected students
     if (!isAccessDeniedForNonSelected) {
       console.error('API request error:', error);
@@ -146,7 +146,7 @@ export const api = {
     uploadSpreadsheet: async (file) => {
       const formData = new FormData();
       formData.append('file', file);
-      
+
       return apiRequest('/interns/upload', {
         method: 'POST',
         body: formData,
@@ -159,10 +159,10 @@ export const api = {
       if (filters.status_id) queryParams.append('status_id', filters.status_id);
       if (filters.limit) queryParams.append('limit', filters.limit);
       if (filters.offset) queryParams.append('offset', filters.offset);
-      
+
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/interns?${queryString}` : '/interns';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -214,7 +214,7 @@ export const api = {
             const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
             const validOptionsMap = new Map();
             let newIndex = 0;
-            
+
             // Create mapping from old indices to new indices
             (q.options || []).forEach((opt, oldIndex) => {
               if (opt && opt.trim() !== '') {
@@ -222,12 +222,12 @@ export const api = {
                 newIndex++;
               }
             });
-            
+
             // Map correctOptions to new indices
             const validCorrectOptions = (q.correctOptions || [])
               .map(oldIndex => validOptionsMap.get(oldIndex))
               .filter(newIndex => newIndex !== undefined);
-            
+
             question.options = validOptions;
             question.correctOptions = validCorrectOptions;
           }
@@ -262,18 +262,18 @@ export const api = {
               const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
               const validOptionsMap = new Map();
               let newIndex = 0;
-              
+
               (q.options || []).forEach((opt, oldIndex) => {
                 if (opt && opt.trim() !== '') {
                   validOptionsMap.set(oldIndex, newIndex);
                   newIndex++;
                 }
               });
-              
+
               const validCorrectOptions = (q.correctOptions || [])
                 .map(oldIndex => validOptionsMap.get(oldIndex))
                 .filter(newIndex => newIndex !== undefined);
-              
+
               question.options = validOptions;
               question.correctOptions = validCorrectOptions;
             }
@@ -298,10 +298,10 @@ export const api = {
       if (filters.semester) queryParams.append('semester', filters.semester);
       if (filters.limit) queryParams.append('limit', filters.limit);
       if (filters.offset) queryParams.append('offset', filters.offset);
-      
+
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/question-papers?${queryString}` : '/question-papers';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -342,7 +342,7 @@ export const api = {
             const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
             const validOptionsMap = new Map();
             let newIndex = 0;
-            
+
             // Create mapping from old indices to new indices
             (q.options || []).forEach((opt, oldIndex) => {
               if (opt && opt.trim() !== '') {
@@ -350,12 +350,12 @@ export const api = {
                 newIndex++;
               }
             });
-            
+
             // Map correctOptions to new indices
             const validCorrectOptions = (q.correctOptions || [])
               .map(oldIndex => validOptionsMap.get(oldIndex))
               .filter(newIndex => newIndex !== undefined);
-            
+
             question.options = validOptions;
             question.correctOptions = validCorrectOptions;
           }
@@ -390,18 +390,18 @@ export const api = {
               const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
               const validOptionsMap = new Map();
               let newIndex = 0;
-              
+
               (q.options || []).forEach((opt, oldIndex) => {
                 if (opt && opt.trim() !== '') {
                   validOptionsMap.set(oldIndex, newIndex);
                   newIndex++;
                 }
               });
-              
+
               const validCorrectOptions = (q.correctOptions || [])
                 .map(oldIndex => validOptionsMap.get(oldIndex))
                 .filter(newIndex => newIndex !== undefined);
-              
+
               question.options = validOptions;
               question.correctOptions = validCorrectOptions;
             }
@@ -533,7 +533,7 @@ export const api = {
     uploadSpreadsheet: async (file) => {
       const formData = new FormData();
       formData.append('file', file);
-      
+
       return apiRequest('/candidates/upload', {
         method: 'POST',
         body: formData,
@@ -593,9 +593,9 @@ export const api = {
     bulkUpdateSelection: async (candidateIds, isSelected) => {
       return apiRequest('/candidates/bulk-selection', {
         method: 'PUT',
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           candidate_ids: candidateIds,
-          is_selected: isSelected 
+          is_selected: isSelected
         }),
       });
     },
@@ -725,7 +725,7 @@ export const api = {
     upload: async (file) => {
       const formData = new FormData();
       formData.append('nocFile', file);
-      
+
       return apiRequest('/student/noc/upload', {
         method: 'POST',
         body: formData,
@@ -749,10 +749,10 @@ export const api = {
       if (filters.status) queryParams.append('status', filters.status);
       if (filters.page) queryParams.append('page', filters.page);
       if (filters.limit) queryParams.append('limit', filters.limit);
-      
+
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/admin/noc?${queryString}` : '/admin/noc';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -765,12 +765,12 @@ export const api = {
           Authorization: `Bearer ${getToken()}`,
         },
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Failed to download NOC letter');
       }
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       return url;
@@ -779,27 +779,27 @@ export const api = {
     downloadAll: async (status = null) => {
       const queryParams = new URLSearchParams();
       if (status) queryParams.append('status', status);
-      
+
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/admin/noc/download-all?${queryString}` : '/admin/noc/download-all';
-      
+
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${getToken()}`,
         },
       });
-      
+
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: 'Failed to download NOC letters' }));
         throw new Error(error.message || 'Failed to download NOC letters');
       }
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      
+
       // Get filename from Content-Disposition header or use default
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'all_noc_letters.zip';
@@ -809,13 +809,13 @@ export const api = {
           filename = filenameMatch[1];
         }
       }
-      
+
       link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       return { success: true, filename };
     },
 
@@ -846,10 +846,10 @@ export const api = {
       const queryParams = new URLSearchParams();
       if (filters.page) queryParams.append('page', filters.page);
       if (filters.limit) queryParams.append('limit', filters.limit);
-      
+
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/admin/feedback?${queryString}` : '/admin/feedback';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -984,8 +984,8 @@ export const api = {
         params.append('selectedOnly', selectedOnly.toString());
       }
       const queryString = params.toString();
-      const endpoint = queryString 
-        ? `/video-analytics/admin/detailed?${queryString}` 
+      const endpoint = queryString
+        ? `/video-analytics/admin/detailed?${queryString}`
         : '/video-analytics/admin/detailed';
       return apiRequest(endpoint, { method: 'GET' });
     },
@@ -1017,11 +1017,11 @@ export const api = {
         if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
         if (filters.sortOrder) queryParams.append('sortOrder', filters.sortOrder);
         if (filters.search) queryParams.append('search', filters.search);
-        
+
         const params = queryParams.toString();
         if (params) endpoint += `?${params}`;
       }
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -1041,10 +1041,10 @@ export const api = {
     getAll: async (filters = {}) => {
       const queryParams = new URLSearchParams();
       if (filters.studentId) queryParams.append('studentId', filters.studentId);
-      
+
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/admin/projects?${queryString}` : '/admin/projects';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -1061,11 +1061,11 @@ export const api = {
         if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
         if (filters.sortOrder) queryParams.append('sortOrder', filters.sortOrder);
         if (filters.search) queryParams.append('search', filters.search);
-        
+
         const params = queryParams.toString();
         if (params) endpoint += `?${params}`;
       }
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -1123,10 +1123,10 @@ export const api = {
       const queryParams = new URLSearchParams();
       if (filters.studentId) queryParams.append('studentId', filters.studentId);
       if (filters.weekNo) queryParams.append('weekNo', filters.weekNo);
-      
+
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/admin/evaluations?${queryString}` : '/admin/evaluations';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -1157,15 +1157,21 @@ export const api = {
       });
     },
 
-    export: async (domainIds = null) => {
+    export: async (domainIds = null, startDate = null, endDate = null) => {
       const token = getToken();
       const queryParams = new URLSearchParams();
       if (domainIds && Array.isArray(domainIds) && domainIds.length > 0) {
         domainIds.forEach(id => queryParams.append('domainId', id));
       }
+      if (startDate) {
+        queryParams.append('startDate', startDate);
+      }
+      if (endDate) {
+        queryParams.append('endDate', endDate);
+      }
       const queryString = queryParams.toString();
       const endpoint = queryString ? `/admin/evaluations/export?${queryString}` : '/admin/evaluations/export';
-      
+
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'GET',
         headers: {
@@ -1185,12 +1191,12 @@ export const api = {
 
       // Get the blob from response
       const blob = await response.blob();
-      
+
       // Create download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      
+
       // Get filename from Content-Disposition header or use default
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'evaluated_students.xlsx';
@@ -1200,13 +1206,13 @@ export const api = {
           filename = filenameMatch[1];
         }
       }
-      
+
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      
+
       return { success: true };
     },
   },
@@ -1235,7 +1241,7 @@ export const api = {
     uploadProfileImage: async (file) => {
       const formData = new FormData();
       formData.append('profileImage', file);
-      
+
       return apiRequest('/student/profile/image', {
         method: 'POST',
         body: formData,
@@ -1245,7 +1251,7 @@ export const api = {
     uploadResume: async (file) => {
       const formData = new FormData();
       formData.append('resume', file);
-      
+
       return apiRequest('/student/profile/resume', {
         method: 'POST',
         body: formData,
@@ -1311,12 +1317,12 @@ export const api = {
       const queryParams = new URLSearchParams();
       if (date) queryParams.append('date', date);
       if (studentId) queryParams.append('studentId', studentId);
-      
+
       const queryString = queryParams.toString();
-      const endpoint = queryString 
-        ? `/admin/time-tracking/students?${queryString}` 
+      const endpoint = queryString
+        ? `/admin/time-tracking/students?${queryString}`
         : '/admin/time-tracking/students';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
@@ -1326,12 +1332,12 @@ export const api = {
       if (studentId) queryParams.append('studentId', studentId);
       if (startDate) queryParams.append('startDate', startDate);
       if (endDate) queryParams.append('endDate', endDate);
-      
+
       const queryString = queryParams.toString();
-      const endpoint = queryString 
-        ? `/admin/time-tracking/students/day-wise?${queryString}` 
+      const endpoint = queryString
+        ? `/admin/time-tracking/students/day-wise?${queryString}`
         : '/admin/time-tracking/students/day-wise';
-      
+
       return apiRequest(endpoint, {
         method: 'GET',
       });
