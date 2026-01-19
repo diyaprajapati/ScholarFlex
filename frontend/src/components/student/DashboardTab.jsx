@@ -39,7 +39,26 @@ const DashboardTab = ({
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-            {continueWatching.slice(0, 5).map((video) => (
+            {continueWatching.slice(0, 5).map((video) => {
+              // Support both intern and open-student shapes
+              const progressValue =
+                typeof video.progress === 'number'
+                  ? video.progress
+                  : typeof video.progressPercent === 'number'
+                  ? video.progressPercent
+                  : 0;
+
+              // Debug logging
+              if (progressValue > 0) {
+                console.log('Video progress:', {
+                  videoTitle: video.videoTitle,
+                  progress: video.progress,
+                  progressPercent: video.progressPercent,
+                  computedProgressValue: progressValue,
+                });
+              }
+
+              return (
               <div
                 key={video.id || video.videoId}
                 onClick={(e) => {
@@ -80,13 +99,16 @@ const DashboardTab = ({
                       </div>
                     );
                   })()}
-                  {video.progress > 0 && (
+                  {progressValue > 0 ? (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-300">
                       <div
-                        className="h-full bg-green-600"
-                        style={{ width: `${video.progress}%` }}
+                        className="h-full bg-green-600 transition-all"
+                        style={{ width: `${Math.min(100, Math.max(0, progressValue))}%` }}
                       ></div>
                     </div>
+                  ) : (
+                    // Always show the gray bar even if no progress (for visual consistency)
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-300"></div>
                   )}
                 </div>
                 <div className="p-2 sm:p-3">
@@ -98,7 +120,8 @@ const DashboardTab = ({
                   )}
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </section>

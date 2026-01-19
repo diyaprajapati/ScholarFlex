@@ -62,6 +62,26 @@ export const ROUTES = {
     VIDEO_ANALYTICS: '/student/video-analytics',
     FEEDBACK: '/student/feedback',
     FORM: '/student/form',
+    // Open student routes
+    OPEN: {
+      BASE: '/student/open',
+      REGISTER: '/student/open/register',
+      DASHBOARD: '/student/open',
+      PLAYLISTS: '/student/open/playlists',
+      DEMO: '/student/open/demo',
+      VIDEO: (videoId) => `/student/open/video/${videoId}`,
+    },
+    // Intern routes (full access)
+    INTERN: {
+      BASE: '/student/intern',
+      DASHBOARD: '/student/intern/dashboard',
+      PLAYLISTS: '/student/intern/playlists',
+      ACTIVITY: '/student/intern/activity',
+      INTERNSHIP: '/student/intern/internship',
+      VIDEO_ANALYTICS: '/student/intern/video-analytics',
+      PROFILE: '/student/intern/profile',
+      NOC: '/student/intern/noc',
+    },
   },
 }
 

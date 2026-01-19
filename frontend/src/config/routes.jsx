@@ -1,7 +1,8 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
+import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, OpenStudentDashboardPage, OpenVideoPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
+import OpenStudentRegistration from '../components/student/OpenStudentRegistration'
 import { ROUTES } from './paths'
 
 /**
@@ -303,6 +304,29 @@ export default function AppRoutes() {
             <StudentFormPage />
           </ProtectedRoute>
         }
+      />
+
+      {/* Open Student Routes (Public - no auth required) */}
+      <Route
+        path={ROUTES.STUDENT.OPEN.REGISTER}
+        element={<OpenStudentRegistration />}
+      />
+      <Route
+        path={ROUTES.STUDENT.OPEN.DASHBOARD}
+        element={<OpenStudentDashboardPage />}
+      />
+      <Route
+        path={ROUTES.STUDENT.OPEN.PLAYLISTS}
+        element={<OpenStudentDashboardPage />}
+      />
+      <Route
+        path={ROUTES.STUDENT.OPEN.DEMO}
+        element={<OpenStudentDashboardPage />}
+      />
+
+      <Route
+        path="/student/open/video/:videoId"
+        element={<OpenVideoPage />}
       />
 
       {/* 404 - Catch all route */}

@@ -1066,6 +1066,21 @@ exports.createStudent = async (req, res) => {
       },
     });
 
+    // Check if this email exists as open student and convert if needed
+    const OpenStudentConversionService = require('../services/openStudentConversionService');
+    try {
+      const conversionResult = await OpenStudentConversionService.convertToIntern(
+        email.toLowerCase().trim(),
+        created.id
+      );
+      if (conversionResult.converted) {
+        console.log(`Converted open student to intern: ${email}`, conversionResult);
+      }
+    } catch (conversionError) {
+      // Log error but don't fail student creation
+      console.error('Error converting open student to intern:', conversionError);
+    }
+
     // Log activity
     await logActivitySimple(
       req,

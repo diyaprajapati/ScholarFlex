@@ -39,12 +39,47 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
   const finalVideoId = videoId || extractVideoId(videoUrl);
   const finalDbVideoId = dbVideoId || videoId; // Use dbVideoId if provided, otherwise fallback to videoId
 
+  // Helper: detect open student mode
+  const isOpenStudent = () => {
+    try {
+      if (typeof window === 'undefined') return false;
+      return !!window.localStorage?.getItem('open_student_token');
+    } catch {
+      return false;
+    }
+  };
+
+  // Helper: track progress for open students
+  const trackOpenStudentProgress = async (currentTime, progressPercent, durationSeconds) => {
+    if (!playlistId || !finalDbVideoId || !isOpenStudent()) return;
+
+    try {
+      await api.openStudent.trackVideoProgress({
+        videoId: finalDbVideoId,
+        playlistId: playlistId,
+        watchTimeSeconds: Math.round(currentTime ?? 0),
+        progressPercent: typeof progressPercent === 'number' ? progressPercent : 0,
+        lastPosition: typeof currentTime === 'number' ? currentTime : 0,
+      });
+    } catch (err) {
+      console.error('Error tracking open student video progress:', err);
+    }
+  };
+
   // Track video opened when component mounts
   useEffect(() => {
     if (playlistId && finalDbVideoId) {
-      api.videoTracking.trackOpened(parseInt(finalDbVideoId), parseInt(playlistId)).catch(err => {
-        console.error('Error tracking video opened:', err);
-      });
+      // Track for open students (initial open with 0 progress)
+      if (isOpenStudent()) {
+        trackOpenStudentProgress(0, 0, 0).catch(err => {
+          console.error('Error tracking open student video opened:', err);
+        });
+      } else {
+        // Intern/internship tracking
+        api.videoTracking.trackOpened(parseInt(finalDbVideoId), parseInt(playlistId)).catch(err => {
+          console.error('Error tracking video opened:', err);
+        });
+      }
     }
   }, [playlistId, finalDbVideoId]);
 
@@ -244,8 +279,15 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
     if (state === window.YT.PlayerState.PLAYING && !progressMilestones.current.started) {
       progressMilestones.current.started = true;
       
-      // Track using new API
-      if (playlistId && finalDbVideoId) {
+      // Track for open students
+      if (isOpenStudent() && playlistId && finalDbVideoId) {
+        trackOpenStudentProgress(0, 0, 0).catch(err => {
+          console.error('Error tracking open student video started:', err);
+        });
+      }
+      
+      // Track using new API (for interns)
+      if (!isOpenStudent() && playlistId && finalDbVideoId) {
         api.videoTracking.trackStarted(parseInt(finalDbVideoId), parseInt(playlistId)).catch(err => {
           console.error('Error tracking video started:', err);
         });
@@ -275,8 +317,15 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
           const progress = (currentTime / duration) * 100;
           // Only log if significant time has passed (avoid spam)
           if (Math.abs(currentTime - lastLoggedTime.current) > 5) {
-            // Track using new API
-            if (playlistId && finalDbVideoId) {
+            // Track for open students
+            if (isOpenStudent() && playlistId && finalDbVideoId) {
+              trackOpenStudentProgress(currentTime, progress, duration).catch(err => {
+                console.error('Error tracking open student video progress:', err);
+              });
+            }
+            
+            // Track using new API (intern tracking)
+            if (!isOpenStudent() && playlistId && finalDbVideoId) {
               api.videoTracking.trackProgress(
                 parseInt(finalDbVideoId),
                 parseInt(playlistId),
@@ -327,8 +376,15 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
         console.error('Error getting video duration:', err);
       }
       
-      // Track using new API
-      if (playlistId && finalDbVideoId) {
+      // Track completion for open students (100% progress)
+      if (isOpenStudent() && playlistId && finalDbVideoId) {
+        trackOpenStudentProgress(videoDuration, 100, videoDuration).catch(err => {
+          console.error('Error tracking open student video completed:', err);
+        });
+      }
+      
+      // Track using new API (intern tracking)
+      if (!isOpenStudent() && playlistId && finalDbVideoId) {
         api.videoTracking.trackCompleted(
           parseInt(finalDbVideoId),
           parseInt(playlistId),
@@ -451,8 +507,15 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
           // Save progress every 10 seconds (for resume functionality)
           // Only log if at least 10 seconds have passed since last log
           if (Math.abs(currentTime - lastLoggedTime.current) >= 10) {
-            // Track using new API
-            if (playlistId && finalDbVideoId) {
+            // Track for open students
+            if (isOpenStudent() && playlistId && finalDbVideoId) {
+              trackOpenStudentProgress(currentTime, progress, duration).catch(err => {
+                console.error('Error tracking open student video progress:', err);
+              });
+            }
+            
+            // Track using new API (for interns)
+            if (!isOpenStudent() && playlistId && finalDbVideoId) {
               api.videoTracking.trackProgress(
                 parseInt(finalDbVideoId),
                 parseInt(playlistId),

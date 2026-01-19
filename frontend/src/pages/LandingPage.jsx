@@ -61,10 +61,10 @@ export default function LandingPage() {
                             to={ROUTES.LOGIN}
                             className="text-sm font-medium text-gray-600 hover:text-[#4C763B] px-4 py-2 transition-colors"
                         >
-                            Sign In
+                            Intern Login
                         </Link>
                         <Link
-                            to={ROUTES.LOGIN}
+                            to={ROUTES.STUDENT.OPEN.DASHBOARD}
                             className="hidden sm:flex items-center gap-2 bg-[#4C763B] hover:bg-[#3a5c2d] text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-lg shadow-green-900/20 transition-all hover:scale-105"
                         >
                             Get Started
@@ -108,20 +108,23 @@ export default function LandingPage() {
 
                             <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 <Link
-                                    to={ROUTES.LOGIN}
+                                    to={ROUTES.STUDENT.OPEN.DASHBOARD}
                                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#4C763B] hover:bg-[#3a5c2d] text-white px-8 py-4 rounded-full text-lg font-semibold shadow-xl shadow-green-900/20 transition-all hover:scale-105"
                                 >
                                     Start Learning Now
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
-                                <a
-                                    href="#how-it-works"
+                                <Link
+                                    to={ROUTES.STUDENT.OPEN.DEMO}
                                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-8 py-4 rounded-full text-lg font-semibold border border-gray-200 transition-all"
                                 >
                                     <Play className="w-5 h-5 fill-current" />
                                     Watch Demo
-                                </a>
+                                </Link>
                             </motion.div>
+                            <motion.p variants={fadeInUp} className="text-sm text-gray-500 mt-4 text-center">
+                                Learning access is open. Login is only required for enrolled interns.
+                            </motion.p>
                         </motion.div>
 
                         {/* Stats */}

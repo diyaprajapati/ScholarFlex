@@ -1,7 +1,7 @@
 // API service for making HTTP requests to the backend
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.32.82.164:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.241.25.164:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sfapi.techelecon.in/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -13,19 +13,32 @@ const getToken = () => {
 };
 
 /**
+ * Get open student session token from localStorage
+ */
+const getOpenSessionToken = () => {
+  return localStorage.getItem('open_student_token');
+};
+
+/**
  * Make an API request with authentication
  */
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
+  const openToken = getOpenSessionToken();
 
   // Don't set Content-Type for FormData (let browser set it with boundary)
   const isFormData = options.body instanceof FormData;
+
+  // Determine if this is an open student endpoint
+  const isOpenEndpoint = endpoint.startsWith('/open/');
 
   const config = {
     ...options,
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
-      ...(token && { Authorization: `Bearer ${token}` }),
+      // Use JWT token for regular endpoints, open session token for open endpoints
+      ...(isOpenEndpoint && openToken && { 'X-Open-Session-Token': openToken }),
+      ...(!isOpenEndpoint && token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
   };
@@ -1340,6 +1353,69 @@ export const api = {
 
       return apiRequest(endpoint, {
         method: 'GET',
+      });
+    },
+  },
+
+  // Open student endpoints
+  openStudent: {
+    register: async (data) => {
+      return apiRequest('/open/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: data.email,
+          name: data.name,
+          phone: data.phone,
+        }),
+      });
+    },
+
+    getCurrent: async () => {
+      return apiRequest('/open/me', {
+        method: 'GET',
+      });
+    },
+
+    getDashboard: async () => {
+      return apiRequest('/open/dashboard', {
+        method: 'GET',
+      });
+    },
+
+    getPlaylists: async () => {
+      return apiRequest('/open/playlists', {
+        method: 'GET',
+      });
+    },
+
+    getPlaylistById: async (playlistId) => {
+      return apiRequest(`/open/playlists/${playlistId}`, {
+        method: 'GET',
+      });
+    },
+
+    trackVideoProgress: async (data) => {
+      return apiRequest('/open/video-progress', {
+        method: 'POST',
+        body: JSON.stringify({
+          videoId: data.videoId,
+          playlistId: data.playlistId,
+          watchTimeSeconds: data.watchTimeSeconds,
+          progressPercent: data.progressPercent,
+          lastPosition: data.lastPosition,
+        }),
+      });
+    },
+
+    getVideoProgress: async (videoId) => {
+      return apiRequest(`/open/video-progress/${videoId}`, {
+        method: 'GET',
+      });
+    },
+
+    logout: async () => {
+      return apiRequest('/open/logout', {
+        method: 'POST',
       });
     },
   },

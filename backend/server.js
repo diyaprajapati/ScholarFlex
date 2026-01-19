@@ -25,6 +25,7 @@ const projectRoutes = require('./routes/projectRoutes');
 const internshipStatusRoutes = require('./routes/internshipStatusRoutes');
 const videoTrackingRoutes = require('./routes/videoTrackingRoutes');
 const videoAnalyticsRoutes = require('./routes/videoAnalyticsRoutes');
+const openStudentRoutes = require('./routes/openStudentRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const securityHeaders = require('./middleware/securityHeaders');
 const { sanitizeInput, validateParams } = require('./middleware/inputValidation');
@@ -52,7 +53,8 @@ app.use(cors({
     'Accept', 
     'Origin',
     'Access-Control-Request-Method',
-    'Access-Control-Request-Headers'
+    'Access-Control-Request-Headers',
+    'x-open-session-token'
   ],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   preflightContinue: false,
@@ -123,6 +125,7 @@ app.use('/api/video-tracking', require('./routes/enhancedVideoTrackingRoutes'));
 app.use('/api/video-analytics', videoAnalyticsRoutes);
 app.use('/api/video-analytics', require('./routes/enhancedVideoAnalyticsRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/open', openStudentRoutes);
 
 // 404 handler
 app.use((req, res) => {

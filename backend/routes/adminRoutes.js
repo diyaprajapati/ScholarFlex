@@ -388,6 +388,25 @@ adminRouter.delete('/projects/:id', projectController.deleteProject);
  */
 adminRouter.get('/internship/status', internshipStatusController.getAllInternshipStatuses);
 
+// Import open student analytics controller
+const openStudentAnalyticsController = require('../controllers/openStudentAnalyticsController');
+
+/**
+ * @route   GET /api/admin/analytics/open-students/aggregate
+ * @desc    Get aggregate analytics for open students (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ * IMPORTANT: Must be registered BEFORE /:id route
+ */
+adminRouter.get('/analytics/open-students/aggregate', openStudentAnalyticsController.getAggregateAnalytics);
+
+/**
+ * @route   GET /api/admin/analytics/open-students/stats
+ * @desc    Get statistics for open students (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ * IMPORTANT: Must be registered BEFORE /:id route
+ */
+adminRouter.get('/analytics/open-students/stats', openStudentAnalyticsController.getStats);
+
 // Mount routers
 // IMPORTANT: adminRouter (with specific routes) must be mounted BEFORE superAdminRouter (with /:id catch-all)
 // IMPORTANT: Mount adminRouter FIRST (with specific routes like /playlists)

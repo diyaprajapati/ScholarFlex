@@ -3,22 +3,77 @@ import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, BookOpen, BarChart3, FileText, X, Video, Briefcase, User } from 'lucide-react';
 import { ROUTES } from '../../config/paths';
 
-export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen }) {
+export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen, isIntern = true, onLockedTabClick }) {
   const navigate = useNavigate();
   
+  // Use different routes based on whether user is intern or open student
+  const getRoute = (internRoute, openRoute) => {
+    return isIntern ? internRoute : openRoute;
+  };
+  
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD },
-    { id: 'profile', label: 'My Profile', icon: User, path: ROUTES.STUDENT.FORM },
-    { id: 'playlists', label: 'Playlists', icon: BookOpen, path: ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS },
-    { id: 'activity', label: 'Activity', icon: BarChart3, path: ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY },
-    { id: 'internship', label: 'Internship', icon: Briefcase, path: ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP },
-    { id: 'video-analytics', label: 'Video Analytics', icon: Video, path: ROUTES.STUDENT.VIDEO_ANALYTICS },
-    { id: 'noc', label: 'NOC Letter', icon: FileText, path: ROUTES.STUDENT.DASHBOARD_TABS.NOC },
+    { 
+      id: 'dashboard', 
+      label: 'Dashboard', 
+      icon: LayoutDashboard, 
+      path: getRoute(ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD, ROUTES.STUDENT.OPEN.DASHBOARD), 
+      accessible: true 
+    },
+    { 
+      id: 'playlists', 
+      label: 'Playlists', 
+      icon: BookOpen, 
+      path: getRoute(ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS, ROUTES.STUDENT.OPEN.PLAYLISTS), 
+      accessible: true 
+    },
+    { 
+      id: 'activity', 
+      label: 'Activity', 
+      icon: BarChart3, 
+      path: ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY, 
+      accessible: isIntern 
+    },
+    { 
+      id: 'internship', 
+      label: 'Internship', 
+      icon: Briefcase, 
+      path: ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP, 
+      accessible: isIntern 
+    },
+    { 
+      id: 'video-analytics', 
+      label: 'Video Analytics', 
+      icon: Video, 
+      path: ROUTES.STUDENT.VIDEO_ANALYTICS, 
+      accessible: isIntern 
+    },
+    { 
+      id: 'profile', 
+      label: 'My Profile', 
+      icon: User, 
+      path: ROUTES.STUDENT.FORM, 
+      accessible: isIntern 
+    },
+    { 
+      id: 'noc', 
+      label: 'NOC Letter', 
+      icon: FileText, 
+      path: ROUTES.STUDENT.DASHBOARD_TABS.NOC, 
+      accessible: isIntern 
+    },
   ];
 
-  const handleItemClick = (itemId, path) => {
-    setActiveTab(itemId);
-    navigate(path);
+  const handleItemClick = (item) => {
+    if (!item.accessible && !isIntern) {
+      // Show locked modal for open students
+      if (onLockedTabClick) {
+        onLockedTabClick();
+      }
+      return;
+    }
+
+    setActiveTab(item.id);
+    navigate(item.path);
     // Close sidebar on mobile after selection
     if (window.innerWidth < 1024) {
       setIsOpen(false);
@@ -66,24 +121,39 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1 sm:space-y-2">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleItemClick(item.id, item.path)}
-                className={`
-                  w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium
-                  transition-all duration-200 cursor-pointer
-                  ${
-                    activeTab === item.id
-                      ? 'bg-green-50 text-green-700 border-l-4 border-green-600'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-green-600'
-                  }
-                `}
-              >
-                <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${activeTab === item.id ? 'text-green-600' : 'text-gray-600'}`} />
-                <span className="truncate">{item.label}</span>
-              </button>
-            ))}
+            {menuItems.map((item) => {
+              const isLocked = !item.accessible && !isIntern;
+              const isActive = activeTab === item.id;
+              
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleItemClick(item)}
+                  disabled={isLocked}
+                  className={`
+                    w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium
+                    transition-all duration-200
+                    ${
+                      isLocked
+                        ? 'opacity-50 cursor-not-allowed text-gray-400'
+                        : isActive
+                        ? 'bg-green-50 text-green-700 border-l-4 border-green-600 cursor-pointer'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-green-600 cursor-pointer'
+                    }
+                  `}
+                  title={isLocked ? 'This feature is available only for students whose internship has started.' : ''}
+                >
+                  <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${
+                    isLocked 
+                      ? 'text-gray-400' 
+                      : isActive 
+                      ? 'text-green-600' 
+                      : 'text-gray-600'
+                  }`} />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
           </nav>
 
           {/* Footer */}

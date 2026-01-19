@@ -380,7 +380,7 @@ const deleteEvaluation = async (req, res) => {
  */
 const exportEvaluatedStudents = async (req, res) => {
   try {
-    const { domainId } = req.query;
+    const { domainId, studentId } = req.query;
 
     // Build where clause for domain filter
     // domainId can be a single value or multiple values (array)
@@ -389,6 +389,11 @@ const exportEvaluatedStudents = async (req, res) => {
     const where = {};
     const evaluationWhere = {}; // Additional filter on the included evaluations
 
+    // Filter by isSelected: only export students who are selected (isSelected = true) AND have evaluations
+    where.student = {
+      isSelected: true,
+    };
+
     if (domainId) {
       // Handle both single domainId and multiple domainIds
       const domainIds = Array.isArray(domainId) ? domainId : [domainId];
@@ -396,6 +401,7 @@ const exportEvaluatedStudents = async (req, res) => {
 
       if (parsedDomainIds.length > 0) {
         where.student = {
+          ...where.student,
           domainId: {
             in: parsedDomainIds,
           },
