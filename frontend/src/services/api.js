@@ -495,6 +495,37 @@ export const api = {
         method: 'GET',
       });
     },
+    
+    // Open Student Analytics
+    getOpenStudentAggregateAnalytics: async () => {
+      return apiRequest('/admin/analytics/open-students/aggregate', {
+        method: 'GET',
+      });
+    },
+    
+    getOpenStudentStats: async () => {
+      return apiRequest('/admin/analytics/open-students/stats', {
+        method: 'GET',
+      });
+    },
+    
+    getOpenStudentIndividualAnalytics: async (params = {}) => {
+      const queryParams = new URLSearchParams();
+      if (params.page) queryParams.append('page', params.page);
+      if (params.limit) queryParams.append('limit', params.limit);
+      if (params.search) queryParams.append('search', params.search);
+      if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+      if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString 
+        ? `/admin/analytics/open-students/individual?${queryString}`
+        : '/admin/analytics/open-students/individual';
+      
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
     create: async (data) => {
       return apiRequest('/admin/create', {
         method: 'POST',

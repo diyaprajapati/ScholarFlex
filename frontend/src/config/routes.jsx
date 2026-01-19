@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from '../components'
-import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, OpenStudentDashboardPage, OpenVideoPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
+import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, OpenStudentDashboardPage, OpenVideoPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, OpenStudentAnalyticsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
 import OpenStudentRegistration from '../components/student/OpenStudentRegistration'
 import { ROUTES } from './paths'
 
@@ -162,6 +162,15 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Open Student Analytics Route - Admin and Super Admin */}
+      <Route
+        path={ROUTES.OPEN_STUDENT_ANALYTICS}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <OpenStudentAnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path={ROUTES.RETEST_MANAGEMENT}

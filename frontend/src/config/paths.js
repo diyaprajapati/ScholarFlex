@@ -15,6 +15,7 @@ export const ROUTES = {
   NOC_MANAGEMENT: '/noc-management',
   FEEDBACK_MANAGEMENT: '/feedback-management',
   STUDENT_ANALYTICS: '/student-analytics',
+  OPEN_STUDENT_ANALYTICS: '/open-student-analytics',
   VIDEO_ANALYTICS: '/video-analytics',
   RETEST_MANAGEMENT: '/retest-management',
   INTERNSHIP_STATUS: '/internship-status',

@@ -407,6 +407,13 @@ adminRouter.get('/analytics/open-students/aggregate', openStudentAnalyticsContro
  */
 adminRouter.get('/analytics/open-students/stats', openStudentAnalyticsController.getStats);
 
+/**
+ * @route   GET /api/admin/analytics/open-students/individual
+ * @desc    Get individual open student analytics with pagination (Admin/Super Admin only)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/analytics/open-students/individual', openStudentAnalyticsController.getIndividualAnalytics);
+
 // Mount routers
 // IMPORTANT: adminRouter (with specific routes) must be mounted BEFORE superAdminRouter (with /:id catch-all)
 // IMPORTANT: Mount adminRouter FIRST (with specific routes like /playlists)
