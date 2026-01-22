@@ -186,12 +186,15 @@ const logActivitySimple = async (req, action, entityType, entityId = null, descr
       }
     }
 
+    // Convert entityId to integer if provided (Prisma expects Int or Null)
+    const entityIdInt = entityId !== null && entityId !== undefined ? parseInt(entityId) : null;
+
     await ActivityLog.create({
       user_id: userId,
       user_type: userType,
       action: action,
       entity_type: entityType,
-      entity_id: entityId,
+      entity_id: entityIdInt,
       description: description || `${req.user.email} performed ${action}`,
       request_method: req.method,
       request_path: req.path,

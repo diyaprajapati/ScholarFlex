@@ -145,7 +145,7 @@ class User {
         SELECT u.*, r.role_name, r.role_code 
         FROM users u 
         JOIN roles r ON u.role_id = r.id 
-        WHERE r.role_code IN ('SUPER_ADMIN', 'ADMIN') AND u.is_active = TRUE
+        WHERE r.role_code IN ('SUPER_ADMIN', 'ADMIN')
         ORDER BY u.created_at DESC
       `;
       return result;
@@ -180,6 +180,10 @@ class User {
     try {
       const updates = [];
       
+      if (updateData.email !== undefined) {
+        updates.push(Prisma.sql`email = ${updateData.email}`);
+      }
+
       if (updateData.full_name !== undefined) {
         updates.push(Prisma.sql`full_name = ${updateData.full_name}`);
       }
@@ -192,8 +196,17 @@ class User {
         updates.push(Prisma.sql`role_id = ${updateData.role_id}`);
       }
 
+      // Get the updated user without filtering by is_active
+      const getUserQuery = Prisma.sql`
+        SELECT u.*, r.role_name, r.role_code 
+        FROM users u 
+        JOIN roles r ON u.role_id = r.id 
+        WHERE u.id = ${id}
+      `;
+
       if (updates.length === 0) {
-        return await this.findById(id);
+        const result = await prisma.$queryRaw(getUserQuery);
+        return result[0] || null;
       }
 
       // Build the update query
@@ -205,7 +218,10 @@ class User {
 
       await prisma.$executeRaw(updateQuery);
 
-      return await this.findById(id);
+      // Get the updated user without filtering by is_active
+      const result = await prisma.$queryRaw(getUserQuery);
+      
+      return result[0] || null;
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;
@@ -213,14 +229,140 @@ class User {
   }
 
   /**
-   * Delete user (soft delete by setting is_active = false)
+   * Delete user (hard delete - permanently removes from database)
+   * Handles foreign key constraints by first updating related records
    */
   static async delete(id) {
     try {
-      await prisma.$executeRaw`
-        UPDATE users SET is_active = FALSE, updated_at = NOW() WHERE id = ${id}
-      `;
-      return true;
+      console.log(`[User.delete] Starting hard deletion for user ID: ${id}`);
+      // Use a transaction to handle foreign key constraints
+      return await prisma.$transaction(async (tx) => {
+        console.log(`[User.delete] Transaction started for user ID: ${id}`);
+        // Find the first super admin to use as replacement for NOT NULL foreign keys
+        const superAdminResult = await tx.$queryRaw`
+          SELECT u.id 
+          FROM users u 
+          JOIN roles r ON u.role_id = r.id 
+          WHERE r.role_code = 'SUPER_ADMIN' AND u.is_active = 1 AND u.id != ${id}
+          ORDER BY u.id ASC
+          LIMIT 1
+        `;
+        
+        const replacementUserId = superAdminResult.length > 0 ? superAdminResult[0].id : null;
+
+        // If no replacement admin found and there are NOT NULL foreign key constraints,
+        // we can't proceed with deletion
+        if (!replacementUserId) {
+          // Check if there are any records that would prevent deletion
+          const hasFileUploads = await tx.$queryRaw`
+            SELECT COUNT(*) as count FROM file_uploads WHERE uploaded_by = ${id}
+          `;
+          const hasQuestionPapers = await tx.$queryRaw`
+            SELECT COUNT(*) as count FROM question_papers WHERE created_by = ${id}
+          `;
+          const hasQuestions = await tx.$queryRaw`
+            SELECT COUNT(*) as count FROM questions WHERE created_by = ${id}
+          `;
+          const hasTestAssignments = await tx.$queryRaw`
+            SELECT COUNT(*) as count FROM test_assignments WHERE assigned_by = ${id}
+          `;
+
+          // Convert BigInt to Number for comparison
+          const fileUploadsCount = Number(hasFileUploads[0]?.count || 0);
+          const questionPapersCount = Number(hasQuestionPapers[0]?.count || 0);
+          const questionsCount = Number(hasQuestions[0]?.count || 0);
+          const testAssignmentsCount = Number(hasTestAssignments[0]?.count || 0);
+
+          const totalRecords = fileUploadsCount + questionPapersCount + questionsCount + testAssignmentsCount;
+
+          if (totalRecords > 0) {
+            throw new Error('Cannot delete admin: No other active super admin available to transfer ownership. Please ensure at least one other super admin exists.');
+          }
+        }
+
+        // Update nullable foreign keys to NULL
+        await tx.$executeRaw`
+          UPDATE users 
+          SET created_by = NULL, updated_at = NOW() 
+          WHERE created_by = ${id} AND id != ${id}
+        `;
+
+        await tx.$executeRaw`
+          UPDATE activity_logs 
+          SET user_id = NULL 
+          WHERE user_id = ${id}
+        `;
+
+        await tx.$executeRaw`
+          UPDATE question_papers 
+          SET updated_by = NULL 
+          WHERE updated_by = ${id}
+        `;
+
+        await tx.$executeRaw`
+          UPDATE questions 
+          SET updated_by = NULL 
+          WHERE updated_by = ${id}
+        `;
+
+        await tx.$executeRaw`
+          UPDATE students 
+          SET created_by = NULL 
+          WHERE created_by = ${id}
+        `;
+
+        await tx.$executeRaw`
+          UPDATE noc_letters 
+          SET reviewed_by = NULL 
+          WHERE reviewed_by = ${id}
+        `;
+
+        // Update NOT NULL foreign keys to replacement admin (if available)
+        if (replacementUserId) {
+          await tx.$executeRaw`
+            UPDATE file_uploads 
+            SET uploaded_by = ${replacementUserId} 
+            WHERE uploaded_by = ${id}
+          `;
+
+          await tx.$executeRaw`
+            UPDATE question_papers 
+            SET created_by = ${replacementUserId} 
+            WHERE created_by = ${id}
+          `;
+
+          await tx.$executeRaw`
+            UPDATE questions 
+            SET created_by = ${replacementUserId} 
+            WHERE created_by = ${id}
+          `;
+
+          await tx.$executeRaw`
+            UPDATE test_assignments 
+            SET assigned_by = ${replacementUserId} 
+            WHERE assigned_by = ${id}
+          `;
+        }
+
+        // Finally, hard delete the user (permanently remove from database)
+        const deleteResult = await tx.$executeRaw`
+          DELETE FROM users 
+          WHERE id = ${id}
+        `;
+
+        // Verify the deletion was successful (record should no longer exist)
+        const verifyResult = await tx.$queryRaw`
+          SELECT id FROM users WHERE id = ${id}
+        `;
+        
+        if (verifyResult.length > 0) {
+          console.error(`[User.delete] Verification failed: User still exists after deletion attempt`);
+          throw new Error('Admin deletion failed: Record still exists in database');
+        }
+
+        console.log(`[User.delete] Successfully hard deleted user ID: ${id}`);
+        return true;
+      });
     } catch (error) {
       console.error("Error deleting user:", error);
       throw error;

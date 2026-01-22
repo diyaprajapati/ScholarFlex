@@ -98,7 +98,8 @@ const getAllAdmins = async (req, res) => {
         full_name: admin.full_name,
         role: admin.role_code,
         role_name: admin.role_name,
-        is_active: admin.is_active,
+        // Normalize is_active: MySQL returns 0/1, convert to boolean
+        is_active: admin.is_active === 1 || admin.is_active === true || admin.is_active === '1',
         last_login_at: admin.last_login_at,
         created_at: admin.created_at,
       })),
@@ -173,7 +174,7 @@ const updateAdmin = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { full_name, is_active, role_code } = req.body;
+    const { email, full_name, is_active, role_code } = req.body;
 
     // Check if admin exists
     const admin = await User.getAdminById(id);
@@ -203,6 +204,18 @@ const updateAdmin = async (req, res) => {
 
     // Prepare update data
     const updateData = { full_name, is_active };
+    
+    // If email is provided, check if it's already taken by another user
+    if (email && email !== admin.email) {
+      const emailExists = await User.exists(email);
+      if (emailExists) {
+        return res.status(409).json({
+          success: false,
+          message: 'Email already exists',
+        });
+      }
+      updateData.email = email;
+    }
     
     // If role_code is provided, get role_id
     if (role_code) {
@@ -255,7 +268,7 @@ const updateAdmin = async (req, res) => {
 };
 
 /**
- * Delete admin (Super Admin only) - Soft delete
+ * Delete admin (Super Admin only) - Hard delete (permanently removes from database)
  */
 const deleteAdmin = async (req, res) => {
   try {
@@ -279,15 +292,37 @@ const deleteAdmin = async (req, res) => {
       });
     }
 
-    // Soft delete admin
-    await User.delete(id);
+    // Hard delete admin (permanently remove from database)
+    const deleteResult = await User.delete(id);
+    
+    if (!deleteResult) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to delete admin',
+      });
+    }
 
-    // Log the activity
+    // Verify the admin was actually deleted (record should no longer exist)
+    const verifyResult = await prisma.$queryRaw`
+      SELECT id FROM users WHERE id = ${id}
+    `;
+    
+    if (verifyResult.length > 0) {
+      console.error('Admin deletion verification failed: Admin still exists in database', { id });
+      return res.status(500).json({
+        success: false,
+        message: 'Admin deletion failed verification: Record still exists in database',
+      });
+    }
+    
+    console.log('Admin deletion verified successfully: Record removed from database', { id });
+
+    // Log the activity (convert id to integer for entityId)
     await logActivitySimple(
       req,
       'DELETE_ADMIN',
       'USER',
-      id,
+      parseInt(id),
       `${req.user.email} deleted admin: ${admin.email}`
     );
 
@@ -299,7 +334,7 @@ const deleteAdmin = async (req, res) => {
     console.error('Error in deleteAdmin:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: error.message || 'Internal server error',
     });
   }
 };

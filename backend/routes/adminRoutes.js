@@ -66,6 +66,11 @@ superAdminRouter.get('/:id', adminController.getAdminById);
 superAdminRouter.put(
   '/:id',
   [
+    body('email')
+      .optional()
+      .isEmail()
+      .withMessage('Please provide a valid email address')
+      .normalizeEmail(),
     body('full_name')
       .optional()
       .trim()
