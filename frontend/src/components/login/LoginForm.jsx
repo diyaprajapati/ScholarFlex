@@ -65,6 +65,9 @@ export default function LoginForm() {
           // Store JWT token and user data in localStorage
           authService.setToken(response.token, response.user)
           
+          // Clear browser history stack to prevent back navigation
+          authService.clearHistoryStack()
+          
           // Get user from stored data
           const user = response.user || authService.getUser()
           const role = user?.role

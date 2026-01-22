@@ -92,7 +92,7 @@ const NOCManagementPage = () => {
       const response = await api.noc.updateStatus(nocId, newStatus);
       
       if (response.success) {
-        setSuccess(`NOC letter ${newStatus.toLowerCase()} successfully`);
+        setSuccess(response.message || `NOC letter ${newStatus.toLowerCase()} successfully`);
         await fetchNOCLetters();
         if (viewerOpen) {
           setViewerOpen(false);
@@ -339,6 +339,26 @@ const NOCManagementPage = () => {
                                   </button>
                                 </>
                               )}
+                              {noc.status === 'APPROVED' && (
+                                <button
+                                  onClick={() => handleStatusUpdate(noc.id, 'REJECTED')}
+                                  disabled={updatingId === noc.id || updating}
+                                  className="text-red-600 hover:text-red-900 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                  title="Rejecting an approved NOC will delete it from the database"
+                                >
+                                  {updatingId === noc.id ? (
+                                    <>
+                                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+                                      Deleting...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <XCircle className="w-4 h-4" />
+                                      Reject & Delete
+                                    </>
+                                  )}
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -432,6 +452,26 @@ const NOCManagementPage = () => {
                       )}
                     </button>
                   </>
+                )}
+                {selectedNOC.status === 'APPROVED' && (
+                  <button
+                    onClick={() => handleStatusUpdate(selectedNOC.id, 'REJECTED')}
+                    disabled={updatingId === selectedNOC.id || updating}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+                    title="Rejecting an approved NOC will delete it from the database"
+                  >
+                    {updatingId === selectedNOC.id ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4" />
+                        Reject & Delete
+                      </>
+                    )}
+                  </button>
                 )}
                 <button
                   onClick={() => {

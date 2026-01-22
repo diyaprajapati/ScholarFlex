@@ -54,7 +54,7 @@ export default function TopNavbar({ user }) {
         {/* Right side - Notifications and Profile */}
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           {/* Notifications */}
-          <div className="relative">
+          {/* <div className="relative">
             <button
               onClick={() => {
                 setShowNotifications(!showNotifications)
@@ -70,10 +70,10 @@ export default function TopNavbar({ user }) {
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
-            </button>
+            </button> */}
 
             {/* Notifications Dropdown */}
-            {showNotifications && (
+            {/* {showNotifications && (
               <>
                 <div
                   className="fixed inset-0 z-10"
@@ -127,7 +127,7 @@ export default function TopNavbar({ user }) {
                 </div>
               </>
             )}
-          </div>
+          </div> */}
 
           {/* Profile Menu */}
           <div className="relative">

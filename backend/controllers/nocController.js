@@ -692,6 +692,7 @@ const downloadAllNOC = async (req, res) => {
 /**
  * Update NOC status (Approve/Reject) - Admin only
  * PATCH /api/admin/noc/:id/status
+ * Note: Rejecting an approved NOC will delete it from the database
  */
 const updateNOCStatus = async (req, res) => {
   try {
@@ -707,6 +708,15 @@ const updateNOCStatus = async (req, res) => {
 
     const nocLetter = await prisma.nOCLetter.findUnique({
       where: { id: parseInt(id) },
+      include: {
+        student: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+          },
+        },
+      },
     });
 
     if (!nocLetter) {
@@ -716,6 +726,53 @@ const updateNOCStatus = async (req, res) => {
       });
     }
 
+    // If rejecting an approved NOC, delete it from database and filesystem
+    if (status === 'REJECTED' && nocLetter.status === 'APPROVED') {
+      // Delete the file from filesystem (handle both old and new path formats)
+      let filePathToDelete;
+      
+      if (nocLetter.filePath.includes('/scholarflex/')) {
+        // New hierarchical path format (relative)
+        filePathToDelete = path.join(__dirname, '../uploads', nocLetter.filePath.replace(/^\//, ''));
+      } else if (nocLetter.filePath.includes(`/students/${nocLetter.studentId}/`)) {
+        // Alternative hierarchical path format
+        filePathToDelete = path.join(__dirname, '../uploads', nocLetter.filePath.replace(/^\//, ''));
+      } else if (path.isAbsolute(nocLetter.filePath)) {
+        // Old absolute path format
+        filePathToDelete = nocLetter.filePath;
+      } else {
+        // Old relative path format
+        filePathToDelete = path.join(__dirname, '../uploads/noc', path.basename(nocLetter.filePath));
+      }
+      
+      // Delete file if it exists
+      if (fs.existsSync(filePathToDelete)) {
+        try {
+          fs.unlinkSync(filePathToDelete);
+        } catch (fileError) {
+          console.error('Error deleting NOC file:', fileError);
+          // Continue with database deletion even if file deletion fails
+        }
+      }
+
+      // Delete from database
+      await prisma.nOCLetter.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Approved NOC letter rejected and deleted successfully',
+        data: {
+          id: nocLetter.id,
+          student: nocLetter.student,
+          fileName: nocLetter.fileName,
+          status: 'DELETED',
+        },
+      });
+    }
+
+    // For other cases (approving pending, or rejecting pending), just update status
     const updatedNOC = await prisma.nOCLetter.update({
       where: { id: parseInt(id) },
       data: {

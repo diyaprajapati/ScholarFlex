@@ -1,6 +1,6 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { ProtectedRoute, PublicRoute } from '../components'
+import { ProtectedRoute, PublicRoute, LandingPageGuard } from '../components'
 import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, OpenStudentDashboardPage, OpenVideoPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, OpenStudentAnalyticsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
 import OpenStudentRegistration from '../components/student/OpenStudentRegistration'
 import { ROUTES } from './paths'
@@ -12,8 +12,15 @@ import { ROUTES } from './paths'
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Landing Page - Public */}
-      <Route path={ROUTES.LANDING} element={<LandingPage />} />
+      {/* Landing Page - Public, but redirects authenticated users */}
+      <Route
+        path={ROUTES.LANDING}
+        element={
+          <LandingPageGuard>
+            <LandingPage />
+          </LandingPageGuard>
+        }
+      />
 
       {/* Public Routes */}
       <Route

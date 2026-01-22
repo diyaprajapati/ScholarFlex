@@ -54,6 +54,8 @@ export const authService = {
   logout: () => {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
+    // Remove history prevention on logout
+    authService.removeHistoryPrevention()
   },
 
   // Check if user is authenticated (has valid token)
@@ -148,6 +150,74 @@ export const authService = {
       }
     }
     return null
+  },
+
+  // Clear browser history stack to prevent back navigation to public pages
+  // This should be called after successful login to prevent users from going back
+  clearHistoryStack: () => {
+    try {
+      // Remove any existing listener first
+      if (window._preventBackListener) {
+        window.removeEventListener('popstate', window._preventBackListener)
+      }
+      
+      // Replace current history entry to clear previous entries
+      // This creates a fresh history state starting from the current page
+      window.history.replaceState(null, '', window.location.href)
+      
+      // Push a new state to create a fresh history entry
+      // This ensures the current page is the "first" page in the history stack
+      window.history.pushState(null, '', window.location.href)
+      
+      // Add popstate listener to prevent back navigation to public pages
+      const preventBack = (e) => {
+        const currentPath = window.location.pathname
+        const publicRoutes = ['/', '/login']
+        
+        // If trying to navigate to a public route while authenticated, prevent it
+        if (authService.isAuthenticated() && publicRoutes.includes(currentPath)) {
+          // Push current state again to prevent going back
+          window.history.pushState(null, '', window.location.href)
+          // Force navigation to appropriate dashboard using window.location
+          const role = authService.getUserRole()
+          if (role === 'STUDENT') {
+            window.location.href = '/student/dashboard'
+          } else if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+            window.location.href = '/dashboard'
+          }
+        } else {
+          // For other routes, allow normal navigation but limit history depth
+          // If history is getting too long, replace current entry
+          if (window.history.length > 10) {
+            window.history.replaceState(null, '', window.location.href)
+          }
+        }
+      }
+      
+      // Add new listener
+      window.addEventListener('popstate', preventBack)
+      
+      // Store the listener so we can remove it on logout
+      window._preventBackListener = preventBack
+    } catch (error) {
+      console.error('Error clearing history stack:', error)
+    }
+  },
+
+  // Remove history prevention (should be called on logout)
+  removeHistoryPrevention: () => {
+    try {
+      if (window._preventBackListener) {
+        window.removeEventListener('popstate', window._preventBackListener)
+        delete window._preventBackListener
+      }
+      if (window._preventHashBackListener) {
+        window.removeEventListener('hashchange', window._preventHashBackListener)
+        delete window._preventHashBackListener
+      }
+    } catch (error) {
+      console.error('Error removing history prevention:', error)
+    }
   },
 }
 
