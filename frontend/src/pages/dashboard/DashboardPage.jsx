@@ -128,7 +128,7 @@ export default function DashboardPage() {
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#4C763B] border-t-transparent"></div>
-              <span className="ml-3 text-gray-600">Loading dashboard...</span>
+              <span className="ml-3 text-gray-600">Loading...</span>
             </div>
           ) : error ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">

@@ -233,7 +233,7 @@ const OpenStudentDashboardPage = () => {
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-green-600 border-t-transparent mb-3 sm:mb-4"></div>
-          <p className="text-sm sm:text-base text-gray-600">Loading dashboard...</p>
+          <p className="text-sm sm:text-base text-gray-600">Loading...</p>
         </div>
       </div>
     );
