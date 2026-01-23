@@ -1,4 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as XLSX from 'xlsx';
 import api from '../../services/api';
 import { 
@@ -480,39 +483,133 @@ const CandidatesTab = () => {
     setGoogleSheetsUrl('');
   }, []);
 
+  const studentSchema = z.object({
+    full_name: z
+      .string()
+      .min(1, 'Full name is required')
+      .min(2, 'Full name must be at least 2 characters'),
+    email: z
+      .string()
+      .min(1, 'Email is required')
+      .email('Please enter a valid email address'),
+    phone: z
+      .string()
+      .min(1, 'Phone number is required')
+      .regex(/^\d{10}$/, 'Phone number must be exactly 10 digits'),
+    domain_id: z
+      .string()
+      .min(1, 'Please select a domain'),
+    institute_name: z
+      .string()
+      .min(1, 'Institute name is required'),
+    course_taken: z
+      .string()
+      .min(1, 'Course taken is required'),
+    internship_start_date: z
+      .string()
+      .min(1, 'Start date is required'),
+    internship_end_date: z
+      .string()
+      .min(1, 'End date is required'),
+    internship_duration: z
+      .string()
+      .min(1, 'Internship duration is required'),
+    reference_information: z.string().optional(),
+    internal_faculty_name: z.string().optional(),
+    faculty_contact: z.string().optional(),
+    faculty_email: z.string().email('Please enter a valid faculty email').optional().or(z.literal('')),
+    image_url: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  }).refine((data) => {
+    if (!data.internship_start_date || !data.internship_end_date) return true;
+    const start = new Date(data.internship_start_date);
+    const end = new Date(data.internship_end_date);
+    return end >= start;
+  }, {
+    message: 'End date cannot be before start date.',
+    path: ['internship_end_date'],
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(studentSchema),
+    defaultValues: {
+      full_name: '',
+      email: '',
+      phone: '',
+      domain_id: '',
+      institute_name: '',
+      course_taken: '',
+      internship_start_date: '',
+      internship_end_date: '',
+      internship_duration: '',
+      reference_information: '',
+      internal_faculty_name: '',
+      faculty_contact: '',
+      faculty_email: '',
+      image_url: '',
+    },
+  });
+
   const handleOpenFormModal = useCallback((student = null) => {
     setEditingStudent(student);
+    if (student) {
+      reset({
+        full_name: student.full_name || '',
+        email: student.email || '',
+        phone: student.phone || student.mobile_number || '',
+        domain_id: student.domain_id ? String(student.domain_id) : '',
+        institute_name: student.institute_name || '',
+        course_taken: student.course_taken || '',
+        internship_start_date: student.internship_start_date
+          ? new Date(student.internship_start_date).toISOString().split('T')[0]
+          : '',
+        internship_end_date: student.internship_end_date
+          ? new Date(student.internship_end_date).toISOString().split('T')[0]
+          : '',
+        internship_duration: student.internship_duration || '',
+        reference_information: student.reference_information || '',
+        internal_faculty_name: student.internal_faculty_name || '',
+        faculty_contact: student.faculty_contact || '',
+        faculty_email: student.faculty_email || '',
+        image_url: student.image_url || '',
+      });
+    } else {
+      reset();
+    }
     setShowFormModal(true);
-  }, []);
+  }, [reset]);
 
   const handleCloseFormModal = useCallback(() => {
     setShowFormModal(false);
     setEditingStudent(null);
-  }, []);
+    reset();
+  }, [reset]);
 
-  const handleFormSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    setIsSubmittingForm(true);
+  const handleFormSubmit = useCallback(async (data) => {
     setError('');
     setSuccess('');
+    setIsSubmittingForm(true);
 
     try {
-      const formData = new FormData(e.target);
       const studentData = {
-        full_name: formData.get('full_name'),
-        email: formData.get('email'),
-        phone: formData.get('phone') || null,
-        domain_id: formData.get('domain_id') || null,
-        institute_name: formData.get('institute_name') || null,
-        course_taken: formData.get('course_taken') || null,
-        internship_start_date: formData.get('internship_start_date') || null,
-        internship_end_date: formData.get('internship_end_date') || null,
-        internship_duration: formData.get('internship_duration') || null,
-        reference_information: formData.get('reference_information') || null,
-        internal_faculty_name: formData.get('internal_faculty_name') || null,
-        faculty_contact: formData.get('faculty_contact') || null,
-        faculty_email: formData.get('faculty_email') || null,
-        image_url: formData.get('image_url') || null,
+        full_name: data.full_name.trim(),
+        email: data.email.trim().toLowerCase(),
+        phone: data.phone.trim(),
+        domain_id: data.domain_id || null,
+        institute_name: data.institute_name || null,
+        course_taken: data.course_taken || null,
+        internship_start_date: data.internship_start_date || null,
+        internship_end_date: data.internship_end_date || null,
+        internship_duration: data.internship_duration || null,
+        reference_information: data.reference_information || null,
+        internal_faculty_name: data.internal_faculty_name || null,
+        faculty_contact: data.faculty_contact || null,
+        faculty_email: data.faculty_email ? data.faculty_email.trim().toLowerCase() : null,
+        image_url: data.image_url || null,
       };
 
       if (editingStudent) {
@@ -529,7 +626,8 @@ const CandidatesTab = () => {
       fetchStudents();
       setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
-      setError(err.message || 'Failed to save student');
+      const message = (err && typeof err === 'object' && 'message' in err) ? err.message : 'Failed to save student';
+      setError(message || 'Failed to save student');
       console.error('Error saving student:', err);
     } finally {
       setIsSubmittingForm(false);
@@ -2105,7 +2203,7 @@ const CandidatesTab = () => {
               </div>
 
               {/* Modal Form */}
-              <form onSubmit={handleFormSubmit} className="px-6 py-5">
+              <form onSubmit={handleSubmit(handleFormSubmit)} className="px-6 py-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Full Name */}
                   <div>
@@ -2115,11 +2213,15 @@ const CandidatesTab = () => {
                     <input
                       type="text"
                       id="full_name"
-                      name="full_name"
+                      {...register('full_name')}
                       required
-                      defaultValue={editingStudent?.full_name || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.full_name ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                     />
+                    {errors.full_name && (
+                      <p className="mt-1 text-xs text-red-600">{errors.full_name.message}</p>
+                    )}
                   </div>
 
                   {/* Email */}
@@ -2130,11 +2232,15 @@ const CandidatesTab = () => {
                     <input
                       type="email"
                       id="email"
-                      name="email"
+                      {...register('email')}
                       required
-                      defaultValue={editingStudent?.email || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                     />
+                    {errors.email && (
+                      <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+                    )}
                   </div>
 
                   {/* Phone */}
@@ -2145,11 +2251,15 @@ const CandidatesTab = () => {
                     <input
                       type="tel"
                       id="phone"
-                      name="phone"
+                      {...register('phone')}
                       required
-                      defaultValue={editingStudent?.phone || editingStudent?.mobile_number || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                     />
+                    {errors.phone && (
+                      <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>
+                    )}
                   </div>
 
                   {/* Domain */}
@@ -2159,13 +2269,13 @@ const CandidatesTab = () => {
                     </label>
                     <select
                       id="domain_id"
-                      name="domain_id"
+                      {...register('domain_id')}
                       disabled={isLoadingDomains}
                       required
                       defaultValue={editingStudent?.domain_id || ''}
-                      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white ${
                         isLoadingDomains ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
+                      } ${errors.domain_id ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     >
                       <option value="">{isLoadingDomains ? 'Loading domains...' : 'Select Domain'}</option>
                       {domains.map((domain) => (
@@ -2174,6 +2284,9 @@ const CandidatesTab = () => {
                         </option>
                       ))}
                     </select>
+                    {errors.domain_id && (
+                      <p className="mt-1 text-xs text-red-600">{errors.domain_id.message}</p>
+                    )}
                   </div>
 
                   {/* Institute Name */}
@@ -2184,11 +2297,15 @@ const CandidatesTab = () => {
                     <input
                       type="text"
                       id="institute_name"
-                      name="institute_name"
-                      defaultValue={editingStudent?.institute_name || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      {...register('institute_name')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.institute_name ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                       required
                     />
+                    {errors.institute_name && (
+                      <p className="mt-1 text-xs text-red-600">{errors.institute_name.message}</p>
+                    )}
                   </div>
 
                   {/* Course Taken */}
@@ -2199,11 +2316,15 @@ const CandidatesTab = () => {
                     <input
                       type="text"
                       id="course_taken"
-                      name="course_taken"
-                      defaultValue={editingStudent?.course_taken || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      {...register('course_taken')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.course_taken ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                       required
                     />
+                    {errors.course_taken && (
+                      <p className="mt-1 text-xs text-red-600">{errors.course_taken.message}</p>
+                    )}
                   </div>
 
                   {/* Internship Start Date */}
@@ -2214,11 +2335,15 @@ const CandidatesTab = () => {
                     <input
                       type="date"
                       id="internship_start_date"
-                      name="internship_start_date"
-                      defaultValue={editingStudent?.internship_start_date ? new Date(editingStudent.internship_start_date).toISOString().split('T')[0] : ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      {...register('internship_start_date')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.internship_start_date ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                       required
                     />
+                    {errors.internship_start_date && (
+                      <p className="mt-1 text-xs text-red-600">{errors.internship_start_date.message}</p>
+                    )}
                   </div>
 
                   {/* Internship End Date */}
@@ -2229,11 +2354,15 @@ const CandidatesTab = () => {
                     <input
                       type="date"
                       id="internship_end_date"
-                      name="internship_end_date"
+                      {...register('internship_end_date')}
                       required
-                      defaultValue={editingStudent?.internship_end_date ? new Date(editingStudent.internship_end_date).toISOString().split('T')[0] : ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.internship_end_date ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                     />
+                    {errors.internship_end_date && (
+                      <p className="mt-1 text-xs text-red-600">{errors.internship_end_date.message}</p>
+                    )}
                   </div>
 
                   {/* Internship Duration */}
@@ -2244,11 +2373,15 @@ const CandidatesTab = () => {
                     <input
                       type="text"
                       id="internship_duration"
-                      name="internship_duration"
+                      {...register('internship_duration')}
                       required
-                      defaultValue={editingStudent?.internship_duration || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
+                        errors.internship_duration ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
                     />
+                    {errors.internship_duration && (
+                      <p className="mt-1 text-xs text-red-600">{errors.internship_duration.message}</p>
+                    )}
                   </div>
 
                   {/* Image URL */}

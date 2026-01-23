@@ -200,16 +200,18 @@ const VideoPage = () => {
     );
   }
 
+  // Error state: Handles cases where video fails to load or isn't found
+  // This prevents the page from breaking when API calls fail or invalid video IDs are provided
   if (error || !video) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error || 'Video not found'}</p>
           <button
-            onClick={() => navigate(ROUTES.STUDENT.DASHBOARD)}
+            onClick={() => navigate(ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS)}
             className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
-            Go Back to Dashboard
+            Go Back to Playlists
           </button>
         </div>
       </div>
@@ -234,7 +236,7 @@ const VideoPage = () => {
         <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate(ROUTES.STUDENT.DASHBOARD)}
+              onClick={() => navigate(ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS)}
               className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
             >
               <ArrowLeft className="w-6 h-6" />
