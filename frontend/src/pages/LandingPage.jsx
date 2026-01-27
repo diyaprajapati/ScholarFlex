@@ -59,17 +59,18 @@ export default function LandingPage() {
                     <div className="flex items-center gap-4">
                         <Link
                             to={ROUTES.LOGIN}
-                            className="text-sm font-medium text-gray-600 hover:text-[#4C763B] px-4 py-2 transition-colors"
+                            // className="text-sm font-medium text-gray-600 hover:text-[#4C763B] px-4 py-2 transition-colors"
+                            className="sm:flex items-center gap-2 bg-[#4C763B] hover:bg-[#3a5c2d] text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-lg shadow-green-900/20 transition-all hover:scale-105"
                         >
                             Intern Login
                         </Link>
-                        <Link
+                        {/* <Link
                             to={ROUTES.STUDENT.OPEN.DASHBOARD}
                             className="hidden sm:flex items-center gap-2 bg-[#4C763B] hover:bg-[#3a5c2d] text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-lg shadow-green-900/20 transition-all hover:scale-105"
                         >
                             Get Started
                             <ArrowRight className="w-4 h-4" />
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </nav>
@@ -115,11 +116,11 @@ export default function LandingPage() {
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
                                 <Link
-                                    to={ROUTES.STUDENT.OPEN.DEMO}
-                                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-8 py-4 rounded-full text-lg font-semibold border border-gray-200 transition-all"
+                                    to={ROUTES.LOGIN}
+                                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-8 py-4 rounded-full text-lg font-semibold border-2 border-[#4C763B] transition-all"
                                 >
-                                    <Play className="w-5 h-5 fill-current" />
-                                    Watch Demo
+                                    {/* <Play className="w-5 h-5 fill-current" /> */}
+                                    Intern Login
                                 </Link>
                             </motion.div>
                             <motion.p variants={fadeInUp} className="text-sm text-gray-500 mt-4 text-center">
