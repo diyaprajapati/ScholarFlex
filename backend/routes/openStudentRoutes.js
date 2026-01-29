@@ -87,7 +87,7 @@ router.post(
   [
     validateOpenSession,
     body('videoId').isInt().withMessage('Video ID must be an integer'),
-    body('playlistId').isInt().withMessage('Playlist ID must be an integer'),
+    body('playlistId').optional().isInt().withMessage('Playlist ID must be an integer'),
     body('watchTimeSeconds').optional().isInt().withMessage('Watch time must be an integer'),
     body('progressPercent').optional().isFloat({ min: 0, max: 100 }).withMessage('Progress must be between 0 and 100'),
     body('lastPosition').optional().isFloat({ min: 0 }).withMessage('Last position must be a positive number'),

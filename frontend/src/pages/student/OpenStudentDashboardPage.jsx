@@ -14,7 +14,7 @@ const OpenStudentDashboardPage = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isIntern] = useState(false); // Open students are not interns
-  
+
   // Determine active tab from URL
   const getActiveTabFromPath = () => {
     const path = location.pathname;
@@ -26,22 +26,22 @@ const OpenStudentDashboardPage = () => {
     console.log('Returning dashboard tab');
     return 'dashboard'; // Default to dashboard
   };
-  
+
   const [activeTab, setActiveTab] = useState(getActiveTabFromPath());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showLockedModal, setShowLockedModal] = useState(false);
-  
+
   // Dashboard Tab State
   const [continueWatching, setContinueWatching] = useState([]);
-  
+
   // Playlists Tab State
   const [allPlaylists, setAllPlaylists] = useState([]);
-  
+
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [loadingPlaylists, setLoadingPlaylists] = useState(true);
-  
+
   // Playlist Viewer Modal State
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
@@ -54,10 +54,10 @@ const OpenStudentDashboardPage = () => {
       navigate(ROUTES.STUDENT.OPEN.REGISTER, { replace: true });
       return;
     }
-    
+
     fetchCurrentStudent();
     fetchInitialData();
-    
+
     // Set active tab based on current URL
     setActiveTab(getActiveTabFromPath());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +96,7 @@ const OpenStudentDashboardPage = () => {
     try {
       setLoadingDashboard(true);
       const response = await api.openStudent.getDashboard();
-      
+
       if (response.success) {
         const items = response.dashboard?.continueWatching || [];
         console.log('Open dashboard continueWatching:', items);
@@ -123,9 +123,9 @@ const OpenStudentDashboardPage = () => {
       setLoadingPlaylists(true);
       setError(''); // Clear previous errors
       const response = await api.openStudent.getPlaylists();
-      
+
       console.log('Playlists API response:', response);
-      
+
       if (response.success) {
         const playlists = response.playlists || [];
         console.log('Setting playlists:', playlists.length, 'playlists found');
@@ -159,7 +159,8 @@ const OpenStudentDashboardPage = () => {
 
   const getThumbnailUrl = (youtubeUrl) => {
     const videoId = extractVideoId(youtubeUrl);
-    return videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+    // Use i.ytimg.com (more reliable) and a higher quality default thumbnail
+    return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
   };
 
   const handlePlaylistClick = (playlist) => {
@@ -188,24 +189,41 @@ const OpenStudentDashboardPage = () => {
         return;
       }
 
+      // Get lastPosition from video data (for continue watching)
+      const lastPosition = video.lastPosition !== undefined && video.lastPosition !== null
+        ? Number(video.lastPosition)
+        : (video.currentTime !== undefined && video.currentTime !== null
+          ? Number(video.currentTime)
+          : 0);
+
+      // ALWAYS add startTime param if we have any position data
+      let startTimeParam = '';
+      if (lastPosition > 0) {
+        const startTime = Math.floor(lastPosition);
+        startTimeParam = `&startTime=${startTime}`;
+      }
+
+      // Add dbVideoId to ensure tracking works correctly with integer IDs
+      const dbVideoIdParam = video.id ? `&dbVideoId=${video.id}` : '';
+
       let navigationPath = '';
       // For open students, navigate to open video route with same UI
       if (!isIntern) {
         if (selectedPlaylist) {
-          navigationPath = ROUTES.STUDENT.OPEN.VIDEO(youtubeVideoId) + `?url=${videoUrl}&playlistId=${selectedPlaylist.id}&title=${title}`;
+          navigationPath = ROUTES.STUDENT.OPEN.VIDEO(youtubeVideoId) + `?url=${videoUrl}&playlistId=${selectedPlaylist.id}&title=${title}${startTimeParam}${dbVideoIdParam}`;
         } else if (video.playlistId) {
-          navigationPath = ROUTES.STUDENT.OPEN.VIDEO(youtubeVideoId) + `?url=${videoUrl}&playlistId=${video.playlistId}&title=${title}`;
+          navigationPath = ROUTES.STUDENT.OPEN.VIDEO(youtubeVideoId) + `?url=${videoUrl}&playlistId=${video.playlistId}&title=${title}${startTimeParam}${dbVideoIdParam}`;
         } else {
-          navigationPath = ROUTES.STUDENT.OPEN.VIDEO(youtubeVideoId) + `?url=${videoUrl}&title=${title}`;
+          navigationPath = ROUTES.STUDENT.OPEN.VIDEO(youtubeVideoId) + `?url=${videoUrl}&title=${title}${startTimeParam}${dbVideoIdParam}`;
         }
       } else {
         // Fallback for intern context (shouldn't normally be used on open dashboard)
         if (selectedPlaylist) {
-          navigationPath = `/student/video/${youtubeVideoId}?url=${videoUrl}&playlistId=${selectedPlaylist.id}&title=${title}`;
+          navigationPath = `/student/video/${youtubeVideoId}?url=${videoUrl}&playlistId=${selectedPlaylist.id}&title=${title}${startTimeParam}`;
         } else if (video.playlistId) {
-          navigationPath = `/student/video/${youtubeVideoId}?url=${videoUrl}&playlistId=${video.playlistId}&title=${title}`;
+          navigationPath = `/student/video/${youtubeVideoId}?url=${videoUrl}&playlistId=${video.playlistId}&title=${title}${startTimeParam}`;
         } else {
-          navigationPath = `/student/video/${youtubeVideoId}?url=${videoUrl}&title=${title}`;
+          navigationPath = `/student/video/${youtubeVideoId}?url=${videoUrl}&title=${title}${startTimeParam}`;
         }
       }
 
@@ -224,7 +242,7 @@ const OpenStudentDashboardPage = () => {
   const handleLogout = () => {
     localStorage.removeItem('open_student_token');
     localStorage.removeItem('open_student_data');
-    api.openStudent.logout().catch(() => {}); // Fire and forget
+    api.openStudent.logout().catch(() => { }); // Fire and forget
     navigate(ROUTES.LANDING, { replace: true });
   };
 

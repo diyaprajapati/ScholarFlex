@@ -946,6 +946,13 @@ export const api = {
       });
     },
 
+    markAsCompleted: async (videoId, skipNextVideo = false) => {
+      const url = `/video-tracking/complete/${videoId}${skipNextVideo ? '?skipNextVideo=true' : ''}`;
+      return apiRequest(url, {
+        method: 'POST',
+      });
+    },
+
     getProgress: async (videoId) => {
       return apiRequest(`/video-tracking/progress/${videoId}`, {
         method: 'GET',

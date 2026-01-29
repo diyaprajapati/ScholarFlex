@@ -73,12 +73,14 @@ const StudentDashboardPage = () => {
       return;
     }
 
+    // Refresh dashboard data when returning to dashboard (e.g., from video page)
+    // This ensures progress updates are reflected
     fetchInitialData();
     
     // Set active tab based on current URL
     setActiveTab(getActiveTabFromPath());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]); // Update tab when URL changes
+  }, [location.pathname]); // Update tab when URL changes and refresh data
 
   // Periodic check for is_selected status changes
   useEffect(() => {
@@ -180,8 +182,23 @@ const StudentDashboardPage = () => {
       ]);
 
       if (videosRes.success) {
-        setContinueWatching(videosRes.videos || []);
-        setRecentActivity(videosRes.videos.slice(0, 5) || []);
+        let videos = videosRes.videos || [];
+        console.log('📥 Received continue watching videos from API:', videos);
+        console.log('📥 First video details:', videos[0] ? {
+          id: videos[0].id,
+          videoTitle: videos[0].videoTitle,
+          lastPosition: videos[0].lastPosition,
+          progress: videos[0].progress,
+          playlistTitle: videos[0].playlistTitle,
+          playlistId: videos[0].playlistId,
+        } : 'No videos');
+        
+        // Backend handles all filtering - just use the videos as-is
+        // Backend will exclude completed videos (including completed video_next videos)
+        // Backend will add next videos for completed videos
+        
+        setContinueWatching(videos);
+        setRecentActivity(videos.slice(0, 5) || []);
       }
 
       if (playlistsRes.success) {
@@ -193,8 +210,39 @@ const StudentDashboardPage = () => {
       }
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
+      setError(err.message || 'Failed to load dashboard data');
     } finally {
       setLoadingDashboard(false);
+    }
+  };
+
+  const handleRemoveVideo = async (videoId, video) => {
+    try {
+      console.log(`[Remove Video] Removing video ${videoId} from continue watching`);
+      
+      // Call API to delete video progress (manual removal)
+      // This prevents the next video from being automatically added
+      const response = await api.videoTracking.markAsCompleted(videoId, true);
+      
+      if (response.success) {
+        console.log(`[Remove Video] Successfully removed video ${videoId}`);
+        
+        // Remove video from local state immediately for better UX
+        setContinueWatching(prev => prev.filter(v => (v.id || v.videoId) !== videoId));
+        setRecentActivity(prev => prev.filter(v => (v.id || v.videoId) !== videoId));
+        
+        // Refresh dashboard after a delay to ensure backend has processed the deletion
+        // Backend will handle not showing next videos for manually removed videos
+        setTimeout(() => {
+          fetchDashboardData();
+        }, 500);
+      } else {
+        console.error('[Remove Video] Failed to remove video:', response.message);
+        alert('Failed to remove video. Please try again.');
+      }
+    } catch (err) {
+      console.error('[Remove Video] Error removing video:', err);
+      alert('Error removing video. Please try again.');
     }
   };
 
@@ -251,7 +299,8 @@ const StudentDashboardPage = () => {
 
   const getThumbnailUrl = (youtubeUrl) => {
     const videoId = extractVideoId(youtubeUrl);
-    return videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+    // Use i.ytimg.com (more reliable) and a higher quality default thumbnail
+    return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
   };
 
   const formatTime = (seconds) => {
@@ -311,17 +360,37 @@ const StudentDashboardPage = () => {
       // Use YouTube video ID for the route (VideoPage will find the actual video by URL)
       const routeVideoId = youtubeVideoId;
       
+      // Get lastPosition from video data (for continue watching)
+      // CRITICAL: Extract lastPosition - check multiple possible field names
+      const lastPosition = video.lastPosition !== undefined && video.lastPosition !== null 
+        ? Number(video.lastPosition)
+        : (video.currentTime !== undefined && video.currentTime !== null
+          ? Number(video.currentTime)
+          : 0);
+      
+      // ALWAYS add startTime param if we have any position data
+      let startTimeParam = '';
+      if (lastPosition > 0) {
+        const startTime = Math.floor(lastPosition);
+        startTimeParam = `&startTime=${startTime}`;
+      }
+      
+      // CRITICAL: Add dbVideoId parameter for proper tracking (especially for video_next videos)
+      // Use video.id (database video ID) if available, otherwise use video.videoId
+      const dbVideoId = video.id || video.videoId;
+      const dbVideoIdParam = dbVideoId ? `&dbVideoId=${dbVideoId}` : '';
+      
       let navigationPath = '';
       if (selectedPlaylist) {
         // Include playlist context from modal
-        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&playlistId=${selectedPlaylist.id}&title=${title}`;
+        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&playlistId=${selectedPlaylist.id}&title=${title}${startTimeParam}${dbVideoIdParam}`;
       } else if (video.playlistId) {
         // Video has playlist context from continue watching
-        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&playlistId=${video.playlistId}&title=${title}`;
+        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&playlistId=${video.playlistId}&title=${title}${startTimeParam}${dbVideoIdParam}`;
       } else {
         // Single video without playlist - try to find it in any playlist
         // Use YouTube ID as placeholder, VideoPage will handle finding the video
-        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&title=${title}`;
+        navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&title=${title}${startTimeParam}${dbVideoIdParam}`;
       }
       
       console.log('Navigating to:', navigationPath);
@@ -419,6 +488,7 @@ const StudentDashboardPage = () => {
                 getThumbnailUrl={getThumbnailUrl}
                 handlePlaylistClick={handlePlaylistClick}
                 handleVideoClick={handleVideoClick}
+                onRemoveVideo={handleRemoveVideo}
               />
             </div>
           )}

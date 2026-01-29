@@ -25,6 +25,7 @@ const OpenVideoPage = () => {
   const videoUrlParam = searchParams.get('url');
   const playlistId = searchParams.get('playlistId');
   const videoTitleParam = searchParams.get('title') || 'Video';
+  const startTimeParam = searchParams.get('startTime');
 
   const extractVideoId = (url) => {
     if (!url) return null;
@@ -35,24 +36,46 @@ const OpenVideoPage = () => {
 
   const fetchOpenVideoProgress = async (dbVideo) => {
     try {
+      // If startTime is provided in URL params (from continue watching), use it directly
+      // This takes priority over API data
+      if (startTimeParam) {
+        const time = parseFloat(startTimeParam);
+        if (!isNaN(time) && time > 0) {
+          setStartTime(time);
+          console.log(`✅ Resuming video from URL param: ${time} seconds`);
+          return;
+        } else {
+          console.log(`⚠️ Invalid startTime param: ${startTimeParam}`);
+        }
+      } else {
+        console.log('ℹ️ No startTime param in URL, fetching from API');
+      }
+      
+      // Otherwise, fetch from API
       if (!dbVideo?.id) {
+        console.log('ℹ️ No dbVideo ID, starting from beginning');
         setStartTime(0);
         return;
       }
 
       const response = await api.openStudent.getVideoProgress(dbVideo.id);
+      console.log('API progress response:', response);
+      
       if (response.success && response.progress) {
         const { lastPosition, isCompleted } = response.progress;
         if (!isCompleted && lastPosition && Number(lastPosition) > 0) {
           setStartTime(Number(lastPosition));
+          console.log(`✅ Resuming video from API: ${Number(lastPosition)} seconds`);
         } else {
+          console.log('ℹ️ Video is completed or no lastPosition, starting from beginning');
           setStartTime(0);
         }
       } else {
+        console.log('ℹ️ No progress found in API response, starting from beginning');
         setStartTime(0);
       }
     } catch (err) {
-      console.error('Error fetching open student video progress:', err);
+      console.error('❌ Error fetching open student video progress:', err);
       setStartTime(0);
     }
   };

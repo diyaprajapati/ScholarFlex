@@ -1,5 +1,5 @@
 const express = require('express');
-const { body } = require('express-validator');
+const { body, param, query } = require('express-validator');
 const videoTrackingController = require('../controllers/videoTrackingController');
 const { authenticate, authorize } = require('../middleware/auth');
 
@@ -21,6 +21,7 @@ router.post(
       .isInt()
       .withMessage('Video ID must be an integer'),
     body('playlistId')
+      .optional()
       .isInt()
       .withMessage('Playlist ID must be an integer'),
   ],
@@ -59,6 +60,7 @@ router.post(
       .isInt()
       .withMessage('Video ID must be an integer'),
     body('playlistId')
+      .optional()
       .isInt()
       .withMessage('Playlist ID must be an integer'),
     body('watchTimeSeconds')
@@ -90,6 +92,7 @@ router.post(
       .isInt()
       .withMessage('Video ID must be an integer'),
     body('playlistId')
+      .optional()
       .isInt()
       .withMessage('Playlist ID must be an integer'),
     body('watchTimeSeconds')
@@ -98,6 +101,26 @@ router.post(
       .withMessage('Watch time must be a non-negative integer'),
   ],
   videoTrackingController.trackVideoCompleted
+);
+
+/**
+ * @route   POST /api/video-tracking/complete/:videoId
+ * @desc    Mark video as completed (remove from continue watching)
+ * @access  Private (Student)
+ */
+router.post(
+  '/complete/:videoId',
+  authorize('STUDENT'),
+  [
+    param('videoId')
+      .isInt()
+      .withMessage('Video ID must be an integer'),
+    query('skipNextVideo')
+      .optional()
+      .isIn(['true', 'false', '1', '0'])
+      .withMessage('skipNextVideo must be true or false'),
+  ],
+  videoTrackingController.markVideoAsCompleted
 );
 
 /**

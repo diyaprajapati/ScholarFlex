@@ -112,7 +112,7 @@ const verifyOTP = async (req, res) => {
       today.setHours(0, 0, 0, 0);
       const endDate = new Date(user.internship_end_date);
       endDate.setHours(23, 59, 59, 999);
-      
+
       if (today > endDate) {
         // Check if feedback has already been submitted
         try {
@@ -120,7 +120,7 @@ const verifyOTP = async (req, res) => {
             where: { studentId: user.id },
             select: { id: true },
           });
-          
+
           if (feedback) {
             // Feedback already submitted, block login permanently
             return res.status(403).json({

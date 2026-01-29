@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../../services/api';
+import { authService } from '../../utils/auth';
 
 /**
  * YouTube Video Player Component with Activity Tracking
@@ -10,11 +12,51 @@ import api from '../../services/api';
  * - Logs activities to backend
  */
 const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlistTitle, onVideoEnd, startTime = 0, dbVideoId = null }) => {
+  const location = useLocation();
   const playerRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [error, setError] = useState(null);
-  
+
+  // Keep track of latest start time to avoid stale closures in effects
+  const startTimeRef = useRef(startTime);
+
+  // Keep track of tracking IDs to avoid stale closures in intervals/callbacks
+  const trackingRef = useRef({
+    dbVideoId: dbVideoId || videoId, // Initial fallbacks
+    playlistId: playlistId
+  });
+
+  // Prevent duplicate tracking calls (React strict mode causes double-invocation)
+  const trackingInProgressRef = useRef(new Set());
+
+  // Helper to safely parse IDs
+  const safeParseInt = (val) => {
+    if (!val) return null;
+    const parsed = parseInt(val);
+    return isNaN(parsed) ? null : parsed;
+  };
+
+  // Update refs when props change
+  useEffect(() => {
+    startTimeRef.current = startTime;
+    // CRITICAL: Only use dbVideoId (database ID), never videoId (YouTube ID string)
+    const dbVideoIdInt = safeParseInt(dbVideoId);
+    trackingRef.current = {
+      dbVideoId: dbVideoIdInt, // Only database ID, null if not available
+      playlistId: safeParseInt(playlistId)
+    };
+
+    console.log('📊 Tracking Params Updated:', trackingRef.current, {
+      dbVideoId,
+      videoId,
+      parsedDbVideoId: dbVideoIdInt
+    });
+  }, [startTime, dbVideoId, videoId, playlistId]);
+
+  // NOTE: We recreate the player in the init effect (dependency includes startTime).
+  // Destroying here can race with initialization and cause 0:00 starts.
+
   // Track progress milestones to avoid duplicate logging
   const progressMilestones = useRef({
     started: false,
@@ -23,7 +65,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
     milestone50: false,
     milestone75: false,
   });
-  
+
   // Track last logged time to avoid too frequent updates
   const lastLoggedTime = useRef(0);
   const lastLoggedProgress = useRef(0);
@@ -37,13 +79,35 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
   };
 
   const finalVideoId = videoId || extractVideoId(videoUrl);
-  const finalDbVideoId = dbVideoId || videoId; // Use dbVideoId if provided, otherwise fallback to videoId
+  // CRITICAL: finalDbVideoId should ONLY be the database ID (integer), never YouTube ID (string)
+  // Use dbVideoId if it's a valid integer, otherwise null (don't fallback to videoId which is YouTube ID)
+  const finalDbVideoId = safeParseInt(dbVideoId) || null;
 
   // Helper: detect open student mode
+  // CRITICAL: Check both token presence AND route to avoid false positives
+  // If user has regular JWT token, they are an intern (not open student)
+  // Only consider open student if they have open_student_token AND no regular JWT token
   const isOpenStudent = () => {
     try {
       if (typeof window === 'undefined') return false;
-      return !!window.localStorage?.getItem('open_student_token');
+      
+      // Check if user has regular JWT token (intern/regular student)
+      const hasRegularToken = authService.isAuthenticated();
+      
+      // If user has regular token, they are NOT an open student
+      if (hasRegularToken) {
+        return false;
+      }
+      
+      // Check if user has open student token
+      const hasOpenToken = !!window.localStorage?.getItem('open_student_token');
+      
+      // Also check route path as additional verification
+      const path = location?.pathname || '';
+      const isOpenRoute = path.includes('/open/') || path.includes('/open-student');
+      
+      // Only return true if they have open token AND are on an open student route
+      return hasOpenToken && isOpenRoute;
     } catch {
       return false;
     }
@@ -51,35 +115,70 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
 
   // Helper: track progress for open students
   const trackOpenStudentProgress = async (currentTime, progressPercent, durationSeconds) => {
-    if (!playlistId || !finalDbVideoId || !isOpenStudent()) return;
+    const { dbVideoId, playlistId } = trackingRef.current;
+
+    // Ensure we have a valid ID before tracking
+    if (!dbVideoId || !isOpenStudent()) {
+      console.log('Skipping open student tracking: Missing dbVideoId or not open student', { dbVideoId });
+      return;
+    }
+
+    // Create a unique key for this tracking request to prevent duplicates
+    // Round values to prevent too many unique keys for similar progress
+    const roundedTime = Math.round(currentTime ?? 0);
+    const roundedProgress = Math.round(progressPercent ?? 0);
+    const trackingKey = `${dbVideoId}-${roundedTime}-${roundedProgress}`;
+    
+    // Skip if this exact tracking request is already in progress
+    if (trackingInProgressRef.current.has(trackingKey)) {
+      return; // Silently skip duplicate
+    }
+
+    // Mark as in progress
+    trackingInProgressRef.current.add(trackingKey);
 
     try {
       await api.openStudent.trackVideoProgress({
-        videoId: finalDbVideoId,
+        videoId: dbVideoId,
         playlistId: playlistId,
-        watchTimeSeconds: Math.round(currentTime ?? 0),
+        watchTimeSeconds: roundedTime,
         progressPercent: typeof progressPercent === 'number' ? progressPercent : 0,
         lastPosition: typeof currentTime === 'number' ? currentTime : 0,
       });
     } catch (err) {
-      console.error('Error tracking open student video progress:', err);
+      // Log error but don't re-throw - this is non-critical
+      // The backend will handle unique constraint violations gracefully
+      if (!err.message?.includes('Unique constraint')) {
+        console.error('Error tracking open student video progress:', err);
+      }
+    } finally {
+      // Remove from in-progress set after a short delay to allow for rapid updates
+      setTimeout(() => {
+        trackingInProgressRef.current.delete(trackingKey);
+      }, 2000); // Increased delay to handle React strict mode double-invocation
     }
   };
 
   // Track video opened when component mounts
   useEffect(() => {
-    if (playlistId && finalDbVideoId) {
-      // Track for open students (initial open with 0 progress)
+    // CRITICAL: Only track if we have a valid integer database ID (not YouTube ID string)
+    const dbVideoIdInt = safeParseInt(finalDbVideoId);
+    if (dbVideoIdInt) {
+      // Track for open students (only needs videoId, playlistId is optional)
       if (isOpenStudent()) {
         trackOpenStudentProgress(0, 0, 0).catch(err => {
           console.error('Error tracking open student video opened:', err);
         });
-      } else {
-        // Intern/internship tracking
-        api.videoTracking.trackOpened(parseInt(finalDbVideoId), parseInt(playlistId)).catch(err => {
+      }
+      // Intern/internship tracking (playlistId is optional)
+      else {
+        // Track opened - playlistId is optional for standalone videos
+        api.videoTracking.trackOpened(dbVideoIdInt, playlistId ? parseInt(playlistId) : null).catch(err => {
           console.error('Error tracking video opened:', err);
         });
       }
+    } else {
+      console.warn(`[Video Tracking] Cannot track video opened - invalid dbVideoId: ${finalDbVideoId} (expected integer database ID)`);
     }
   }, [playlistId, finalDbVideoId]);
 
@@ -102,7 +201,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
 
     // Create script element
     const scriptUrl = 'https://www.youtube.com/s/player/217a23a9/www-widgetapi.vflset/www-widgetapi.js';
-    
+
     // Handle Trusted Types if available
     let finalScriptUrl = scriptUrl;
     try {
@@ -211,37 +310,80 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
     };
   }, []);
 
-  // Initialize player when API is ready
+  // Initialize player when API is ready OR when startTime changes
   useEffect(() => {
-    if (!isPlayerReady || !finalVideoId || !containerRef.current) return;
+    console.log(`🔄 YouTubeVideoPlayer useEffect triggered:`, {
+      isPlayerReady,
+      finalVideoId,
+      hasContainer: !!containerRef.current,
+      startTime,
+    });
+
+    if (!isPlayerReady || !finalVideoId || !containerRef.current) {
+      console.log('⏸️ Player not ready yet, waiting...');
+      return;
+    }
+
+    // Destroy existing player if it exists
+    if (playerRef.current && playerRef.current.destroy) {
+      console.log('🗑️ Destroying existing player before recreating...');
+      try {
+        playerRef.current.destroy();
+      } catch (e) {
+        console.error('Error destroying existing player:', e);
+      }
+      playerRef.current = null;
+    }
 
     // Initialize YouTube player
     try {
+      const playerVars = {
+        enablejsapi: 1,
+        origin: window.location.origin,
+        rel: 0,
+        modestbranding: 1,
+        autoplay: 1, // Enable autoplay
+      };
+
+      // CRITICAL: Use start parameter - YouTube's native way to resume
+      if (startTime > 0) {
+        playerVars.start = Math.floor(startTime);
+      }
+
       playerRef.current = new window.YT.Player(containerRef.current, {
         videoId: finalVideoId,
-        playerVars: {
-          enablejsapi: 1,
-          origin: window.location.origin,
-          rel: 0,
-          modestbranding: 1,
-        },
+        playerVars: playerVars,
         events: {
           onReady: (event) => {
-            console.log('YouTube player ready');
             const player = event.target;
-            
-            // Seek to startTime if provided (for resuming playback)
-            // Wait a bit for video to load before seeking
-            if (startTime > 0 && player && player.seekTo) {
-              // Use setTimeout to ensure video metadata is loaded
+            const targetTime = startTimeRef.current; // Use Ref for latest value
+
+            console.log(`🎬 Player Ready. Seeking to ${targetTime}s`);
+
+            // Initial seek check
+            if (targetTime > 0 && player && player.seekTo) {
+              // Immediate seek
+              try {
+                player.seekTo(targetTime, true);
+                player.playVideo();
+              } catch (e) { /* ignore */ }
+
+              // Retry after short delay to ensure metadata loaded
               setTimeout(() => {
                 try {
-                  player.seekTo(startTime, true);
-                  console.log(`Seeking to ${startTime} seconds`);
-                } catch (err) {
-                  console.error('Error seeking to start time:', err);
-                }
-              }, 500);
+                  const currentTime = player.getCurrentTime();
+                  // Convert to numbers explicitly to be safe
+                  if (Math.abs(Number(currentTime) - Number(targetTime)) > 2) {
+                    console.log('🔄 Retry seek...');
+                    player.seekTo(targetTime, true);
+                    player.playVideo();
+                  }
+                } catch (err) { /* ignore */ }
+              }, 1000);
+            } else {
+              try {
+                player.playVideo();
+              } catch (e) { /* ignore */ }
             }
           },
           onStateChange: (event) => {
@@ -268,7 +410,105 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
         }
       }
     };
-  }, [isPlayerReady, finalVideoId, startTime]);
+  }, [isPlayerReady, finalVideoId]); // REMOVED startTime from dependency
+
+  // Handle start time changes dynamically
+  useEffect(() => {
+    if (!playerRef.current || !startTime || startTime <= 0) return;
+
+    try {
+      const player = playerRef.current;
+      if (player.seekTo) {
+        console.log(`⏩ Seeking to ${startTime}s due to prop update`);
+        player.seekTo(startTime, true);
+        if (player.playVideo) {
+          player.playVideo();
+        }
+      }
+    } catch (err) {
+      console.error('Error seeking to new start time:', err);
+    }
+  }, [startTime]);
+
+  // Flush progress when user leaves the page / switches tabs (critical for resume)
+  useEffect(() => {
+    const saveProgress = (reason) => {
+      try {
+        const player = playerRef.current;
+        if (!player || !player.getCurrentTime || !player.getDuration) return;
+
+        const currentTime = player.getCurrentTime();
+        const duration = player.getDuration();
+        if (!duration || duration <= 0 || !currentTime || currentTime <= 0) return;
+
+        const progress = (currentTime / duration) * 100;
+
+        // Track for open students (playlistId is optional)
+        if (isOpenStudent() && finalDbVideoId) {
+          trackOpenStudentProgress(currentTime, progress, duration).catch(() => { });
+        }
+
+        // Track using new API (intern tracking - playlistId is optional)
+        // Ensure finalDbVideoId is a valid integer (database ID), not a YouTube ID string
+        const dbVideoIdInt = safeParseInt(finalDbVideoId);
+        if (!isOpenStudent() && dbVideoIdInt) {
+          api.videoTracking
+            .trackProgress(
+              dbVideoIdInt,
+              playlistId ? parseInt(playlistId) : null,
+              Math.round(currentTime),
+              progress,
+              currentTime
+            )
+            .catch((err) => {
+              console.error('Error tracking video progress:', err);
+            });
+        }
+
+        // Always log to activity log (this is what student resume reads)
+        logActivity('video_progress', {
+          videoId: finalVideoId,
+          video_id: finalVideoId,
+          videoTitle: videoTitle || 'Unknown Video',
+          video_title: videoTitle || 'Unknown Video',
+          playlistId: playlistId || null,
+          playlist_id: playlistId || null,
+          playlistTitle: playlistTitle || null,
+          playlist_title: playlistTitle || null,
+          youtubeUrl: videoUrl || `https://www.youtube.com/watch?v=${finalVideoId}`,
+          youtube_url: videoUrl || `https://www.youtube.com/watch?v=${finalVideoId}`,
+          progress: Math.round(progress),
+          currentTime: currentTime,
+          duration: duration,
+          reason,
+        });
+
+        lastLoggedTime.current = currentTime;
+        lastLoggedProgress.current = progress;
+      } catch {
+        // ignore
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') saveProgress('visibility_hidden');
+    };
+
+    const onPageHide = () => saveProgress('pagehide');
+    const onBeforeUnload = () => saveProgress('beforeunload');
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('beforeunload', onBeforeUnload);
+
+    return () => {
+      // Save once on unmount as well
+      saveProgress('unmount');
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [finalVideoId, finalDbVideoId, playlistId, playlistTitle, videoTitle, videoUrl]);
 
   // Handle player state changes
   const handlePlayerStateChange = (event) => {
@@ -278,24 +518,31 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
     // Video started (playing)
     if (state === window.YT.PlayerState.PLAYING && !progressMilestones.current.started) {
       progressMilestones.current.started = true;
-      
-      // Track for open students
-      if (isOpenStudent() && playlistId && finalDbVideoId) {
-        trackOpenStudentProgress(0, 0, 0).catch(err => {
-          console.error('Error tracking open student video started:', err);
-        });
+
+      // Track for open students - Use current time instead of 0
+      if (isOpenStudent()) {
+        const currentTime = player.getCurrentTime ? player.getCurrentTime() : 0;
+        // Only track if we have a valid time > 1s (to avoid overwriting resume progress with 0)
+        // or if we are truly at the start
+        if (currentTime > 1 || startTime < 1) {
+          trackOpenStudentProgress(currentTime, 0, 0).catch(err => {
+            console.error('Error tracking open student video started:', err);
+          });
+        }
       }
-      
+
       // Track using new API (for interns)
-      if (!isOpenStudent() && playlistId && finalDbVideoId) {
-        api.videoTracking.trackStarted(parseInt(finalDbVideoId), parseInt(playlistId)).catch(err => {
-          console.error('Error tracking video started:', err);
+      const { dbVideoId: currentDbId, playlistId: currentPlId } = trackingRef.current;
+      if (!isOpenStudent() && currentPlId && currentDbId) {
+        api.videoTracking.trackStarted(parseInt(currentDbId), parseInt(currentPlId)).catch(err => {
+          // ...
         });
       }
-      
+
       // Also log to activity log for backward compatibility
       logActivity('video_start', {
         videoId: finalVideoId,
+        // ...
         video_id: finalVideoId,
         videoTitle: videoTitle || 'Unknown Video',
         video_title: videoTitle || 'Unknown Video',
@@ -318,25 +565,26 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
           // Only log if significant time has passed (avoid spam)
           if (Math.abs(currentTime - lastLoggedTime.current) > 5) {
             // Track for open students
-            if (isOpenStudent() && playlistId && finalDbVideoId) {
+            if (isOpenStudent() && finalDbVideoId) {
               trackOpenStudentProgress(currentTime, progress, duration).catch(err => {
                 console.error('Error tracking open student video progress:', err);
               });
             }
-            
-            // Track using new API (intern tracking)
-            if (!isOpenStudent() && playlistId && finalDbVideoId) {
+
+            // Track using new API (intern tracking - playlistId is optional)
+            const dbVideoIdInt = safeParseInt(finalDbVideoId);
+            if (!isOpenStudent() && dbVideoIdInt) {
               api.videoTracking.trackProgress(
-                parseInt(finalDbVideoId),
-                parseInt(playlistId),
+                dbVideoIdInt,
+                playlistId ? parseInt(playlistId) : null,
                 Math.round(currentTime),
                 progress,
                 currentTime
               ).catch(err => {
-                console.error('Error tracking video progress:', err);
+                console.error('Error tracking video progress on pause:', err);
               });
             }
-            
+
             // Also log to activity log for backward compatibility
             logActivity('video_progress', {
               videoId: finalVideoId,
@@ -365,7 +613,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
     // Video ended (completed)
     if (state === window.YT.PlayerState.ENDED && !progressMilestones.current.completed) {
       progressMilestones.current.completed = true;
-      
+
       // Get video duration before logging
       let videoDuration = 0;
       try {
@@ -375,25 +623,33 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
       } catch (err) {
         console.error('Error getting video duration:', err);
       }
-      
+
       // Track completion for open students (100% progress)
-      if (isOpenStudent() && playlistId && finalDbVideoId) {
+      if (isOpenStudent() && finalDbVideoId) {
         trackOpenStudentProgress(videoDuration, 100, videoDuration).catch(err => {
           console.error('Error tracking open student video completed:', err);
         });
       }
-      
+
       // Track using new API (intern tracking)
-      if (!isOpenStudent() && playlistId && finalDbVideoId) {
+      // Only require finalDbVideoId - playlistId is optional (can be null for standalone videos)
+      // Ensure finalDbVideoId is a valid integer (database ID), not a YouTube ID string
+      const dbVideoIdInt = safeParseInt(finalDbVideoId);
+      if (!isOpenStudent() && dbVideoIdInt) {
+        console.log(`[Video Completion] Tracking completion for video ${dbVideoIdInt}, playlistId: ${playlistId}, duration: ${videoDuration}`);
         api.videoTracking.trackCompleted(
-          parseInt(finalDbVideoId),
-          parseInt(playlistId),
+          dbVideoIdInt,
+          playlistId ? parseInt(playlistId) : null,
           Math.round(videoDuration)
-        ).catch(err => {
-          console.error('Error tracking video completed:', err);
+        ).then(() => {
+          console.log(`[Video Completion] Successfully tracked completion for video ${dbVideoIdInt}`);
+        }).catch(err => {
+          console.error('[Video Completion] Error tracking video completed:', err);
         });
+      } else if (!isOpenStudent() && !dbVideoIdInt) {
+        console.warn(`[Video Completion] Cannot track completion - invalid finalDbVideoId: ${finalDbVideoId} (expected integer database ID)`);
       }
-      
+
       // Also log to activity log for backward compatibility
       logActivity('video_complete', {
         videoId: finalVideoId,
@@ -504,21 +760,22 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
             lastLoggedProgress.current = progress;
           }
 
-          // Save progress every 10 seconds (for resume functionality)
-          // Only log if at least 10 seconds have passed since last log
-          if (Math.abs(currentTime - lastLoggedTime.current) >= 10) {
-            // Track for open students
-            if (isOpenStudent() && playlistId && finalDbVideoId) {
+          // Save progress every ~5 seconds (for resume functionality)
+          // Only log if at least 5 seconds have passed since last log
+          if (Math.abs(currentTime - lastLoggedTime.current) >= 5) {
+            // Track for open students (requires dbVideoId)
+            if (isOpenStudent() && finalDbVideoId) {
               trackOpenStudentProgress(currentTime, progress, duration).catch(err => {
                 console.error('Error tracking open student video progress:', err);
               });
             }
-            
+
             // Track using new API (for interns)
-            if (!isOpenStudent() && playlistId && finalDbVideoId) {
+            const { dbVideoId: currentDbId, playlistId: currentPlId } = trackingRef.current;
+            if (!isOpenStudent() && currentPlId && currentDbId) {
               api.videoTracking.trackProgress(
-                parseInt(finalDbVideoId),
-                parseInt(playlistId),
+                parseInt(currentDbId),
+                parseInt(currentPlId),
                 Math.round(currentTime),
                 progress,
                 currentTime
@@ -526,7 +783,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
                 console.error('Error tracking video progress:', err);
               });
             }
-            
+
             // Also log to activity log for backward compatibility
             logActivity('video_progress', {
               videoId: finalVideoId,
@@ -553,8 +810,8 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
       }
     };
 
-    // Check progress every 10 seconds while video is playing
-    const progressInterval = setInterval(checkProgress, 10000);
+    // Check progress every 5 seconds while video is playing
+    const progressInterval = setInterval(checkProgress, 5000);
 
     // Cleanup interval when component unmounts
     return () => {

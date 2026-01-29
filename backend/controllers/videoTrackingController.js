@@ -44,8 +44,11 @@ const trackVideoOpened = async (req, res) => {
       });
     }
 
-    // Verify playlist matches
-    if (video.playlistId !== playlistId) {
+    // Verify playlist matches (if playlistId is provided)
+    // If playlistId is not provided, use the video's playlistId
+    const finalPlaylistId = playlistId || video.playlistId;
+    
+    if (playlistId && video.playlistId && video.playlistId !== playlistId) {
       return res.status(400).json({
         success: false,
         message: 'Video does not belong to the specified playlist',
@@ -53,6 +56,16 @@ const trackVideoOpened = async (req, res) => {
     }
 
     // Create or update video progress
+    // CRITICAL: Preserve existing playlistId if request doesn't provide one
+    const existingProgress = await prisma.videoProgress.findUnique({
+      where: {
+        studentId_videoId: {
+          studentId: student.id,
+          videoId: videoId,
+        },
+      },
+    });
+
     const videoProgress = await prisma.videoProgress.upsert({
       where: {
         studentId_videoId: {
@@ -62,12 +75,13 @@ const trackVideoOpened = async (req, res) => {
       },
       update: {
         openedAt: new Date(),
-        playlistId: playlistId,
+        // Preserve playlistId if it exists, otherwise use finalPlaylistId
+        playlistId: existingProgress?.playlistId || finalPlaylistId,
       },
       create: {
         studentId: student.id,
         videoId: videoId,
-        playlistId: playlistId,
+        playlistId: finalPlaylistId,
         openedAt: new Date(),
       },
     });
@@ -230,6 +244,29 @@ const trackVideoProgress = async (req, res) => {
     
     const baselineWatchTime = existingVideoProgress?.watchTimeSeconds || 0;
 
+    // Determine if video should be marked as completed
+    // Mark as completed if progress >= 90% (similar to open students)
+    const shouldBeCompleted = (progressPercent || 0) >= 90;
+    
+    // Log completion status for debugging
+    if (shouldBeCompleted && !existingVideoProgress?.isCompleted) {
+      console.log(`[Video Progress] Auto-marking video ${videoId} as completed (progress: ${progressPercent}%)`);
+    }
+    const wasCompleted = existingVideoProgress?.isCompleted || false;
+    const existingCompletedAt = existingVideoProgress?.completedAt;
+    const existingStartedWatching = existingVideoProgress?.startedWatching;
+    
+    // If video is already completed, preserve the completion lastPosition (don't overwrite with lower values)
+    // This prevents progress updates after completion from resetting the position
+    let finalLastPosition = lastPosition || 0;
+    if (wasCompleted && existingVideoProgress?.lastPosition) {
+      const existingLastPosition = typeof existingVideoProgress.lastPosition === 'object' && existingVideoProgress.lastPosition.toNumber
+        ? existingVideoProgress.lastPosition.toNumber()
+        : Number(existingVideoProgress.lastPosition);
+      // Only update if new position is higher (shouldn't happen for completed videos, but safety check)
+      finalLastPosition = Math.max(existingLastPosition, finalLastPosition);
+    }
+    
     // Create or update video progress
     const videoProgress = await prisma.videoProgress.upsert({
       where: {
@@ -241,9 +278,12 @@ const trackVideoProgress = async (req, res) => {
       update: {
         watchTimeSeconds: watchTimeSeconds || 0,
         progressPercent: progressPercent || 0,
-        lastPosition: lastPosition || 0,
+        lastPosition: finalLastPosition,
         playlistId: playlistId,
-        startedWatching: new Date(),
+        // Mark as completed if progress >= 90%, but don't unmark if already completed
+        isCompleted: shouldBeCompleted || wasCompleted,
+        completedAt: (shouldBeCompleted && !wasCompleted) ? new Date() : existingCompletedAt,
+        startedWatching: existingStartedWatching || new Date(),
       },
       create: {
         studentId: student.id,
@@ -252,6 +292,8 @@ const trackVideoProgress = async (req, res) => {
         watchTimeSeconds: watchTimeSeconds || 0,
         progressPercent: progressPercent || 0,
         lastPosition: lastPosition || 0,
+        isCompleted: shouldBeCompleted,
+        completedAt: shouldBeCompleted ? new Date() : null,
         startedWatching: new Date(),
       },
     });
@@ -347,7 +389,27 @@ const trackVideoCompleted = async (req, res) => {
       });
     }
 
+    // Get existing progress to preserve startedWatching
+    const existingProgress = await prisma.videoProgress.findUnique({
+      where: {
+        studentId_videoId: {
+          studentId: student.id,
+          videoId: videoId,
+        },
+      },
+    });
+
+    // Use watchTimeSeconds as lastPosition (video duration when completed)
+    const lastPosition = watchTimeSeconds || 0;
+
     // Create or update video progress
+    // CRITICAL: Force completion status - this should never be false after this call
+    // CRITICAL: Preserve playlistId from existing progress if request doesn't provide one
+    // This ensures next video logic can find the playlist even if playlistId is not in the request
+    const finalPlaylistId = playlistId !== undefined && playlistId !== null 
+      ? playlistId 
+      : (existingProgress?.playlistId || null);
+    
     const videoProgress = await prisma.videoProgress.upsert({
       where: {
         studentId_videoId: {
@@ -356,22 +418,35 @@ const trackVideoCompleted = async (req, res) => {
         },
       },
       update: {
-        isCompleted: true,
+        isCompleted: true, // Force to true
         completedAt: new Date(),
-        progressPercent: 100,
+        progressPercent: 100, // Force to 100%
         watchTimeSeconds: watchTimeSeconds || 0,
-        playlistId: playlistId,
+        lastPosition: lastPosition, // Set lastPosition to video duration
+        // Use finalPlaylistId which preserves existing if request doesn't provide one
+        playlistId: finalPlaylistId,
+        startedWatching: existingProgress?.startedWatching || new Date(),
       },
       create: {
         studentId: student.id,
         videoId: videoId,
-        playlistId: playlistId,
-        isCompleted: true,
+        playlistId: finalPlaylistId,
+        isCompleted: true, // Force to true
         completedAt: new Date(),
-        progressPercent: 100,
+        progressPercent: 100, // Force to 100%
         watchTimeSeconds: watchTimeSeconds || 0,
+        lastPosition: lastPosition, // Set lastPosition to video duration
         startedWatching: new Date(),
       },
+    });
+    
+    // Verify completion was saved correctly
+    console.log(`[Video Completion] Marked video ${videoId} as completed:`, {
+      videoId,
+      playlistId: videoProgress.playlistId,
+      isCompleted: videoProgress.isCompleted,
+      progressPercent: videoProgress.progressPercent,
+      lastPosition: videoProgress.lastPosition,
     });
 
     // End active session for today
@@ -414,6 +489,127 @@ const trackVideoCompleted = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in trackVideoCompleted:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Mark video as completed (remove from continue watching)
+ * POST /api/video-tracking/complete/:videoId
+ */
+const markVideoAsCompleted = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    const skipNextVideo = req.query.skipNextVideo === 'true'; // Check if manual removal (skip next video)
+
+    // Get student ID from authenticated user
+    const student = await prisma.student.findUnique({
+      where: { email: req.user.email },
+    });
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student record not found',
+      });
+    }
+
+    // Verify video exists
+    const video = await prisma.video.findUnique({
+      where: { id: parseInt(videoId) },
+    });
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: 'Video not found',
+      });
+    }
+
+    // Get existing progress (if any)
+    const existingProgress = await prisma.videoProgress.findUnique({
+      where: {
+        studentId_videoId: {
+          studentId: student.id,
+          videoId: parseInt(videoId),
+        },
+      },
+    });
+
+    // If skipNextVideo is true (manual removal), DELETE the progress entry instead of marking as completed
+    // This ensures the video won't trigger next video logic
+    if (skipNextVideo && existingProgress) {
+      await prisma.videoProgress.delete({
+        where: {
+          studentId_videoId: {
+            studentId: student.id,
+            videoId: parseInt(videoId),
+          },
+        },
+      });
+
+      console.log(`[Video Removal] Deleted video progress for video ${videoId} (manual removal - skipping next video)`);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Video removed from continue watching successfully',
+        videoProgress: null,
+      });
+    }
+
+    // Normal completion flow (when skipNextVideo is false or not set)
+    // If progress doesn't exist, create it; otherwise update it
+    // CRITICAL: Preserve playlistId if it exists, otherwise set it from video
+    // This ensures next video logic can find the playlist
+    const videoProgress = existingProgress
+      ? await prisma.videoProgress.update({
+          where: {
+            studentId_videoId: {
+              studentId: student.id,
+              videoId: parseInt(videoId),
+            },
+          },
+          data: {
+            isCompleted: true,
+            completedAt: new Date(),
+            progressPercent: 100,
+            // Preserve playlistId if it exists, otherwise set from video (needed for next video logic)
+            playlistId: existingProgress.playlistId || video.playlistId,
+            // Preserve lastPosition if it exists, otherwise set to watchTimeSeconds
+            lastPosition: existingProgress.lastPosition || existingProgress.watchTimeSeconds || 0,
+          },
+        })
+      : await prisma.videoProgress.create({
+          data: {
+            studentId: student.id,
+            videoId: parseInt(videoId),
+            playlistId: video.playlistId,
+            isCompleted: true,
+            completedAt: new Date(),
+            progressPercent: 100,
+            watchTimeSeconds: 0,
+            lastPosition: 0,
+            startedWatching: new Date(),
+          },
+        });
+
+    console.log(`[Video Completion] Manually marked video ${videoId} as completed`, {
+      videoId: parseInt(videoId),
+      playlistId: videoProgress.playlistId,
+      isCompleted: videoProgress.isCompleted,
+      progressPercent: videoProgress.progressPercent,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Video marked as completed successfully',
+      videoProgress,
+    });
+  } catch (error) {
+    console.error('Error in markVideoAsCompleted:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',
@@ -494,6 +690,7 @@ module.exports = {
   trackVideoStarted,
   trackVideoProgress,
   trackVideoCompleted,
+  markVideoAsCompleted,
   getVideoProgress,
 };
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Play, Clock, Star, FileText, Video } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Play, Clock, Star, FileText, Video, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const DashboardTab = ({
   loadingDashboard,
@@ -10,7 +10,35 @@ const DashboardTab = ({
   getThumbnailUrl,
   handlePlaylistClick,
   handleVideoClick,
+  onRemoveVideo,
 }) => {
+  const CONTINUE_PAGE_SIZE = 5;
+  const [continueOffset, setContinueOffset] = useState(0);
+  const totalContinueItems = continueWatching?.length || 0;
+  const maxContinueOffset =
+    totalContinueItems > CONTINUE_PAGE_SIZE
+      ? totalContinueItems - CONTINUE_PAGE_SIZE
+      : 0;
+
+  useEffect(() => {
+    // Reset to start whenever the list size changes
+    setContinueOffset(0);
+  }, [continueWatching?.length]);
+
+  const handleContinuePrev = () => {
+    setContinueOffset((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleContinueNext = () => {
+    setContinueOffset((prev) => Math.min(maxContinueOffset, prev + 1));
+  };
+
+  const continueStartIndex = continueOffset;
+  const visibleContinueItems = (continueWatching || []).slice(
+    continueStartIndex,
+    continueStartIndex + CONTINUE_PAGE_SIZE
+  );
+
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Welcome Section */}
@@ -38,96 +66,161 @@ const DashboardTab = ({
             <p className="text-gray-500">No recent videos to continue watching</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-            {continueWatching.slice(0, 5).map((video) => {
-              // Support both intern and open-student shapes
-              const progressValue =
-                typeof video.progress === 'number'
-                  ? video.progress
-                  : typeof video.progressPercent === 'number'
-                  ? video.progressPercent
-                  : 0;
+          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <p className="text-xs sm:text-sm text-gray-500">
+                Pick up exactly where you left off across all your playlists.
+              </p>
+              {totalContinueItems > CONTINUE_PAGE_SIZE && (
+                <span className="text-[11px] sm:text-xs text-gray-400">
+                  Showing {continueStartIndex + 1}–
+                  {Math.min(totalContinueItems, continueStartIndex + CONTINUE_PAGE_SIZE)} of{' '}
+                  {totalContinueItems} videos
+                </span>
+              )}
+            </div>
+            <div className="relative">
+              {totalContinueItems > CONTINUE_PAGE_SIZE && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleContinuePrev}
+                    disabled={continueOffset === 0}
+                    className="hidden sm:flex items-center justify-center absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-white border border-gray-200 shadow-md hover:bg-gray-50 disabled:opacity-40 disabled:cursor-default"
+                    aria-label="Previous videos"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-gray-700" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleContinueNext}
+                    disabled={continueOffset === maxContinueOffset}
+                    className="hidden sm:flex items-center justify-center absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-white border border-gray-200 shadow-md hover:bg-gray-50 disabled:opacity-40 disabled:cursor-default"
+                    aria-label="Next videos"
+                  >
+                    <ChevronRight className="w-4 h-4 text-gray-700" />
+                  </button>
+                </>
+              )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+                {visibleContinueItems.map((video) => {
+                  // Support both intern and open-student shapes
+                  const progressValue =
+                    typeof video.progress === 'number'
+                      ? video.progress
+                      : typeof video.progressPercent === 'number'
+                        ? video.progressPercent
+                        : 0;
 
-              // Debug logging
-              if (progressValue > 0) {
-                console.log('Video progress:', {
-                  videoTitle: video.videoTitle,
-                  progress: video.progress,
-                  progressPercent: video.progressPercent,
-                  computedProgressValue: progressValue,
-                });
-              }
+                  console.log(`Video ${video.id} progress:`, {
+                    title: video.title || video.videoTitle,
+                    progress: video.progress,
+                    progressPercent: video.progressPercent,
+                    resolved: progressValue
+                  });
 
-              return (
-              <div
-                key={video.id || video.videoId}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  
-                  console.log('Continue watching video clicked:', video);
-                  
-                  const youtubeUrl = video.youtubeUrl || (video.videoId ? `https://www.youtube.com/watch?v=${video.videoId}` : null);
-                  
-                  if (!youtubeUrl) {
-                    console.error('Video missing YouTube URL and videoId:', video);
-                    return;
-                  }
-                  
-                  if (handleVideoClick) {
-                    handleVideoClick({ ...video, youtubeUrl });
-                  } else {
-                    console.warn('handleVideoClick not provided, opening in new tab');
-                    window.open(youtubeUrl, '_blank');
-                  }
-                }}
-                className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-              >
-                <div className="aspect-video bg-gray-200 relative">
-                  {(() => {
-                    const youtubeUrl = video.youtubeUrl || (video.videoId ? `https://www.youtube.com/watch?v=${video.videoId}` : null);
-                    const thumbnailUrl = youtubeUrl ? getThumbnailUrl(youtubeUrl) : null;
-                    return thumbnailUrl ? (
-                      <img
-                        src={thumbnailUrl}
-                        alt={video.videoTitle || 'Video'}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Play className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400" />
-                      </div>
-                    );
-                  })()}
-                  {progressValue > 0 ? (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-300">
+                  return (
+                    <div
+                      key={video.id || video.videoId}
+                      className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow relative group"
+                    >
+                      {/* Close button - positioned on top right */}
+                      {onRemoveVideo && (video.id || video.videoId) && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const videoId = video.id || video.videoId;
+                            console.log('Removing video from continue watching:', videoId);
+                            onRemoveVideo(videoId, video);
+                          }}
+                          className="absolute top-2 right-2 z-20 p-1.5 bg-black bg-opacity-70 hover:bg-opacity-90 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-label="Remove from continue watching"
+                          title="Remove from continue watching"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
                       <div
-                        className="h-full bg-green-600 transition-all"
-                        style={{ width: `${Math.min(100, Math.max(0, progressValue))}%` }}
-                      ></div>
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          console.log('Continue watching video clicked:', video);
+
+                          const youtubeUrl = video.youtubeUrl || (video.videoId ? `https://www.youtube.com/watch?v=${video.videoId}` : null);
+
+                          if (!youtubeUrl) {
+                            console.error('Video missing YouTube URL and videoId:', video);
+                            return;
+                          }
+
+                          if (handleVideoClick) {
+                            handleVideoClick({ ...video, youtubeUrl });
+                          } else {
+                            console.warn('handleVideoClick not provided, opening in new tab');
+                            window.open(youtubeUrl, '_blank');
+                          }
+                        }}
+                        className="cursor-pointer"
+                      >
+                      <div className="aspect-video bg-gray-200 relative overflow-hidden">
+                        {(() => {
+                          const youtubeUrl =
+                            video.youtubeUrl ||
+                            (video.videoId ? `https://www.youtube.com/watch?v=${video.videoId}` : null);
+                          const thumbnailUrl = youtubeUrl ? getThumbnailUrl(youtubeUrl) : null;
+                          return thumbnailUrl ? (
+                            <img
+                              src={thumbnailUrl}
+                              alt={video.videoTitle || 'Video'}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // If thumbnail fails, hide image and show fallback icon
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Play className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400" />
+                            </div>
+                          );
+                        })()}
+                        {/* Progress bar - YouTube style */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black bg-opacity-30">
+                          {progressValue > 0 ? (
+                            <div
+                              className="h-full bg-red-600 transition-all"
+                              style={{ width: `${Math.min(100, Math.max(0, progressValue))}%` }}
+                            ></div>
+                          ) : null}
+                        </div>
+                      </div>
+                      <div className="p-2 sm:p-3">
+                        {/* Playlist Banner - YouTube style - ALWAYS SHOW IF AVAILABLE */}
+                        {video.playlistTitle ? (
+                          <div className="mb-1.5">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                              {video.playlistTitle}
+                            </span>
+                          </div>
+                        ) : null}
+                        <h3 className="font-medium text-xs sm:text-sm text-gray-900 line-clamp-2">
+                          {video.videoTitle || 'Untitled Video'}
+                        </h3>
+                      </div>
+                      </div>
                     </div>
-                  ) : (
-                    // Always show the gray bar even if no progress (for visual consistency)
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-300"></div>
-                  )}
-                </div>
-                <div className="p-2 sm:p-3">
-                  <h3 className="font-medium text-xs sm:text-sm text-gray-900 line-clamp-2 mb-1">
-                    {video.videoTitle}
-                  </h3>
-                  {video.playlistTitle && (
-                    <p className="text-xs text-gray-500 truncate">{video.playlistTitle}</p>
-                  )}
-                </div>
+                  );
+                })}
               </div>
-            );
-            })}
+            </div>
           </div>
         )}
       </section>
 
       {/* Recent Activity */}
-      <section>
+      {/* <section>
         <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 flex items-center">
           <Clock className="w-5 h-5 mr-2 text-green-600" />
           Recent Activity
@@ -164,7 +257,7 @@ const DashboardTab = ({
             </div>
           </div>
         )}
-      </section>
+      </section> */}
 
       {/* Recommended Playlists */}
       <section>

@@ -327,28 +327,81 @@ const EnhancedYouTubeVideoPlayer = ({
     if (!isPlayerReady || !finalVideoId || !containerRef.current) return;
 
     try {
+      // Destroy existing player if it exists
+      if (playerRef.current && playerRef.current.destroy) {
+        try {
+          playerRef.current.destroy();
+        } catch (e) {
+          console.error('Error destroying existing player:', e);
+        }
+        playerRef.current = null;
+      }
+
+      const playerVars = {
+        enablejsapi: 1,
+        origin: window.location.origin,
+        rel: 0,
+        modestbranding: 1,
+        autoplay: 0, // Don't autoplay - let user control
+      };
+      
+      // Use start parameter for more reliable resume (in seconds)
+      // This is the PRIMARY method - YouTube will start the video at this time
+      if (startTime > 0) {
+        playerVars.start = Math.floor(startTime);
+        console.log(`🎬 Setting YouTube player start time to ${playerVars.start} seconds (PRIMARY METHOD)`);
+      }
+      
       playerRef.current = new window.YT.Player(containerRef.current, {
         videoId: finalVideoId,
-        playerVars: {
-          enablejsapi: 1,
-          origin: window.location.origin,
-          rel: 0,
-          modestbranding: 1,
-        },
+        playerVars: playerVars,
         events: {
           onReady: (event) => {
-            console.log('YouTube player ready');
+            console.log('✅ YouTube player ready, startTime:', startTime);
             const player = event.target;
             
+            // BACKUP METHOD: Also seek to startTime if provided
+            // This ensures we seek even if start parameter didn't work perfectly
             if (startTime > 0 && player && player.seekTo) {
-              setTimeout(() => {
+              let seekAttempts = 0;
+              const maxSeekAttempts = 5;
+              
+              const seekToStart = () => {
                 try {
-                  player.seekTo(startTime, true);
-                  console.log(`Seeking to ${startTime} seconds`);
+                  seekAttempts++;
+                  const currentTime = player.getCurrentTime();
+                  const timeDiff = Math.abs(currentTime - startTime);
+                  
+                  console.log(`Seek attempt ${seekAttempts}: current=${currentTime.toFixed(1)}s, target=${startTime}s, diff=${timeDiff.toFixed(1)}s`);
+                  
+                  // Only seek if we're not already at the right position (within 1 second)
+                  if (timeDiff > 1 && seekAttempts <= maxSeekAttempts) {
+                    player.seekTo(startTime, true);
+                    console.log(`✅ Seeking to ${startTime} seconds (backup method, attempt ${seekAttempts})`);
+                    
+                    // Try again after a delay if still not at correct position
+                    if (seekAttempts < maxSeekAttempts) {
+                      setTimeout(seekToStart, 1000 * seekAttempts);
+                    }
+                  } else if (timeDiff <= 1) {
+                    console.log(`✅ Video is at correct position (${currentTime.toFixed(1)}s)`);
+                  }
                 } catch (err) {
                   console.error('Error seeking to start time:', err);
+                  if (seekAttempts < maxSeekAttempts) {
+                    setTimeout(seekToStart, 1000 * seekAttempts);
+                  }
                 }
-              }, 500);
+              };
+              
+              // Start seeking attempts with delays: 500ms, 1.5s, 3s, 5s, 7s
+              setTimeout(seekToStart, 500);
+              setTimeout(seekToStart, 1500);
+              setTimeout(seekToStart, 3000);
+              setTimeout(seekToStart, 5000);
+              setTimeout(seekToStart, 7000);
+            } else if (startTime === 0) {
+              console.log('ℹ️ No startTime provided, video will start from beginning');
             }
 
             // Get initial video duration

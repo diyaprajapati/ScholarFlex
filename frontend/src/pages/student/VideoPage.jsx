@@ -11,7 +11,7 @@ const VideoPage = () => {
   const navigate = useNavigate();
   const { videoId } = useParams();
   const [searchParams] = useSearchParams();
-  
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -26,6 +26,20 @@ const VideoPage = () => {
   const videoUrl = searchParams.get('url');
   const playlistId = searchParams.get('playlistId');
   const videoTitle = searchParams.get('title') || 'Video';
+  const startTimeParam = searchParams.get('startTime');
+  const dbVideoIdParam = searchParams.get('dbVideoId'); // For video_next videos that need tracking
+
+  // Initialize startTime from URL (if present)
+  useEffect(() => {
+    if (startTimeParam) {
+      const t = parseFloat(startTimeParam);
+      if (!isNaN(t) && t > 0) {
+        setStartTime(t);
+        return;
+      }
+    }
+    setStartTime(0);
+  }, [startTimeParam]);
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -51,7 +65,7 @@ const VideoPage = () => {
 
       // Fetch all playlists to search for the video
       const response = await api.playlists.getStudentPlaylists();
-      
+
       if (!response.success) {
         setError('Failed to load playlists');
         return;
@@ -68,7 +82,7 @@ const VideoPage = () => {
         if (foundPlaylist) {
           setPlaylist(foundPlaylist);
           setPlaylistVideos(foundPlaylist.videos || []);
-          
+
           // Find current video by database ID or YouTube URL
           foundVideoIndex = foundPlaylist.videos.findIndex(
             v => v.id === parseInt(videoId) || v.youtubeUrl === decodeURIComponent(videoUrl || '')
@@ -80,7 +94,7 @@ const VideoPage = () => {
       } else if (videoUrl) {
         // No playlistId provided - search across all playlists for the video
         const decodedVideoUrl = decodeURIComponent(videoUrl);
-        
+
         for (const playlist of allPlaylists) {
           const videoIndex = playlist.videos.findIndex(
             v => v.youtubeUrl === decodedVideoUrl || v.id === parseInt(videoId)
@@ -94,16 +108,16 @@ const VideoPage = () => {
             break;
           }
         }
-        
+
         // If video not found in any playlist, create a standalone video object
+        // CRITICAL: Use dbVideoIdParam if available (for video_next videos) to ensure tracking works
         if (!foundVideo) {
           const standaloneVideo = {
-            id: videoId,
+            id: dbVideoIdParam ? parseInt(dbVideoIdParam) : videoId, // Use dbVideoId from URL if provided
             title: decodeURIComponent(videoTitle || 'Video'),
             youtubeUrl: decodedVideoUrl,
           };
           setVideo(standaloneVideo);
-          await fetchVideoProgress(standaloneVideo);
           return;
         }
       } else {
@@ -111,18 +125,13 @@ const VideoPage = () => {
         return;
       }
 
-      // Set the found video
+      // Set the found video (resume handled purely via startTimeParam from dashboard)
       if (foundVideo) {
         setVideo(foundVideo);
         setCurrentVideoIndex(foundVideoIndex);
-        
-        // Fetch saved progress for this video
-        await fetchVideoProgress(foundVideo);
       } else if (foundPlaylist && foundPlaylist.videos.length > 0) {
-        // Fallback: use first video in playlist
         setVideo(foundPlaylist.videos[0]);
         setCurrentVideoIndex(0);
-        await fetchVideoProgress(foundPlaylist.videos[0]);
       } else {
         setError('Video not found');
       }
@@ -141,27 +150,8 @@ const VideoPage = () => {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  const fetchVideoProgress = async (video) => {
-    try {
-      const videoId = extractVideoId(video.youtubeUrl);
-      const response = await api.activity.getVideoProgress(videoId, video.youtubeUrl);
-      
-      if (response.success && response.currentTime > 0) {
-        // Only resume if video is not completed (progress < 100)
-        if (response.progress < 100) {
-          setStartTime(response.currentTime);
-          console.log(`Resuming video from ${response.currentTime} seconds (${response.progress}% progress)`);
-        } else {
-          setStartTime(0);
-        }
-      } else {
-        setStartTime(0);
-      }
-    } catch (err) {
-      console.error('Error fetching video progress:', err);
-      setStartTime(0);
-    }
-  };
+  // We intentionally do NOT call the activity getVideoProgress API anymore.
+  // Resume is driven entirely by the startTime passed in the URL (from Continue Watching).
 
   const handleVideoEnd = () => {
     // Auto-play next video in playlist if available
@@ -225,7 +215,7 @@ const VideoPage = () => {
       {/* Sidebar */}
       <StudentSidebar
         activeTab=""
-        setActiveTab={() => {}}
+        setActiveTab={() => { }}
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
       />
@@ -261,17 +251,45 @@ const VideoPage = () => {
               {/* Video Player - Main Content */}
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-                  <YouTubeVideoPlayer
-                    videoId={finalVideoId}
-                    dbVideoId={video.id}
-                    videoTitle={video.title}
-                    videoUrl={video.youtubeUrl}
-                    playlistId={playlist?.id}
-                    playlistTitle={playlist?.title}
-                    onVideoEnd={handleVideoEnd}
-                    startTime={startTime}
-                  />
-                  
+                  {(() => {
+                    // CRITICAL: Prioritize dbVideoIdParam (from URL) for video_next videos
+                    // Then try video.id (database ID), then fallback to null
+                    // This ensures video_next videos with database IDs can track properly
+                    let finalDbVideoId = null;
+                    if (dbVideoIdParam) {
+                      const parsed = parseInt(dbVideoIdParam);
+                      if (!isNaN(parsed) && parsed > 0) {
+                        finalDbVideoId = parsed;
+                      }
+                    } else if (video.id && !isNaN(parseInt(video.id)) && parseInt(video.id) > 0) {
+                      finalDbVideoId = parseInt(video.id);
+                    }
+                    
+                    console.log('🎥 Rendering YouTubeVideoPlayer with:', {
+                      finalVideoId,
+                      dbVideoId: finalDbVideoId,
+                      dbVideoIdParam,
+                      videoId: video.id,
+                      videoTitle: video.title,
+                      startTime,
+                      playlistId: playlist?.id || playlistId,
+                      isVideoNext: !finalDbVideoId && video.id, // Log if we might have a video_next issue
+                    });
+                    return (
+                      <YouTubeVideoPlayer
+                        videoId={finalVideoId}
+                        dbVideoId={finalDbVideoId}
+                        videoTitle={video.title}
+                        videoUrl={video.youtubeUrl}
+                        // IMPORTANT: use playlistId from URL if playlist is not loaded yet (so tracking always works)
+                        playlistId={playlist?.id || playlistId}
+                        playlistTitle={playlist?.title}
+                        onVideoEnd={handleVideoEnd}
+                        startTime={startTime}
+                      />
+                    );
+                  })()}
+
                   {/* Video Info */}
                   <div className="mt-6">
                     <h2 className="text-xl font-semibold text-gray-900 mb-2">{video.title}</h2>
@@ -316,28 +334,25 @@ const VideoPage = () => {
                         <div
                           key={playlistVideo.id}
                           onClick={() => handleVideoSelect(playlistVideo, index)}
-                          className={`p-3 rounded-lg cursor-pointer transition-all ${
-                            playlistVideo.id === video.id
+                          className={`p-3 rounded-lg cursor-pointer transition-all ${playlistVideo.id === video.id
                               ? 'bg-green-50 border-2 border-green-500'
                               : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-start gap-3">
                             <div className="flex-shrink-0">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                                playlistVideo.id === video.id
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${playlistVideo.id === video.id
                                   ? 'bg-green-600 text-white'
                                   : 'bg-gray-200 text-gray-600'
-                              }`}>
+                                }`}>
                                 {index + 1}
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium line-clamp-2 ${
-                                playlistVideo.id === video.id
+                              <p className={`text-sm font-medium line-clamp-2 ${playlistVideo.id === video.id
                                   ? 'text-green-900'
                                   : 'text-gray-900'
-                              }`}>
+                                }`}>
                                 {playlistVideo.title}
                               </p>
                               {playlistVideo.id === video.id && (

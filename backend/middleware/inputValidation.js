@@ -106,8 +106,10 @@ function validateParams(req, res, next) {
             });
           }
           
-          // Validate ID parameters
-          if (key.toLowerCase().includes('id')) {
+          // Validate ID parameters (only if key ends with 'id' or is exactly 'id')
+          // This prevents false positives like 'skipNextVideo' being treated as an ID
+          const lowerKey = key.toLowerCase();
+          if (lowerKey === 'id' || lowerKey.endsWith('id')) {
             if (!isValidId(value)) {
               return res.status(400).json({
                 success: false,
@@ -140,8 +142,10 @@ function validateParams(req, res, next) {
             }
           }
           
-          // Validate ID query parameters
-          if (key.toLowerCase().includes('id')) {
+          // Validate ID query parameters (only if key ends with 'id' or is exactly 'id')
+          // This prevents false positives like 'skipNextVideo' being treated as an ID
+          const lowerKey = key.toLowerCase();
+          if (lowerKey === 'id' || lowerKey.endsWith('id')) {
             if (!isValidId(value)) {
               return res.status(400).json({
                 success: false,
@@ -174,8 +178,10 @@ function validateParams(req, res, next) {
             }
           }
           
-          // Validate ID fields
-          if (key.toLowerCase().includes('id') && !key.toLowerCase().includes('email')) {
+          // Validate ID fields (only if key ends with 'id' or is exactly 'id', and not email)
+          // This prevents false positives like 'skipNextVideo' being treated as an ID
+          const lowerKey = key.toLowerCase();
+          if ((lowerKey === 'id' || lowerKey.endsWith('id')) && !lowerKey.includes('email')) {
             if (typeof value === 'string' && !isValidId(value)) {
               return res.status(400).json({
                 success: false,
