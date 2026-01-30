@@ -29,10 +29,10 @@ export default function TestSubmissionPage() {
   }, [navigate])
 
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center p-4">
+    <div className="h-screen bg-linear-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10 w-full max-w-3xl border border-gray-100">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-[#4C763B]/20 to-[#B0CE88]/20 mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-linear-to-br from-[#4C763B]/20 to-[#B0CE88]/20 mb-6 shadow-lg">
             <svg className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-[#4C763B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

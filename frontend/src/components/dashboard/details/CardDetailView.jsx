@@ -6,7 +6,7 @@ import { authService } from '../../../utils/auth'
 export default function CardDetailView({ cardId, onBack }) {
   // Debug: Log the cardId to see what's being passed
   useEffect(() => {
-    console.log('CardDetailView - cardId:', cardId)
+    // console.log('CardDetailView - cardId:', cardId)
   }, [cardId])
 
   const renderDetailContent = () => {

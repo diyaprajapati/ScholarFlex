@@ -315,7 +315,7 @@ const deleteAdmin = async (req, res) => {
       });
     }
     
-    console.log('Admin deletion verified successfully: Record removed from database', { id });
+    // console.log('Admin deletion verified successfully: Record removed from database', { id });
 
     // Log the activity (convert id to integer for entityId)
     await logActivitySimple(

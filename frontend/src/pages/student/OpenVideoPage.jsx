@@ -364,7 +364,7 @@ const OpenVideoPage = () => {
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <div
                                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                                   index === currentVideoIndex

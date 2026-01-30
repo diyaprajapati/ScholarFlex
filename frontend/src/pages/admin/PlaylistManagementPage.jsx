@@ -65,7 +65,7 @@ const PlaylistManagementPage = () => {
       
       if (response.success) {
         const playlistsArray = response.playlists || [];
-        console.log(`✅ Received ${playlistsArray.length} playlists:`, playlistsArray);
+        // console.log(`✅ Received ${playlistsArray.length} playlists:`, playlistsArray);
         setPlaylists(playlistsArray);
         if (playlistsArray.length === 0) {
           console.warn('⚠️ Playlists array is empty even though API succeeded');
