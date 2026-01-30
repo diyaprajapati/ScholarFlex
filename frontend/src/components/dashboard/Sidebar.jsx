@@ -169,6 +169,7 @@ const Sidebar = React.memo(function Sidebar({ user }) {
 
   // Track previous pathname to prevent unnecessary updates
   const prevPathnameRef = useRef(pathname)
+  const prevPathnameForSidebarRef = useRef(pathname)
 
   // Update expanded sections when route changes
   useEffect(() => {
@@ -185,12 +186,17 @@ const Sidebar = React.memo(function Sidebar({ user }) {
     }
   }, [pathname])
 
-  // Close sidebar on mobile when route changes
+  // Close sidebar on mobile when route changes (only trigger on pathname change, not sidebarOpen change)
   useEffect(() => {
-    if (window.innerWidth < 1024 && sidebarOpen) {
-      setSidebarOpen(false)
+    if (prevPathnameForSidebarRef.current !== pathname) {
+      prevPathnameForSidebarRef.current = pathname
+      // Close sidebar on mobile when navigating to a new route
+      if (window.innerWidth < 1024) {
+        setSidebarOpen(false)
+      }
     }
-  }, [pathname, sidebarOpen, setSidebarOpen])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   const toggleSection = useCallback((sectionId) => {
     setExpandedSections((prev) => ({
@@ -212,7 +218,7 @@ const Sidebar = React.memo(function Sidebar({ user }) {
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[55] lg:hidden transition-opacity duration-300"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -221,10 +227,10 @@ const Sidebar = React.memo(function Sidebar({ user }) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed left-0 top-0 z-50 h-screen w-64
+          fixed left-0 top-0 z-[60] h-screen w-64
           bg-white border-r border-gray-200
           flex flex-col
-          transform transition-transform duration-300 ease-in-out
+          transition-transform duration-300 ease-in-out will-change-transform
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           shadow-lg lg:shadow-none
         `}
