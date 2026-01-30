@@ -10,7 +10,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 
 async function recalculateScores() {
   try {
-    console.log('🔄 Recalculating test scores for all completed attempts...\n');
+    // console.log('🔄 Recalculating test scores for all completed attempts...\n');
 
     // Get all completed test attempts
     const attempts = await prisma.testAttempt.findMany({
@@ -30,7 +30,7 @@ async function recalculateScores() {
       },
     });
 
-    console.log(`Found ${attempts.length} test attempts to recalculate.\n`);
+    // console.log(`Found ${attempts.length} test attempts to recalculate.\n`);
 
     let successCount = 0;
     let errorCount = 0;
@@ -66,7 +66,7 @@ async function recalculateScores() {
 
         successCount++;
         if (successCount % 10 === 0) {
-          console.log(`✅ Recalculated ${successCount} attempts...`);
+          // console.log(`✅ Recalculated ${successCount} attempts...`);
         }
       } catch (error) {
         console.error(`❌ Error recalculating attempt ${attempt.id}:`, error.message);
@@ -74,9 +74,9 @@ async function recalculateScores() {
       }
     }
 
-    console.log(`\n✨ Recalculation complete!`);
-    console.log(`   ✅ Success: ${successCount}`);
-    console.log(`   ❌ Errors: ${errorCount}`);
+    // console.log(`\n✨ Recalculation complete!`);
+    // console.log(`   ✅ Success: ${successCount}`);
+    // console.log(`   ❌ Errors: ${errorCount}`);
     
   } catch (error) {
     console.error('❌ Error during recalculation:', error.message);
@@ -89,7 +89,7 @@ async function recalculateScores() {
 // Run the recalculation
 recalculateScores()
   .then(() => {
-    console.log('\n✨ Done!');
+    // console.log('\n✨ Done!');
     process.exit(0);
   })
   .catch((error) => {

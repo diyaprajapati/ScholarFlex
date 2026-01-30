@@ -12,7 +12,7 @@ async function fixMigrationHistory() {
     `;
     
     if (columnCheck.length === 0) {
-      console.log('⚠️  is_selected column does not exist. Adding it...');
+      // console.log('⚠️  is_selected column does not exist. Adding it...');
       try {
         // MySQL doesn't support IF NOT EXISTS for ADD COLUMN, so we check first
         await prisma.$executeRawUnsafe(`
@@ -21,16 +21,16 @@ async function fixMigrationHistory() {
         await prisma.$executeRawUnsafe(`
           CREATE INDEX idx_students_is_selected ON students(is_selected);
         `);
-        console.log('✅ is_selected column added');
+        // console.log('✅ is_selected column added');
       } catch (error) {
         if (error.code === 'ER_DUP_FIELDNAME') {
-          console.log('✅ is_selected column already exists');
+          // console.log('✅ is_selected column already exists');
         } else {
           throw error;
         }
       }
     } else {
-      console.log('✅ is_selected column already exists');
+      // console.log('✅ is_selected column already exists');
     }
     
     // Remove duplicate migration entries (keep the latest one) - MySQL syntax
@@ -53,7 +53,7 @@ async function fixMigrationHistory() {
       WHERE migration_name = 'add_student_additional_fields'
     `);
     
-    console.log('✅ Migration history updated successfully');
+    // console.log('✅ Migration history updated successfully');
     
     // Verify the update
     const result = await prisma.$queryRaw`
@@ -62,9 +62,9 @@ async function fixMigrationHistory() {
       ORDER BY finished_at
     `;
     
-    console.log('\nMigration history:');
+    // console.log('\nMigration history:');
     result.forEach(row => {
-      console.log(`  - ${row.migration_name} (${row.finished_at})`);
+      // console.log(`  - ${row.migration_name} (${row.finished_at})`);
     });
   } catch (error) {
     console.error('❌ Error fixing migration history:', error.message);
@@ -76,7 +76,7 @@ async function fixMigrationHistory() {
 
 fixMigrationHistory()
   .then(() => {
-    console.log('\n✅ Done!');
+    // console.log('\n✅ Done!');
     process.exit(0);
   })
   .catch((error) => {

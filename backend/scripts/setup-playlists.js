@@ -9,7 +9,7 @@ const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-console.log('🚀 Setting up playlists feature...\n');
+// console.log('🚀 Setting up playlists feature...\n');
 
 try {
   // Step 1: Check if migration file exists
@@ -20,16 +20,16 @@ try {
     process.exit(1);
   }
 
-  console.log('✅ Migration file found\n');
+  // console.log('✅ Migration file found\n');
 
   // Step 2: Run Prisma migration
-  console.log('📦 Running database migration...');
+  // console.log('📦 Running database migration...');
   try {
     execSync('npm run prisma:migrate', {
       cwd: path.join(__dirname, '..'),
       stdio: 'inherit',
     });
-    console.log('✅ Migration completed\n');
+    // console.log('✅ Migration completed\n');
   } catch (error) {
     console.error('❌ Migration failed. You may need to run it manually:');
     console.error('   npm run prisma:migrate');
@@ -37,19 +37,19 @@ try {
   }
 
   // Step 3: Generate Prisma client
-  console.log('🔧 Regenerating Prisma client...');
+  // console.log('🔧 Regenerating Prisma client...');
   try {
     execSync('npm run prisma:generate', {
       cwd: path.join(__dirname, '..'),
       stdio: 'inherit',
     });
-    console.log('✅ Prisma client regenerated\n');
+    // console.log('✅ Prisma client regenerated\n');
   } catch (error) {
     console.error('❌ Prisma client generation failed. Make sure the server is stopped and try:');
     console.error('   npm run prisma:generate\n');
   }
 
-  console.log('✨ Setup complete! You can now start the server.\n');
+  // console.log('✨ Setup complete! You can now start the server.\n');
 } catch (error) {
   console.error('❌ Setup failed:', error.message);
   process.exit(1);

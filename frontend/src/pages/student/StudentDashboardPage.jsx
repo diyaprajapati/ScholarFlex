@@ -183,15 +183,15 @@ const StudentDashboardPage = () => {
 
       if (videosRes.success) {
         let videos = videosRes.videos || [];
-        console.log('📥 Received continue watching videos from API:', videos);
-        console.log('📥 First video details:', videos[0] ? {
-          id: videos[0].id,
-          videoTitle: videos[0].videoTitle,
-          lastPosition: videos[0].lastPosition,
-          progress: videos[0].progress,
-          playlistTitle: videos[0].playlistTitle,
-          playlistId: videos[0].playlistId,
-        } : 'No videos');
+        // console.log('📥 Received continue watching videos from API:', videos);
+        // console.log('📥 First video details:', videos[0] ? {
+        //   id: videos[0].id,
+        //   videoTitle: videos[0].videoTitle,
+        //   lastPosition: videos[0].lastPosition,
+        //   progress: videos[0].progress,
+        //   playlistTitle: videos[0].playlistTitle,
+        //   playlistId: videos[0].playlistId,
+        // } : 'No videos');
         
         // Backend handles all filtering - just use the videos as-is
         // Backend will exclude completed videos (including completed video_next videos)
@@ -218,14 +218,14 @@ const StudentDashboardPage = () => {
 
   const handleRemoveVideo = async (videoId, video) => {
     try {
-      console.log(`[Remove Video] Removing video ${videoId} from continue watching`);
+      // console.log(`[Remove Video] Removing video ${videoId} from continue watching`);
       
       // Call API to delete video progress (manual removal)
       // This prevents the next video from being automatically added
       const response = await api.videoTracking.markAsCompleted(videoId, true);
       
       if (response.success) {
-        console.log(`[Remove Video] Successfully removed video ${videoId}`);
+        // console.log(`[Remove Video] Successfully removed video ${videoId}`);
         
         // Remove video from local state immediately for better UX
         setContinueWatching(prev => prev.filter(v => (v.id || v.videoId) !== videoId));
@@ -327,7 +327,7 @@ const StudentDashboardPage = () => {
   };
 
   const handleVideoClick = (video) => {
-    console.log('handleVideoClick called with video:', video);
+    // console.log('handleVideoClick called with video:', video);
     
     // Construct YouTube URL if not provided
     let youtubeUrl = video.youtubeUrl;
@@ -336,7 +336,7 @@ const StudentDashboardPage = () => {
       youtubeUrl = `https://www.youtube.com/watch?v=${video.videoId}`;
     }
     
-    console.log('Constructed youtubeUrl:', youtubeUrl);
+    // console.log('Constructed youtubeUrl:', youtubeUrl);
     
     if (!youtubeUrl) {
       console.error('Cannot open video: missing YouTube URL and videoId', video);
@@ -393,7 +393,7 @@ const StudentDashboardPage = () => {
         navigationPath = `/student/video/${routeVideoId}?url=${videoUrl}&title=${title}${startTimeParam}${dbVideoIdParam}`;
       }
       
-      console.log('Navigating to:', navigationPath);
+      // console.log('Navigating to:', navigationPath);
       navigate(navigationPath);
     } catch (error) {
       console.error('Error navigating to video:', error);

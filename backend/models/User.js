@@ -234,10 +234,10 @@ class User {
    */
   static async delete(id) {
     try {
-      console.log(`[User.delete] Starting hard deletion for user ID: ${id}`);
+      // console.log(`[User.delete] Starting hard deletion for user ID: ${id}`);
       // Use a transaction to handle foreign key constraints
       return await prisma.$transaction(async (tx) => {
-        console.log(`[User.delete] Transaction started for user ID: ${id}`);
+        // console.log(`[User.delete] Transaction started for user ID: ${id}`);
         // Find the first super admin to use as replacement for NOT NULL foreign keys
         const superAdminResult = await tx.$queryRaw`
           SELECT u.id 
@@ -360,7 +360,7 @@ class User {
           throw new Error('Admin deletion failed: Record still exists in database');
         }
 
-        console.log(`[User.delete] Successfully hard deleted user ID: ${id}`);
+        // console.log(`[User.delete] Successfully hard deleted user ID: ${id}`);
         return true;
       });
     } catch (error) {

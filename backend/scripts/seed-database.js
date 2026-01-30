@@ -11,10 +11,10 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 
 async function seedDatabase() {
   try {
-    console.log('🌱 Seeding database...\n');
+    // console.log('🌱 Seeding database...\n');
 
     // 1. Insert Roles using Prisma upsert (MySQL compatible)
-    console.log('📝 Inserting roles...');
+    // console.log('📝 Inserting roles...');
     await prisma.role.upsert({
       where: { roleCode: 'SUPER_ADMIN' },
       update: {},
@@ -42,10 +42,10 @@ async function seedDatabase() {
         description: 'Can only attempt tests',
       },
     });
-    console.log('✅ Roles inserted\n');
+    // console.log('✅ Roles inserted\n');
 
     // 2. Insert Intern Statuses using Prisma upsert
-    console.log('📝 Inserting intern statuses...');
+    // console.log('📝 Inserting intern statuses...');
     const statuses = [
       { statusName: 'Active', statusCode: 'ACTIVE', description: 'Intern is active' },
       { statusName: 'Pending', statusCode: 'PENDING', description: 'Intern registration pending' },
@@ -64,9 +64,9 @@ async function seedDatabase() {
         create: status,
       });
     }
-    console.log('✅ Intern statuses inserted\n');
+    // console.log('✅ Intern statuses inserted\n');
 
-    console.log('✅ Database seeding completed successfully!');
+    // console.log('✅ Database seeding completed successfully!');
     
   } catch (error) {
     console.error('❌ Error seeding database:', error);
@@ -79,7 +79,7 @@ async function seedDatabase() {
 // Run the seeding
 seedDatabase()
   .then(() => {
-    console.log('\n✨ Done!');
+    // console.log('\n✨ Done!');
     process.exit(0);
   })
   .catch((error) => {

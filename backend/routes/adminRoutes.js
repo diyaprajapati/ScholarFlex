@@ -182,8 +182,8 @@ adminRouter.delete(
  * @access  Private (Admin, Super Admin)
  */
 adminRouter.get('/playlists', (req, res, next) => {
-  console.log('📥 GET /api/admin/playlists - Request received');
-  console.log('User:', req.user?.email);
+  // console.log('📥 GET /api/admin/playlists - Request received');
+  // console.log('User:', req.user?.email);
   next();
 }, playlistController.getAllPlaylists);
 

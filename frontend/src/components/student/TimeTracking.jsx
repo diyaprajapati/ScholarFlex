@@ -78,7 +78,7 @@ const TimeTracking = () => {
 
   // Handle auto-stop session when question is not answered
   const handleAutoStopSession = async () => {
-    console.log('Auto-stopping session due to unanswered question...');
+    // console.log('Auto-stopping session due to unanswered question...');
 
     // 1. Attempt to show notification (non-blocking)
     try {
@@ -300,7 +300,7 @@ const TimeTracking = () => {
 
         // Show background notification with generic message (works even when tab/window is closed)
         // Pass callback to show modal when notification is clicked
-        console.log('Attempting to show notification...');
+        // console.log('Attempting to show notification...');
         try {
           const notificationShown = await showBackgroundNotification(() => {
             // This callback will be called when notification is clicked
@@ -308,11 +308,11 @@ const TimeTracking = () => {
             setCurrentQuestion(questionData);
             window.focus();
           });
-          console.log('Notification result:', notificationShown);
+          // console.log('Notification result:', notificationShown);
 
           // If notification failed, try again after ensuring Service Worker is ready
           if (!notificationShown && 'serviceWorker' in navigator) {
-            console.log('Retrying notification after Service Worker ready...');
+            // console.log('Retrying notification after Service Worker ready...');
             const registration = await navigator.serviceWorker.ready;
             setTimeout(async () => {
               await showBackgroundNotification(() => {

@@ -311,13 +311,13 @@ const getRecentVideoActivities = async (req, res) => {
       .filter(video => {
         // Filter out completed videos (from activity log metadata)
         if (video.isCompleted) {
-          console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - marked as completed in metadata`);
+          // console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - marked as completed in metadata`);
           return false;
         }
         
         // Filter out videos with 100% progress (completed)
         if (video.maxProgress >= 100) {
-          console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - progress is 100%`);
+          // console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - progress is 100%`);
           return false;
         }
         
@@ -335,7 +335,7 @@ const getRecentVideoActivities = async (req, res) => {
         
         // Check by YouTube URL
         if (finalYoutubeUrl && completedVideosMap.has(finalYoutubeUrl)) {
-          console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - completed by URL in VideoProgress`);
+          // console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - completed by URL in VideoProgress`);
           return false; // Exclude - this video is completed in VideoProgress
         }
         
@@ -344,14 +344,14 @@ const getRecentVideoActivities = async (req, res) => {
         if (video.videoId) {
           // Check as-is (might be YouTube ID string)
           if (completedVideoIdsMap.has(video.videoId)) {
-            console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - completed by videoId (as-is) in VideoProgress`);
+            // console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - completed by videoId (as-is) in VideoProgress`);
             return false;
           }
           
           // Try as number (database ID)
           const videoIdNum = typeof video.videoId === 'string' ? parseInt(video.videoId, 10) : video.videoId;
           if (!isNaN(videoIdNum) && videoIdNum > 0 && completedVideoIdsMap.has(videoIdNum)) {
-            console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - completed by videoId (as number) in VideoProgress`);
+            // console.log(`[Continue Watching] Excluding "${video.videoTitle || video.videoId}" from activity logs - completed by videoId (as number) in VideoProgress`);
             return false;
           }
         }
@@ -502,9 +502,9 @@ const getRecentVideoActivities = async (req, res) => {
       }
     });
     
-    console.log(`[Continue Watching] Fresh completion map has ${freshCompletedMap.size} entries`);
+    // console.log(`[Continue Watching] Fresh completion map has ${freshCompletedMap.size} entries`);
     
-    console.log(`[Continue Watching] Found ${freshCompletionStatus.length} video progress entries, ${freshCompletedMap.size} completed videos in fresh check`);
+    // console.log(`[Continue Watching] Found ${freshCompletionStatus.length} video progress entries, ${freshCompletedMap.size} completed videos in fresh check`);
     
     const finalVideos = Array.from(uniqueVideos.values())
       .filter(video => {
@@ -518,7 +518,7 @@ const getRecentVideoActivities = async (req, res) => {
           const videoIdNum = typeof videoId === 'string' ? parseInt(videoId, 10) : videoId;
           if (!isNaN(videoIdNum) && videoIdNum > 0) {
             if (freshCompletedMap.has(videoIdNum) || freshCompletedMap.has(String(videoIdNum))) {
-              console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" (videoId: ${videoIdNum}) - completed in fresh DB check`);
+              // console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" (videoId: ${videoIdNum}) - completed in fresh DB check`);
               return false;
             }
           }
@@ -529,7 +529,7 @@ const getRecentVideoActivities = async (req, res) => {
           const tableIdNum = typeof videoTableId === 'string' ? parseInt(videoTableId, 10) : videoTableId;
           if (!isNaN(tableIdNum) && tableIdNum > 0) {
             if (freshCompletedMap.has(tableIdNum) || freshCompletedMap.has(String(tableIdNum))) {
-              console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" (tableId: ${tableIdNum}) - completed in fresh DB check`);
+              // console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" (tableId: ${tableIdNum}) - completed in fresh DB check`);
               return false;
             }
           }
@@ -537,7 +537,7 @@ const getRecentVideoActivities = async (req, res) => {
         
         // Check by YouTube URL
         if (videoUrl && freshCompletedMap.has(videoUrl)) {
-          console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed in fresh DB check (URL)`);
+          // console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed in fresh DB check (URL)`);
           return false;
         }
         
@@ -545,26 +545,26 @@ const getRecentVideoActivities = async (req, res) => {
         if (videoUrl) {
           const youtubeIdMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
           if (youtubeIdMatch && youtubeIdMatch[1] && freshCompletedMap.has(youtubeIdMatch[1])) {
-            console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed in fresh DB check (YouTube ID)`);
+            // console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed in fresh DB check (YouTube ID)`);
             return false;
           }
         }
         
         // Skip if marked as completed by URL in original map
         if (videoUrl && completedVideosMap.has(videoUrl)) {
-          console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed by URL in original map`);
+          // console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed by URL in original map`);
           return false;
         }
         
         // Skip if marked as completed by videoId in original map
         if (videoId && completedVideoIdsMap.has(videoId)) {
-          console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed by videoId in original map`);
+          // console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - completed by videoId in original map`);
           return false;
         }
         
         // Skip if progress is 100% (completed)
         if (video.progress >= 100) {
-          console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - progress is 100%`);
+          // console.log(`[Continue Watching] Excluding "${video.videoTitle || videoId}" - progress is 100%`);
           return false;
         }
         
@@ -594,25 +594,25 @@ const getRecentVideoActivities = async (req, res) => {
       return isCompleted && hasPlaylist;
     });
     
-    console.log(`[Continue Watching] Found ${completedVideosWithPlaylists.length} completed videos with playlists:`, 
-      completedVideosWithPlaylists.map(vp => ({ 
-        videoId: vp.videoId, 
-        playlistId: vp.playlistId,
-        isCompleted: vp.isCompleted,
-        progressPercent: typeof vp.progressPercent === 'object' && vp.progressPercent.toNumber ? vp.progressPercent.toNumber() : Number(vp.progressPercent || 0),
-        completedAt: vp.completedAt,
-        updatedAt: vp.updatedAt
-      })));
+    // console.log(`[Continue Watching] Found ${completedVideosWithPlaylists.length} completed videos with playlists:`, 
+    //   completedVideosWithPlaylists.map(vp => ({ 
+    //     videoId: vp.videoId, 
+    //     playlistId: vp.playlistId,
+    //     isCompleted: vp.isCompleted,
+    //     progressPercent: typeof vp.progressPercent === 'object' && vp.progressPercent.toNumber ? vp.progressPercent.toNumber() : Number(vp.progressPercent || 0),
+    //     completedAt: vp.completedAt,
+    //     updatedAt: vp.updatedAt
+    //   })));
     
     // Process ALL completed videos to find next videos
     // This ensures that if you complete video 2, video 3 appears (even if you also completed video 10)
     // We'll check each completed video and add its next video if it's not already in the list
-    console.log(`[Continue Watching] Processing ${completedVideosWithPlaylists.length} completed videos to find next videos`);
+    // console.log(`[Continue Watching] Processing ${completedVideosWithPlaylists.length} completed videos to find next videos`);
     
     // For each completed video, find the next video in its playlist
     for (const completedVp of completedVideosWithPlaylists) {
       try {
-        console.log(`[Continue Watching] 🔍 Processing completed video ID: ${completedVp.videoId}, playlistId: ${completedVp.playlistId}`);
+        // console.log(`[Continue Watching] 🔍 Processing completed video ID: ${completedVp.videoId}, playlistId: ${completedVp.playlistId}`);
         
         // Get the completed video's details
         const completedVideo = await prisma.video.findUnique({
@@ -629,47 +629,47 @@ const getRecentVideoActivities = async (req, res) => {
         });
         
         if (!completedVideo) {
-          console.log(`[Continue Watching] Completed video ${completedVp.videoId} not found in database`);
+          // console.log(`[Continue Watching] Completed video ${completedVp.videoId} not found in database`);
           continue;
         }
         
         if (!completedVideo.playlist) {
-          console.log(`[Continue Watching] Completed video ${completedVp.videoId} has no playlist`);
+          // console.log(`[Continue Watching] Completed video ${completedVp.videoId} has no playlist`);
           continue;
         }
         
-        console.log(`[Continue Watching] Found playlist "${completedVideo.playlist.title}" with ${completedVideo.playlist.videos.length} videos`);
+        // console.log(`[Continue Watching] Found playlist "${completedVideo.playlist.title}" with ${completedVideo.playlist.videos.length} videos`);
         
         // Find the index of the completed video in the playlist by orderIndex
         // Sort videos by orderIndex to ensure correct order
         const sortedVideos = [...completedVideo.playlist.videos].sort((a, b) => a.orderIndex - b.orderIndex);
         const completedIndex = sortedVideos.findIndex(v => v.id === completedVideo.id);
-        console.log(`[Continue Watching] Completed video "${completedVideo.title}" (ID: ${completedVideo.id}, orderIndex: ${completedVideo.orderIndex}) is at index ${completedIndex} in sorted playlist (total: ${sortedVideos.length} videos)`);
+        // console.log(`[Continue Watching] Completed video "${completedVideo.title}" (ID: ${completedVideo.id}, orderIndex: ${completedVideo.orderIndex}) is at index ${completedIndex} in sorted playlist (total: ${sortedVideos.length} videos)`);
         
         if (completedIndex < 0) {
-          console.log(`[Continue Watching] ❌ Completed video not found in playlist videos array`);
+          // console.log(`[Continue Watching] ❌ Completed video not found in playlist videos array`);
           continue;
         }
         
         if (completedIndex >= sortedVideos.length - 1) {
-          console.log(`[Continue Watching] ❌ Completed video is the last video in playlist (index ${completedIndex} of ${sortedVideos.length}), no next video`);
+          // console.log(`[Continue Watching] ❌ Completed video is the last video in playlist (index ${completedIndex} of ${sortedVideos.length}), no next video`);
           continue; // No next video
         }
         
         // Get the next video by orderIndex (not just array index)
         const nextVideo = sortedVideos[completedIndex + 1];
         if (!nextVideo) {
-          console.log(`[Continue Watching] ❌ No next video found at index ${completedIndex + 1}`);
+          // console.log(`[Continue Watching] ❌ No next video found at index ${completedIndex + 1}`);
           continue;
         }
         
-        console.log(`[Continue Watching] ✅ Found next video "${nextVideo.title}" (ID: ${nextVideo.id}, orderIndex: ${nextVideo.orderIndex}) after "${completedVideo.title}" (orderIndex: ${completedVideo.orderIndex})`);
+        // console.log(`[Continue Watching] ✅ Found next video "${nextVideo.title}" (ID: ${nextVideo.id}, orderIndex: ${nextVideo.orderIndex}) after "${completedVideo.title}" (orderIndex: ${completedVideo.orderIndex})`);
         
         // Check if next video is already in the list or is completed
         const nextVideoUrl = nextVideo.youtubeUrl;
         const nextVideoId = nextVideo.id;
         
-        console.log(`[Continue Watching] Checking next video "${nextVideo.title}" (ID: ${nextVideoId}) after completed video "${completedVideo.title}"`);
+        // console.log(`[Continue Watching] Checking next video "${nextVideo.title}" (ID: ${nextVideoId}) after completed video "${completedVideo.title}"`);
         
         // Check if next video has progress entry
         const nextVideoProgress = allVideoProgresses.find(vp => vp.videoId === nextVideoId);
@@ -682,14 +682,14 @@ const getRecentVideoActivities = async (req, res) => {
           
           // Skip if next video is completed
           if (nextVideoProgress.isCompleted || nextProgressPercent >= 100) {
-            console.log(`[Continue Watching] Skipping "${nextVideo.title}" - already completed (${nextProgressPercent}%)`);
+            // console.log(`[Continue Watching] Skipping "${nextVideo.title}" - already completed (${nextProgressPercent}%)`);
             continue;
           }
         }
         
         // Also check completed maps (for videos completed but not in allVideoProgresses)
         if (completedVideosMap.has(nextVideoUrl) || completedVideoIdsMap.has(nextVideoId)) {
-          console.log(`[Continue Watching] Skipping "${nextVideo.title}" - marked as completed in maps`);
+          // console.log(`[Continue Watching] Skipping "${nextVideo.title}" - marked as completed in maps`);
           continue;
         }
         
@@ -713,20 +713,20 @@ const getRecentVideoActivities = async (req, res) => {
         
         if (alreadyInFinalVideos) {
           // Next video is already in the list with progress - user started watching it
-          console.log(`[Continue Watching] Next video "${nextVideo.title}" (ID: ${nextVideoId}) is already in continue watching list with progress (${nextProgressPercent}%) - skipping duplicate`);
+          // console.log(`[Continue Watching] Next video "${nextVideo.title}" (ID: ${nextVideoId}) is already in continue watching list with progress (${nextProgressPercent}%) - skipping duplicate`);
           continue;
         }
         
         if (alreadyInNextVideos) {
           // Already added to nextVideosToAdd - skip duplicate
-          console.log(`[Continue Watching] Next video "${nextVideo.title}" (ID: ${nextVideoId}) is already in nextVideosToAdd - skipping duplicate`);
+          // console.log(`[Continue Watching] Next video "${nextVideo.title}" (ID: ${nextVideoId}) is already in nextVideosToAdd - skipping duplicate`);
           continue;
         }
         
         // Video is not in the list - ADD IT
         // This is the key: when you complete a video, the next one should ALWAYS appear
         // Even if it has 0% progress and hasn't been started yet
-        console.log(`[Continue Watching] ✅ Adding next video "${nextVideo.title}" (ID: ${nextVideoId}) - not in list, progress: ${nextProgressPercent}%`);
+        // console.log(`[Continue Watching] ✅ Adding next video "${nextVideo.title}" (ID: ${nextVideoId}) - not in list, progress: ${nextProgressPercent}%`);
         
         // Add next video to continue watching (not started yet, but next in playlist)
         // Use a timestamp slightly in the past so it appears after in-progress videos
@@ -748,7 +748,7 @@ const getRecentVideoActivities = async (req, res) => {
           lastPosition: 0,
         });
         
-        console.log(`[Continue Watching] Adding next video "${nextVideo.title}" from playlist "${completedVideo.playlist.title}"`);
+        // console.log(`[Continue Watching] Adding next video "${nextVideo.title}" from playlist "${completedVideo.playlist.title}"`);
       } catch (err) {
         console.error(`Error finding next video for completed video ${completedVp.videoId}:`, err);
         // Continue with next completed video
@@ -766,14 +766,14 @@ const getRecentVideoActivities = async (req, res) => {
         const videoIdNum = typeof nextVideoId === 'string' ? parseInt(nextVideoId, 10) : nextVideoId;
         if (!isNaN(videoIdNum) && videoIdNum > 0) {
           if (freshCompletedMap.has(videoIdNum) || freshCompletedMap.has(String(videoIdNum))) {
-            console.log(`[Continue Watching] Filtering out completed video_next video "${nextVideo.videoTitle}" (ID: ${videoIdNum})`);
+            // console.log(`[Continue Watching] Filtering out completed video_next video "${nextVideo.videoTitle}" (ID: ${videoIdNum})`);
             return false;
           }
         }
       }
       
       if (nextVideoUrl && freshCompletedMap.has(nextVideoUrl)) {
-        console.log(`[Continue Watching] Filtering out completed video_next video "${nextVideo.videoTitle}" (URL)`);
+        // console.log(`[Continue Watching] Filtering out completed video_next video "${nextVideo.videoTitle}" (URL)`);
         return false;
       }
       
@@ -809,7 +809,7 @@ const getRecentVideoActivities = async (req, res) => {
       if (nextVideoUrl && finalVideosMap.has(nextVideoUrl)) {
         const existingVideo = finalVideosMap.get(nextVideoUrl);
         const existingProgress = existingVideo.progress || existingVideo.progressPercent || 0;
-        console.log(`[Continue Watching] Skipping video_next duplicate "${nextVideo.videoTitle}" (URL match) - already in finalVideos with ${existingProgress}% progress`);
+        // console.log(`[Continue Watching] Skipping video_next duplicate "${nextVideo.videoTitle}" (URL match) - already in finalVideos with ${existingProgress}% progress`);
         return false;
       }
       
@@ -820,7 +820,7 @@ const getRecentVideoActivities = async (req, res) => {
           if (finalVideosMap.has(videoIdNum) || finalVideosMap.has(String(videoIdNum)) || finalVideosMap.has(Number(videoIdNum))) {
             const existingVideo = finalVideosMap.get(videoIdNum) || finalVideosMap.get(String(videoIdNum)) || finalVideosMap.get(Number(videoIdNum));
             const existingProgress = existingVideo?.progress || existingVideo?.progressPercent || 0;
-            console.log(`[Continue Watching] Skipping video_next duplicate "${nextVideo.videoTitle}" (ID: ${videoIdNum}) - already in finalVideos with ${existingProgress}% progress`);
+            // console.log(`[Continue Watching] Skipping video_next duplicate "${nextVideo.videoTitle}" (ID: ${videoIdNum}) - already in finalVideos with ${existingProgress}% progress`);
             return false;
           }
         }
@@ -846,19 +846,19 @@ const getRecentVideoActivities = async (req, res) => {
       })
       .slice(0, 10); // Get top 10 most recent
     
-    console.log(`[Continue Watching] Final result: ${allContinueWatchingVideos.length} videos`);
-    console.log(`[Continue Watching] Breakdown: ${finalVideos.length} in-progress, ${nextVideosToAdd.length} next videos found, ${filteredNextVideos.length} next videos after filtering completed ones, ${deduplicatedNextVideos.length} next videos after deduplication`);
+    // console.log(`[Continue Watching] Final result: ${allContinueWatchingVideos.length} videos`);
+    // console.log(`[Continue Watching] Breakdown: ${finalVideos.length} in-progress, ${nextVideosToAdd.length} next videos found, ${filteredNextVideos.length} next videos after filtering completed ones, ${deduplicatedNextVideos.length} next videos after deduplication`);
     if (deduplicatedNextVideos.length > 0) {
-      console.log(`[Continue Watching] Next videos added:`, deduplicatedNextVideos.map(v => ({ title: v.videoTitle, id: v.videoId })));
+      // console.log(`[Continue Watching] Next videos added:`, deduplicatedNextVideos.map(v => ({ title: v.videoTitle, id: v.videoId })));
     }
     
-    console.log(`[Continue Watching] Returning ${allContinueWatchingVideos.length} videos (${finalVideos.length} in-progress + ${deduplicatedNextVideos.length} next videos)`);
-    console.log(`[Continue Watching] Final video list:`, allContinueWatchingVideos.map(v => ({ 
-      title: v.videoTitle || v.title, 
-      id: v.videoId, 
-      type: v.activityType,
-      progress: v.progress 
-    })));
+    // console.log(`[Continue Watching] Returning ${allContinueWatchingVideos.length} videos (${finalVideos.length} in-progress + ${deduplicatedNextVideos.length} next videos)`);
+    // console.log(`[Continue Watching] Final video list:`, allContinueWatchingVideos.map(v => ({ 
+    //   title: v.videoTitle || v.title, 
+    //   id: v.videoId, 
+    //   type: v.activityType,
+    //   progress: v.progress 
+    // })));
     
     res.status(200).json({
       success: true,

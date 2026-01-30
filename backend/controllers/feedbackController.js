@@ -127,13 +127,13 @@ const getStudentFeedback = async (req, res) => {
  */
 const getAllFeedback = async (req, res) => {
   try {
-    console.log('✅ getAllFeedback function called');
-    console.log('User:', req.user ? { id: req.user.id, role: req.user.role_code } : 'No user');
+    // console.log('✅ getAllFeedback function called');
+    // console.log('User:', req.user ? { id: req.user.id, role: req.user.role_code } : 'No user');
     
     const { page = 1, limit = 20 } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    console.log('Starting Prisma query...');
+    // console.log('Starting Prisma query...');
     const [feedbacks, total] = await Promise.all([
       prisma.internshipFeedback.findMany({
         skip: parseInt(skip),
@@ -160,7 +160,7 @@ const getAllFeedback = async (req, res) => {
       prisma.internshipFeedback.count(),
     ]);
 
-    console.log(`✅ Query successful: ${feedbacks.length} feedbacks, total: ${total}`);
+    // console.log(`✅ Query successful: ${feedbacks.length} feedbacks, total: ${total}`);
 
     res.status(200).json({
       success: true,

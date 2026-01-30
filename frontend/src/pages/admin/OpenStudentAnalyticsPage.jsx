@@ -108,13 +108,13 @@ const OpenStudentAnalyticsPage = () => {
   const fetchIndividualAnalytics = async () => {
     try {
       setLoadingStudents(true);
-      console.log('[OpenStudentAnalytics] Fetching individual analytics:', {
-        page: currentPage,
-        limit: 20,
-        search: searchQuery,
-        sortBy,
-        sortOrder,
-      });
+      // console.log('[OpenStudentAnalytics] Fetching individual analytics:', {
+      //   page: currentPage,
+      //   limit: 20,
+      //   search: searchQuery,
+      //   sortBy,
+      //   sortOrder,
+      // });
       
       const response = await api.admin.getOpenStudentIndividualAnalytics({
         page: currentPage,
@@ -124,23 +124,23 @@ const OpenStudentAnalyticsPage = () => {
         sortOrder,
       });
       
-      console.log('[OpenStudentAnalytics] Full response:', response);
-      console.log('[OpenStudentAnalytics] Response received:', {
-        success: response.success,
-        studentsCount: response.students?.length || 0,
-        pagination: response.pagination,
-        students: response.students,
-      });
+      // console.log('[OpenStudentAnalytics] Full response:', response);
+      // console.log('[OpenStudentAnalytics] Response received:', {
+      //   success: response.success,
+      //   studentsCount: response.students?.length || 0,
+      //   pagination: response.pagination,
+      //   students: response.students,
+      // });
       
       if (response.success) {
         const studentsData = response.students || [];
-        console.log('[OpenStudentAnalytics] Setting students:', studentsData.length);
+        // console.log('[OpenStudentAnalytics] Setting students:', studentsData.length);
         setStudents(studentsData);
         setTotalPages(response.pagination?.totalPages || 1);
         setTotal(response.pagination?.total || 0);
         
         if (studentsData.length === 0) {
-          console.log('[OpenStudentAnalytics] No students found in response');
+          // console.log('[OpenStudentAnalytics] No students found in response');
         }
       } else {
         console.error('[OpenStudentAnalytics] API returned success=false:', response.message);

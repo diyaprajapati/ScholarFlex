@@ -8,11 +8,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  console.log('Service Worker received message:', event.data);
+  // console.log('Service Worker received message:', event.data);
   if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
     const { title, body, tag } = event.data;
     
-    console.log('Service Worker attempting to show notification:', { title, body, tag });
+    // console.log('Service Worker attempting to show notification:', { title, body, tag });
     
     // Use event.waitUntil to keep Service Worker alive during async operation
     event.waitUntil(
@@ -31,7 +31,7 @@ self.addEventListener('message', (event) => {
         ]
       })
       .then(() => {
-        console.log('Service Worker notification shown successfully');
+        // console.log('Service Worker notification shown successfully');
       })
       .catch((error) => {
         console.error('Service Worker notification error:', error);

@@ -12,12 +12,12 @@ const PlaylistsTab = ({
   const safeAllPlaylists = Array.isArray(allPlaylists) ? allPlaylists : [];
   const safeRecommendedPlaylists = Array.isArray(recommendedPlaylists) ? recommendedPlaylists : [];
   
-  console.log('PlaylistsTab render:', { 
-    loadingPlaylists, 
-    allPlaylistsLength: safeAllPlaylists.length, 
-    allPlaylists: safeAllPlaylists,
-    recommendedPlaylistsLength: safeRecommendedPlaylists.length
-  });
+  // console.log('PlaylistsTab render:', { 
+  //   loadingPlaylists, 
+  //   allPlaylistsLength: safeAllPlaylists.length, 
+  //   allPlaylists: safeAllPlaylists,
+  //   recommendedPlaylistsLength: safeRecommendedPlaylists.length
+  // });
   
   return (
     <div className="space-y-6 sm:space-y-8">

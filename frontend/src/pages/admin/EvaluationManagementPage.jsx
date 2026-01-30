@@ -138,8 +138,8 @@ const EvaluationManagementPage = () => {
       const response = await api.internshipStatus.getAllStatuses({}, params.toString());
       if (response.success) {
         const studentsData = response.data || [];
-        console.log('Evaluation API Response - Sample item:', studentsData[0]);
-        console.log('Evaluation API Response - Student imageUrl:', studentsData[0]?.student?.imageUrl);
+        // console.log('Evaluation API Response - Sample item:', studentsData[0]);
+        // console.log('Evaluation API Response - Student imageUrl:', studentsData[0]?.student?.imageUrl);
         setStudents(studentsData);
         if (response.pagination) {
           setTotalPages(response.pagination.totalPages || 1);
@@ -639,19 +639,19 @@ const EvaluationManagementPage = () => {
 
                                     if (imageUrl && !hasFailed) {
                                       const url = getImageUrl(imageUrl);
-                                      console.log('Evaluation page - Student image:', { studentId: student.id, imageUrl, constructedUrl: url });
+                                      // console.log('Evaluation page - Student image:', { studentId: student.id, imageUrl, constructedUrl: url });
                                       return (
                                         <img
                                           src={url}
                                           alt={student.fullName}
                                           className="shrink-0 h-10 w-10 rounded-full object-cover border-2 border-gray-200"
                                           onError={handleImageError(imageKey)}
-                                          onLoad={() => console.log('Image loaded successfully:', url)}
+                                          // onLoad={() => console.log('Image loaded successfully:', url)}
                                           loading="lazy"
                                         />
                                       );
                                     }
-                                    console.log('Evaluation page - No image or failed:', { studentId: student.id, imageUrl, hasFailed });
+                                    // console.log('Evaluation page - No image or failed:', { studentId: student.id, imageUrl, hasFailed });
                                     return (
                                       <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-100">
                                         <User className="w-5 h-5 text-green-600" />

@@ -9,7 +9,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 
 async function createFunction() {
   try {
-    console.log('🔄 Creating sp_calculate_test_score function...\n');
+    // console.log('🔄 Creating sp_calculate_test_score function...\n');
 
     // MySQL stored procedure syntax (different from PostgreSQL)
     const createProcedureSQL = `
@@ -86,14 +86,14 @@ async function createFunction() {
     `;
 
     await prisma.$executeRawUnsafe(createProcedureSQL);
-    console.log('✅ Function sp_calculate_test_score created successfully!');
-    console.log('ℹ️  Note: MySQL stored procedures work differently than PostgreSQL.');
-    console.log('ℹ️  The application uses Prisma for score calculation, so this procedure may not be used.');
+    // console.log('✅ Function sp_calculate_test_score created successfully!');
+    // console.log('ℹ️  Note: MySQL stored procedures work differently than PostgreSQL.');
+    // console.log('ℹ️  The application uses Prisma for score calculation, so this procedure may not be used.');
     
   } catch (error) {
     console.error('❌ Error creating function:', error.message);
     console.error('   Error code:', error.code);
-    console.log('ℹ️  This is expected if the procedure already exists or if using Prisma for calculations.');
+    // console.log('ℹ️  This is expected if the procedure already exists or if using Prisma for calculations.');
   } finally {
     await prisma.$disconnect();
   }
@@ -102,7 +102,7 @@ async function createFunction() {
 // Run the function creation
 createFunction()
   .then(() => {
-    console.log('\n✨ Done!');
+    // console.log('\n✨ Done!');
     process.exit(0);
   })
   .catch((error) => {

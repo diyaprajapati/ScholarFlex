@@ -244,7 +244,7 @@ const getDashboard = async (req, res) => {
           watchTimeSeconds: 0,
         });
         
-        console.log(`[Open Student Continue Watching] Adding next video "${nextVideo.title}" from playlist "${playlist.title}"`);
+        // console.log(`[Open Student Continue Watching] Adding next video "${nextVideo.title}" from playlist "${playlist.title}"`);
       } catch (err) {
         console.error(`Error finding next video for completed video ${completedProgress.videoId}:`, err);
         // Continue with next completed video
@@ -266,14 +266,14 @@ const getDashboard = async (req, res) => {
           : Number(progress.lastPosition))
         : 0;
 
-      console.log('Formatting continue watching video:', {
-        videoId: progress.video.id,
-        videoTitle: progress.video.title,
-        rawProgressPercent: progress.progressPercent,
-        formattedProgress: progressPercent,
-        rawLastPosition: progress.lastPosition,
-        formattedLastPosition: lastPosition,
-      });
+      // console.log('Formatting continue watching video:', {
+      //   videoId: progress.video.id,
+      //   videoTitle: progress.video.title,
+      //   rawProgressPercent: progress.progressPercent,
+      //   formattedProgress: progressPercent,
+      //   rawLastPosition: progress.lastPosition,
+      //   formattedLastPosition: lastPosition,
+      // });
 
       return {
         // Match shape expected by DashboardTab for continueWatching cards
@@ -321,7 +321,7 @@ const getDashboard = async (req, res) => {
       })
       .slice(0, 10); // Get top 10
 
-    console.log(`[Open Student Continue Watching] Returning ${allContinueWatching.length} videos (${formattedVideos.length} in-progress + ${formattedNextVideos.length} next videos)`);
+    // console.log(`[Open Student Continue Watching] Returning ${allContinueWatching.length} videos (${formattedVideos.length} in-progress + ${formattedNextVideos.length} next videos)`);
 
     res.status(200).json({
       success: true,
@@ -568,7 +568,7 @@ const trackVideoProgress = async (req, res) => {
       // Handle unique constraint violation (race condition)
       // If create fails due to unique constraint, try to update instead
       if (error.code === 'P2002' || error.message?.includes('Unique constraint')) {
-        console.log(`[Open Student] Race condition detected, retrying as update for video ${videoId}`);
+        // console.log(`[Open Student] Race condition detected, retrying as update for video ${videoId}`);
         // Record was created by another concurrent request, just update it
         progress = await prisma.openVideoProgress.update({
           where: {

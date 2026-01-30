@@ -56,12 +56,12 @@ const PlaylistManagementPage = () => {
 
   const fetchPlaylists = async () => {
     try {
-      console.log('🔄 Fetching playlists...');
+      // console.log('🔄 Fetching playlists...');
       const response = await api.playlists.getAll();
-      console.log('📦 Playlists API response:', response);
-      console.log('📦 Response keys:', Object.keys(response));
-      console.log('📦 Response.success:', response.success);
-      console.log('📦 Response.playlists:', response.playlists);
+      // console.log('📦 Playlists API response:', response);
+      // console.log('📦 Response keys:', Object.keys(response));
+      // console.log('📦 Response.success:', response.success);
+      // console.log('📦 Response.playlists:', response.playlists);
       
       if (response.success) {
         const playlistsArray = response.playlists || [];

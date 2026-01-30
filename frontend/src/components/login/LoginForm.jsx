@@ -42,7 +42,7 @@ export default function LoginForm() {
         setShowOTP(true)
         // In development, if OTP is returned, log it for testing
         if (response.otp) {
-          console.log('OTP (development only):', response.otp)
+          // console.log('OTP (development only):', response.otp)
         }
       }
     } catch (error) {

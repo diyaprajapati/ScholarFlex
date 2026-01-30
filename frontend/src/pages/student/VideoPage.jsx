@@ -265,16 +265,16 @@ const VideoPage = () => {
                       finalDbVideoId = parseInt(video.id);
                     }
                     
-                    console.log('🎥 Rendering YouTubeVideoPlayer with:', {
-                      finalVideoId,
-                      dbVideoId: finalDbVideoId,
-                      dbVideoIdParam,
-                      videoId: video.id,
-                      videoTitle: video.title,
-                      startTime,
-                      playlistId: playlist?.id || playlistId,
-                      isVideoNext: !finalDbVideoId && video.id, // Log if we might have a video_next issue
-                    });
+                    // console.log('🎥 Rendering YouTubeVideoPlayer with:', {
+                    //   finalVideoId,
+                    //   dbVideoId: finalDbVideoId,
+                    //   dbVideoIdParam,
+                    //   videoId: video.id,
+                    //   videoTitle: video.title,
+                    //   startTime,
+                    //   playlistId: playlist?.id || playlistId,
+                    //   isVideoNext: !finalDbVideoId && video.id, // Log if we might have a video_next issue
+                    // });
                     return (
                       <YouTubeVideoPlayer
                         videoId={finalVideoId}
@@ -340,7 +340,7 @@ const VideoPage = () => {
                             }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${playlistVideo.id === video.id
                                   ? 'bg-green-600 text-white'
                                   : 'bg-gray-200 text-gray-600'
@@ -360,7 +360,7 @@ const VideoPage = () => {
                               )}
                             </div>
                             {playlistVideo.id === video.id && (
-                              <Play className="w-5 h-5 text-green-600 flex-shrink-0" />
+                              <Play className="w-5 h-5 text-green-600 shrink-0" />
                             )}
                           </div>
                         </div>

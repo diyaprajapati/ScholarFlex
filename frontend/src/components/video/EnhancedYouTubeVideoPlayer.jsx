@@ -119,7 +119,7 @@ const EnhancedYouTubeVideoPlayer = ({
       if (response.success && response.sessionId) {
         sessionIdRef.current = response.sessionId;
         sessionStartedRef.current = true;
-        console.log('Video session started:', response.sessionId);
+        // console.log('Video session started:', response.sessionId);
       }
     } catch (err) {
       console.error('Error starting video session:', err);
@@ -349,7 +349,7 @@ const EnhancedYouTubeVideoPlayer = ({
       // This is the PRIMARY method - YouTube will start the video at this time
       if (startTime > 0) {
         playerVars.start = Math.floor(startTime);
-        console.log(`🎬 Setting YouTube player start time to ${playerVars.start} seconds (PRIMARY METHOD)`);
+        // console.log(`🎬 Setting YouTube player start time to ${playerVars.start} seconds (PRIMARY METHOD)`);
       }
       
       playerRef.current = new window.YT.Player(containerRef.current, {
@@ -357,7 +357,7 @@ const EnhancedYouTubeVideoPlayer = ({
         playerVars: playerVars,
         events: {
           onReady: (event) => {
-            console.log('✅ YouTube player ready, startTime:', startTime);
+            // console.log('✅ YouTube player ready, startTime:', startTime);
             const player = event.target;
             
             // BACKUP METHOD: Also seek to startTime if provided
@@ -377,14 +377,14 @@ const EnhancedYouTubeVideoPlayer = ({
                   // Only seek if we're not already at the right position (within 1 second)
                   if (timeDiff > 1 && seekAttempts <= maxSeekAttempts) {
                     player.seekTo(startTime, true);
-                    console.log(`✅ Seeking to ${startTime} seconds (backup method, attempt ${seekAttempts})`);
+                    // console.log(`✅ Seeking to ${startTime} seconds (backup method, attempt ${seekAttempts})`);
                     
                     // Try again after a delay if still not at correct position
                     if (seekAttempts < maxSeekAttempts) {
                       setTimeout(seekToStart, 1000 * seekAttempts);
                     }
                   } else if (timeDiff <= 1) {
-                    console.log(`✅ Video is at correct position (${currentTime.toFixed(1)}s)`);
+                    // console.log(`✅ Video is at correct position (${currentTime.toFixed(1)}s)`);
                   }
                 } catch (err) {
                   console.error('Error seeking to start time:', err);
@@ -401,7 +401,7 @@ const EnhancedYouTubeVideoPlayer = ({
               setTimeout(seekToStart, 5000);
               setTimeout(seekToStart, 7000);
             } else if (startTime === 0) {
-              console.log('ℹ️ No startTime provided, video will start from beginning');
+              // console.log('ℹ️ No startTime provided, video will start from beginning');
             }
 
             // Get initial video duration

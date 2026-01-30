@@ -23,8 +23,8 @@ router.get('/student/feedback', authenticate, authorize('STUDENT'), feedbackCont
  * @access  Private (Admin, Super Admin)
  */
 router.get('/admin/feedback', authenticate, authorize('ADMIN', 'SUPER_ADMIN'), (req, res, next) => {
-  console.log('✅ Route handler reached for /admin/feedback');
-  console.log('User:', req.user);
+  // console.log('✅ Route handler reached for /admin/feedback');
+  // console.log('User:', req.user);
   next();
 }, feedbackController.getAllFeedback);
 

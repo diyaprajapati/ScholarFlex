@@ -108,7 +108,7 @@ export default function StudentProfileFormPage() {
         const completionRes = await api.studentProfile.checkCompletion()
         if (completionRes.success && completionRes.isCompleted) {
           // Profile is completed, but allow access for viewing/editing
-          console.log('Profile is completed, allowing access for editing')
+          // console.log('Profile is completed, allowing access for editing')
         }
 
         // All checks passed, allow access to form
@@ -229,10 +229,10 @@ export default function StudentProfileFormPage() {
       }
       
       const blobUrl = URL.createObjectURL(file)
-      console.log('Image selected, blob URL created:', blobUrl)
-      console.log('File details:', { name: file.name, type: file.type, size: file.size })
+      // console.log('Image selected, blob URL created:', blobUrl)
+      // console.log('File details:', { name: file.name, type: file.type, size: file.size })
       setFormData(prev => {
-        console.log('Updating formData with imageUrl:', blobUrl)
+        // console.log('Updating formData with imageUrl:', blobUrl)
         return {
           ...prev,
           imageFile: file,
@@ -686,7 +686,7 @@ export default function StudentProfileFormPage() {
                           className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 bg-gray-100"
                           style={{ display: 'block', minWidth: '80px', minHeight: '80px' }}
                           onLoad={() => {
-                            console.log('Image loaded successfully:', formData.imageUrl)
+                            // console.log('Image loaded successfully:', formData.imageUrl)
                           }}
                           onError={(e) => {
                             console.error('Failed to load image:', formData.imageUrl, e)

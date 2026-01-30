@@ -179,13 +179,13 @@ const addVideoToPlaylist = async (req, res) => {
  */
 const getAllPlaylists = async (req, res) => {
   try {
-    console.log('🔄 Attempting to fetch playlists...');
+    // console.log('🔄 Attempting to fetch playlists...');
     
     // Step 1: Test connection with count
     let totalCount;
     try {
       totalCount = await prisma.playlist.count();
-      console.log(`✅ Total playlists in database: ${totalCount}`);
+      // console.log(`✅ Total playlists in database: ${totalCount}`);
     } catch (testError) {
       console.error('❌ Failed to count playlists:', testError);
       console.error('Error stack:', testError.stack);
@@ -200,7 +200,7 @@ const getAllPlaylists = async (req, res) => {
           createdAt: 'desc',
         },
       });
-      console.log(`✅ Fetched ${playlists.length} playlists from database`);
+      // console.log(`✅ Fetched ${playlists.length} playlists from database`);
     } catch (queryError) {
       console.error('❌ Failed to fetch playlists:', queryError);
       console.error('Error name:', queryError.name);
@@ -266,7 +266,7 @@ const getAllPlaylists = async (req, res) => {
       playlistsWithRelations.push(playlistData);
     }
     
-    console.log(`✅ Successfully processed ${playlistsWithRelations.length} playlists`);
+    // console.log(`✅ Successfully processed ${playlistsWithRelations.length} playlists`);
 
     // Log the activity (don't fail if logging fails)
     try {
@@ -282,7 +282,7 @@ const getAllPlaylists = async (req, res) => {
       // Continue even if logging fails
     }
 
-    console.log(`✅ Returning ${playlistsWithRelations.length} playlists to client`);
+    // console.log(`✅ Returning ${playlistsWithRelations.length} playlists to client`);
 
     res.status(200).json({
       success: true,

@@ -47,11 +47,11 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
       playlistId: safeParseInt(playlistId)
     };
 
-    console.log('📊 Tracking Params Updated:', trackingRef.current, {
-      dbVideoId,
-      videoId,
-      parsedDbVideoId: dbVideoIdInt
-    });
+    // console.log('📊 Tracking Params Updated:', trackingRef.current, {
+    //   dbVideoId,
+    //   videoId,
+    //   parsedDbVideoId: dbVideoIdInt
+    // });
   }, [startTime, dbVideoId, videoId, playlistId]);
 
   // NOTE: We recreate the player in the init effect (dependency includes startTime).
@@ -119,7 +119,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
 
     // Ensure we have a valid ID before tracking
     if (!dbVideoId || !isOpenStudent()) {
-      console.log('Skipping open student tracking: Missing dbVideoId or not open student', { dbVideoId });
+      // console.log('Skipping open student tracking: Missing dbVideoId or not open student', { dbVideoId });
       return;
     }
 
@@ -312,21 +312,21 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
 
   // Initialize player when API is ready OR when startTime changes
   useEffect(() => {
-    console.log(`🔄 YouTubeVideoPlayer useEffect triggered:`, {
-      isPlayerReady,
-      finalVideoId,
-      hasContainer: !!containerRef.current,
-      startTime,
-    });
+    // console.log(`🔄 YouTubeVideoPlayer useEffect triggered:`, {
+    //   isPlayerReady,
+    //   finalVideoId,
+    //   hasContainer: !!containerRef.current,
+    //   startTime,
+    // });
 
     if (!isPlayerReady || !finalVideoId || !containerRef.current) {
-      console.log('⏸️ Player not ready yet, waiting...');
+      // console.log('⏸️ Player not ready yet, waiting...');
       return;
     }
 
     // Destroy existing player if it exists
     if (playerRef.current && playerRef.current.destroy) {
-      console.log('🗑️ Destroying existing player before recreating...');
+      // console.log('🗑️ Destroying existing player before recreating...');
       try {
         playerRef.current.destroy();
       } catch (e) {
@@ -358,7 +358,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
             const player = event.target;
             const targetTime = startTimeRef.current; // Use Ref for latest value
 
-            console.log(`🎬 Player Ready. Seeking to ${targetTime}s`);
+            // console.log(`🎬 Player Ready. Seeking to ${targetTime}s`);
 
             // Initial seek check
             if (targetTime > 0 && player && player.seekTo) {
@@ -374,7 +374,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
                   const currentTime = player.getCurrentTime();
                   // Convert to numbers explicitly to be safe
                   if (Math.abs(Number(currentTime) - Number(targetTime)) > 2) {
-                    console.log('🔄 Retry seek...');
+                    // console.log('🔄 Retry seek...');
                     player.seekTo(targetTime, true);
                     player.playVideo();
                   }
@@ -419,7 +419,7 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
     try {
       const player = playerRef.current;
       if (player.seekTo) {
-        console.log(`⏩ Seeking to ${startTime}s due to prop update`);
+        // console.log(`⏩ Seeking to ${startTime}s due to prop update`);
         player.seekTo(startTime, true);
         if (player.playVideo) {
           player.playVideo();
@@ -636,13 +636,13 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
       // Ensure finalDbVideoId is a valid integer (database ID), not a YouTube ID string
       const dbVideoIdInt = safeParseInt(finalDbVideoId);
       if (!isOpenStudent() && dbVideoIdInt) {
-        console.log(`[Video Completion] Tracking completion for video ${dbVideoIdInt}, playlistId: ${playlistId}, duration: ${videoDuration}`);
+        // console.log(`[Video Completion] Tracking completion for video ${dbVideoIdInt}, playlistId: ${playlistId}, duration: ${videoDuration}`);
         api.videoTracking.trackCompleted(
           dbVideoIdInt,
           playlistId ? parseInt(playlistId) : null,
           Math.round(videoDuration)
         ).then(() => {
-          console.log(`[Video Completion] Successfully tracked completion for video ${dbVideoIdInt}`);
+          // console.log(`[Video Completion] Successfully tracked completion for video ${dbVideoIdInt}`);
         }).catch(err => {
           console.error('[Video Completion] Error tracking video completed:', err);
         });

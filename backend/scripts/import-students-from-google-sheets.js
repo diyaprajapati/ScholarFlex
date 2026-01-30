@@ -85,7 +85,7 @@ function getCsvDownloadUrl(googleSheetsUrl) {
  */
 async function downloadCsv(csvUrl) {
   try {
-    console.log(`Downloading CSV from: ${csvUrl}`);
+    // console.log(`Downloading CSV from: ${csvUrl}`);
     const response = await fetch(csvUrl);
     
     if (!response.ok) {
@@ -242,21 +242,21 @@ async function upsertStudent(row, uniqueField = 'email') {
  */
 async function importStudents(googleSheetsUrl, uniqueField = 'email') {
   try {
-    console.log('Starting student import from Google Sheets...');
-    console.log(`Google Sheets URL: ${googleSheetsUrl}`);
-    console.log(`Unique field: ${uniqueField}`);
+    // console.log('Starting student import from Google Sheets...');
+    // console.log(`Google Sheets URL: ${googleSheetsUrl}`);
+    // console.log(`Unique field: ${uniqueField}`);
 
     // Step 1: Get CSV download URL
     const csvUrl = getCsvDownloadUrl(googleSheetsUrl);
-    console.log(`CSV Download URL: ${csvUrl}`);
+    // console.log(`CSV Download URL: ${csvUrl}`);
 
     // Step 2: Download CSV
     const csvText = await downloadCsv(csvUrl);
-    console.log(`Downloaded CSV (${csvText.length} characters)`);
+    // console.log(`Downloaded CSV (${csvText.length} characters)`);
 
     // Step 3: Parse CSV
     const rows = parseCsv(csvText);
-    console.log(`Parsed ${rows.length} rows from CSV`);
+    // console.log(`Parsed ${rows.length} rows from CSV`);
 
     if (rows.length === 0) {
       console.warn('No rows found in CSV');
@@ -264,8 +264,8 @@ async function importStudents(googleSheetsUrl, uniqueField = 'email') {
     }
 
     // Step 4: Display first row as sample
-    console.log('\nSample row structure:');
-    console.log(Object.keys(rows[0]));
+    // console.log('\nSample row structure:');
+    // console.log(Object.keys(rows[0]));
 
     // Step 5: Upsert each row
     const results = {
@@ -289,7 +289,7 @@ async function importStudents(googleSheetsUrl, uniqueField = 'email') {
             name: result.student.fullName,
           });
         }
-        console.log(`[${i + 1}/${rows.length}] ${result.action}: ${result.student.email}`);
+        // console.log(`[${i + 1}/${rows.length}] ${result.action}: ${result.student.email}`);
       } catch (error) {
         const email = row.email || row.Email || row['Email'] || 'unknown';
         results.errors.push({
@@ -302,16 +302,16 @@ async function importStudents(googleSheetsUrl, uniqueField = 'email') {
     }
 
     // Step 6: Summary
-    console.log('\n=== Import Summary ===');
-    console.log(`Total rows processed: ${rows.length}`);
-    console.log(`Created: ${results.created.length}`);
-    console.log(`Updated: ${results.updated.length}`);
-    console.log(`Errors: ${results.errors.length}`);
+    // console.log('\n=== Import Summary ===');
+    // console.log(`Total rows processed: ${rows.length}`);
+    // console.log(`Created: ${results.created.length}`);
+    // console.log(`Updated: ${results.updated.length}`);
+    // console.log(`Errors: ${results.errors.length}`);
 
     if (results.errors.length > 0) {
-      console.log('\nErrors:');
+      // console.log('\nErrors:');
       results.errors.forEach((err) => {
-        console.log(`  Row ${err.row} (${err.email}): ${err.error}`);
+        // console.log(`  Row ${err.row} (${err.email}): ${err.error}`);
       });
     }
 
@@ -337,7 +337,7 @@ if (require.main === module) {
 
   importStudents(googleSheetsUrl, uniqueField)
     .then(() => {
-      console.log('\nImport completed successfully!');
+      // console.log('\nImport completed successfully!');
       process.exit(0);
     })
     .catch((error) => {

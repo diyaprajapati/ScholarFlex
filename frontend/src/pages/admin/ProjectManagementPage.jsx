@@ -112,8 +112,8 @@ const ProjectManagementPage = () => {
       const response = await api.projects.getSelectedStudentsWithProjects({}, params.toString());
       if (response.success) {
         const studentsData = response.data || [];
-        console.log('Projects API Response - Sample student:', studentsData[0]);
-        console.log('Projects API Response - Student imageUrl:', studentsData[0]?.imageUrl);
+        // console.log('Projects API Response - Sample student:', studentsData[0]);
+        // console.log('Projects API Response - Student imageUrl:', studentsData[0]?.imageUrl);
         setStudents(studentsData);
         if (response.pagination) {
           setTotalPages(response.pagination.totalPages || 1);
@@ -371,14 +371,14 @@ const ProjectManagementPage = () => {
                                     
                                     if (imageUrl && !hasFailed) {
                                       const url = getImageUrl(imageUrl);
-                                      console.log('Project page - Student image:', { studentId: student.id, imageUrl, constructedUrl: url });
+                                      // console.log('Project page - Student image:', { studentId: student.id, imageUrl, constructedUrl: url });
                                       return (
                                         <img
                                           src={url}
                                           alt={student.fullName}
                                           className="shrink-0 h-10 w-10 rounded-full object-cover border-2 border-gray-200"
                                           onError={handleImageError(imageKey)}
-                                          onLoad={() => console.log('Image loaded successfully:', url)}
+                                          // onLoad={() => console.log('Image loaded successfully:', url)}
                                           loading="lazy"
                                         />
                                       );

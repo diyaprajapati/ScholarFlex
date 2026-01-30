@@ -18,12 +18,12 @@ const OpenStudentDashboardPage = () => {
   // Determine active tab from URL
   const getActiveTabFromPath = () => {
     const path = location.pathname;
-    console.log('Current path:', path, 'Checking against:', ROUTES.STUDENT.OPEN.PLAYLISTS);
+    // console.log('Current path:', path, 'Checking against:', ROUTES.STUDENT.OPEN.PLAYLISTS);
     if (path === ROUTES.STUDENT.OPEN.PLAYLISTS || path === ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS) {
-      console.log('Returning playlists tab');
+      // console.log('Returning playlists tab');
       return 'playlists';
     }
-    console.log('Returning dashboard tab');
+    // console.log('Returning dashboard tab');
     return 'dashboard'; // Default to dashboard
   };
 
@@ -99,14 +99,14 @@ const OpenStudentDashboardPage = () => {
 
       if (response.success) {
         const items = response.dashboard?.continueWatching || [];
-        console.log('Open dashboard continueWatching:', items);
-        console.log('First item details:', items[0] ? {
-          id: items[0].id,
-          videoTitle: items[0].videoTitle,
-          progress: items[0].progress,
-          progressPercent: items[0].progressPercent,
-          lastPosition: items[0].lastPosition,
-        } : 'No items');
+        // console.log('Open dashboard continueWatching:', items);
+        // console.log('First item details:', items[0] ? {
+        //   id: items[0].id,
+        //   videoTitle: items[0].videoTitle,
+        //   progress: items[0].progress,
+        //   progressPercent: items[0].progressPercent,
+        //   lastPosition: items[0].lastPosition,
+        // } : 'No items');
         setContinueWatching(items);
       } else {
         console.error('Failed to fetch open dashboard:', response.message);
@@ -124,11 +124,11 @@ const OpenStudentDashboardPage = () => {
       setError(''); // Clear previous errors
       const response = await api.openStudent.getPlaylists();
 
-      console.log('Playlists API response:', response);
+      // console.log('Playlists API response:', response);
 
       if (response.success) {
         const playlists = response.playlists || [];
-        console.log('Setting playlists:', playlists.length, 'playlists found');
+        // console.log('Setting playlists:', playlists.length, 'playlists found');
         setAllPlaylists(playlists);
       } else {
         console.error('Failed to fetch playlists:', response.message);

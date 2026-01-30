@@ -452,7 +452,7 @@ class Student {
         },
       });
 
-      console.log(`✅ Created domain: ${trimmedName} (ID: ${domain.id})`);
+      // console.log(`✅ Created domain: ${trimmedName} (ID: ${domain.id})`);
       return domain.id;
     } catch (error) {
       console.error("❌ Error getting or creating domain:", error.message);

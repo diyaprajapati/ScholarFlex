@@ -197,7 +197,7 @@ export default function AllInternsPage() {
   }
 
   const handleView = (intern) => {
-    console.log('View intern:', intern)
+    // console.log('View intern:', intern)
     // Navigate to view page or open view modal
   }
 

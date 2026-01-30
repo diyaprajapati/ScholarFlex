@@ -415,7 +415,7 @@ const getIndividualAnalytics = async (req, res) => {
       })
     );
 
-    console.log(`[OpenStudentAnalytics] Returning ${studentsWithAnalytics.length} students (page ${pageNum}, total: ${total})`);
+    // console.log(`[OpenStudentAnalytics] Returning ${studentsWithAnalytics.length} students (page ${pageNum}, total: ${total})`);
 
     res.status(200).json({
       success: true,

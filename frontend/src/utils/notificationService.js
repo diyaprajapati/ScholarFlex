@@ -9,15 +9,15 @@ export const registerServiceWorker = async () => {
         scope: '/'
       });
       serviceWorkerRegistration = registration;
-      console.log('Service Worker registered successfully', registration);
+      // console.log('Service Worker registered successfully', registration);
       
       // Wait for Service Worker to be ready
       await navigator.serviceWorker.ready;
-      console.log('Service Worker is ready');
+      // console.log('Service Worker is ready');
       
       return registration;
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
+      // console.error('Service Worker registration failed:', error);
       return null;
     }
   } else {
@@ -62,12 +62,12 @@ export const showBackgroundNotification = async (onClickCallback) => {
       // Wait for Service Worker to be ready
       registration = await navigator.serviceWorker.ready;
       serviceWorkerRegistration = registration;
-      console.log('Service Worker ready:', registration);
+      // console.log('Service Worker ready:', registration);
     }
 
     if (registration) {
       // Use registration.showNotification directly - this works even when tab is not focused
-      console.log('Showing notification via Service Worker registration...');
+      // console.log('Showing notification via Service Worker registration...');
       await registration.showNotification('Quick Check!', {
         body: 'Answer this question to continue',
         tag: 'attendance-question',
@@ -82,7 +82,7 @@ export const showBackgroundNotification = async (onClickCallback) => {
           }
         ]
       });
-      console.log('Service Worker notification shown successfully');
+      // console.log('Service Worker notification shown successfully');
       return true;
     } else {
       console.warn('Service Worker registration not available');
@@ -114,7 +114,7 @@ export const showBackgroundNotification = async (onClickCallback) => {
         notification.close();
       };
       
-      console.log('Regular notification shown (fallback)');
+      // console.log('Regular notification shown (fallback)');
       return true;
     } catch (error) {
       console.error('Notification failed:', error);

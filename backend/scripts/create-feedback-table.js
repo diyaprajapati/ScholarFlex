@@ -21,13 +21,13 @@ async function createFeedbackTable() {
       await tx.$executeRawUnsafe(sql);
     });
     
-    console.log('✅ internship_feedback table created successfully\n');
-    console.log('✨ Migration completed successfully!\n');
+    // console.log('✅ internship_feedback table created successfully\n');
+    // console.log('✨ Migration completed successfully!\n');
   } catch (error) {
     console.error('❌ Error creating feedback table:', error.message);
     // MySQL error code for table already exists is different from PostgreSQL
     if (error.code === 'ER_TABLE_EXISTS_ERROR' || error.code === '42P07') {
-      console.log('ℹ️  Table already exists. This is okay.\n');
+      // console.log('ℹ️  Table already exists. This is okay.\n');
     } else {
       throw error;
     }
@@ -38,7 +38,7 @@ async function createFeedbackTable() {
 
 createFeedbackTable()
   .then(() => {
-    console.log('✅ Setup complete!');
+    // console.log('✅ Setup complete!');
     process.exit(0);
   })
   .catch((error) => {

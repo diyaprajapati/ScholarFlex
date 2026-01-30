@@ -9,7 +9,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 
 async function checkDomains() {
   try {
-    console.log('🔍 Checking student domains...\n');
+    // console.log('🔍 Checking student domains...\n');
 
     // Get all students with their domain info using Prisma
     const students = await prisma.student.findMany({
@@ -30,28 +30,28 @@ async function checkDomains() {
       },
     });
 
-    console.log(`📊 Total students: ${students.length}\n`);
+    // console.log(`📊 Total students: ${students.length}\n`);
 
     const withDomain = students.filter(s => s.domainId !== null);
     const withoutDomain = students.filter(s => s.domainId === null);
 
-    console.log(`✅ Students with domain: ${withDomain.length}`);
-    console.log(`❌ Students without domain: ${withoutDomain.length}\n`);
+    // console.log(`✅ Students with domain: ${withDomain.length}`);
+    // console.log(`❌ Students without domain: ${withoutDomain.length}\n`);
 
     if (withoutDomain.length > 0) {
-      console.log('📋 Students without domain:');
+      // console.log('📋 Students without domain:');
       withoutDomain.forEach((student, index) => {
-        console.log(`   ${index + 1}. ${student.fullName} (${student.email}) - ID: ${student.id}`);
+        // console.log(`   ${index + 1}. ${student.fullName} (${student.email}) - ID: ${student.id}`);
       });
     }
 
     if (withDomain.length > 0) {
-      console.log('\n📋 Students with domain:');
+      // console.log('\n📋 Students with domain:');
       withDomain.slice(0, 5).forEach((student, index) => {
-        console.log(`   ${index + 1}. ${student.fullName} - Domain: ${student.domain?.domainName || 'N/A'}`);
+        // console.log(`   ${index + 1}. ${student.fullName} - Domain: ${student.domain?.domainName || 'N/A'}`);
       });
       if (withDomain.length > 5) {
-        console.log(`   ... and ${withDomain.length - 5} more`);
+        // console.log(`   ... and ${withDomain.length - 5} more`);
       }
     }
 
@@ -71,12 +71,12 @@ async function checkDomains() {
     });
 
     if (domains.length > 0) {
-      console.log('\n📋 Available domains:');
+      // console.log('\n📋 Available domains:');
       domains.forEach((domain, index) => {
-        console.log(`   ${index + 1}. ${domain.domainName} (ID: ${domain.id})`);
+        // console.log(`   ${index + 1}. ${domain.domainName} (ID: ${domain.id})`);
       });
     } else {
-      console.log('\n⚠️  No domains found in database');
+      // console.log('\n⚠️  No domains found in database');
     }
 
   } catch (error) {
@@ -89,7 +89,7 @@ async function checkDomains() {
 
 checkDomains()
   .then(() => {
-    console.log('\n✨ Done!');
+    // console.log('\n✨ Done!');
     process.exit(0);
   })
   .catch((error) => {

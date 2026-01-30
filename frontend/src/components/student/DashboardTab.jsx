@@ -112,12 +112,12 @@ const DashboardTab = ({
                         ? video.progressPercent
                         : 0;
 
-                  console.log(`Video ${video.id} progress:`, {
-                    title: video.title || video.videoTitle,
-                    progress: video.progress,
-                    progressPercent: video.progressPercent,
-                    resolved: progressValue
-                  });
+                  // console.log(`Video ${video.id} progress:`, {
+                  //   title: video.title || video.videoTitle,
+                  //   progress: video.progress,
+                  //   progressPercent: video.progressPercent,
+                  //   resolved: progressValue
+                  // });
 
                   return (
                     <div
@@ -131,7 +131,7 @@ const DashboardTab = ({
                             e.preventDefault();
                             e.stopPropagation();
                             const videoId = video.id || video.videoId;
-                            console.log('Removing video from continue watching:', videoId);
+                            // console.log('Removing video from continue watching:', videoId);
                             onRemoveVideo(videoId, video);
                           }}
                           className="absolute top-2 right-2 z-20 p-1.5 bg-black bg-opacity-70 hover:bg-opacity-90 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
@@ -146,7 +146,7 @@ const DashboardTab = ({
                           e.preventDefault();
                           e.stopPropagation();
 
-                          console.log('Continue watching video clicked:', video);
+                          // console.log('Continue watching video clicked:', video);
 
                           const youtubeUrl = video.youtubeUrl || (video.videoId ? `https://www.youtube.com/watch?v=${video.videoId}` : null);
 

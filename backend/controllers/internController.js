@@ -200,9 +200,9 @@ exports.uploadSpreadsheet = async (req, res) => {
     // Debug: Log available columns (first row only, in development)
     if (process.env.NODE_ENV === 'development' && rows.length > 0 && rows[0] && typeof rows[0] === 'object') {
       try {
-        console.log('📋 Available columns in spreadsheet:', Object.keys(rows[0]));
+        // console.log('📋 Available columns in spreadsheet:', Object.keys(rows[0]));
       } catch (error) {
-        console.log('📋 Could not log spreadsheet columns:', error.message);
+        // console.log('📋 Could not log spreadsheet columns:', error.message);
       }
     }
 
@@ -309,10 +309,10 @@ exports.uploadSpreadsheet = async (req, res) => {
 
     // Log domain statistics
     if (domainsMissing > 0) {
-      console.log(`⚠️  ${domainsMissing} students without domain. Make sure your spreadsheet has a "Domain" or "Area of Interest" column.`);
+      // console.log(`⚠️  ${domainsMissing} students without domain. Make sure your spreadsheet has a "Domain" or "Area of Interest" column.`);
     }
     if (domainsFound > 0) {
-      console.log(`✅ ${domainsFound} students with domain assigned.`);
+      // console.log(`✅ ${domainsFound} students with domain assigned.`);
     }
 
     // Bulk insert students

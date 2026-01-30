@@ -9,13 +9,13 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 
 async function checkDatabase() {
   try {
-    console.log('🔍 Checking database seed data...\n');
+    // console.log('🔍 Checking database seed data...\n');
 
     // Check roles
     const rolesCount = await prisma.role.count();
-    console.log(`📋 Roles: ${rolesCount} found`);
+    // console.log(`📋 Roles: ${rolesCount} found`);
     if (rolesCount === 0) {
-      console.log('   ⚠️  No roles found. Need to seed.');
+      // console.log('   ⚠️  No roles found. Need to seed.');
     } else {
       const roles = await prisma.role.findMany({
         select: {
@@ -23,14 +23,14 @@ async function checkDatabase() {
           roleCode: true,
         },
       });
-      roles.forEach(r => console.log(`   - ${r.roleName} (${r.roleCode})`));
+      // roles.forEach(r => console.log(`   - ${r.roleName} (${r.roleCode})`));
     }
 
     // Check intern_status
     const statusCount = await prisma.internStatus.count();
-    console.log(`\n📋 Intern Statuses: ${statusCount} found`);
+    // console.log(`\n📋 Intern Statuses: ${statusCount} found`);
     if (statusCount === 0) {
-      console.log('   ⚠️  No intern statuses found. Need to seed.');
+      // console.log('   ⚠️  No intern statuses found. Need to seed.');
     } else {
       const statuses = await prisma.internStatus.findMany({
         select: {
@@ -41,7 +41,7 @@ async function checkDatabase() {
           id: 'asc',
         },
       });
-      statuses.forEach(s => console.log(`   - ${s.statusName} (${s.statusCode})`));
+      // statuses.forEach(s => console.log(`   - ${s.statusName} (${s.statusCode})`));
     }
 
     // Check for REGISTERED status specifically
@@ -52,11 +52,11 @@ async function checkDatabase() {
       },
     });
     if (!registeredStatus) {
-      console.log('\n❌ REGISTERED status not found! This is required for adding interns.');
-      console.log('\n💡 To fix this, run: npm run db:seed');
+      // console.log('\n❌ REGISTERED status not found! This is required for adding interns.');
+      // console.log('\n💡 To fix this, run: npm run db:seed');
       process.exit(1);
     } else {
-      console.log('\n✅ REGISTERED status found - database is ready for adding interns!');
+      // console.log('\n✅ REGISTERED status found - database is ready for adding interns!');
     }
 
   } catch (error) {

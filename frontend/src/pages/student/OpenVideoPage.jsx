@@ -42,36 +42,36 @@ const OpenVideoPage = () => {
         const time = parseFloat(startTimeParam);
         if (!isNaN(time) && time > 0) {
           setStartTime(time);
-          console.log(`✅ Resuming video from URL param: ${time} seconds`);
+          // console.log(`✅ Resuming video from URL param: ${time} seconds`);
           return;
         } else {
-          console.log(`⚠️ Invalid startTime param: ${startTimeParam}`);
+          // console.log(`⚠️ Invalid startTime param: ${startTimeParam}`);
         }
       } else {
-        console.log('ℹ️ No startTime param in URL, fetching from API');
+        // console.log('ℹ️ No startTime param in URL, fetching from API');
       }
       
       // Otherwise, fetch from API
       if (!dbVideo?.id) {
-        console.log('ℹ️ No dbVideo ID, starting from beginning');
+        // console.log('ℹ️ No dbVideo ID, starting from beginning');
         setStartTime(0);
         return;
       }
 
       const response = await api.openStudent.getVideoProgress(dbVideo.id);
-      console.log('API progress response:', response);
+      // console.log('API progress response:', response);
       
       if (response.success && response.progress) {
         const { lastPosition, isCompleted } = response.progress;
         if (!isCompleted && lastPosition && Number(lastPosition) > 0) {
           setStartTime(Number(lastPosition));
-          console.log(`✅ Resuming video from API: ${Number(lastPosition)} seconds`);
+          // console.log(`✅ Resuming video from API: ${Number(lastPosition)} seconds`);
         } else {
-          console.log('ℹ️ Video is completed or no lastPosition, starting from beginning');
+          // console.log('ℹ️ Video is completed or no lastPosition, starting from beginning');
           setStartTime(0);
         }
       } else {
-        console.log('ℹ️ No progress found in API response, starting from beginning');
+        // console.log('ℹ️ No progress found in API response, starting from beginning');
         setStartTime(0);
       }
     } catch (err) {

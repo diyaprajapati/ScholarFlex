@@ -716,11 +716,11 @@ const CandidatesTab = () => {
         const response = await api.candidates.updateNOCStatus(studentId, nocReceived);
         
         if (response.success) {
-          console.log('✅ NOC status updated successfully:', {
-            studentId,
-            nocReceived,
-            response: response.data,
-          });
+          // console.log('✅ NOC status updated successfully:', {
+          //   studentId,
+          //   nocReceived,
+          //   response: response.data,
+          // });
         }
       } catch (err) {
         console.error('❌ Error updating NOC received status:', err);

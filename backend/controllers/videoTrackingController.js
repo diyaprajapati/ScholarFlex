@@ -250,7 +250,7 @@ const trackVideoProgress = async (req, res) => {
     
     // Log completion status for debugging
     if (shouldBeCompleted && !existingVideoProgress?.isCompleted) {
-      console.log(`[Video Progress] Auto-marking video ${videoId} as completed (progress: ${progressPercent}%)`);
+      // console.log(`[Video Progress] Auto-marking video ${videoId} as completed (progress: ${progressPercent}%)`);
     }
     const wasCompleted = existingVideoProgress?.isCompleted || false;
     const existingCompletedAt = existingVideoProgress?.completedAt;
@@ -441,13 +441,13 @@ const trackVideoCompleted = async (req, res) => {
     });
     
     // Verify completion was saved correctly
-    console.log(`[Video Completion] Marked video ${videoId} as completed:`, {
-      videoId,
-      playlistId: videoProgress.playlistId,
-      isCompleted: videoProgress.isCompleted,
-      progressPercent: videoProgress.progressPercent,
-      lastPosition: videoProgress.lastPosition,
-    });
+    // console.log(`[Video Completion] Marked video ${videoId} as completed:`, {
+    //   videoId,
+    //   playlistId: videoProgress.playlistId,
+    //   isCompleted: videoProgress.isCompleted,
+    //   progressPercent: videoProgress.progressPercent,
+    //   lastPosition: videoProgress.lastPosition,
+    // });
 
     // End active session for today
     const today = new Date();
@@ -551,7 +551,7 @@ const markVideoAsCompleted = async (req, res) => {
         },
       });
 
-      console.log(`[Video Removal] Deleted video progress for video ${videoId} (manual removal - skipping next video)`);
+      // console.log(`[Video Removal] Deleted video progress for video ${videoId} (manual removal - skipping next video)`);
 
       return res.status(200).json({
         success: true,
@@ -596,12 +596,12 @@ const markVideoAsCompleted = async (req, res) => {
           },
         });
 
-    console.log(`[Video Completion] Manually marked video ${videoId} as completed`, {
-      videoId: parseInt(videoId),
-      playlistId: videoProgress.playlistId,
-      isCompleted: videoProgress.isCompleted,
-      progressPercent: videoProgress.progressPercent,
-    });
+    // console.log(`[Video Completion] Manually marked video ${videoId} as completed`, {
+    //   videoId: parseInt(videoId),
+    //   playlistId: videoProgress.playlistId,
+    //   isCompleted: videoProgress.isCompleted,
+    //   progressPercent: videoProgress.progressPercent,
+    // });
 
     res.status(200).json({
       success: true,

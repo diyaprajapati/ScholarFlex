@@ -206,8 +206,8 @@ exports.uploadSpreadsheet = async (req, res) => {
 
     // Log available columns in development
     if (process.env.NODE_ENV === 'development' && rows.length > 0) {
-      console.log('📋 Available columns:', Object.keys(rows[0]));
-      console.log('💡 Note: Both "Area of Interest" and "Domain" columns will be converted to domain_id');
+      // console.log('📋 Available columns:', Object.keys(rows[0]));
+      // console.log('💡 Note: Both "Area of Interest" and "Domain" columns will be converted to domain_id');
     }
 
     const studentsData = [];
@@ -820,11 +820,11 @@ exports.updateNOCReceivedStatus = async (req, res) => {
       },
     });
 
-    console.log('✅ NOC status saved to database:', {
-      student_id: id,
-      noc_received: noc_received,
-      saved_data: nocStatus,
-    });
+    // console.log('✅ NOC status saved to database:', {
+    //   student_id: id,
+    //   noc_received: noc_received,
+    //   saved_data: nocStatus,
+    // });
 
     // Log activity
     await logActivitySimple(
@@ -1074,7 +1074,7 @@ exports.createStudent = async (req, res) => {
         created.id
       );
       if (conversionResult.converted) {
-        console.log(`Converted open student to intern: ${email}`, conversionResult);
+        // console.log(`Converted open student to intern: ${email}`, conversionResult);
       }
     } catch (conversionError) {
       // Log error but don't fail student creation

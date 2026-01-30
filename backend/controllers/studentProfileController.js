@@ -102,9 +102,9 @@ const getStudentUploadDir = async (studentId) => {
     // This works even after deployment - directories are created on-demand
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
-      console.log(`✅ Created upload directory: ${dirPath}`);
+      // console.log(`✅ Created upload directory: ${dirPath}`);
     } else {
-      console.log(`📁 Using existing upload directory: ${dirPath}`);
+      // console.log(`📁 Using existing upload directory: ${dirPath}`);
     }
 
     return dirPath;
@@ -123,12 +123,12 @@ const imageUpload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
-    console.log('🔍 File filter called');
-    console.log('   File mimetype:', file.mimetype);
-    console.log('   File originalname:', file.originalname);
+    // console.log('🔍 File filter called');
+    // console.log('   File mimetype:', file.mimetype);
+    // console.log('   File originalname:', file.originalname);
     const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (allowedMimes.includes(file.mimetype)) {
-      console.log('✅ File type allowed');
+      // console.log('✅ File type allowed');
       cb(null, true);
     } else {
       console.error('❌ File type not allowed:', file.mimetype);
@@ -142,15 +142,15 @@ const imageUpload = multer({
 const resumeStorage = multer.diskStorage({
   destination: async (req, file, cb) => {
     try {
-      console.log('📁 Multer destination callback called for resume');
+      // console.log('📁 Multer destination callback called for resume');
       const studentId = req.user?.id;
       if (!studentId) {
         console.error('❌ Student ID not found in request');
         return cb(new Error('Student ID not found in request'));
       }
-      console.log(`📤 Getting upload directory for student ${studentId}`);
+      // console.log(`📤 Getting upload directory for student ${studentId}`);
       const uploadDir = await getStudentUploadDir(studentId);
-      console.log(`✅ Using upload directory: ${uploadDir}`);
+      // console.log(`✅ Using upload directory: ${uploadDir}`);
       cb(null, uploadDir);
     } catch (error) {
       console.error('❌ Error in multer destination callback:', error);
@@ -648,17 +648,17 @@ const updateProfile = async (req, res) => {
  */
 const uploadProfileImageHandler = async (req, res) => {
   try {
-    console.log('📥 Profile image upload request received');
-    console.log('   req.file:', req.file ? {
-      fieldname: req.file.fieldname,
-      originalname: req.file.originalname,
-      encoding: req.file.encoding,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      destination: req.file.destination,
-      filename: req.file.filename,
-      path: req.file.path,
-    } : 'null');
+    // console.log('📥 Profile image upload request received');
+    // console.log('   req.file:', req.file ? {
+    //   fieldname: req.file.fieldname,
+    //   originalname: req.file.originalname,
+    //   encoding: req.file.encoding,
+    //   mimetype: req.file.mimetype,
+    //   size: req.file.size,
+    //   destination: req.file.destination,
+    //   filename: req.file.filename,
+    //   path: req.file.path,
+    // } : 'null');
 
     if (!req.file) {
       console.error('❌ No file in request');
@@ -677,7 +677,7 @@ const uploadProfileImageHandler = async (req, res) => {
       });
     }
 
-    console.log(`👤 Student ID: ${studentId}`);
+    // console.log(`👤 Student ID: ${studentId}`);
 
     // Get current student to delete old image if exists
     const student = await prisma.student.findUnique({
@@ -702,7 +702,7 @@ const uploadProfileImageHandler = async (req, res) => {
       if (fs.existsSync(oldImagePath)) {
         try {
           fs.unlinkSync(oldImagePath);
-          console.log(`🗑️ Deleted old image: ${oldImagePath}`);
+          // console.log(`🗑️ Deleted old image: ${oldImagePath}`);
         } catch (unlinkError) {
           console.warn('Could not delete old image file:', unlinkError.message);
         }
@@ -718,27 +718,27 @@ const uploadProfileImageHandler = async (req, res) => {
       });
     }
 
-    console.log('📄 File upload details:');
-    console.log('   Original name:', req.file.originalname);
-    console.log('   Size:', req.file.size, 'bytes');
-    console.log('   MIME type:', req.file.mimetype);
-    console.log('   Buffer size:', req.file.buffer.length, 'bytes');
+    // console.log('📄 File upload details:');
+    // console.log('   Original name:', req.file.originalname);
+    // console.log('   Size:', req.file.size, 'bytes');
+    // console.log('   MIME type:', req.file.mimetype);
+    // console.log('   Buffer size:', req.file.buffer.length, 'bytes');
 
     // Get upload directory
     const uploadDir = await getStudentUploadDir(studentId);
-    console.log(`📁 Upload directory: ${uploadDir}`);
+    // console.log(`📁 Upload directory: ${uploadDir}`);
     
     // Determine filename
     const ext = path.extname(req.file.originalname);
     const filename = `profile${ext}`;
     const filePath = path.join(uploadDir, filename);
-    console.log(`📝 Target file path: ${filePath}`);
+    // console.log(`📝 Target file path: ${filePath}`);
     
     // Write file manually from buffer
-    console.log('💾 Writing file to disk...');
+    // console.log('💾 Writing file to disk...');
     try {
       fs.writeFileSync(filePath, req.file.buffer);
-      console.log(`✅ File written successfully to: ${filePath}`);
+      // console.log(`✅ File written successfully to: ${filePath}`);
     } catch (writeError) {
       console.error('❌ Error writing file:', writeError);
       console.error('   Stack:', writeError.stack);
@@ -758,16 +758,16 @@ const uploadProfileImageHandler = async (req, res) => {
     }
     
     const stats = fs.statSync(filePath);
-    console.log(`✅ File verified: ${stats.size} bytes`);
+    // console.log(`✅ File verified: ${stats.size} bytes`);
 
     // Calculate relative path from uploads directory
     const uploadsBaseDir = path.join(__dirname, '../uploads');
     const relativePath = path.relative(uploadsBaseDir, filePath);
     const imageUrl = `/${relativePath.replace(/\\/g, '/')}`;
 
-    console.log(`✅ Profile image saved successfully`);
-    console.log(`   Full path: ${filePath}`);
-    console.log(`   Relative path: ${imageUrl}`);
+    // console.log(`✅ Profile image saved successfully`);
+    // console.log(`   Full path: ${filePath}`);
+    // console.log(`   Relative path: ${imageUrl}`);
 
     await prisma.student.update({
       where: { id: studentId },
@@ -786,7 +786,7 @@ const uploadProfileImageHandler = async (req, res) => {
     if (req.file && req.file.path && fs.existsSync(req.file.path)) {
       try {
         fs.unlinkSync(req.file.path);
-        console.log('🗑️ Deleted uploaded file due to error');
+        // console.log('🗑️ Deleted uploaded file due to error');
       } catch (unlinkError) {
         console.warn('Could not delete uploaded file on error:', unlinkError.message);
       }
@@ -865,9 +865,9 @@ const uploadResumeHandler = async (req, res) => {
     const relativePath = path.relative(uploadsBaseDir, req.file.path);
     const resumeUrl = `/${relativePath.replace(/\\/g, '/')}`;
 
-    console.log(`✅ Resume saved successfully`);
-    console.log(`   Full path: ${req.file.path}`);
-    console.log(`   Relative path: ${resumeUrl}`);
+    // console.log(`✅ Resume saved successfully`);
+    // console.log(`   Full path: ${req.file.path}`);
+    // console.log(`   Relative path: ${resumeUrl}`);
 
     await prisma.student.update({
       where: { id: studentId },

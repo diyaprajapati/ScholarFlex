@@ -675,7 +675,7 @@ const downloadAllNOC = async (req, res) => {
 
     // Log completion
     archive.on('end', () => {
-      console.log(`ZIP archive created with ${addedCount} NOC letters`);
+      // console.log(`ZIP archive created with ${addedCount} NOC letters`);
     });
 
   } catch (error) {
