@@ -22,7 +22,12 @@ export default function LandingPageGuard({ children }) {
     const role = authService.getUserRole()
     
     // For admins, redirect immediately (no async needed)
-    if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+    if (role === 'ADMIN') {
+      // Admin users can only access Evaluations, Student Analytics, and Open Student Analytics
+      setRedirectPath(ROUTES.EVALUATION_MANAGEMENT)
+      return
+    }
+    if (role === 'SUPER_ADMIN') {
       setRedirectPath(ROUTES.DASHBOARD)
       return
     }

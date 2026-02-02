@@ -1,10 +1,18 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ROUTES } from '../../config/paths'
-import { X, ChevronDown, ChevronRight, LayoutDashboard, Users, FileText, Music, FolderKanban, ClipboardCheck, BarChart3, Settings, Shield } from 'lucide-react'
+import { X, ChevronDown, ChevronRight, LayoutDashboard, Users, FileText, Music, FolderKanban, ClipboardCheck, BarChart3, Settings, Shield, Lock } from 'lucide-react'
 import { useSidebar } from '../../contexts/SidebarContext'
 
 // Navigation menu configuration
+// Routes that ADMIN users can access (all others will be disabled)
+const ADMIN_ALLOWED_ROUTES = [
+  ROUTES.PROJECT_MANAGEMENT,
+  ROUTES.EVALUATION_MANAGEMENT,
+  ROUTES.STUDENT_ANALYTICS,
+  ROUTES.OPEN_STUDENT_ANALYTICS,
+]
+
 const NAVIGATION_MENU = {
   dashboard: {
     label: 'Dashboard',
@@ -79,29 +87,44 @@ const getExpandedSectionsForPath = (pathname) => {
 }
 
 // NavItem Component
-const NavItem = React.memo(({ item, pathname, isActive, onNavigate }) => {
+const NavItem = React.memo(({ item, pathname, isActive, onNavigate, user }) => {
   const Icon = item.icon
   const isMatch = item.matchPattern
     ? pathname.startsWith(item.matchPattern)
     : pathname === item.path
 
+  // Check if item is disabled for ADMIN users
+  const isDisabled = user?.role === 'ADMIN' && !ADMIN_ALLOWED_ROUTES.includes(item.path)
+
+  const handleClick = (e) => {
+    if (isDisabled) {
+      e.preventDefault()
+      return
+    }
+    onNavigate()
+  }
+
   return (
     <li>
       <Link
         to={item.path}
-        onClick={onNavigate}
+        onClick={handleClick}
         className={`
           flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
           transition-all duration-200 ease-in-out
-          ${isMatch || isActive
+          ${isDisabled
+            ? 'text-gray-400 cursor-not-allowed opacity-60'
+            : isMatch || isActive
             ? 'bg-[#4C763B]/10 text-[#4C763B] shadow-sm'
             : 'text-gray-700 hover:bg-gray-50 hover:text-[#4C763B]'
           }
         `}
         aria-current={isMatch || isActive ? 'page' : undefined}
+        aria-disabled={isDisabled}
       >
-        <Icon className={`h-4 w-4 shrink-0 ${isMatch || isActive ? 'text-[#4C763B]' : 'text-gray-500'}`} />
-        <span>{item.label}</span>
+        <Icon className={`h-4 w-4 shrink-0 ${isMatch || isActive ? 'text-[#4C763B]' : isDisabled ? 'text-gray-400' : 'text-gray-500'}`} />
+        <span className="flex-1">{item.label}</span>
+        {isDisabled && <Lock className="h-3.5 w-3.5 text-gray-400 shrink-0" />}
       </Link>
     </li>
   )
@@ -144,6 +167,7 @@ const CollapsibleSection = React.memo(({ section, isExpanded, pathname, onToggle
                 pathname={pathname}
                 isActive={false}
                 onNavigate={onNavigate}
+                user={user}
               />
             )
           })}
@@ -254,22 +278,36 @@ const Sidebar = React.memo(function Sidebar({ user }) {
         <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
           {/* Dashboard Link */}
           <div>
-            <Link
-              to={ROUTES.DASHBOARD}
-              onClick={handleNavClick}
-              className={`
-                flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
-                transition-all duration-200 ease-in-out
-                ${isDashboardActive
-                  ? 'bg-[#4C763B]/10 text-[#4C763B] shadow-sm'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-[#4C763B]'
-                }
-              `}
-              aria-current={isDashboardActive ? 'page' : undefined}
-            >
-              <LayoutDashboard className={`h-4 w-4 shrink-0 ${isDashboardActive ? 'text-[#4C763B]' : 'text-gray-500'}`} />
-              <span>Dashboard</span>
-            </Link>
+            {user?.role === 'ADMIN' ? (
+              <div
+                className={`
+                  flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+                  transition-all duration-200 ease-in-out
+                  text-gray-400 cursor-not-allowed opacity-60
+                `}
+              >
+                <LayoutDashboard className="h-4 w-4 shrink-0 text-gray-400" />
+                <span className="flex-1">Dashboard</span>
+                <Lock className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+              </div>
+            ) : (
+              <Link
+                to={ROUTES.DASHBOARD}
+                onClick={handleNavClick}
+                className={`
+                  flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+                  transition-all duration-200 ease-in-out
+                  ${isDashboardActive
+                    ? 'bg-[#4C763B]/10 text-[#4C763B] shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-[#4C763B]'
+                  }
+                `}
+                aria-current={isDashboardActive ? 'page' : undefined}
+              >
+                <LayoutDashboard className={`h-4 w-4 shrink-0 ${isDashboardActive ? 'text-[#4C763B]' : 'text-gray-500'}`} />
+                <span>Dashboard</span>
+              </Link>
+            )}
           </div>
 
           {/* Collapsible Sections */}

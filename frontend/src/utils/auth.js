@@ -182,7 +182,10 @@ export const authService = {
           const role = authService.getUserRole()
           if (role === 'STUDENT') {
             window.location.href = '/student/dashboard'
-          } else if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+          } else if (role === 'ADMIN') {
+            // Admin users can only access Evaluations, Student Analytics, and Open Student Analytics
+            window.location.href = '/evaluation-management'
+          } else if (role === 'SUPER_ADMIN') {
             window.location.href = '/dashboard'
           }
         } else {

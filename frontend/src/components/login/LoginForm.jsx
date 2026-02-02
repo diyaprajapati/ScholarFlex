@@ -100,8 +100,11 @@ export default function LoginForm() {
               // Non-selected students go to test instructions page
               navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
             }
+          } else if (role === 'ADMIN') {
+            // Admin users can only access Evaluations, Student Analytics, and Open Student Analytics
+            navigate(ROUTES.EVALUATION_MANAGEMENT, { replace: true })
           } else {
-            // Admin and Super Admin go to dashboard
+            // Super Admin goes to dashboard
             navigate(ROUTES.DASHBOARD, { replace: true })
           }
         }

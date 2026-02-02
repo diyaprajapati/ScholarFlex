@@ -32,11 +32,11 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Protected Routes - Admin and Super Admin only */}
+      {/* Protected Routes - Super Admin only (Admin restricted) */}
       <Route
         path={ROUTES.DASHBOARD}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <DashboardPage />
           </ProtectedRoute>
         }
@@ -45,7 +45,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.TEST_ATTEMPTS}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <TestAttemptsPage />
           </ProtectedRoute>
         }
@@ -65,7 +65,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.QUESTION_PAPERS.LIST}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <QuestionPapersListPage />
           </ProtectedRoute>
         }
@@ -73,7 +73,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.QUESTION_PAPERS.ADD}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <AddQuestionPaperFormPage />
           </ProtectedRoute>
         }
@@ -81,7 +81,7 @@ export default function AppRoutes() {
       <Route
         path="/question-papers/edit/:id"
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <AddQuestionPaperFormPage />
           </ProtectedRoute>
         }
@@ -89,7 +89,7 @@ export default function AppRoutes() {
       <Route
         path="/question-papers/view/:id"
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <ViewQuestionPaperPage />
           </ProtectedRoute>
         }
@@ -99,7 +99,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.INTERNS.VIEW}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <CandidatesPage />
           </ProtectedRoute>
         }
@@ -107,7 +107,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.INTERNS.ADD}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <AddInternPage />
           </ProtectedRoute>
         }
@@ -115,7 +115,7 @@ export default function AppRoutes() {
       <Route
         path="/interns/edit/:id"
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <AddInternPage />
           </ProtectedRoute>
         }
@@ -125,7 +125,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.PLAYLISTS.MANAGEMENT}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <PlaylistManagementPage />
           </ProtectedRoute>
         }
@@ -133,7 +133,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.PLAYLISTS.ADD_VIDEOS}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <AddVideosToPlaylistPage />
           </ProtectedRoute>
         }
@@ -143,7 +143,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.NOC_MANAGEMENT}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <NOCManagementPage />
           </ProtectedRoute>
         }
@@ -153,7 +153,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.FEEDBACK_MANAGEMENT}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <FeedbackManagementPage />
           </ProtectedRoute>
         }
@@ -182,7 +182,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.RETEST_MANAGEMENT}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <RetestManagementPage />
           </ProtectedRoute>
         }
@@ -192,17 +192,17 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.INTERNSHIP_STATUS}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <InternshipStatusPage />
           </ProtectedRoute>
         }
       />
 
-      {/* Project Management Route - Admin and Super Admin */}
+      {/* Project Management Route - Super Admin only (Admin restricted) */}
       <Route
         path={ROUTES.PROJECT_MANAGEMENT}
         element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <ProjectManagementPage />
           </ProtectedRoute>
         }
