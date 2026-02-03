@@ -5,6 +5,8 @@ import { ROUTES } from '../config/paths'
 
 export default function ProtectedRoute({ children, allowedRoles = null, requireSelected = false }) {
   const isAuthenticated = authService.isAuthenticated()
+  const isOpenStudent = authService.isOpenStudent()
+  const isAnyAuthenticated = isAuthenticated || isOpenStudent
   const location = useLocation()
   const hasNavigated = useRef(false)
   const lastPathname = useRef(location.pathname)
@@ -115,7 +117,17 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
     }
   }, [isAuthenticated, profileCompletionChecked, location.pathname])
 
-  if (!isAuthenticated) {
+  // Check authentication (either JWT token or open student session)
+  if (!isAnyAuthenticated) {
+    // For open student routes, redirect to registration
+    if (location.pathname.startsWith('/student/')) {
+      if (location.pathname !== ROUTES.STUDENT.OPEN.REGISTER && !hasNavigated.current) {
+        hasNavigated.current = true
+        return <Navigate to={ROUTES.STUDENT.OPEN.REGISTER} replace />
+      }
+      return null
+    }
+    // For admin routes, redirect to login
     if (location.pathname !== ROUTES.LOGIN && !hasNavigated.current) {
       hasNavigated.current = true
       return <Navigate to={ROUTES.LOGIN} replace />
@@ -208,12 +220,36 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
           return <Navigate to={ROUTES.STUDENT.INSTRUCTIONS} replace />
         }
         return null
-      } else {
-        if (location.pathname !== ROUTES.DASHBOARD && !hasNavigated.current) {
+      } else if (userRole === 'OPEN_STUDENT') {
+        // Open students can access dashboard, playlists, and videos
+        const allowedOpenStudentRoutes = [
+          ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD,
+          ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS,
+        ]
+        const isVideoRoute = location.pathname.startsWith('/student/video/')
+        const isAllowedRoute = allowedOpenStudentRoutes.includes(location.pathname) || isVideoRoute
+        
+        if (!isAllowedRoute && !hasNavigated.current) {
           hasNavigated.current = true
-          return <Navigate to={ROUTES.DASHBOARD} replace />
+          return <Navigate to={ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD} replace />
         }
         return null
+      } else {
+        // Admin/Super Admin
+        if (userRole === 'ADMIN') {
+          // Admin users can only access Evaluations, Student Analytics, and Open Student Analytics
+          if (location.pathname !== ROUTES.EVALUATION_MANAGEMENT && !hasNavigated.current) {
+            hasNavigated.current = true
+            return <Navigate to={ROUTES.EVALUATION_MANAGEMENT} replace />
+          }
+          return null
+        } else {
+          if (location.pathname !== ROUTES.DASHBOARD && !hasNavigated.current) {
+            hasNavigated.current = true
+            return <Navigate to={ROUTES.DASHBOARD} replace />
+          }
+          return null
+        }
       }
     }
 

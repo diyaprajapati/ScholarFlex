@@ -7,8 +7,6 @@ export { default as ViewQuestionPaperPage } from './question-papers/ViewQuestion
 export { default as AllInternsPage } from './interns/AllInternsPage'
 export { default as AddInternPage } from './interns/AddInternPage'
 export { default as StudentDashboardPage } from './student/StudentDashboardPage'
-export { default as OpenStudentDashboardPage } from './student/OpenStudentDashboardPage'
-export { default as OpenVideoPage } from './student/OpenVideoPage'
 export { default as StudentTestInstructionsPage } from './student/StudentTestInstructionsPage'
 export { default as StudentTestPage } from './student/StudentTestPage'
 export { default as TestSubmissionPage } from './student/TestSubmissionPage'

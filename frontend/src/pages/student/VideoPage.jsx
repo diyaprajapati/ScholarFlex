@@ -29,8 +29,20 @@ const VideoPage = () => {
   const startTimeParam = searchParams.get('startTime');
   const dbVideoIdParam = searchParams.get('dbVideoId'); // For video_next videos that need tracking
 
-  // Initialize startTime from URL (if present)
+  const extractVideoId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  // Initialize startTime from URL (if present) - only for regular students
+  // Open students handle this in fetchOpenVideoProgress
   useEffect(() => {
+    const isOpenStudent = authService.isOpenStudent();
+    if (isOpenStudent) {
+      return; // Open students handle startTime in fetchOpenVideoProgress
+    }
     if (startTimeParam) {
       const t = parseFloat(startTimeParam);
       if (!isNaN(t) && t > 0) {
@@ -42,6 +54,36 @@ const VideoPage = () => {
   }, [startTimeParam]);
 
   useEffect(() => {
+    const isOpenStudent = authService.isOpenStudent();
+    
+    // Handle open students
+    if (isOpenStudent) {
+      const token = localStorage.getItem('open_student_token');
+      if (!token) {
+        navigate(ROUTES.STUDENT.OPEN.REGISTER, { replace: true });
+        return;
+      }
+
+      const stored = localStorage.getItem('open_student_data');
+      if (stored) {
+        try {
+          setUser(JSON.parse(stored));
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!videoUrl) {
+        setError('Missing video URL.');
+        setLoading(false);
+        return;
+      }
+
+      fetchOpenStudentVideoData();
+      return;
+    }
+    
+    // Handle regular students
     if (!authService.isAuthenticated()) {
       navigate(ROUTES.LOGIN, { replace: true });
       return;
@@ -50,13 +92,180 @@ const VideoPage = () => {
     const userData = authService.getUser();
     setUser(userData);
 
-    if (userData?.role !== 'STUDENT') {
+    const userRole = authService.getUserRole();
+    if (userRole !== 'STUDENT') {
       navigate(ROUTES.DASHBOARD, { replace: true });
       return;
     }
 
     fetchVideoData();
   }, [videoId, videoUrl, playlistId]);
+
+  // Fetch video progress for open students
+  const fetchOpenVideoProgress = async (dbVideo) => {
+    try {
+      if (startTimeParam) {
+        const time = parseFloat(startTimeParam);
+        if (!isNaN(time) && time > 0) {
+          setStartTime(time);
+          return;
+        }
+      }
+      
+      if (!dbVideo?.id) {
+        setStartTime(0);
+        return;
+      }
+
+      const response = await api.openStudent.getVideoProgress(dbVideo.id);
+      if (response.success && response.progress) {
+        const { lastPosition, isCompleted } = response.progress;
+        if (!isCompleted && lastPosition && Number(lastPosition) > 0) {
+          setStartTime(Number(lastPosition));
+        } else {
+          setStartTime(0);
+        }
+      } else {
+        setStartTime(0);
+      }
+    } catch (err) {
+      console.error('Error fetching open student video progress:', err);
+      setStartTime(0);
+    }
+  };
+
+  // Fetch video data for open students
+  const fetchOpenStudentVideoData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      if (!videoUrl) {
+        setError('Missing video URL.');
+        setLoading(false);
+        return;
+      }
+
+      const decodedUrl = decodeURIComponent(videoUrl);
+      const decodedTitle = decodeURIComponent(videoTitle || 'Video');
+      
+      // Always create a fallback video object first so player can render even if API fails
+      const fallbackVideo = {
+        id: dbVideoIdParam ? parseInt(dbVideoIdParam) : null,
+        title: decodedTitle,
+        youtubeUrl: decodedUrl,
+      };
+
+      if (playlistId) {
+        const response = await api.openStudent.getPlaylistById(playlistId);
+        if (response.success && response.playlist) {
+          const pl = response.playlist;
+          setPlaylist(pl);
+          const videos = pl.videos || [];
+          setPlaylistVideos(videos);
+
+          const currentYoutubeId = videoId;
+          let index = videos.findIndex((v) => {
+            const vId = extractVideoId(v.youtubeUrl);
+            return vId === currentYoutubeId;
+          });
+
+          if (index < 0) {
+            index = videos.findIndex((v) => v.youtubeUrl === decodedUrl);
+          }
+
+          if (index >= 0 && videos[index]) {
+            const current = videos[index];
+            const currentVideo = {
+              id: current.id,
+              title: current.title,
+              youtubeUrl: current.youtubeUrl,
+            };
+            setVideo(currentVideo);
+            setCurrentVideoIndex(index);
+            await fetchOpenVideoProgress(currentVideo);
+          } else {
+            // Video not found in playlist - use fallback video
+            // This can happen if the video was removed from playlist or URL doesn't match
+            setVideo(fallbackVideo);
+            setCurrentVideoIndex(-1); // Not in playlist
+            // Set startTime from URL param if available
+            if (startTimeParam) {
+              const time = parseFloat(startTimeParam);
+              if (!isNaN(time) && time > 0) {
+                setStartTime(time);
+              }
+            }
+            // Try to fetch progress if we have a database ID
+            if (fallbackVideo.id) {
+              await fetchOpenVideoProgress(fallbackVideo);
+            }
+          }
+        } else {
+          // Playlist fetch failed - create standalone video
+          const standaloneVideo = {
+            id: dbVideoIdParam ? parseInt(dbVideoIdParam) : null,
+            title: decodedTitle,
+            youtubeUrl: decodedUrl,
+          };
+          setVideo(standaloneVideo);
+          // Set startTime from URL param if available
+          if (startTimeParam) {
+            const time = parseFloat(startTimeParam);
+            if (!isNaN(time) && time > 0) {
+              setStartTime(time);
+            }
+          }
+          // Try to fetch progress if we have a database ID
+          if (standaloneVideo.id) {
+            await fetchOpenVideoProgress(standaloneVideo);
+          }
+        }
+      } else {
+        // No playlist context – standalone video
+        const standaloneVideo = {
+          id: dbVideoIdParam ? parseInt(dbVideoIdParam) : null,
+          title: decodedTitle,
+          youtubeUrl: decodedUrl,
+        };
+        setVideo(standaloneVideo);
+        // For standalone videos without dbVideoId, we can't fetch progress, so use startTimeParam if available
+        if (startTimeParam) {
+          const time = parseFloat(startTimeParam);
+          if (!isNaN(time) && time > 0) {
+            setStartTime(time);
+          }
+        }
+        if (standaloneVideo.id) {
+          await fetchOpenVideoProgress(standaloneVideo);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading open video data:', err);
+      // Even on error, set the fallback video so the player can still render
+      if (videoUrl) {
+        const decodedUrl = decodeURIComponent(videoUrl);
+        const decodedTitle = decodeURIComponent(videoTitle || 'Video');
+        const errorVideo = {
+          id: dbVideoIdParam ? parseInt(dbVideoIdParam) : null,
+          title: decodedTitle,
+          youtubeUrl: decodedUrl,
+        };
+        setVideo(errorVideo);
+        if (startTimeParam) {
+          const time = parseFloat(startTimeParam);
+          if (!isNaN(time) && time > 0) {
+            setStartTime(time);
+          }
+        }
+        // Don't set error - let video play even if API failed
+      } else {
+        setError(err.message || 'Failed to load video');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchVideoData = async () => {
     try {
@@ -143,40 +352,51 @@ const VideoPage = () => {
     }
   };
 
-  const extractVideoId = (url) => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  };
-
   // We intentionally do NOT call the activity getVideoProgress API anymore.
   // Resume is driven entirely by the startTime passed in the URL (from Continue Watching).
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else if (playlistId) {
+      navigate(ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS, { replace: true });
+    } else {
+      navigate(ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD, { replace: true });
+    }
+  };
 
   const handleVideoEnd = () => {
     // Auto-play next video in playlist if available
     if (playlistVideos.length > 0 && currentVideoIndex < playlistVideos.length - 1) {
       const nextVideo = playlistVideos[currentVideoIndex + 1];
-      navigate(`/student/video/${nextVideo.id}?url=${encodeURIComponent(nextVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(nextVideo.title)}`);
+      const isOpenStudent = authService.isOpenStudent();
+      const nextYoutubeId = extractVideoId(nextVideo.youtubeUrl) || (isOpenStudent ? videoId : nextVideo.id);
+      navigate(`/student/video/${nextYoutubeId}?url=${encodeURIComponent(nextVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(nextVideo.title)}`);
     }
   };
 
   const handleNextVideo = () => {
     if (playlistVideos.length > 0 && currentVideoIndex < playlistVideos.length - 1) {
       const nextVideo = playlistVideos[currentVideoIndex + 1];
-      navigate(`/student/video/${nextVideo.id}?url=${encodeURIComponent(nextVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(nextVideo.title)}`);
+      const isOpenStudent = authService.isOpenStudent();
+      const nextYoutubeId = extractVideoId(nextVideo.youtubeUrl) || (isOpenStudent ? videoId : nextVideo.id);
+      navigate(`/student/video/${nextYoutubeId}?url=${encodeURIComponent(nextVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(nextVideo.title)}`);
     }
   };
 
   const handlePreviousVideo = () => {
     if (playlistVideos.length > 0 && currentVideoIndex > 0) {
       const prevVideo = playlistVideos[currentVideoIndex - 1];
-      navigate(`/student/video/${prevVideo.id}?url=${encodeURIComponent(prevVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(prevVideo.title)}`);
+      const isOpenStudent = authService.isOpenStudent();
+      const prevYoutubeId = extractVideoId(prevVideo.youtubeUrl) || (isOpenStudent ? videoId : prevVideo.id);
+      navigate(`/student/video/${prevYoutubeId}?url=${encodeURIComponent(prevVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(prevVideo.title)}`);
     }
   };
 
   const handleVideoSelect = (selectedVideo, index) => {
-    navigate(`/student/video/${selectedVideo.id}?url=${encodeURIComponent(selectedVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(selectedVideo.title)}`);
+    const isOpenStudent = authService.isOpenStudent();
+    const selectedYoutubeId = extractVideoId(selectedVideo.youtubeUrl) || (isOpenStudent ? videoId : selectedVideo.id);
+    navigate(`/student/video/${selectedYoutubeId}?url=${encodeURIComponent(selectedVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(selectedVideo.title)}`);
   };
 
   if (loading) {
@@ -190,25 +410,33 @@ const VideoPage = () => {
     );
   }
 
-  // Error state: Handles cases where video fails to load or isn't found
-  // This prevents the page from breaking when API calls fail or invalid video IDs are provided
-  if (error || !video) {
+  // Error state: Only show error if we have an error AND no video object
+  // For open students, we always try to create a video object from URL params
+  if (error && !video && !loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error || 'Video not found'}</p>
           <button
-            onClick={() => navigate(ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS)}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            onClick={handleBack}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer"
           >
-            Go Back to Playlists
+            Go Back
           </button>
         </div>
       </div>
     );
   }
 
-  const finalVideoId = extractVideoId(video.youtubeUrl);
+  // If still loading or no video yet, show loading state
+  if (!video) {
+    return null; // Still loading or setting up video
+  }
+
+  // Extract YouTube video ID for player - use video.youtubeUrl if available, otherwise use videoId from route
+  const finalVideoId = video?.youtubeUrl 
+    ? extractVideoId(video.youtubeUrl) 
+    : (videoId || extractVideoId(videoUrl || ''));
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -226,8 +454,8 @@ const VideoPage = () => {
         <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate(ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS)}
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              onClick={handleBack}
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 cursor-pointer"
             >
               <ArrowLeft className="w-6 h-6" />
             </button>

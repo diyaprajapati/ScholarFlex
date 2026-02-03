@@ -84,30 +84,15 @@ const YouTubeVideoPlayer = ({ videoId, videoTitle, videoUrl, playlistId, playlis
   const finalDbVideoId = safeParseInt(dbVideoId) || null;
 
   // Helper: detect open student mode
-  // CRITICAL: Check both token presence AND route to avoid false positives
-  // If user has regular JWT token, they are an intern (not open student)
-  // Only consider open student if they have open_student_token AND no regular JWT token
+  // Use authService to check role instead of checking route paths
+  // This works with consolidated routes where open students use /student/video/ instead of /student/open/video/
   const isOpenStudent = () => {
     try {
       if (typeof window === 'undefined') return false;
       
-      // Check if user has regular JWT token (intern/regular student)
-      const hasRegularToken = authService.isAuthenticated();
-      
-      // If user has regular token, they are NOT an open student
-      if (hasRegularToken) {
-        return false;
-      }
-      
-      // Check if user has open student token
-      const hasOpenToken = !!window.localStorage?.getItem('open_student_token');
-      
-      // Also check route path as additional verification
-      const path = location?.pathname || '';
-      const isOpenRoute = path.includes('/open/') || path.includes('/open-student');
-      
-      // Only return true if they have open token AND are on an open student route
-      return hasOpenToken && isOpenRoute;
+      // Use authService to check if user is an open student
+      // This checks for open_student_token and doesn't require route path matching
+      return authService.isOpenStudent();
     } catch {
       return false;
     }

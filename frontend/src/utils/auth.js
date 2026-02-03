@@ -2,6 +2,8 @@
 
 const TOKEN_KEY = 'scholarflex_token'
 const USER_KEY = 'scholarflex_user'
+const OPEN_STUDENT_TOKEN_KEY = 'open_student_token'
+const OPEN_STUDENT_DATA_KEY = 'open_student_data'
 
 /**
  * Decode JWT token to get payload (without verification)
@@ -113,10 +115,21 @@ export const authService = {
     }
   },
 
-  // Get user role from token
+  // Get user role from token or open student session
   getUserRole: () => {
+    // First check for regular JWT token (intern/regular student)
     const user = authService.getUser()
-    return user?.role || null
+    if (user?.role) {
+      return user.role
+    }
+    
+    // Check for open student session token
+    const openToken = localStorage.getItem(OPEN_STUDENT_TOKEN_KEY)
+    if (openToken) {
+      return 'OPEN_STUDENT'
+    }
+    
+    return null
   },
 
   // Check if user is admin or super admin
@@ -130,9 +143,20 @@ export const authService = {
     return authService.getUserRole() === 'SUPER_ADMIN'
   },
 
-  // Check if user is student
+  // Check if user is student (regular intern)
   isStudent: () => {
     return authService.getUserRole() === 'STUDENT'
+  },
+
+  // Check if user is open student
+  isOpenStudent: () => {
+    return authService.getUserRole() === 'OPEN_STUDENT'
+  },
+
+  // Check if user is any type of student (regular or open)
+  isAnyStudent: () => {
+    const role = authService.getUserRole()
+    return role === 'STUDENT' || role === 'OPEN_STUDENT'
   },
 
   // Update user data in localStorage

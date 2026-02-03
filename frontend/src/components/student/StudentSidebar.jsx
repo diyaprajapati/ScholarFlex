@@ -1,29 +1,33 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, BarChart3, FileText, X, Video, Briefcase, User } from 'lucide-react';
+import { LayoutDashboard, BookOpen, BarChart3, FileText, X, Video, Briefcase, User, Lock } from 'lucide-react';
 import { ROUTES } from '../../config/paths';
+import { authService } from '../../utils/auth';
 
-export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen, isIntern = true, onLockedTabClick }) {
+// Routes that OPEN_STUDENT users can access (all others will be disabled)
+const OPEN_STUDENT_ALLOWED_ROUTES = [
+  ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD,
+  ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS,
+];
+
+export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen, onLockedTabClick }) {
   const navigate = useNavigate();
-  
-  // Use different routes based on whether user is intern or open student
-  const getRoute = (internRoute, openRoute) => {
-    return isIntern ? internRoute : openRoute;
-  };
+  const userRole = authService.getUserRole();
+  const isOpenStudent = userRole === 'OPEN_STUDENT';
   
   const menuItems = [
     { 
       id: 'dashboard', 
       label: 'Dashboard', 
       icon: LayoutDashboard, 
-      path: getRoute(ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD, ROUTES.STUDENT.OPEN.DASHBOARD), 
+      path: ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD, 
       accessible: true 
     },
     { 
       id: 'playlists', 
       label: 'Playlists', 
       icon: BookOpen, 
-      path: getRoute(ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS, ROUTES.STUDENT.OPEN.PLAYLISTS), 
+      path: ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS, 
       accessible: true 
     },
     { 
@@ -31,40 +35,43 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
       label: 'Activity', 
       icon: BarChart3, 
       path: ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY, 
-      accessible: isIntern 
+      accessible: !isOpenStudent 
     },
     { 
       id: 'internship', 
       label: 'Internship', 
       icon: Briefcase, 
       path: ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP, 
-      accessible: isIntern 
+      accessible: !isOpenStudent 
     },
     { 
       id: 'video-analytics', 
       label: 'Video Analytics', 
       icon: Video, 
       path: ROUTES.STUDENT.VIDEO_ANALYTICS, 
-      accessible: isIntern 
+      accessible: !isOpenStudent 
     },
     { 
       id: 'profile', 
       label: 'My Profile', 
       icon: User, 
       path: ROUTES.STUDENT.FORM, 
-      accessible: isIntern 
+      accessible: !isOpenStudent 
     },
     { 
       id: 'noc', 
       label: 'NOC Letter', 
       icon: FileText, 
       path: ROUTES.STUDENT.DASHBOARD_TABS.NOC, 
-      accessible: isIntern 
+      accessible: !isOpenStudent 
     },
   ];
 
   const handleItemClick = (item) => {
-    if (!item.accessible && !isIntern) {
+    // Check if item is disabled for open students
+    const isDisabled = isOpenStudent && !OPEN_STUDENT_ALLOWED_ROUTES.includes(item.path);
+    
+    if (!item.accessible || isDisabled) {
       // Show locked modal for open students
       if (onLockedTabClick) {
         onLockedTabClick();
@@ -122,7 +129,8 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1 sm:space-y-2">
             {menuItems.map((item) => {
-              const isLocked = !item.accessible && !isIntern;
+              const isDisabled = isOpenStudent && !OPEN_STUDENT_ALLOWED_ROUTES.includes(item.path);
+              const isLocked = !item.accessible || isDisabled;
               const isActive = activeTab === item.id;
               
               return (
@@ -135,7 +143,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
                     transition-all duration-200
                     ${
                       isLocked
-                        ? 'opacity-50 cursor-not-allowed text-gray-400'
+                        ? 'opacity-60 cursor-not-allowed text-gray-400'
                         : isActive
                         ? 'bg-green-50 text-green-700 border-l-4 border-green-600 cursor-pointer'
                         : 'text-gray-700 hover:bg-gray-50 hover:text-green-600 cursor-pointer'
@@ -150,7 +158,8 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
                       ? 'text-green-600' 
                       : 'text-gray-600'
                   }`} />
-                  <span className="truncate">{item.label}</span>
+                  <span className="flex-1 truncate">{item.label}</span>
+                  {isLocked && <Lock className="w-3.5 h-3.5 text-gray-400 shrink-0" />}
                 </button>
               );
             })}

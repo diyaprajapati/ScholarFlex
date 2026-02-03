@@ -10,6 +10,7 @@ import ActivityTab from '../../components/student/ActivityTab';
 import NOCTab from '../../components/student/NOCTab';
 import InternshipTab from '../../components/student/InternshipTab';
 import PlaylistModal from '../../components/student/PlaylistModal';
+import LockedFeatureModal from '../../components/student/LockedFeatureModal';
 import TimeTracking from '../../components/student/TimeTracking';
 import { Menu } from 'lucide-react';
 
@@ -17,6 +18,7 @@ const StudentDashboardPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
+  const isOpenStudent = authService.isOpenStudent();
   
   // Determine active tab from URL
   const getActiveTabFromPath = () => {
@@ -32,6 +34,7 @@ const StudentDashboardPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showLockedModal, setShowLockedModal] = useState(false);
   
   // Dashboard Tab State
   const [continueWatching, setContinueWatching] = useState([]);
@@ -54,6 +57,20 @@ const StudentDashboardPage = () => {
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
 
   useEffect(() => {
+    // Handle open students
+    if (isOpenStudent) {
+      const token = localStorage.getItem('open_student_token');
+      if (!token) {
+        navigate(ROUTES.STUDENT.OPEN.REGISTER, { replace: true });
+        return;
+      }
+      fetchCurrentStudent();
+      fetchInitialData();
+      setActiveTab(getActiveTabFromPath());
+      return;
+    }
+    
+    // Handle regular students
     if (!authService.isAuthenticated()) {
       navigate(ROUTES.LOGIN, { replace: true });
       return;
@@ -80,11 +97,28 @@ const StudentDashboardPage = () => {
     // Set active tab based on current URL
     setActiveTab(getActiveTabFromPath());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]); // Update tab when URL changes and refresh data
+  }, [location.pathname, isOpenStudent]); // Update tab when URL changes and refresh data
 
-  // Periodic check for is_selected status changes
+  // Fetch current student for open students
+  const fetchCurrentStudent = async () => {
+    try {
+      const response = await api.openStudent.getCurrent();
+      if (response.success && response.student) {
+        setUser(response.student);
+      }
+    } catch (error) {
+      console.error('Error fetching current student:', error);
+      if (error.status === 401) {
+        localStorage.removeItem('open_student_token');
+        localStorage.removeItem('open_student_data');
+        navigate(ROUTES.STUDENT.OPEN.REGISTER, { replace: true });
+      }
+    }
+  };
+
+  // Periodic check for is_selected status changes (only for regular students)
   useEffect(() => {
-    if (!authService.isAuthenticated() || !authService.isStudent()) {
+    if (isOpenStudent || !authService.isAuthenticated() || !authService.isStudent()) {
       return;
     }
 
@@ -175,38 +209,39 @@ const StudentDashboardPage = () => {
   const fetchDashboardData = async () => {
     try {
       setLoadingDashboard(true);
-      const [videosRes, playlistsRes, testsRes] = await Promise.all([
-        api.activity.getRecentVideos().catch(() => ({ success: false, videos: [] })),
-        api.playlists.getRecommendedPlaylists().catch(() => ({ success: false, playlists: [] })),
-        api.studentTests.getAvailable().catch(() => ({ success: false, data: [] })),
-      ]);
+      
+      if (isOpenStudent) {
+        // Open student dashboard - simpler API
+        const response = await api.openStudent.getDashboard();
+        if (response.success) {
+          const items = response.dashboard?.continueWatching || [];
+          setContinueWatching(items);
+          // Open students don't have recentActivity, recommendedPlaylists, or recommendedTests
+          setRecentActivity([]);
+          setRecommendedPlaylists([]);
+          setRecommendedTests([]);
+        }
+      } else {
+        // Regular student dashboard - full API
+        const [videosRes, playlistsRes, testsRes] = await Promise.all([
+          api.activity.getRecentVideos().catch(() => ({ success: false, videos: [] })),
+          api.playlists.getRecommendedPlaylists().catch(() => ({ success: false, playlists: [] })),
+          api.studentTests.getAvailable().catch(() => ({ success: false, data: [] })),
+        ]);
 
-      if (videosRes.success) {
-        let videos = videosRes.videos || [];
-        // console.log('📥 Received continue watching videos from API:', videos);
-        // console.log('📥 First video details:', videos[0] ? {
-        //   id: videos[0].id,
-        //   videoTitle: videos[0].videoTitle,
-        //   lastPosition: videos[0].lastPosition,
-        //   progress: videos[0].progress,
-        //   playlistTitle: videos[0].playlistTitle,
-        //   playlistId: videos[0].playlistId,
-        // } : 'No videos');
-        
-        // Backend handles all filtering - just use the videos as-is
-        // Backend will exclude completed videos (including completed video_next videos)
-        // Backend will add next videos for completed videos
-        
-        setContinueWatching(videos);
-        setRecentActivity(videos.slice(0, 5) || []);
-      }
+        if (videosRes.success) {
+          let videos = videosRes.videos || [];
+          setContinueWatching(videos);
+          setRecentActivity(videos.slice(0, 5) || []);
+        }
 
-      if (playlistsRes.success) {
-        setRecommendedPlaylists(playlistsRes.playlists || []);
-      }
+        if (playlistsRes.success) {
+          setRecommendedPlaylists(playlistsRes.playlists || []);
+        }
 
-      if (testsRes.success) {
-        setRecommendedTests(testsRes.data || []);
+        if (testsRes.success) {
+          setRecommendedTests(testsRes.data || []);
+        }
       }
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
@@ -249,17 +284,29 @@ const StudentDashboardPage = () => {
   const fetchPlaylistsData = async () => {
     try {
       setLoadingPlaylists(true);
-      const [recommendedRes, allRes] = await Promise.all([
-        api.playlists.getRecommendedPlaylists().catch(() => ({ success: false, playlists: [] })),
-        api.playlists.getStudentPlaylists().catch(() => ({ success: false, playlists: [] })),
-      ]);
+      
+      if (isOpenStudent) {
+        // Open student playlists
+        const response = await api.openStudent.getPlaylists();
+        if (response.success) {
+          setAllPlaylists(response.playlists || []);
+        }
+        // Open students don't have recommended playlists
+        setRecommendedPlaylists([]);
+      } else {
+        // Regular student playlists
+        const [recommendedRes, allRes] = await Promise.all([
+          api.playlists.getRecommendedPlaylists().catch(() => ({ success: false, playlists: [] })),
+          api.playlists.getStudentPlaylists().catch(() => ({ success: false, playlists: [] })),
+        ]);
 
-      if (recommendedRes.success) {
-        setRecommendedPlaylists(recommendedRes.playlists || []);
-      }
+        if (recommendedRes.success) {
+          setRecommendedPlaylists(recommendedRes.playlists || []);
+        }
 
-      if (allRes.success) {
-        setAllPlaylists(allRes.playlists || []);
+        if (allRes.success) {
+          setAllPlaylists(allRes.playlists || []);
+        }
       }
     } catch (err) {
       console.error('Error fetching playlists:', err);
@@ -426,6 +473,7 @@ const StudentDashboardPage = () => {
         setActiveTab={setActiveTab}
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
+        onLockedTabClick={isOpenStudent ? () => setShowLockedModal(true) : undefined}
       />
 
       {/* Main Content */}
@@ -448,14 +496,21 @@ const StudentDashboardPage = () => {
                     Student Portal
                   </h1>
                   <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 truncate">
-                    Welcome back, {user?.full_name || user?.email || 'Student'}
+                    Welcome back, {user?.full_name || user?.name || user?.email || 'Student'}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => {
-                  authService.logout();
-                  navigate(ROUTES.LOGIN);
+                  if (isOpenStudent) {
+                    localStorage.removeItem('open_student_token');
+                    localStorage.removeItem('open_student_data');
+                    api.openStudent.logout().catch(() => {});
+                    navigate(ROUTES.LANDING, { replace: true });
+                  } else {
+                    authService.logout();
+                    navigate(ROUTES.LOGIN);
+                  }
                 }}
                 className="px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shrink-0 whitespace-nowrap cursor-pointer"
               >
@@ -476,19 +531,19 @@ const StudentDashboardPage = () => {
           {/* Dashboard Tab */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6 sm:space-y-8">
-              {/* Time Tracking Component */}
-              <TimeTracking />
+              {/* Time Tracking Component - only for regular students */}
+              {!isOpenStudent && <TimeTracking />}
               
               <DashboardTab
                 loadingDashboard={loadingDashboard}
                 continueWatching={continueWatching}
-                recentActivity={recentActivity}
-                recommendedPlaylists={recommendedPlaylists}
-                recommendedTests={recommendedTests}
+                recentActivity={isOpenStudent ? [] : recentActivity}
+                recommendedPlaylists={isOpenStudent ? [] : recommendedPlaylists}
+                recommendedTests={isOpenStudent ? [] : recommendedTests}
                 getThumbnailUrl={getThumbnailUrl}
                 handlePlaylistClick={handlePlaylistClick}
                 handleVideoClick={handleVideoClick}
-                onRemoveVideo={handleRemoveVideo}
+                onRemoveVideo={isOpenStudent ? undefined : handleRemoveVideo}
               />
             </div>
           )}
@@ -504,8 +559,8 @@ const StudentDashboardPage = () => {
             />
           )}
 
-          {/* Activity Tab */}
-          {activeTab === 'activity' && (
+          {/* Activity Tab - only for regular students */}
+          {!isOpenStudent && activeTab === 'activity' && (
             <ActivityTab
               loadingActivity={loadingActivity}
               activitySummary={activitySummary}
@@ -513,9 +568,9 @@ const StudentDashboardPage = () => {
             />
           )}
 
-          {/* NOC Tab */}
-          {activeTab === 'internship' && <InternshipTab />}
-          {activeTab === 'noc' && <NOCTab />}
+          {/* NOC Tab - only for regular students */}
+          {!isOpenStudent && activeTab === 'internship' && <InternshipTab />}
+          {!isOpenStudent && activeTab === 'noc' && <NOCTab />}
         </main>
       </div>
 
@@ -527,6 +582,14 @@ const StudentDashboardPage = () => {
         getThumbnailUrl={getThumbnailUrl}
         handleVideoClick={handleVideoClick}
       />
+
+      {/* Locked Feature Modal - only for open students */}
+      {isOpenStudent && (
+        <LockedFeatureModal
+          isOpen={showLockedModal}
+          onClose={() => setShowLockedModal(false)}
+        />
+      )}
     </div>
   );
 };
