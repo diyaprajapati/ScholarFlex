@@ -26,6 +26,8 @@ const TimeTracking = () => {
   const questionTimeoutRef = useRef(null);
   const showQuestionRef = useRef(false);
   const currentQuestionRef = useRef(null);
+  const pauseStartTimeRef = useRef(null);
+  const pausedElapsedTimeRef = useRef(0);
 
   // Format time as HH:MM:SS
   const formatTime = (seconds) => {
@@ -113,8 +115,16 @@ const TimeTracking = () => {
         const elapsedMs = now - questionTime;
         const TIMEOUT_MS = 120000; // 2 minutes
 
-        // If question was asked less than 2 minutes ago (plus minimal grace), show it and resume timer
+        // If question was asked less than 2 minutes ago (plus minimal grace), show it and pause timer
         if (elapsedMs < TIMEOUT_MS) {
+          // PAUSE TIMER: Store current elapsed time and pause start time
+          if (sessionRef.current) {
+            const startTime = new Date(sessionRef.current.startTime);
+            const currentElapsed = Math.floor((now - startTime) / 1000);
+            pausedElapsedTimeRef.current = currentElapsed;
+            pauseStartTimeRef.current = questionTime; // Use question time as pause start
+          }
+
           setCurrentQuestion(questionData);
           setShowQuestion(true);
           setAnswer('');
@@ -203,6 +213,25 @@ const TimeTracking = () => {
 
         // Only start tracking if session is active (not paused)
         if (response.session.status === 'ACTIVE') {
+          // Check if there's a pending question (timer should be paused)
+          const pendingQuestion = localStorage.getItem('pendingAttendanceQuestion');
+          if (pendingQuestion) {
+            try {
+              const questionData = JSON.parse(pendingQuestion);
+              const questionTime = new Date(questionData.askedAt);
+              const elapsedMs = now - questionTime;
+              const TIMEOUT_MS = 120000; // 2 minutes
+              
+              if (elapsedMs < TIMEOUT_MS) {
+                // Timer is paused due to pending question
+                pausedElapsedTimeRef.current = elapsed;
+                pauseStartTimeRef.current = questionTime;
+              }
+            } catch (e) {
+              console.error('Error parsing pending question:', e);
+            }
+          }
+
           // Calculate next question time (every 10 minutes)
           const lastQuestionTime = response.session.attendanceQuestions?.length > 0
             ? new Date(response.session.attendanceQuestions[0].askedAt)
@@ -231,25 +260,29 @@ const TimeTracking = () => {
     // Update elapsed time every second (always, regardless of tab focus)
     // Update elapsed time by calculating difference from start time
     // This prevents drift when the tab is inactive/throttled
+    // PAUSE when question is shown (don't update elapsedTime)
     timeUpdateRef.current = setInterval(() => {
-      if (sessionRef.current && sessionRef.current.status === 'ACTIVE') {
+      if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
         const startTime = new Date(sessionRef.current.startTime);
         const now = new Date();
         const elapsed = Math.floor((now - startTime) / 1000);
         setElapsedTime(elapsed);
+      } else if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && showQuestionRef.current) {
+        // Timer is paused - keep showing the paused elapsed time
+        setElapsedTime(pausedElapsedTimeRef.current);
       }
     }, 1000);
 
     // Check for questions every minute (always, regardless of tab focus)
     questionIntervalRef.current = setInterval(() => {
-      if (sessionRef.current && sessionRef.current.status === 'ACTIVE') {
+      if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
         checkForQuestion();
       }
     }, 60000); // Check every minute
 
     // Initial check after a short delay to ensure session is set
     setTimeout(() => {
-      if (sessionRef.current && sessionRef.current.status === 'ACTIVE') {
+      if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
         checkForQuestion();
       }
     }, 2000);
@@ -290,6 +323,15 @@ const TimeTracking = () => {
           askedAt: new Date().toISOString(),
         };
 
+        // PAUSE TIMER: Store current elapsed time and pause start time
+        if (sessionRef.current) {
+          const startTime = new Date(sessionRef.current.startTime);
+          const now = new Date();
+          const currentElapsed = Math.floor((now - startTime) / 1000);
+          pausedElapsedTimeRef.current = currentElapsed;
+          pauseStartTimeRef.current = now;
+        }
+
         setCurrentQuestion(questionData);
         setShowQuestion(true);
         setAnswer('');
@@ -300,7 +342,7 @@ const TimeTracking = () => {
 
         // Show background notification with generic message (works even when tab/window is closed)
         // Pass callback to show modal when notification is clicked
-        // console.log('Attempting to show notification...');
+        console.log('Attempting to show notification...');
         try {
           const notificationShown = await showBackgroundNotification(() => {
             // This callback will be called when notification is clicked
@@ -308,19 +350,25 @@ const TimeTracking = () => {
             setCurrentQuestion(questionData);
             window.focus();
           });
-          // console.log('Notification result:', notificationShown);
+          console.log('Notification result:', notificationShown);
 
           // If notification failed, try again after ensuring Service Worker is ready
           if (!notificationShown && 'serviceWorker' in navigator) {
-            // console.log('Retrying notification after Service Worker ready...');
-            const registration = await navigator.serviceWorker.ready;
-            setTimeout(async () => {
-              await showBackgroundNotification(() => {
-                setShowQuestion(true);
-                setCurrentQuestion(questionData);
-                window.focus();
-              });
-            }, 500);
+            console.log('Retrying notification after Service Worker ready...');
+            try {
+              const registration = await navigator.serviceWorker.ready;
+              console.log('Service Worker ready for retry:', registration);
+              setTimeout(async () => {
+                const retryResult = await showBackgroundNotification(() => {
+                  setShowQuestion(true);
+                  setCurrentQuestion(questionData);
+                  window.focus();
+                });
+                console.log('Retry notification result:', retryResult);
+              }, 1000);
+            } catch (swError) {
+              console.error('Service Worker ready error:', swError);
+            }
           }
         } catch (error) {
           console.error('Error showing notification:', error);
@@ -348,11 +396,28 @@ const TimeTracking = () => {
     try {
       setLoading(true);
 
+      // Ensure Service Worker is registered first
+      if ('serviceWorker' in navigator) {
+        try {
+          await registerServiceWorker();
+          console.log('Service Worker registered for notifications');
+        } catch (error) {
+          console.error('Service Worker registration error:', error);
+        }
+      }
+
       // Request notification permission when Start is clicked
       const hasPermission = await requestNotificationPermission();
       if (!hasPermission) {
-        alert('Please allow notifications to receive attendance check reminders.');
-        // Continue anyway - they can still track time
+        const userChoice = confirm('Notifications are required for attendance check reminders. Without notifications, you may miss important alerts. Do you want to continue without notifications?');
+        if (!userChoice) {
+          setLoading(false);
+          return;
+        }
+        // Continue anyway - they can still track time, but notifications won't work
+        console.warn('User declined notification permission');
+      } else {
+        console.log('Notification permission granted');
       }
 
       const response = await api.timeTracking.start();
@@ -481,23 +546,52 @@ const TimeTracking = () => {
 
       if (response.success) {
         const isCorrect = response.question.isCorrect;
+        
+        // RESUME TIMER: Adjust session startTime to account for paused duration
+        if (sessionRef.current && pauseStartTimeRef.current) {
+          const pauseDuration = Math.floor((Date.now() - pauseStartTimeRef.current) / 1000);
+          const originalStartTime = new Date(sessionRef.current.startTime);
+          // Adjust startTime forward by pause duration to resume from where we paused
+          const adjustedStartTime = new Date(originalStartTime.getTime() + (pauseDuration * 1000));
+          
+          // Update session with adjusted startTime
+          setSession((prevSession) => {
+            if (!prevSession) return prevSession;
+            const updatedSession = {
+              ...prevSession,
+              startTime: adjustedStartTime.toISOString(),
+              attendanceQuestions: [
+                response.question,
+                ...(prevSession.attendanceQuestions || []),
+              ],
+            };
+            sessionRef.current = updatedSession;
+            return updatedSession;
+          });
+          
+          // Clear pause tracking
+          pauseStartTimeRef.current = null;
+        }
+
         setShowQuestion(false);
         setCurrentQuestion(null);
         setAnswer('');
 
-        // Update session state with new question
-        setSession((prevSession) => {
-          if (!prevSession) return prevSession;
-          const updatedSession = {
-            ...prevSession,
-            attendanceQuestions: [
-              response.question,
-              ...(prevSession.attendanceQuestions || []),
-            ],
-          };
-          sessionRef.current = updatedSession;
-          return updatedSession;
-        });
+        // Update session state with new question (if not already updated above)
+        if (!pauseStartTimeRef.current) {
+          setSession((prevSession) => {
+            if (!prevSession) return prevSession;
+            const updatedSession = {
+              ...prevSession,
+              attendanceQuestions: [
+                response.question,
+                ...(prevSession.attendanceQuestions || []),
+              ],
+            };
+            sessionRef.current = updatedSession;
+            return updatedSession;
+          });
+        }
 
         // Clear timeout
         if (questionTimeoutRef.current) {
@@ -548,24 +642,25 @@ const TimeTracking = () => {
         {session && (
           <div className="text-right">
             <div className="flex items-center justify-end gap-2">
-              {session.status === 'PAUSED' && (
+              {(session.status === 'PAUSED' || showQuestion) && (
                 <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                  ⏸️ Paused
+                  ⏸️ {showQuestion ? 'Timer Paused - Answer Question' : 'Paused'}
                 </span>
               )}
-              <div className={`text-2xl sm:text-3xl font-bold ${session.status === 'PAUSED' ? 'text-yellow-600' : 'text-green-600'
-                }`}>
+              <div className={`text-2xl sm:text-3xl font-bold ${
+                session.status === 'PAUSED' || showQuestion ? 'text-yellow-600' : 'text-green-600'
+              }`}>
                 {formatTime(elapsedTime)}
               </div>
             </div>
-            {nextQuestionTime !== null && nextQuestionTime > 0 && session.status === 'ACTIVE' && (
+            {nextQuestionTime !== null && nextQuestionTime > 0 && session.status === 'ACTIVE' && !showQuestion && (
               <div className="text-xs sm:text-sm text-gray-500 mt-1">
                 Next check in {nextQuestionTime} min
               </div>
             )}
             {showQuestion && currentQuestion && (
               <div className="text-xs sm:text-sm text-red-600 mt-1 font-medium">
-                ⚠️ Question pending - Please answer
+                ⚠️ Timer paused - Answer the question to resume
               </div>
             )}
           </div>
@@ -665,7 +760,8 @@ const TimeTracking = () => {
             </div>
 
             <p className="text-gray-600 mb-4 text-sm">
-              Just verifying you're still here! 😊
+              Just verifying you're still here! 😊<br />
+              <span className="text-yellow-600 font-medium">⏸️ Timer is paused - Answer to resume tracking</span>
             </p>
 
             <div className="mb-4 bg-blue-50 p-4 rounded-lg">

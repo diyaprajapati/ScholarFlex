@@ -68,6 +68,8 @@ export default function StudentTestPage() {
   })
   const questionTimingsRef = useRef(new Map())
   const currentQuestionStartRef = useRef(null)
+  const testStartTimeRef = useRef(null)
+  const totalDurationSecondsRef = useRef(3600)
 
   const pickFromBuckets = useCallback((preferredBands = []) => {
     const buckets = bucketsRef.current
@@ -216,7 +218,9 @@ export default function StudentTestPage() {
         setQuestions([initialQuestion])
         setCurrentQuestionIndex(0)
         setSelectedAnswers({})
-        setTimeRemaining((data.duration_minutes || 60) * 60)
+        const durationSeconds = (data.duration_minutes || 60) * 60
+        totalDurationSecondsRef.current = durationSeconds
+        setTimeRemaining(durationSeconds)
         setFetchError(null)
       } catch (error) {
         console.error('Error fetching test details:', error)
@@ -267,32 +271,67 @@ export default function StudentTestPage() {
   }, [attemptId, isSubmitting, navigate, questions, selectedAnswers])
 
   const handleAutoSubmit = useCallback(() => {
-    if (questions[currentQuestionIndex]) {
-      recordTimeForQuestion(questions[currentQuestionIndex].id)
-    }
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    if (questions[currentQuestionIndex]) {
+      recordTimeForQuestion(questions[currentQuestionIndex].id)
     }
     submitTestPayload({ force: true })
   }, [submitTestPayload, questions, currentQuestionIndex, recordTimeForQuestion])
 
+  // Timer effect - uses elapsed time calculation to handle sleep/wake
   useEffect(() => {
-    if (testStarted) {
-      intervalRef.current = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 1) {
-            handleAutoSubmit()
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
+    if (!testStarted || !testStartTimeRef.current) return
+
+    const updateTimer = () => {
+      const now = Date.now()
+      const elapsedSeconds = Math.floor((now - testStartTimeRef.current) / 1000)
+      const remaining = Math.max(0, totalDurationSecondsRef.current - elapsedSeconds)
+      
+      setTimeRemaining(remaining)
+      
+      if (remaining <= 0) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
+        handleAutoSubmit()
+      }
     }
+
+    // Initial calculation
+    updateTimer()
+
+    // Update every second
+    intervalRef.current = setInterval(updateTimer, 1000)
+
+    // Handle visibility change (page wake/sleep)
+    const handleVisibilityChange = () => {
+      if (!document.hidden && testStarted && testStartTimeRef.current) {
+        // Recalculate time when page becomes visible (wakes from sleep)
+        updateTimer()
+      }
+    }
+
+    // Handle page focus (another way to detect wake)
+    const handleFocus = () => {
+      if (testStarted && testStartTimeRef.current) {
+        updateTimer()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
+        intervalRef.current = null
       }
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
     }
   }, [testStarted, handleAutoSubmit])
 
@@ -302,6 +341,7 @@ export default function StudentTestPage() {
   }, [violationTriggered])
 
   const handleStartTest = () => {
+    testStartTimeRef.current = Date.now()
     setTestStarted(true)
     setWarningCount(0) // Reset warning count when test starts
     warningCountRef.current = 0 // Reset ref as well
@@ -373,6 +413,7 @@ export default function StudentTestPage() {
     setShowConfirmModal(false)
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
     await submitTestPayload()
   }
