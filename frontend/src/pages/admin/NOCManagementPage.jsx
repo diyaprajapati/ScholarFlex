@@ -400,7 +400,7 @@ const NOCManagementPage = () => {
       {/* PDF Viewer Modal */}
       {viewerOpen && selectedNOC && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 backdrop-blur-md bg-opacity-75 z-[70] flex items-center justify-center p-4"
           onClick={() => {
             setViewerOpen(false);
             setSelectedNOC(null);

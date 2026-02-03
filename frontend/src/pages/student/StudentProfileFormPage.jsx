@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
 import api from '../../services/api'
@@ -9,6 +9,7 @@ import StudentSidebar from '../../components/student/StudentSidebar'
 
 export default function StudentProfileFormPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [loading, setLoading] = useState(true)
   const [checking, setChecking] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -21,6 +22,8 @@ export default function StudentProfileFormPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('profile')
   const [user, setUser] = useState(null)
+  const lastPathnameRef = useRef(location.pathname)
+  const isPageVisibleRef = useRef(true)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -123,75 +126,153 @@ export default function StudentProfileFormPage() {
     checkAccess()
   }, [navigate])
 
-  useEffect(() => {
+  // Function to fetch profile data
+  const fetchProfileData = useCallback(async (preserveEditMode = false) => {
     if (checking) return // Don't fetch data until access check is complete
 
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        
-        // Fetch domains
-        const domainsRes = await api.domains.getAll()
-        if (domainsRes.success) {
-          setDomains(domainsRes.domains || domainsRes.data || [])
-        }
-        
-        // Fetch existing profile
-        const profileRes = await api.studentProfile.get()
-        if (profileRes.success && profileRes.profile) {
-          const profile = profileRes.profile
-          const completed = profile.profileCompleted || false
-          setFormData({
-            fullName: profile.fullName || '',
-            email: profile.email || '',
-            phone: profile.phone || '',
-            imageUrl: profile.imageUrl || '',
-            imageFile: null,
-            instituteName: profile.instituteName || '',
-            courseTaken: profile.courseTaken || '',
-            currentYear: profile.currentYear || '',
-            currentSemester: profile.currentSemester || '',
-            graduationYear: profile.graduationYear ? String(profile.graduationYear) : '',
-            domainId: profile.domainId ? String(profile.domainId) : '',
-            internshipStartDate: profile.internshipStartDate ? profile.internshipStartDate.split('T')[0] : '',
-            internshipEndDate: profile.internshipEndDate ? profile.internshipEndDate.split('T')[0] : '',
-            skills: profile.skills || { languages: [], frameworks: [], tools: [], softSkills: [] },
-            personalProjects: profile.personalProjects || [],
-            achievements: profile.achievements ? {
-              hackathons: (profile.achievements.hackathons || []).map(a => ({
-                ...a,
-                date: a.date ? a.date.split('T')[0] : ''
-              })),
-              certifications: (profile.achievements.certifications || []).map(a => ({
-                ...a,
-                date: a.date ? a.date.split('T')[0] : ''
-              })),
-              awards: (profile.achievements.awards || []).map(a => ({
-                ...a,
-                date: a.date ? a.date.split('T')[0] : ''
-              })),
-              competitions: (profile.achievements.competitions || []).map(a => ({
-                ...a,
-                date: a.date ? a.date.split('T')[0] : ''
-              }))
-            } : { hackathons: [], certifications: [], awards: [], competitions: [] },
-            resumeUrl: profile.resumeUrl || '',
-            resumeFile: null,
-            profileCompleted: completed,
-          })
-          // Set edit mode: false if profile is completed (show view mode), true if not completed (show form)
+    try {
+      setLoading(true)
+      
+      // Fetch domains
+      const domainsRes = await api.domains.getAll()
+      if (domainsRes.success) {
+        setDomains(domainsRes.domains || domainsRes.data || [])
+      }
+      
+      // Fetch existing profile
+      const profileRes = await api.studentProfile.get()
+      if (profileRes.success && profileRes.profile) {
+        const profile = profileRes.profile
+        const completed = profile.profileCompleted || false
+        setFormData({
+          fullName: profile.fullName || '',
+          email: profile.email || '',
+          phone: profile.phone || '',
+          imageUrl: profile.imageUrl || '',
+          imageFile: null,
+          instituteName: profile.instituteName || '',
+          courseTaken: profile.courseTaken || '',
+          currentYear: profile.currentYear || '',
+          currentSemester: profile.currentSemester || '',
+          graduationYear: profile.graduationYear ? String(profile.graduationYear) : '',
+          domainId: profile.domainId ? String(profile.domainId) : '',
+          internshipStartDate: profile.internshipStartDate ? profile.internshipStartDate.split('T')[0] : '',
+          internshipEndDate: profile.internshipEndDate ? profile.internshipEndDate.split('T')[0] : '',
+          skills: profile.skills || { languages: [], frameworks: [], tools: [], softSkills: [] },
+          personalProjects: (profile.personalProjects || []).map(project => ({
+            projectTitle: project.projectTitle || '',
+            description: project.description || '',
+            techStack: project.techStack || '',
+            role: project.role || '',
+            githubLink: project.githubLink || '',
+            liveLink: project.liveLink || '',
+          })),
+          achievements: profile.achievements ? {
+            hackathons: (profile.achievements.hackathons || []).map(a => ({
+              title: a.title || '',
+              description: a.description || '',
+              issuer: a.issuer || '',
+              date: a.date ? a.date.split('T')[0] : '',
+              link: a.link || '',
+            })),
+            certifications: (profile.achievements.certifications || []).map(a => ({
+              title: a.title || '',
+              description: a.description || '',
+              issuer: a.issuer || '',
+              date: a.date ? a.date.split('T')[0] : '',
+              link: a.link || '',
+            })),
+            awards: (profile.achievements.awards || []).map(a => ({
+              title: a.title || '',
+              description: a.description || '',
+              issuer: a.issuer || '',
+              date: a.date ? a.date.split('T')[0] : '',
+              link: a.link || '',
+            })),
+            competitions: (profile.achievements.competitions || []).map(a => ({
+              title: a.title || '',
+              description: a.description || '',
+              issuer: a.issuer || '',
+              date: a.date ? a.date.split('T')[0] : '',
+              link: a.link || '',
+            }))
+          } : { hackathons: [], certifications: [], awards: [], competitions: [] },
+          resumeUrl: profile.resumeUrl || '',
+          resumeFile: null,
+          profileCompleted: completed,
+        })
+        // Set edit mode: false if profile is completed (show view mode), true if not completed (show form)
+        // But preserve current edit mode if preserveEditMode is true (used after saving)
+        if (!preserveEditMode) {
           setIsEditMode(!completed)
+        } else if (completed) {
+          // If preserving edit mode but profile is completed, ensure we're in view mode
+          setIsEditMode(false)
         }
-      } catch (err) {
-        console.error('Error fetching profile:', err)
-        setError(err.message || 'Failed to load profile')
-      } finally {
-        setLoading(false)
+      }
+    } catch (err) {
+      console.error('Error fetching profile:', err)
+      setError(err.message || 'Failed to load profile')
+    } finally {
+      setLoading(false)
+    }
+  }, [checking])
+
+  // Fetch data when component mounts or when checking completes
+  useEffect(() => {
+    fetchProfileData()
+  }, [checking])
+
+  // Refresh data when pathname changes (user navigates back to this page)
+  useEffect(() => {
+    if (lastPathnameRef.current !== location.pathname && location.pathname === ROUTES.STUDENT.FORM) {
+      lastPathnameRef.current = location.pathname
+      // User navigated back to this page, refresh data
+      fetchProfileData()
+    }
+  }, [location.pathname])
+
+  // Listen for page visibility changes and storage events to refresh data
+  useEffect(() => {
+    // Handle page visibility (when tab becomes visible again)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !isPageVisibleRef.current) {
+        // Tab became visible, refresh data if we're on this page
+        if (location.pathname === ROUTES.STUDENT.FORM && !checking) {
+          fetchProfileData()
+        }
+      }
+      isPageVisibleRef.current = document.visibilityState === 'visible'
+    }
+
+    // Handle storage events (profile updated in another tab)
+    const handleStorageChange = (e) => {
+      // Check if profile completion changed or user data was updated
+      if ((e.key === 'profile_completion_changed' || e.key === 'scholarflex_user') && 
+          location.pathname === ROUTES.STUDENT.FORM && !checking) {
+        // Profile was updated in another tab, refresh data
+        fetchProfileData()
       }
     }
 
-    fetchData()
-  }, [checking])
+    // Handle window focus (when switching back to this tab)
+    const handleFocus = () => {
+      if (location.pathname === ROUTES.STUDENT.FORM && !checking && !isPageVisibleRef.current) {
+        // Tab got focus, refresh data
+        fetchProfileData()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [location.pathname, checking, fetchProfileData])
 
   // Fetch user data for header
   useEffect(() => {
@@ -343,6 +424,19 @@ export default function StudentProfileFormPage() {
 
   const removeSkill = (type, index) => {
     const key = type === 'language' ? 'languages' : type === 'framework' ? 'frameworks' : type === 'tool' ? 'tools' : 'softSkills'
+    
+    // Check total skills count
+    const totalSkills = (formData.skills?.languages?.length || 0) +
+                       (formData.skills?.frameworks?.length || 0) +
+                       (formData.skills?.tools?.length || 0) +
+                       (formData.skills?.softSkills?.length || 0)
+    
+    // Prevent removing the last skill if it's the only one
+    if (totalSkills === 1) {
+      setError('At least one skill is required. Please add another skill before removing this one.')
+      return
+    }
+    
     setFormData(prev => ({
       ...prev,
       skills: {
@@ -350,6 +444,7 @@ export default function StudentProfileFormPage() {
         [key]: prev.skills[key].filter((_, i) => i !== index),
       },
     }))
+    setError('') // Clear any previous errors
   }
 
   const addProject = () => {
@@ -372,10 +467,17 @@ export default function StudentProfileFormPage() {
   }
 
   const removeProject = (index) => {
+    // Prevent removing the last project if it's the only one
+    if (formData.personalProjects.length === 1) {
+      setError('At least one project is required. Please add another project before removing this one.')
+      return
+    }
+    
     setFormData(prev => ({
       ...prev,
       personalProjects: prev.personalProjects.filter((_, i) => i !== index),
     }))
+    setError('') // Clear any previous errors
   }
 
   const addAchievement = (type) => {
@@ -420,6 +522,56 @@ export default function StudentProfileFormPage() {
     setSaving(true)
 
     try {
+      // Validate all required fields
+      const missingFields = []
+      
+      // Identity & Contact
+      if (!formData.fullName?.trim()) missingFields.push('Full Name')
+      if (!formData.phone?.trim()) missingFields.push('Phone Number')
+      if (!formData.imageUrl && !formData.imageFile) missingFields.push('Profile Image')
+      
+      // Education Details
+      if (!formData.instituteName?.trim()) missingFields.push('College Name')
+      if (!formData.courseTaken?.trim()) missingFields.push('Degree')
+      if (!formData.currentYear?.trim()) missingFields.push('Current Year')
+      if (!formData.currentSemester?.trim()) missingFields.push('Current Semester')
+      if (!formData.graduationYear?.trim()) missingFields.push('Graduation Year')
+      
+      // Internship Information
+      if (!formData.domainId) missingFields.push('Domain')
+      if (!formData.internshipStartDate) missingFields.push('Internship Start Date')
+      if (!formData.internshipEndDate) missingFields.push('Internship End Date')
+      
+      // Skills - check if at least one skill exists
+      const totalSkills = (formData.skills?.languages?.length || 0) +
+                         (formData.skills?.frameworks?.length || 0) +
+                         (formData.skills?.tools?.length || 0) +
+                         (formData.skills?.softSkills?.length || 0)
+      if (totalSkills === 0) missingFields.push('Skills (at least one skill is required)')
+      
+      // Projects - check if at least one project with title exists
+      const validProjects = formData.personalProjects.filter(p => p.projectTitle.trim())
+      if (validProjects.length === 0) missingFields.push('Projects (at least one)')
+      
+      // Documents
+      if (!formData.resumeUrl && !formData.resumeFile) missingFields.push('Resume')
+      
+      // If any required fields are missing, show error message
+      if (missingFields.length > 0) {
+        let errorMessage = ''
+        if (missingFields.length === 1) {
+          errorMessage = `The following field is required to complete your profile: ${missingFields[0]}. Please fill in this field before saving.`
+        } else {
+          const fieldsList = missingFields.join(', ')
+          errorMessage = `The following fields are required to complete your profile: ${fieldsList}. Please fill in all required fields before saving.`
+        }
+        setError(errorMessage)
+        setSaving(false)
+        // Scroll to top to show error message
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
+
       // Upload profile image if changed
       if (formData.imageFile) {
         const imageResponse = await api.studentProfile.uploadProfileImage(formData.imageFile)
@@ -463,7 +615,7 @@ export default function StudentProfileFormPage() {
         internshipStartDate: formData.internshipStartDate || null,
         internshipEndDate: formData.internshipEndDate || null,
         skills: formData.skills,
-        personalProjects: formData.personalProjects.filter(p => p.projectTitle.trim()),
+        personalProjects: validProjects,
         achievements: formData.achievements,
       }
 
@@ -476,17 +628,39 @@ export default function StudentProfileFormPage() {
         const wasCompleted = formData.profileCompleted
         const isNowCompleted = response.profileCompleted
         
+        // Always update user data in localStorage with profile completion status
+        // This ensures other tabs can detect the change and stay in sync
+        authService.updateUser({ profileCompleted: isNowCompleted })
+        
+        // Broadcast storage event to notify other tabs if status changed
+        if (isNowCompleted !== wasCompleted) {
+          // Use a custom event key to trigger storage event listener
+          const eventKey = 'profile_completion_changed'
+          const eventData = { profileCompleted: isNowCompleted, timestamp: Date.now() }
+          localStorage.setItem(eventKey, JSON.stringify(eventData))
+          
+          // Also dispatch a custom event for same-tab updates
+          window.dispatchEvent(new CustomEvent('profileCompletionChanged', { 
+            detail: { profileCompleted: isNowCompleted } 
+          }))
+          
+          // Remove the key immediately to allow future changes to trigger the event
+          setTimeout(() => localStorage.removeItem(eventKey), 100)
+        }
+        
+        // Update the profileCompleted flag in formData
+        setFormData(prev => ({ ...prev, profileCompleted: isNowCompleted }))
+        
         // Only redirect to dashboard if this was the first time completing the profile
-        // If profile was already completed, stay on the form so they can continue editing
         if (isNowCompleted && !wasCompleted) {
           // First time completion, redirect to dashboard
           setTimeout(() => {
             navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
           }, 1500)
         } else {
-          // If already completed, just show success message (no redirect)
-          // Update the profileCompleted flag in formData and switch back to view mode
-          setFormData(prev => ({ ...prev, profileCompleted: isNowCompleted }))
+          // If already completed or just saved, switch to view mode immediately
+          // Don't refresh data immediately - let the user see their saved changes
+          // Data will refresh automatically when they switch tabs or come back
           setIsEditMode(false) // Switch back to view mode after saving
         }
       }
@@ -600,9 +774,12 @@ export default function StudentProfileFormPage() {
             </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
-            <AlertCircle className="w-5 h-5" />
-            {error}
+          <div className="bg-red-50 border-2 border-red-300 text-red-800 px-4 py-4 rounded-lg mb-6 flex items-start gap-3 shadow-sm">
+            <AlertCircle className="w-6 h-6 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold mb-1">Profile Incomplete</p>
+              <p className="text-sm">{error}</p>
+            </div>
           </div>
         )}
 
@@ -619,6 +796,7 @@ export default function StudentProfileFormPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
               Identity & Contact
+            <span className="text-red-600">*</span>
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -745,7 +923,7 @@ export default function StudentProfileFormPage() {
           {/* Section 2: Education Details */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              Education Details
+              Education Details<span className="text-red-600">*</span>
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -817,7 +995,7 @@ export default function StudentProfileFormPage() {
           {/* Section 3: Internship Information */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              Internship Information
+              Internship Information<span className="text-red-600">*</span>
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -867,9 +1045,27 @@ export default function StudentProfileFormPage() {
 
           {/* Section 4: Skills */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              Skills
+            <h2 className="text-xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              Skills <span className="text-red-600">*</span>
             </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Minimum one skill is required to complete your profile. You can add skills from any category (Programming Languages, Frameworks, Tools, or Soft Skills).
+            </p>
+            
+            {/* Show warning if no skills added */}
+            {(() => {
+              const totalSkills = (formData.skills?.languages?.length || 0) +
+                                 (formData.skills?.frameworks?.length || 0) +
+                                 (formData.skills?.tools?.length || 0) +
+                                 (formData.skills?.softSkills?.length || 0)
+              return totalSkills === 0 ? (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    <span className="font-medium">No skills added yet.</span> Please add at least one skill to complete your profile.
+                  </p>
+                </div>
+              ) : null
+            })()}
             
             {['language', 'framework', 'tool', 'softSkill'].map((type) => (
               <div key={type} className="mb-4">
@@ -916,9 +1112,20 @@ export default function StudentProfileFormPage() {
 
           {/* Section 5: Projects */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              Projects
+            <h2 className="text-xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              Projects <span className="text-red-600">*</span>
             </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Minimum one project is required to complete your profile. Each project must have a title.
+            </p>
+            
+            {formData.personalProjects.length === 0 && (
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  <span className="font-medium">No projects added yet.</span> Please add at least one project to complete your profile.
+                </p>
+              </div>
+            )}
             
             {formData.personalProjects.map((project, index) => (
               <div key={index} className="mb-4 p-4 border border-gray-200 rounded-lg">
@@ -937,7 +1144,7 @@ export default function StudentProfileFormPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Project Title *</label>
                     <input
                       type="text"
-                      value={project.projectTitle}
+                      value={project.projectTitle || ''}
                       onChange={(e) => updateProject(index, 'projectTitle', e.target.value)}
                       required
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -946,7 +1153,7 @@ export default function StudentProfileFormPage() {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                     <textarea
-                      value={project.description}
+                      value={project.description || ''}
                       onChange={(e) => updateProject(index, 'description', e.target.value)}
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -956,7 +1163,7 @@ export default function StudentProfileFormPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tech Stack</label>
                     <input
                       type="text"
-                      value={project.techStack}
+                      value={project.techStack || ''}
                       onChange={(e) => updateProject(index, 'techStack', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
@@ -965,7 +1172,7 @@ export default function StudentProfileFormPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
                     <input
                       type="text"
-                      value={project.role}
+                      value={project.role || ''}
                       onChange={(e) => updateProject(index, 'role', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
@@ -974,7 +1181,7 @@ export default function StudentProfileFormPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">GitHub Link</label>
                     <input
                       type="url"
-                      value={project.githubLink}
+                      value={project.githubLink || ''}
                       onChange={(e) => updateProject(index, 'githubLink', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
@@ -983,7 +1190,7 @@ export default function StudentProfileFormPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Live Link</label>
                     <input
                       type="url"
-                      value={project.liveLink}
+                      value={project.liveLink || ''}
                       onChange={(e) => updateProject(index, 'liveLink', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
@@ -1038,7 +1245,7 @@ export default function StudentProfileFormPage() {
                         <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
                         <input
                           type="text"
-                          value={achievement.title}
+                          value={achievement.title || ''}
                           onChange={(e) => updateAchievement(type, index, 'title', e.target.value)}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         />
@@ -1047,7 +1254,7 @@ export default function StudentProfileFormPage() {
                         <label className="block text-xs font-medium text-gray-700 mb-1">Issuer</label>
                         <input
                           type="text"
-                          value={achievement.issuer}
+                          value={achievement.issuer || ''}
                           onChange={(e) => updateAchievement(type, index, 'issuer', e.target.value)}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         />
@@ -1055,7 +1262,7 @@ export default function StudentProfileFormPage() {
                       <div className="md:col-span-2">
                         <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
                         <textarea
-                          value={achievement.description}
+                          value={achievement.description || ''}
                           onChange={(e) => updateAchievement(type, index, 'description', e.target.value)}
                           rows={2}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -1065,7 +1272,7 @@ export default function StudentProfileFormPage() {
                         <label className="block text-xs font-medium text-gray-700 mb-1">Date</label>
                         <input
                           type="date"
-                          value={achievement.date}
+                          value={achievement.date || ''}
                           onChange={(e) => updateAchievement(type, index, 'date', e.target.value)}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         />
@@ -1074,7 +1281,7 @@ export default function StudentProfileFormPage() {
                         <label className="block text-xs font-medium text-gray-700 mb-1">Link</label>
                         <input
                           type="url"
-                          value={achievement.link}
+                          value={achievement.link || ''}
                           onChange={(e) => updateAchievement(type, index, 'link', e.target.value)}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         />
@@ -1089,7 +1296,7 @@ export default function StudentProfileFormPage() {
           {/* Section 7: Documents */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              Documents
+              Documents<span className="text-red-600">*</span>
             </h2>
             
             <div>

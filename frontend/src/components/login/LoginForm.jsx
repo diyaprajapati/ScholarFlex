@@ -61,52 +61,85 @@ export default function LoginForm() {
       try {
         const response = await api.auth.verifyOTP(email, otp)
         
-        if (response.success && response.token) {
-          // Store JWT token and user data in localStorage
+        // Debug: Log response to help diagnose issues
+        console.log('Login response:', { 
+          success: response.success, 
+          hasToken: !!response.token, 
+          hasUser: !!response.user,
+          userRole: response.user?.role 
+        })
+        
+        // Check if response has token
+        if (!response.success) {
+          throw new Error(response.message || 'Login failed')
+        }
+        
+        if (!response.token) {
+          console.error('No token received from server:', response)
+          throw new Error('No authentication token received. Please try again.')
+        }
+        
+        // Store JWT token and user data in localStorage
+        try {
           authService.setToken(response.token, response.user)
           
-          // Clear browser history stack to prevent back navigation
-          authService.clearHistoryStack()
-          
-          // Get user from stored data
-          const user = response.user || authService.getUser()
-          const role = user?.role
-          
-          // Navigate based on role
-          if (role === 'STUDENT') {
-            // Check if student is selected
-            if (user?.is_selected) {
-              // Selected students - check profile completion from database
-              try {
-                const response = await api.studentProfile.checkCompletion()
-                if (response.success) {
-                  if (response.isCompleted) {
-                    // Profile completed, redirect to dashboard
-                    navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
-                  } else {
-                    // Profile not completed, redirect to form page
-                    navigate(ROUTES.STUDENT.FORM, { replace: true })
-                  }
+          // Verify token was stored
+          const storedToken = authService.getToken()
+          if (!storedToken || storedToken !== response.token) {
+            console.error('Failed to store token in localStorage')
+            throw new Error('Failed to store authentication token. Please check your browser settings.')
+          }
+        } catch (storageError) {
+          console.error('Error storing token:', storageError)
+          throw new Error('Failed to store authentication token. Please check your browser settings.')
+        }
+        
+        // Clear browser history stack to prevent back navigation
+        authService.clearHistoryStack()
+        
+        // Get user from stored data
+        const user = response.user || authService.getUser()
+        const role = user?.role
+        
+        if (!role) {
+          console.error('No role found in user data:', user)
+          throw new Error('Invalid user data received. Please try again.')
+        }
+        
+        // Navigate based on role
+        if (role === 'STUDENT') {
+          // Check if student is selected
+          if (user?.is_selected) {
+            // Selected students - check profile completion from database
+            try {
+              const response = await api.studentProfile.checkCompletion()
+              if (response.success) {
+                if (response.isCompleted) {
+                  // Profile completed, redirect to dashboard
+                  navigate(ROUTES.STUDENT.DASHBOARD, { replace: true })
                 } else {
-                  // Error checking, redirect to form to be safe
+                  // Profile not completed, redirect to form page
                   navigate(ROUTES.STUDENT.FORM, { replace: true })
                 }
-              } catch (error) {
-                console.error('Error checking profile completion:', error)
+              } else {
                 // Error checking, redirect to form to be safe
                 navigate(ROUTES.STUDENT.FORM, { replace: true })
               }
-            } else {
-              // Non-selected students go to test instructions page
-              navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
+            } catch (error) {
+              console.error('Error checking profile completion:', error)
+              // Error checking, redirect to form to be safe
+              navigate(ROUTES.STUDENT.FORM, { replace: true })
             }
-          } else if (role === 'ADMIN') {
-            // Admin users can only access Evaluations, Student Analytics, and Open Student Analytics
-            navigate(ROUTES.EVALUATION_MANAGEMENT, { replace: true })
           } else {
-            // Super Admin goes to dashboard
-            navigate(ROUTES.DASHBOARD, { replace: true })
+            // Non-selected students go to test instructions page
+            navigate(ROUTES.STUDENT.INSTRUCTIONS, { replace: true })
           }
+        } else if (role === 'ADMIN') {
+          // Admin users can only access Evaluations, Student Analytics, and Open Student Analytics
+          navigate(ROUTES.EVALUATION_MANAGEMENT, { replace: true })
+        } else {
+          // Super Admin goes to dashboard
+          navigate(ROUTES.DASHBOARD, { replace: true })
         }
       } catch (error) {
         setOtpError(error.message || 'Invalid OTP. Please try again.')

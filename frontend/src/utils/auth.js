@@ -41,9 +41,40 @@ const isTokenExpired = (token) => {
 export const authService = {
   // Store JWT token and user data
   setToken: (token, userData = null) => {
-    localStorage.setItem(TOKEN_KEY, token)
-    if (userData) {
-      localStorage.setItem(USER_KEY, JSON.stringify(userData))
+    try {
+      if (!token) {
+        console.error('setToken called with empty token')
+        throw new Error('Token is required')
+      }
+      
+      localStorage.setItem(TOKEN_KEY, token)
+      
+      // Verify token was stored
+      const storedToken = localStorage.getItem(TOKEN_KEY)
+      if (storedToken !== token) {
+        console.error('Token storage verification failed', { expected: token, stored: storedToken })
+        throw new Error('Failed to verify token storage')
+      }
+      
+      if (userData) {
+        localStorage.setItem(USER_KEY, JSON.stringify(userData))
+        
+        // Verify user data was stored
+        const storedUser = localStorage.getItem(USER_KEY)
+        if (!storedUser) {
+          console.error('User data storage verification failed')
+          throw new Error('Failed to verify user data storage')
+        }
+      }
+      
+      console.log('Token and user data stored successfully')
+    } catch (error) {
+      console.error('Error storing token/user data:', error)
+      // Check if localStorage is available
+      if (typeof Storage === 'undefined') {
+        throw new Error('localStorage is not available in this browser')
+      }
+      throw error
     }
   },
 
