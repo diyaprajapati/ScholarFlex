@@ -891,28 +891,33 @@ export default function StudentProfileFormPage() {
                     )}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                      />
-                      <span className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
-                        <Upload className="w-4 h-4" />
-                        {formData.imageUrl ? 'Change' : 'Select'} Image
-                      </span>
-                    </label>
+                    <div className="flex flex-col gap-1">
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                        <span className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 w-fit">
+                          <Upload className="w-4 h-4" />
+                          {formData.imageUrl ? 'Change' : 'Select'} Image
+                        </span>
+                      </label>
+                      <span className="text-xs text-gray-500 mt-1">Maximum size is 5MB</span>
+                    </div>
                     {formData.imageFile && (
-                      <button
-                        type="button"
-                        onClick={handleImageUpload}
-                        disabled={uploadingImage}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                      >
-                        <Upload className="w-4 h-4" />
-                        {uploadingImage ? 'Uploading...' : 'Upload Image'}
-                      </button>
+                      <div className="flex flex-col gap-1">
+                        <button
+                          type="button"
+                          onClick={handleImageUpload}
+                          disabled={uploadingImage}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-fit"
+                        >
+                          <Upload className="w-4 h-4" />
+                          {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1341,28 +1346,33 @@ export default function StudentProfileFormPage() {
                   </div>
                 )}
                 <div className="flex flex-col gap-2">
-                  <label className="cursor-pointer">
-                    <input
-                      type="file"
-                      accept="application/pdf"
-                      onChange={handleResumeChange}
-                      className="hidden"
-                    />
-                    <span className="px-4 py-2 bg-green-600 w-fit text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
-                      <Upload className="w-4 h-4" />
-                      {formData.resumeUrl ? 'Change' : 'Select'} Resume
-                    </span>
-                  </label>
+                  <div className="flex flex-col gap-1">
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handleResumeChange}
+                        className="hidden"
+                      />
+                      <span className="px-4 py-2 bg-green-600 w-fit text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+                        <Upload className="w-4 h-4" />
+                        {formData.resumeUrl ? 'Change' : 'Select'} Resume
+                      </span>
+                    </label>
+                    <span className="text-xs text-gray-500 mt-1">Maximum size is 10MB</span>
+                  </div>
                   {formData.resumeFile && (
-                    <button
-                      type="button"
-                      onClick={handleResumeUpload}
-                      disabled={uploadingResume}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                    >
-                      <Upload className="w-4 h-4" />
-                      {uploadingResume ? 'Uploading...' : 'Upload Resume'}
-                    </button>
+                    <div className="flex flex-col gap-1">
+                      <button
+                        type="button"
+                        onClick={handleResumeUpload}
+                        disabled={uploadingResume}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-fit"
+                      >
+                        <Upload className="w-4 h-4" />
+                        {uploadingResume ? 'Uploading...' : 'Upload Resume'}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
