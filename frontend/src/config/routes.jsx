@@ -202,7 +202,7 @@ export default function AppRoutes() {
       <Route
         path={ROUTES.PROJECT_MANAGEMENT}
         element={
-          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
             <ProjectManagementPage />
           </ProtectedRoute>
         }
