@@ -244,7 +244,7 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
           try {
             const eventData = JSON.parse(e.newValue)
             if (eventData.profileCompleted !== undefined) {
-              console.log('Profile completion changed via storage event:', eventData.profileCompleted)
+              // console.log('Profile completion changed via storage event:', eventData.profileCompleted)
               setIsProfileCompleted(eventData.profileCompleted)
               setProfileCompletionChecked(true)
               // Update user data in localStorage
@@ -260,7 +260,7 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
           try {
             const updatedUser = JSON.parse(e.newValue)
             if (updatedUser.profileCompleted !== undefined) {
-              console.log('Profile completion changed via user data update:', updatedUser.profileCompleted)
+              // console.log('Profile completion changed via user data update:', updatedUser.profileCompleted)
               setIsProfileCompleted(updatedUser.profileCompleted)
               setProfileCompletionChecked(true)
             }
@@ -274,7 +274,7 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
       const handleCustomEvent = () => {
         const user = authService.getUser()
         if (user?.profileCompleted !== undefined) {
-          console.log('Profile completion changed via custom event:', user.profileCompleted)
+          // console.log('Profile completion changed via custom event:', user.profileCompleted)
           setIsProfileCompleted(user.profileCompleted)
           setProfileCompletionChecked(true)
         }
@@ -299,11 +299,11 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
           const currentState = isProfileCompleted
           const localStorageState = user.profileCompleted
           if (currentState !== localStorageState) {
-            console.log('Profile completion status changed in localStorage:', {
-              from: currentState,
-              to: localStorageState,
-              pathname: location.pathname
-            })
+            // console.log('Profile completion status changed in localStorage:', {
+            //   from: currentState,
+            //   to: localStorageState,
+            //   pathname: location.pathname
+            // })
             setIsProfileCompleted(localStorageState)
             setProfileCompletionChecked(true)
           }
@@ -384,13 +384,13 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
       // Wait for profile check to complete (but we've initialized from localStorage, so this should be quick)
       if (!profileCompletionChecked) {
         // Debug: Log why we're showing loading
-        console.log('Profile completion not checked yet', {
-          isAuthenticated,
-          userRole,
-          isSelected: user?.is_selected,
-          profileCompleted: user?.profileCompleted,
-          stateProfileCompleted: isProfileCompleted
-        })
+        // console.log('Profile completion not checked yet', {
+        //   isAuthenticated,
+        //   userRole,
+        //   isSelected: user?.is_selected,
+        //   profileCompleted: user?.profileCompleted,
+        //   stateProfileCompleted: isProfileCompleted
+        // })
         // Show loading indicator instead of blank screen
         return (
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -403,17 +403,17 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
       }
       
       // Debug: Log current state
-      console.log('Profile completion check:', {
-        pathname: location.pathname,
-        isProfileCompleted,
-        cachedProfileCompleted: user?.profileCompleted,
-        profileCompletionChecked
-      })
+      // console.log('Profile completion check:', {
+      //   pathname: location.pathname,
+      //   isProfileCompleted,
+      //   cachedProfileCompleted: user?.profileCompleted,
+      //   profileCompletionChecked
+      // })
       
       // If not on form page and profile is not completed, redirect to form page
       // (But allow access to form even after completion for viewing/editing)
       if (location.pathname !== ROUTES.STUDENT.FORM && !isProfileCompleted) {
-        console.log('Redirecting to form - profile not completed')
+        // console.log('Redirecting to form - profile not completed')
         // Always navigate - don't use hasNavigated flag to prevent loops
         return <Navigate to={ROUTES.STUDENT.FORM} replace />
       }
@@ -422,7 +422,7 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
       // Note: We no longer redirect away from form page if profile is completed
       // Students can now access the form to view/edit their profile anytime
       if (isProfileCompleted) {
-        console.log('Profile completed - allowing access to:', location.pathname)
+        // console.log('Profile completed - allowing access to:', location.pathname)
         // Profile is completed, user can access any student route
         // No redirect needed - they can navigate freely
       }

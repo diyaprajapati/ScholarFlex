@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.1.17",
+    "firebase": "^12.8.0",
     "framer-motion": "^12.25.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.556.0",
@@ -19,6 +20,7 @@
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.66.0",
     "react-router-dom": "^7.9.5",
+    "recharts": "^3.7.0",
     "tailwindcss": "^4.1.17",
     "xlsx": "^0.18.5",
     "zod": "^4.1.12"

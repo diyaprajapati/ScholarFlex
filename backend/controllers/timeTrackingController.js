@@ -991,6 +991,226 @@ const getDayWiseStudentsWorkingHours = async (req, res) => {
   }
 };
 
+/**
+ * Get timer logs for all students (Admin only)
+ * GET /api/admin/time-tracking/logs
+ */
+const getTimerLogs = async (req, res) => {
+  try {
+    const { studentId, startDate, endDate, status, page = 1, limit = 50 } = req.query;
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Build where clause
+    const whereClause = {};
+    
+    if (studentId) {
+      whereClause.studentId = parseInt(studentId);
+    }
+    
+    if (startDate || endDate) {
+      whereClause.startTime = {};
+      if (startDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        whereClause.startTime.gte = start;
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        whereClause.startTime.lte = end;
+      }
+    } else {
+      // Default to last 30 days if no date range
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+      const start = new Date();
+      start.setDate(start.getDate() - 30);
+      start.setHours(0, 0, 0, 0);
+      whereClause.startTime = {
+        gte: start,
+        lte: end
+      };
+    }
+    
+    if (status) {
+      whereClause.status = status;
+    }
+
+    // Get total count
+    const total = await prisma.timeTrackingSession.count({
+      where: whereClause
+    });
+
+    // Get sessions with student info
+    const sessions = await prisma.timeTrackingSession.findMany({
+      where: whereClause,
+      include: {
+        student: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            domain: {
+              select: {
+                domainName: true
+              }
+            }
+          }
+        },
+        attendanceQuestions: {
+          orderBy: {
+            askedAt: 'asc'
+          }
+        }
+      },
+      orderBy: {
+        startTime: 'desc'
+      },
+      skip,
+      take: limitNum
+    });
+
+    // Transform sessions into event logs
+    const logs = sessions.map(session => {
+      const events = [];
+      
+      // START event
+      events.push({
+        type: 'START',
+        timestamp: session.startTime,
+        sessionId: session.id,
+        studentId: session.studentId,
+        studentName: session.student.fullName,
+        studentEmail: session.student.email,
+        domainName: session.student.domain?.domainName || null
+      });
+
+      // Track pause/resume cycles
+      if (session.pauseCount > 0) {
+        // Show pause event if currently paused or if there's a lastPausedAt
+        if (session.status === 'PAUSED' && session.lastPausedAt) {
+          events.push({
+            type: 'PAUSE',
+            timestamp: session.lastPausedAt,
+            sessionId: session.id,
+            studentId: session.studentId,
+            studentName: session.student.fullName,
+            studentEmail: session.student.email,
+            domainName: session.student.domain?.domainName || null,
+            pauseCount: session.pauseCount,
+            note: `Pause #${session.pauseCount}`
+          });
+        }
+        
+        // If currently ACTIVE but has pause history, show resume event
+        if (session.status === 'ACTIVE' && session.lastPausedAt && session.updatedAt > session.lastPausedAt) {
+          events.push({
+            type: 'RESUME',
+            timestamp: session.updatedAt,
+            sessionId: session.id,
+            studentId: session.studentId,
+            studentName: session.student.fullName,
+            studentEmail: session.student.email,
+            domainName: session.student.domain?.domainName || null,
+            note: `Resumed after ${session.pauseCount} pause(s)`
+          });
+        }
+        
+        // If status is PAUSED but no lastPausedAt (edge case)
+        if (session.status === 'PAUSED' && !session.lastPausedAt) {
+          events.push({
+            type: 'PAUSE',
+            timestamp: session.updatedAt,
+            sessionId: session.id,
+            studentId: session.studentId,
+            studentName: session.student.fullName,
+            studentEmail: session.student.email,
+            domainName: session.student.domain?.domainName || null,
+            pauseCount: session.pauseCount
+          });
+        }
+      }
+
+      // STOP event (if session is completed)
+      if (session.status === 'COMPLETED' && session.finishTime) {
+        events.push({
+          type: 'STOP',
+          timestamp: session.finishTime,
+          sessionId: session.id,
+          studentId: session.studentId,
+          studentName: session.student.fullName,
+          studentEmail: session.student.email,
+          domainName: session.student.domain?.domainName || null,
+          totalMinutes: session.totalMinutes,
+          pausedMinutes: session.pausedMinutes,
+          pauseCount: session.pauseCount
+        });
+      }
+
+      // Current status indicator if session is still active/paused
+      if (session.status === 'ACTIVE' && session.pauseCount === 0) {
+        events.push({
+          type: 'ACTIVE',
+          timestamp: session.updatedAt,
+          sessionId: session.id,
+          studentId: session.studentId,
+          studentName: session.student.fullName,
+          studentEmail: session.student.email,
+          domainName: session.student.domain?.domainName || null,
+          isActive: true
+        });
+      } else if (session.status === 'PAUSED' && !session.lastPausedAt) {
+        events.push({
+          type: 'PAUSED',
+          timestamp: session.updatedAt,
+          sessionId: session.id,
+          studentId: session.studentId,
+          studentName: session.student.fullName,
+          studentEmail: session.student.email,
+          domainName: session.student.domain?.domainName || null,
+          isPaused: true
+        });
+      }
+
+      return {
+        sessionId: session.id,
+        studentId: session.studentId,
+        studentName: session.student.fullName,
+        studentEmail: session.student.email,
+        domainName: session.student.domain?.domainName || null,
+        startTime: session.startTime,
+        finishTime: session.finishTime,
+        status: session.status,
+        totalMinutes: session.totalMinutes,
+        pausedMinutes: session.pausedMinutes,
+        pauseCount: session.pauseCount,
+        lastPausedAt: session.lastPausedAt,
+        events: events.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      logs,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum)
+      }
+    });
+  } catch (error) {
+    console.error('Error getting timer logs:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   startTimeTracking,
   finishTimeTracking,
@@ -1002,5 +1222,6 @@ module.exports = {
   getTodayWorkingHours,
   getAllStudentsWorkingHours,
   getDayWiseStudentsWorkingHours,
+  getTimerLogs,
 };
 

@@ -21,7 +21,8 @@ adminRouter.use(authorize('ADMIN', 'SUPER_ADMIN'));
 const emailValidation = body('email')
   .isEmail()
   .withMessage('Please provide a valid email address')
-  .normalizeEmail();
+  .normalizeEmail({ gmail_remove_dots: false })
+  .trim();
 
 const fullNameValidation = body('full_name')
   .trim()
@@ -70,7 +71,8 @@ superAdminRouter.put(
       .optional()
       .isEmail()
       .withMessage('Please provide a valid email address')
-      .normalizeEmail(),
+      .normalizeEmail({ gmail_remove_dots: false })
+      .trim(),
     body('full_name')
       .optional()
       .trim()
@@ -395,6 +397,8 @@ adminRouter.get('/internship/status', internshipStatusController.getAllInternshi
 
 // Import open student analytics controller
 const openStudentAnalyticsController = require('../controllers/openStudentAnalyticsController');
+// Import Firebase analytics controller
+const firebaseAnalyticsController = require('../controllers/firebaseAnalyticsController');
 
 /**
  * @route   GET /api/admin/analytics/open-students/aggregate
@@ -418,6 +422,12 @@ adminRouter.get('/analytics/open-students/stats', openStudentAnalyticsController
  * @access  Private (Admin, Super Admin)
  */
 adminRouter.get('/analytics/open-students/individual', openStudentAnalyticsController.getIndividualAnalytics);
+
+/**
+ * @route   GET /api/admin/analytics/firebase
+ * @desc    Get Firebase Analytics summary data (Admin/Super Admin only)
+ */
+adminRouter.get('/analytics/firebase', firebaseAnalyticsController.getFirebaseAnalytics);
 
 // Mount routers
 // IMPORTANT: adminRouter (with specific routes) must be mounted BEFORE superAdminRouter (with /:id catch-all)

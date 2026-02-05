@@ -23,6 +23,8 @@ export { default as PlaylistManagementPage } from './admin/PlaylistManagementPag
 export { default as AddVideosToPlaylistPage } from './admin/AddVideosToPlaylistPage'
 export { default as StudentAnalyticsPage } from './admin/StudentAnalyticsPage'
 export { default as OpenStudentAnalyticsPage } from './admin/OpenStudentAnalyticsPage'
+export { default as FirebaseAnalyticsPage } from './admin/FirebaseAnalyticsPage'
+export { default as TimerLogsPage } from './admin/TimerLogsPage'
 export { default as RetestManagementPage } from './admin/RetestManagementPage'
 export { default as InternshipStatusPage } from './admin/InternshipStatusPage'
 export { default as ProjectManagementPage } from './admin/ProjectManagementPage'

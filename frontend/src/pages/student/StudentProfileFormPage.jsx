@@ -24,6 +24,7 @@ export default function StudentProfileFormPage() {
   const [user, setUser] = useState(null)
   const lastPathnameRef = useRef(location.pathname)
   const isPageVisibleRef = useRef(true)
+  const isFetchingRef = useRef(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -128,9 +129,10 @@ export default function StudentProfileFormPage() {
 
   // Function to fetch profile data
   const fetchProfileData = useCallback(async (preserveEditMode = false) => {
-    if (checking) return // Don't fetch data until access check is complete
+    if (checking || isFetchingRef.current) return // Don't fetch data until access check is complete or if already fetching
 
     try {
+      isFetchingRef.current = true
       setLoading(true)
       
       // Fetch domains
@@ -215,62 +217,47 @@ export default function StudentProfileFormPage() {
       setError(err.message || 'Failed to load profile')
     } finally {
       setLoading(false)
+      isFetchingRef.current = false
     }
   }, [checking])
 
   // Fetch data when component mounts or when checking completes
   useEffect(() => {
-    fetchProfileData()
-  }, [checking])
+    if (!checking) {
+      fetchProfileData()
+    }
+  }, [checking, fetchProfileData])
 
   // Refresh data when pathname changes (user navigates back to this page)
   useEffect(() => {
     if (lastPathnameRef.current !== location.pathname && location.pathname === ROUTES.STUDENT.FORM) {
       lastPathnameRef.current = location.pathname
-      // User navigated back to this page, refresh data
-      fetchProfileData()
-    }
-  }, [location.pathname])
-
-  // Listen for page visibility changes and storage events to refresh data
-  useEffect(() => {
-    // Handle page visibility (when tab becomes visible again)
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && !isPageVisibleRef.current) {
-        // Tab became visible, refresh data if we're on this page
-        if (location.pathname === ROUTES.STUDENT.FORM && !checking) {
-          fetchProfileData()
-        }
+      // User navigated back to this page, refresh data only if not checking
+      if (!checking) {
+        fetchProfileData()
       }
-      isPageVisibleRef.current = document.visibilityState === 'visible'
     }
+  }, [location.pathname, checking, fetchProfileData])
 
+  // Listen ONLY for storage events (profile updated in another tab) - NOT for tab switches
+  useEffect(() => {
     // Handle storage events (profile updated in another tab)
+    // This is the ONLY event that should trigger a refresh
     const handleStorageChange = (e) => {
-      // Check if profile completion changed or user data was updated
+      // Only refresh if profile was actually updated in another tab
       if ((e.key === 'profile_completion_changed' || e.key === 'scholarflex_user') && 
-          location.pathname === ROUTES.STUDENT.FORM && !checking) {
+          location.pathname === ROUTES.STUDENT.FORM && 
+          !checking && 
+          !isFetchingRef.current) {
         // Profile was updated in another tab, refresh data
         fetchProfileData()
       }
     }
 
-    // Handle window focus (when switching back to this tab)
-    const handleFocus = () => {
-      if (location.pathname === ROUTES.STUDENT.FORM && !checking && !isPageVisibleRef.current) {
-        // Tab got focus, refresh data
-        fetchProfileData()
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('focus', handleFocus)
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('focus', handleFocus)
     }
   }, [location.pathname, checking, fetchProfileData])
 
@@ -405,7 +392,11 @@ export default function StudentProfileFormPage() {
     }
   }
 
-  const addSkill = (type) => {
+  const addSkill = (e, type) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     const inputValue = skillInputs[type]?.trim()
     if (!inputValue) return
 
@@ -447,7 +438,11 @@ export default function StudentProfileFormPage() {
     setError('') // Clear any previous errors
   }
 
-  const addProject = () => {
+  const addProject = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setFormData(prev => ({
       ...prev,
       personalProjects: [
@@ -480,7 +475,11 @@ export default function StudentProfileFormPage() {
     setError('') // Clear any previous errors
   }
 
-  const addAchievement = (type) => {
+  const addAchievement = (e, type) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setFormData(prev => ({
       ...prev,
       achievements: {
@@ -1082,13 +1081,18 @@ export default function StudentProfileFormPage() {
                     type="text"
                     value={skillInputs[type]}
                     onChange={(e) => setSkillInputs(prev => ({ ...prev, [type]: e.target.value }))}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill(type))}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        addSkill(e, type)
+                      }
+                    }}
                     placeholder={`Add ${type === 'softSkill' ? 'soft skill' : type}`}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                   <button
                     type="button"
-                    onClick={() => addSkill(type)}
+                    onClick={(e) => addSkill(e, type)}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                   >
                     <Plus className="w-4 h-4" />
@@ -1206,7 +1210,7 @@ export default function StudentProfileFormPage() {
             
             <button
               type="button"
-              onClick={addProject}
+              onClick={(e) => addProject(e)}
               className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
@@ -1226,7 +1230,7 @@ export default function StudentProfileFormPage() {
                   <h3 className="font-medium text-gray-900 capitalize">{type}</h3>
                   <button
                     type="button"
-                    onClick={() => addAchievement(type)}
+                    onClick={(e) => addAchievement(e, type)}
                     className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1 text-sm"
                   >
                     <Plus className="w-4 h-4" />

@@ -7,6 +7,8 @@ import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
 import OTPInput from './OTPInput'
 import api from '../../services/api'
+import { logEvent } from 'firebase/analytics'
+import { analytics } from '../../firebase'
 
 const emailSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
@@ -100,6 +102,23 @@ export default function LoginForm() {
         // Get user from stored data
         const user = response.user || authService.getUser()
         const role = user?.role
+
+        // Track login event in Firebase Analytics
+        if (analytics && user) {
+          try {
+            logEvent(analytics, 'login', {
+              user_id: `user_${user.id}`,
+              user_role: role || 'UNKNOWN',
+              login_method: 'otp',
+              timestamp: new Date().toISOString()
+            })
+            if (import.meta.env.DEV) {
+              console.log('Login event logged in Analytics')
+            }
+          } catch (error) {
+            console.error('Error logging login event:', error)
+          }
+        }
         
         if (!role) {
           console.error('No role found in user data:', user)

@@ -21,5 +21,12 @@ router.get('/students', timeTrackingController.getAllStudentsWorkingHours);
  */
 router.get('/students/day-wise', timeTrackingController.getDayWiseStudentsWorkingHours);
 
+/**
+ * @route   GET /api/admin/time-tracking/logs
+ * @desc    Get timer logs (start, pause, resume, stop events) for all students
+ * @access  Private (Admin)
+ */
+router.get('/logs', timeTrackingController.getTimerLogs);
+
 module.exports = router;
 

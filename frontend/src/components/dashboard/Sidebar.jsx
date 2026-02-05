@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ROUTES } from '../../config/paths'
-import { X, ChevronDown, ChevronRight, LayoutDashboard, Users, FileText, Music, FolderKanban, ClipboardCheck, BarChart3, Settings, Shield, Lock } from 'lucide-react'
+import { X, ChevronDown, ChevronRight, LayoutDashboard, Users, FileText, Music, FolderKanban, ClipboardCheck, BarChart3, Settings, Shield, Lock, Clock } from 'lucide-react'
 import { useSidebar } from '../../contexts/SidebarContext'
 
 // Navigation menu configuration
@@ -11,6 +11,8 @@ const ADMIN_ALLOWED_ROUTES = [
   ROUTES.EVALUATION_MANAGEMENT,
   ROUTES.STUDENT_ANALYTICS,
   ROUTES.OPEN_STUDENT_ANALYTICS,
+  ROUTES.FIREBASE_ANALYTICS,
+  ROUTES.TIMER_LOGS,
 ]
 
 const NAVIGATION_MENU = {
@@ -52,8 +54,10 @@ const NAVIGATION_MENU = {
     {
       id: 'analytics',
       label: 'Analytics',
-      routes: [ROUTES.STUDENT_ANALYTICS, ROUTES.OPEN_STUDENT_ANALYTICS],
+      routes: [ROUTES.STUDENT_ANALYTICS, ROUTES.OPEN_STUDENT_ANALYTICS, ROUTES.FIREBASE_ANALYTICS, ROUTES.TIMER_LOGS],
       items: [
+        { label: 'User Analytics', path: ROUTES.FIREBASE_ANALYTICS, icon: BarChart3 },
+        { label: 'Timer Logs', path: ROUTES.TIMER_LOGS, icon: Clock },
         { label: 'Student Analytics', path: ROUTES.STUDENT_ANALYTICS, icon: BarChart3 },
         { label: 'Open Student Analytics', path: ROUTES.OPEN_STUDENT_ANALYTICS, icon: BarChart3 },
       ],

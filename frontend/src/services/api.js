@@ -526,6 +526,13 @@ export const api = {
         method: 'GET',
       });
     },
+    
+    // Firebase Analytics
+    getFirebaseAnalytics: async () => {
+      return apiRequest('/admin/analytics/firebase', {
+        method: 'GET',
+      });
+    },
     create: async (data) => {
       return apiRequest('/admin/create', {
         method: 'POST',
@@ -1389,6 +1396,25 @@ export const api = {
         ? `/admin/time-tracking/students/day-wise?${queryString}`
         : '/admin/time-tracking/students/day-wise';
 
+      return apiRequest(endpoint, {
+        method: 'GET',
+      });
+    },
+    
+    getTimerLogs: async (params = {}) => {
+      const queryParams = new URLSearchParams();
+      if (params.studentId) queryParams.append('studentId', params.studentId);
+      if (params.startDate) queryParams.append('startDate', params.startDate);
+      if (params.endDate) queryParams.append('endDate', params.endDate);
+      if (params.status) queryParams.append('status', params.status);
+      if (params.page) queryParams.append('page', params.page);
+      if (params.limit) queryParams.append('limit', params.limit);
+      
+      const queryString = queryParams.toString();
+      const endpoint = queryString
+        ? `/admin/time-tracking/logs?${queryString}`
+        : '/admin/time-tracking/logs';
+      
       return apiRequest(endpoint, {
         method: 'GET',
       });

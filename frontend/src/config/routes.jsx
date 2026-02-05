@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute, LandingPageGuard } from '../components'
-import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, OpenStudentAnalyticsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
+import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, OpenStudentAnalyticsPage, FirebaseAnalyticsPage, TimerLogsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
 import OpenStudentRegistration from '../components/student/OpenStudentRegistration'
 import { ROUTES } from './paths'
 
@@ -175,6 +175,26 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
             <OpenStudentAnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Firebase Analytics Route - Admin and Super Admin */}
+      <Route
+        path={ROUTES.FIREBASE_ANALYTICS}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <FirebaseAnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Timer Logs Route - Admin and Super Admin */}
+      <Route
+        path={ROUTES.TIMER_LOGS}
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+            <TimerLogsPage />
           </ProtectedRoute>
         }
       />

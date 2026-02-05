@@ -16,6 +16,8 @@ export const ROUTES = {
   FEEDBACK_MANAGEMENT: '/feedback-management',
   STUDENT_ANALYTICS: '/student-analytics',
   OPEN_STUDENT_ANALYTICS: '/open-student-analytics',
+  FIREBASE_ANALYTICS: '/firebase-analytics',
+  TIMER_LOGS: '/timer-logs',
   VIDEO_ANALYTICS: '/video-analytics',
   RETEST_MANAGEMENT: '/retest-management',
   INTERNSHIP_STATUS: '/internship-status',

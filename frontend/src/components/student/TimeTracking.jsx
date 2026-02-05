@@ -6,6 +6,9 @@ import {
   requestNotificationPermission,
   showBackgroundNotification
 } from '../../utils/notificationService';
+import { logEvent } from 'firebase/analytics';
+import { analytics } from '../../firebase';
+import { authService } from '../../utils/auth';
 
 const TimeTracking = () => {
   const [session, setSession] = useState(null);
@@ -330,6 +333,28 @@ const TimeTracking = () => {
           const currentElapsed = Math.floor((now - startTime) / 1000);
           pausedElapsedTimeRef.current = currentElapsed;
           pauseStartTimeRef.current = now;
+
+          // Track automatic pause due to question
+          if (analytics) {
+            try {
+              const user = authService.getUser();
+              logEvent(analytics, 'timer_pause_auto', {
+                user_id: user ? `user_${user.id}` : 'anonymous',
+                session_id: sessionRef.current.id,
+                question_id: questionData.id,
+                elapsed_time_seconds: currentElapsed,
+                elapsed_time_minutes: Math.round((currentElapsed / 60) * 100) / 100,
+                pause_reason: 'attendance_question',
+                pause_time: now.toISOString(),
+                timestamp: now.toISOString()
+              });
+              if (import.meta.env.DEV) {
+                // console.log('Timer auto-paused for question - Analytics logged, elapsed:', currentElapsed, 'seconds');
+              }
+            } catch (error) {
+              console.error('Error logging auto pause:', error);
+            }
+          }
         }
 
         setCurrentQuestion(questionData);
@@ -342,7 +367,7 @@ const TimeTracking = () => {
 
         // Show background notification with generic message (works even when tab/window is closed)
         // Pass callback to show modal when notification is clicked
-        console.log('Attempting to show notification...');
+        // console.log('Attempting to show notification...');
         try {
           const notificationShown = await showBackgroundNotification(() => {
             // This callback will be called when notification is clicked
@@ -350,21 +375,21 @@ const TimeTracking = () => {
             setCurrentQuestion(questionData);
             window.focus();
           });
-          console.log('Notification result:', notificationShown);
+          // console.log('Notification result:', notificationShown);
 
           // If notification failed, try again after ensuring Service Worker is ready
           if (!notificationShown && 'serviceWorker' in navigator) {
-            console.log('Retrying notification after Service Worker ready...');
+            // console.log('Retrying notification after Service Worker ready...');
             try {
               const registration = await navigator.serviceWorker.ready;
-              console.log('Service Worker ready for retry:', registration);
+              // console.log('Service Worker ready for retry:', registration);
               setTimeout(async () => {
                 const retryResult = await showBackgroundNotification(() => {
                   setShowQuestion(true);
                   setCurrentQuestion(questionData);
                   window.focus();
                 });
-                console.log('Retry notification result:', retryResult);
+                // console.log('Retry notification result:', retryResult);
               }, 1000);
             } catch (swError) {
               console.error('Service Worker ready error:', swError);
@@ -400,7 +425,7 @@ const TimeTracking = () => {
       if ('serviceWorker' in navigator) {
         try {
           await registerServiceWorker();
-          console.log('Service Worker registered for notifications');
+          // console.log('Service Worker registered for notifications');
         } catch (error) {
           console.error('Service Worker registration error:', error);
         }
@@ -417,7 +442,7 @@ const TimeTracking = () => {
         // Continue anyway - they can still track time, but notifications won't work
         console.warn('User declined notification permission');
       } else {
-        console.log('Notification permission granted');
+        // console.log('Notification permission granted');
       }
 
       const response = await api.timeTracking.start();
@@ -433,6 +458,24 @@ const TimeTracking = () => {
 
         setNextQuestionTime(10);
         startTimeTracking();
+
+        // Track timer start event
+        if (analytics) {
+          try {
+            const user = authService.getUser();
+            logEvent(analytics, 'timer_start', {
+              user_id: user ? `user_${user.id}` : 'anonymous',
+              session_id: response.session.id,
+              start_time: response.session.startTime,
+              timestamp: new Date().toISOString()
+            });
+            if (import.meta.env.DEV) {
+              // console.log('Timer started - Analytics logged');
+            }
+          } catch (error) {
+            console.error('Error logging timer start:', error);
+          }
+        }
       }
     } catch (error) {
       console.error('Error starting session:', error);
@@ -470,6 +513,27 @@ const TimeTracking = () => {
         // Clear intervals when paused
         if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
         if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
+
+        // Track timer pause event
+        if (analytics) {
+          try {
+            const user = authService.getUser();
+            const elapsedSeconds = Math.floor(elapsedTime);
+            logEvent(analytics, 'timer_pause', {
+              user_id: user ? `user_${user.id}` : 'anonymous',
+              session_id: response.session.id,
+              elapsed_time_seconds: elapsedSeconds,
+              elapsed_time_minutes: Math.round((elapsedSeconds / 60) * 100) / 100,
+              pause_time: new Date().toISOString(),
+              timestamp: new Date().toISOString()
+            });
+            if (import.meta.env.DEV) {
+              // console.log('Timer paused - Analytics logged, elapsed:', elapsedSeconds, 'seconds');
+            }
+          } catch (error) {
+            console.error('Error logging timer pause:', error);
+          }
+        }
       }
     } catch (error) {
       console.error('Error pausing session:', error);
@@ -491,6 +555,27 @@ const TimeTracking = () => {
         sessionRef.current = response.session;
         // Restart time tracking
         startTimeTracking();
+
+        // Track timer resume event
+        if (analytics) {
+          try {
+            const user = authService.getUser();
+            const elapsedSeconds = Math.floor(elapsedTime);
+            logEvent(analytics, 'timer_resume', {
+              user_id: user ? `user_${user.id}` : 'anonymous',
+              session_id: response.session.id,
+              elapsed_time_seconds: elapsedSeconds,
+              elapsed_time_minutes: Math.round((elapsedSeconds / 60) * 100) / 100,
+              resume_time: new Date().toISOString(),
+              timestamp: new Date().toISOString()
+            });
+            if (import.meta.env.DEV) {
+              // console.log('Timer resumed - Analytics logged, elapsed:', elapsedSeconds, 'seconds');
+            }
+          } catch (error) {
+            console.error('Error logging timer resume:', error);
+          }
+        }
       }
     } catch (error) {
       console.error('Error resuming session:', error);
@@ -520,7 +605,29 @@ const TimeTracking = () => {
       if (response.success) {
         stopSessionLocally();
         const totalMinutes = response.session.totalMinutes || 0;
-        alert(`Session stopped! Total time: ${formatTimeReadable(totalMinutes * 60)}`);
+        const totalSeconds = totalMinutes * 60;
+        alert(`Session stopped! Total time: ${formatTimeReadable(totalSeconds)}`);
+
+        // Track timer stop event
+        if (analytics) {
+          try {
+            const user = authService.getUser();
+            logEvent(analytics, 'timer_stop', {
+              user_id: user ? `user_${user.id}` : 'anonymous',
+              session_id: response.session.id,
+              total_time_seconds: totalSeconds,
+              total_time_minutes: totalMinutes,
+              total_time_hours: Math.round((totalMinutes / 60) * 100) / 100,
+              stop_time: new Date().toISOString(),
+              timestamp: new Date().toISOString()
+            });
+            if (import.meta.env.DEV) {
+              // console.log('Timer stopped - Analytics logged, total time:', totalMinutes, 'minutes');
+            }
+          } catch (error) {
+            console.error('Error logging timer stop:', error);
+          }
+        }
       }
     } catch (error) {
       console.error('Error stopping session:', error);
