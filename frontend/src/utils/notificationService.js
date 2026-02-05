@@ -16,11 +16,11 @@ export const registerServiceWorker = async () => {
         scope: '/'
       });
       serviceWorkerRegistration = registration;
-      console.log('Service Worker registered successfully', registration);
+      // console.log('Service Worker registered successfully', registration);
       
       // Wait for Service Worker to be ready
       await navigator.serviceWorker.ready;
-      console.log('Service Worker is ready');
+      // console.log('Service Worker is ready');
       
       return registration;
     } catch (error) {
@@ -51,9 +51,13 @@ export const setNotificationClickHandler = (callback) => {
 
 export const showBackgroundNotification = async (onClickCallback) => {
   // Check notification permission first
+  if (!('Notification' in window)) {
+    console.warn('Notification API not available in this browser');
+    return false;
+  }
+
   if (Notification.permission !== 'granted') {
     console.warn('Notification permission not granted. Current permission:', Notification.permission);
-    // Try to request permission if it's default
     if (Notification.permission === 'default') {
       try {
         const permission = await Notification.requestPermission();
@@ -66,11 +70,12 @@ export const showBackgroundNotification = async (onClickCallback) => {
         return false;
       }
     } else {
+      // Explicitly denied
       return false;
     }
   }
 
-  // Store the callback for when notification is clicked
+  // Store the callback for when notification is clicked (used for fallback path)
   if (onClickCallback) {
     setNotificationClickHandler(onClickCallback);
   }
@@ -84,43 +89,37 @@ export const showBackgroundNotification = async (onClickCallback) => {
     }
   }
 
-  // Try Service Worker first (works even when tab is closed or not focused)
+  // Preferred: use Service Worker registration so notification works even
+  // when this tab is not focused or is closed.
   try {
-    // Get or wait for Service Worker registration
     let registration = serviceWorkerRegistration;
     if (!registration && 'serviceWorker' in navigator) {
       try {
-        // Wait for Service Worker to be ready
         registration = await navigator.serviceWorker.ready;
         serviceWorkerRegistration = registration;
-        console.log('Service Worker ready:', registration);
+        // console.log('Service Worker ready:', registration);
       } catch (error) {
         console.error('Service Worker not ready:', error);
       }
     }
 
     if (registration && registration.showNotification) {
-      // Use registration.showNotification directly - this works even when tab is not focused
-      console.log('Showing notification via Service Worker registration...');
       try {
-        await registration.showNotification('Quick Check!', {
-          body: 'Answer this question to continue tracking your time',
-          tag: 'attendance-question',
-          icon: '/favicon.ico',
-          badge: '/favicon.ico',
+        // Use a unique tag each time so every attendance check
+        // creates a fresh OS notification instead of merely
+        // updating/replacing the previous one.
+        const uniqueTag = `attendance-check-${Date.now()}`;
+
+        await registration.showNotification('Attendance Check Required', {
+          body: 'Answer the question within 2 minutes to continue tracking.',
+          icon: '/logo.png',
+          badge: '/logo.png',
           requireInteraction: true,
           vibrate: [200, 100, 200],
-          actions: [
-            {
-              action: 'open',
-              title: 'Open & Answer'
-            }
-          ],
-          data: {
-            url: window.location.href
-          }
+          tag: uniqueTag,
+          data: { type: 'SHOW_ATTENDANCE_MODAL' }
         });
-        console.log('Service Worker notification shown successfully');
+        // console.log('Service Worker notification shown successfully');
         return true;
       } catch (error) {
         console.error('Error showing notification via Service Worker:', error);
@@ -133,38 +132,34 @@ export const showBackgroundNotification = async (onClickCallback) => {
     console.error('Service Worker notification failed:', error);
     // Fall through to regular notification
   }
-  
-  // Fallback to regular notification (only works when tab is focused)
-  if ('Notification' in window && Notification.permission === 'granted') {
+
+  // Fallback: regular Notification API (only reliable when tab is active)
+  if (Notification.permission === 'granted') {
     try {
-      console.log('Falling back to regular Notification API...');
-      const notification = new Notification('Quick Check!', {
-        body: 'Answer this question to continue tracking your time',
-        tag: 'attendance-question',
-        icon: '/favicon.ico',
-        requireInteraction: true,
-        badge: '/favicon.ico',
+      // console.log('Falling back to regular Notification API...');
+      const notification = new Notification('Attendance Check Required', {
+        body: 'Answer the question within 2 minutes to continue tracking.',
+        // No static tag here so multiple notifications can appear
+        icon: '/logo.png',
+        badge: '/logo.png',
+        requireInteraction: true
       });
-      
+
       notification.onclick = () => {
-        // Focus the window
         window.focus();
-        
-        // Call the callback to show modal
         if (notificationClickHandler) {
           notificationClickHandler();
         }
-        
         notification.close();
       };
-      
-      console.log('Regular notification shown (fallback)');
+
+      // console.log('Regular notification shown (fallback)');
       return true;
     } catch (error) {
       console.error('Notification failed:', error);
     }
   }
-  
+
   console.warn('Failed to show notification - no method available');
   return false;
 };
@@ -177,10 +172,10 @@ export const sendMessageToServiceWorker = (message) => {
 
 // Test notification function for debugging
 export const testNotification = async () => {
-  console.log('Testing notification...');
-  console.log('Notification API available:', 'Notification' in window);
-  console.log('Service Worker available:', 'serviceWorker' in navigator);
-  console.log('Current notification permission:', Notification.permission);
+  // console.log('Testing notification...');
+  // console.log('Notification API available:', 'Notification' in window);
+  // console.log('Service Worker available:', 'serviceWorker' in navigator);
+  // console.log('Current notification permission:', Notification.permission);
   
   if (!('Notification' in window)) {
     alert('This browser does not support notifications.');
@@ -189,7 +184,7 @@ export const testNotification = async () => {
 
   if (Notification.permission === 'default') {
     const permission = await Notification.requestPermission();
-    console.log('Permission result:', permission);
+    // console.log('Permission result:', permission);
     if (permission !== 'granted') {
       alert('Notification permission was denied. Please enable notifications in your browser settings.');
       return false;
@@ -210,7 +205,7 @@ export const testNotification = async () => {
           icon: '/favicon.ico',
           tag: 'test-notification'
         });
-        console.log('Test notification shown via Service Worker');
+        // console.log('Test notification shown via Service Worker');
         return true;
       }
     }
@@ -224,7 +219,7 @@ export const testNotification = async () => {
       body: 'If you see this, notifications are working!',
       icon: '/favicon.ico'
     });
-    console.log('Test notification shown via regular API');
+    // console.log('Test notification shown via regular API');
     return true;
   } catch (error) {
     console.error('Regular test notification failed:', error);

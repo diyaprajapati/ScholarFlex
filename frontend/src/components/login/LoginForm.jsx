@@ -64,12 +64,12 @@ export default function LoginForm() {
         const response = await api.auth.verifyOTP(email, otp)
         
         // Debug: Log response to help diagnose issues
-        console.log('Login response:', { 
-          success: response.success, 
-          hasToken: !!response.token, 
-          hasUser: !!response.user,
-          userRole: response.user?.role 
-        })
+        // console.log('Login response:', { 
+        //   success: response.success, 
+        //   hasToken: !!response.token, 
+        //   hasUser: !!response.user,
+        //   userRole: response.user?.role 
+        // })
         
         // Check if response has token
         if (!response.success) {

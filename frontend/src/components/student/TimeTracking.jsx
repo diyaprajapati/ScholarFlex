@@ -179,10 +179,11 @@ const TimeTracking = () => {
     });
     loadTodayHours();
 
-    // Check for pending questions when tab becomes visible
+    // When tab becomes visible, re-check for any pending question so
+    // the modal can be restored if needed. Leaving the tab should NOT
+    // pause or stop the timer by itself.
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        // Tab became visible - check for pending questions
         checkForPendingQuestion();
       }
     };
@@ -211,8 +212,9 @@ const TimeTracking = () => {
         sessionRef.current = response.session;
         const startTime = new Date(response.session.startTime);
         const now = new Date();
-        const elapsed = Math.floor((now - startTime) / 1000);
-        setElapsedTime(elapsed);
+        const pausedSeconds = (sessionRef.current.pausedMinutes || 0) * 60;
+        const elapsed = Math.floor((now - startTime) / 1000) - pausedSeconds;
+        setElapsedTime(Math.max(0, elapsed));
 
         // Only start tracking if session is active (not paused)
         if (response.session.status === 'ACTIVE') {
@@ -268,8 +270,9 @@ const TimeTracking = () => {
       if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
         const startTime = new Date(sessionRef.current.startTime);
         const now = new Date();
-        const elapsed = Math.floor((now - startTime) / 1000);
-        setElapsedTime(elapsed);
+        const pausedSeconds = (sessionRef.current.pausedMinutes || 0) * 60;
+        const elapsed = Math.floor((now - startTime) / 1000) - pausedSeconds;
+        setElapsedTime(Math.max(0, elapsed));
       } else if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && showQuestionRef.current) {
         // Timer is paused - keep showing the paused elapsed time
         setElapsedTime(pausedElapsedTimeRef.current);
@@ -453,8 +456,9 @@ const TimeTracking = () => {
         // Calculate initial elapsed time based on server response
         const startTime = new Date(response.session.startTime);
         const now = new Date();
-        const elapsed = Math.floor((now - startTime) / 1000);
-        setElapsedTime(elapsed);
+        const pausedSeconds = (sessionRef.current.pausedMinutes || 0) * 60;
+        const elapsed = Math.floor((now - startTime) / 1000) - pausedSeconds;
+        setElapsedTime(Math.max(0, elapsed));
 
         setNextQuestionTime(10);
         startTimeTracking();
@@ -738,6 +742,28 @@ const TimeTracking = () => {
     };
   }, []);
 
+  useEffect(() => {
+    let lastCheck = Date.now();
+  
+    const interval = setInterval(async () => {
+      const now = Date.now();
+      const diff = now - lastCheck;
+  
+      // Detect sleep ONLY if tab is hidden + big time jump
+      if (document.hidden && diff > 120000) { // 2 min
+        // console.log("Sleep/lock detected");
+  
+        if (sessionRef.current?.status === "ACTIVE") {
+          alert("System sleep detected. Timer paused automatically.");
+          await handlePause();
+        }
+      }
+  
+      lastCheck = now;
+    }, 5000);
+  
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">

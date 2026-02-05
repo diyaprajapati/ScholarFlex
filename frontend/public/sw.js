@@ -51,27 +51,27 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
-  // Focus/open the app
+
+  const notificationType = event.notification?.data?.type || 'SHOW_ATTENDANCE_MODAL';
+
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Check if there's already a window/tab open
+      // If there's already a window/tab for this origin, focus it and send a message
       for (const client of clientList) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
-          // Focus existing window and send message to show modal
           client.focus();
-          // Send message to client to show modal
-          client.postMessage({ type: 'SHOW_ATTENDANCE_MODAL' });
+          client.postMessage({ type: notificationType });
           return;
         }
       }
-      // If no window is open, open a new one
+
+      // If no window is open, open a new one (landing on dashboard is fine)
       if (clients.openWindow) {
         return clients.openWindow('/student/dashboard').then((windowClient) => {
-          // Wait a bit for the page to load, then send message
+          // After opening, send the message so the app can show the modal
           setTimeout(() => {
             if (windowClient) {
-              windowClient.postMessage({ type: 'SHOW_ATTENDANCE_MODAL' });
+              windowClient.postMessage({ type: notificationType });
             }
           }, 1000);
         });

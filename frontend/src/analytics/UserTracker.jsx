@@ -28,7 +28,7 @@ const UserTracker = () => {
         })
 
         if (import.meta.env.DEV) {
-          console.log('User ID set in Analytics:', `user_${user.id}`, 'Role:', user.role)
+          // console.log('User ID set in Analytics:', `user_${user.id}`, 'Role:', user.role)
         }
       } catch (error) {
         console.error('Error setting user ID in Analytics:', error)
@@ -54,7 +54,7 @@ const UserTracker = () => {
       try {
         setUserId(analytics, null)
         if (import.meta.env.DEV) {
-          console.log('User logged out - Analytics user ID cleared')
+          // console.log('User logged out - Analytics user ID cleared')
         }
       } catch (error) {
         console.error('Error clearing user ID in Analytics:', error)

@@ -67,7 +67,7 @@ export const authService = {
         }
       }
       
-      console.log('Token and user data stored successfully')
+      // console.log('Token and user data stored successfully')
     } catch (error) {
       console.error('Error storing token/user data:', error)
       // Check if localStorage is available

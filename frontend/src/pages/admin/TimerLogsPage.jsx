@@ -69,7 +69,7 @@ const TimerLogsPage = () => {
           limit: pagination.limit
         };
         
-        console.log('Fetch useEffect triggered, fetching page:', pagination.page, 'limit:', pagination.limit);
+        // console.log('Fetch useEffect triggered, fetching page:', pagination.page, 'limit:', pagination.limit);
         
         // Remove empty filters
         Object.keys(params).forEach(key => {
@@ -551,10 +551,10 @@ const TimerLogsPage = () => {
                       {/* Next */}
                       <button
                         onClick={() => {
-                          console.log('Next clicked, current page:', pagination.page, 'totalPages:', pagination.totalPages);
+                          // console.log('Next clicked, current page:', pagination.page, 'totalPages:', pagination.totalPages);
                           setPagination(prev => {
                             const newPage = prev.page + 1;
-                            console.log('Setting page to:', newPage);
+                            // console.log('Setting page to:', newPage);
                             return { ...prev, page: newPage };
                           });
                         }}
