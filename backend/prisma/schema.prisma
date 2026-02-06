@@ -643,6 +643,7 @@ model TimeTrackingSession {
   totalMinutes        Int?                 @map("total_minutes")
   pausedMinutes       Int                  @default(0) @map("paused_minutes")
   status              TimeTrackingStatus   @default(ACTIVE)
+  lastHeartbeatAt     DateTime?            @map("last_heartbeat_at")
   lastPausedAt        DateTime?            @map("last_paused_at")
   pauseCount          Int                  @default(0) @map("pause_count")
   createdAt           DateTime             @default(now()) @map("created_at")

@@ -70,12 +70,13 @@ const startTimeTracking = async (req, res) => {
       });
     }
 
-    // Create new session
+    // Create new session (set lastHeartbeatAt so cron doesn't auto-finish immediately)
     const session = await prisma.timeTrackingSession.create({
       data: {
         studentId: student.id,
         startTime: new Date(),
         status: 'ACTIVE',
+        lastHeartbeatAt: new Date(),
       },
     });
 
@@ -167,6 +168,51 @@ const finishTimeTracking = async (req, res) => {
     });
   } catch (error) {
     console.error('Error finishing time tracking:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Heartbeat - update lastHeartbeatAt for active session (frontend calls every 1 min).
+ * Used by cron to auto-finish sessions when client is gone (shutdown, closed tab).
+ * POST /api/student/time-tracking/heartbeat
+ */
+const heartbeat = async (req, res) => {
+  try {
+    const student = await prisma.student.findUnique({
+      where: { email: req.user.email },
+    });
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student record not found',
+      });
+    }
+
+    const activeSession = await prisma.timeTrackingSession.findFirst({
+      where: {
+        studentId: student.id,
+        status: 'ACTIVE',
+      },
+      orderBy: { startTime: 'desc' },
+    });
+
+    if (!activeSession) {
+      return res.status(200).json({ success: true, message: 'No active session' });
+    }
+
+    await prisma.timeTrackingSession.update({
+      where: { id: activeSession.id },
+      data: { lastHeartbeatAt: new Date() },
+    });
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error updating heartbeat:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',
@@ -1211,11 +1257,66 @@ const getTimerLogs = async (req, res) => {
   }
 };
 
+/** Stale threshold: no heartbeat for this many ms → auto-finish (e.g. 5 min) */
+const HEARTBEAT_STALE_MS = 5 * 60 * 1000;
+
+/**
+ * Internal: finish a session by record (compute totalMinutes, set COMPLETED).
+ * Used by finishTimeTracking and by autoFinishStaleSessions.
+ */
+const finishSessionRecord = async (activeSession) => {
+  const finishTime = new Date();
+  const startTime = new Date(activeSession.startTime);
+  let totalMinutes = Math.floor((finishTime - startTime) / (1000 * 60));
+  totalMinutes = Math.max(0, totalMinutes - (activeSession.pausedMinutes || 0));
+  if (activeSession.status === 'PAUSED' && activeSession.lastPausedAt) {
+    const pausedAt = new Date(activeSession.lastPausedAt);
+    const pausedDuration = Math.floor((finishTime - pausedAt) / (1000 * 60));
+    totalMinutes = Math.max(0, totalMinutes - pausedDuration);
+  }
+  await prisma.timeTrackingSession.update({
+    where: { id: activeSession.id },
+    data: { finishTime, totalMinutes, status: 'COMPLETED' },
+  });
+};
+
+/**
+ * Auto-finish ACTIVE sessions that have not received a heartbeat for HEARTBEAT_STALE_MS.
+ * Call this from a cron/setInterval every 5 minutes.
+ */
+const autoFinishStaleSessions = async () => {
+  try {
+    const cutoff = new Date(Date.now() - HEARTBEAT_STALE_MS);
+    const staleSessions = await prisma.timeTrackingSession.findMany({
+      where: {
+        status: 'ACTIVE',
+        OR: [
+          { lastHeartbeatAt: null },
+          { lastHeartbeatAt: { lt: cutoff } },
+        ],
+      },
+    });
+    for (const session of staleSessions) {
+      try {
+        await finishSessionRecord(session);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[TimeTracking] Auto-finished stale session ${session.id} (studentId: ${session.studentId})`);
+        }
+      } catch (err) {
+        console.error(`[TimeTracking] Error auto-finishing session ${session.id}:`, err);
+      }
+    }
+  } catch (error) {
+    console.error('[TimeTracking] Error in autoFinishStaleSessions:', error);
+  }
+};
+
 module.exports = {
   startTimeTracking,
   finishTimeTracking,
   pauseTimeTracking,
   resumeTimeTracking,
+  heartbeat,
   getActiveSession,
   askAttendanceQuestion,
   answerAttendanceQuestion,
@@ -1223,5 +1324,6 @@ module.exports = {
   getAllStudentsWorkingHours,
   getDayWiseStudentsWorkingHours,
   getTimerLogs,
+  autoFinishStaleSessions,
 };
 

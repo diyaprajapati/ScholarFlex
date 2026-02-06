@@ -139,11 +139,21 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // Start server
+const timeTrackingController = require('./controllers/timeTrackingController');
+const HEARTBEAT_CRON_MS = 5 * 60 * 1000; // 5 minutes
+
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
   console.log(`🌍 Server accessible on: http://0.0.0.0:${PORT} and http://localhost:${PORT}`);
+
+  // Auto-finish time tracking sessions with no heartbeat (e.g. laptop shutdown, closed tab)
+  setInterval(() => {
+    timeTrackingController.autoFinishStaleSessions().catch((err) => {
+      console.error('Time tracking cron error:', err);
+    });
+  }, HEARTBEAT_CRON_MS);
 });
 
 // Keep server reference to prevent garbage collection

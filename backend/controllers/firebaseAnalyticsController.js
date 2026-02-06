@@ -1,12 +1,16 @@
 const { prisma } = require('../config/database');
-const User = require('../models/User');
+
+const RANGE_DAYS = { week: 7, month: 30, year: 365 };
 
 /**
  * Get Firebase Analytics summary data
  * GET /api/admin/analytics/firebase
+ * Query: range = 'week' | 'month' | 'year' (for daily activity period)
  */
 const getFirebaseAnalytics = async (req, res) => {
   try {
+    const range = (req.query.range && RANGE_DAYS[req.query.range]) ? req.query.range : 'month';
+    const days = RANGE_DAYS[range];
     // Get total users (students + admins)
     const totalStudents = await prisma.student.count({
       where: { isActive: true }
@@ -130,30 +134,22 @@ const getFirebaseAnalytics = async (req, res) => {
       count: item._count
     }));
 
-    // Get daily user activity based on actual activity (updatedAt) - last 30 days
-    // This shows when users were last active, not when they registered
-    const dailyActivity = await prisma.$queryRaw`
-      SELECT 
-        DATE(updated_at) as date,
-        COUNT(DISTINCT id) as count
-      FROM students
-      WHERE is_active = TRUE
-        AND updated_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-      GROUP BY DATE(updated_at)
-      ORDER BY date ASC
-    `;
+    // Get daily user activity (range: week 7, month 30, year 365). days is from RANGE_DAYS only (safe to interpolate).
+    const dailyActivity = await prisma.$queryRawUnsafe(
+      `SELECT DATE(updated_at) as date, COUNT(DISTINCT id) as count
+       FROM students
+       WHERE is_active = TRUE AND updated_at >= DATE_SUB(NOW(), INTERVAL ${Number(days)} DAY)
+       GROUP BY DATE(updated_at)
+       ORDER BY date ASC`
+    );
 
-    // Also get daily new user registrations
-    const dailyRegistrations = await prisma.$queryRaw`
-      SELECT 
-        DATE(created_at) as date,
-        COUNT(*) as count
-      FROM students
-      WHERE is_active = TRUE
-        AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-      GROUP BY DATE(created_at)
-      ORDER BY date ASC
-    `;
+    const dailyRegistrations = await prisma.$queryRawUnsafe(
+      `SELECT DATE(created_at) as date, COUNT(*) as count
+       FROM students
+       WHERE is_active = TRUE AND created_at >= DATE_SUB(NOW(), INTERVAL ${Number(days)} DAY)
+       GROUP BY DATE(created_at)
+       ORDER BY date ASC`
+    );
 
     // Format daily activity
     const dailyActivityFormatted = dailyActivity.map(item => ({
@@ -194,7 +190,8 @@ const getFirebaseAnalytics = async (req, res) => {
           admins: adminsByRoleFormatted
         },
         dailyActivity: dailyActivityFormatted,
-        dailyRegistrations: dailyRegistrationsFormatted
+        dailyRegistrations: dailyRegistrationsFormatted,
+        activityRange: range
       }
     });
   } catch (error) {

@@ -16,8 +16,8 @@ import {
   RefreshCw
 } from 'lucide-react';
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   BarChart,
   Bar,
   PieChart as RechartsPieChart,
@@ -40,6 +40,7 @@ const FirebaseAnalyticsPage = () => {
   const [error, setError] = useState('');
   const [analytics, setAnalytics] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [activityRange, setActivityRange] = useState('month'); // 'week' | 'month' | 'year'
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -55,14 +56,14 @@ const FirebaseAnalyticsPage = () => {
       return;
     }
     
-    fetchAnalytics();
-  }, [navigate]);
+    fetchAnalytics(activityRange);
+  }, [navigate, activityRange]);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (range = activityRange) => {
     try {
       setLoading(true);
       setError('');
-      const response = await api.admin.getFirebaseAnalytics();
+      const response = await api.admin.getFirebaseAnalytics({ range });
       if (response.success) {
         setAnalytics(response.data);
       } else {
@@ -79,8 +80,10 @@ const FirebaseAnalyticsPage = () => {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchAnalytics();
+    fetchAnalytics(activityRange);
   };
+
+  const activityRangeLabel = { week: 'Week', month: 'Month', year: 'Year' };
 
   const formatNumber = (num) => {
     return new Intl.NumberFormat().format(num);
@@ -222,41 +225,95 @@ const FirebaseAnalyticsPage = () => {
 
               {/* Charts Row 1 */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Daily Activity Chart */}
+                {/* Daily Activity Chart - shadcn-style Area with Week/Month/Year tabs */}
                 <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-[#4C763B]" />
-                    Daily User Activity (Last 30 Days)
-                  </h3>
-                  <p className="text-xs text-gray-500 mb-4">
-                    Shows users who were active (updated their profile or accessed the system) each day
-                  </p>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={analytics.dailyActivity}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="date" 
-                        tick={{ fontSize: 12 }}
-                        angle={-45}
-                        textAnchor="end"
-                        height={80}
-                      />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                        formatter={(value) => [formatNumber(value), 'Active Users']}
-                      />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="count" 
-                        stroke="#4C763B" 
-                        strokeWidth={2}
-                        name="Active Users"
-                        dot={{ r: 4 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-[#4C763B]" />
+                        Daily User Activity
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Active users by day — week, month, or year
+                      </p>
+                    </div>
+                    {/* Week / Month / Year tabs (shadcn-style) */}
+                    <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50/50 p-0.5">
+                      {(['week', 'month', 'year']).map((range) => (
+                        <button
+                          key={range}
+                          type="button"
+                          onClick={() => setActivityRange(range)}
+                          className={`relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4C763B] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+                            activityRange === range
+                              ? 'bg-white text-gray-900 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          {activityRangeLabel[range]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="min-h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart
+                        data={analytics.dailyActivity}
+                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                      >
+                        <defs>
+                          <linearGradient id="fillActiveUsers" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#4C763B" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#4C763B" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-gray-200" />
+                        <XAxis
+                          dataKey="date"
+                          tickLine={false}
+                          axisLine={false}
+                          tickMargin={8}
+                          tick={{ fontSize: 12, fill: '#6b7280' }}
+                          tickFormatter={(value) => {
+                            const d = new Date(value);
+                            if (activityRange === 'year') return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+                            if (activityRange === 'month') return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            return d.toLocaleDateString('en-US', { weekday: 'short' });
+                          }}
+                        />
+                        <YAxis
+                          tickLine={false}
+                          axisLine={false}
+                          tickMargin={8}
+                          tick={{ fontSize: 12, fill: '#6b7280' }}
+                          tickFormatter={(value) => formatNumber(value)}
+                        />
+                        <Tooltip
+                          content={({ active, payload, label }) => {
+                            if (!active || !payload?.length) return null;
+                            return (
+                              <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+                                <p className="text-sm font-medium text-gray-900 mb-1">
+                                  {new Date(label).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                                </p>
+                                <p className="text-sm text-[#4C763B] font-medium">
+                                  Active Users: {formatNumber(payload[0]?.value ?? 0)}
+                                </p>
+                              </div>
+                            );
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="count"
+                          name="Active Users"
+                          stroke="#4C763B"
+                          strokeWidth={2}
+                          fill="url(#fillActiveUsers)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
 
                 {/* Users by Role - Pie Chart */}

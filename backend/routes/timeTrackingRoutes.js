@@ -37,6 +37,13 @@ router.post('/resume', timeTrackingController.resumeTimeTracking);
 router.post('/finish', timeTrackingController.finishTimeTracking);
 
 /**
+ * @route   POST /api/student/time-tracking/heartbeat
+ * @desc    Update last heartbeat for active session (used to detect shutdown/closed tab)
+ * @access  Private (Student)
+ */
+router.post('/heartbeat', timeTrackingController.heartbeat);
+
+/**
  * @route   GET /api/student/time-tracking/active
  * @desc    Get current active session
  * @access  Private (Student)

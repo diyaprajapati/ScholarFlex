@@ -24,6 +24,7 @@ const TimeTracking = () => {
 
   const intervalRef = useRef(null);
   const questionIntervalRef = useRef(null);
+  const heartbeatRef = useRef(null);
   const timeUpdateRef = useRef(null);
   const sessionRef = useRef(null);
   const questionTimeoutRef = useRef(null);
@@ -64,6 +65,7 @@ const TimeTracking = () => {
     // Clear intervals
     if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
     if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
+    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
     if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
 
     // Clear question and session state
@@ -261,6 +263,16 @@ const TimeTracking = () => {
     // Clear any existing intervals
     if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
     if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
+    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+
+    // Heartbeat every 1 min so backend can auto-finish if client is gone (shutdown, closed tab)
+    const sendHeartbeat = () => {
+      if (sessionRef.current?.status === 'ACTIVE') {
+        api.timeTracking.heartbeat().catch((err) => console.error('Heartbeat failed:', err));
+      }
+    };
+    sendHeartbeat();
+    heartbeatRef.current = setInterval(sendHeartbeat, 60000);
 
     // Update elapsed time every second (always, regardless of tab focus)
     // Update elapsed time by calculating difference from start time
@@ -517,6 +529,7 @@ const TimeTracking = () => {
         // Clear intervals when paused
         if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
         if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
+        if (heartbeatRef.current) clearInterval(heartbeatRef.current);
 
         // Track timer pause event
         if (analytics) {
@@ -738,6 +751,7 @@ const TimeTracking = () => {
     return () => {
       if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
       if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
+      if (heartbeatRef.current) clearInterval(heartbeatRef.current);
       if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
     };
   }, []);

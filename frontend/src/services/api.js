@@ -527,9 +527,10 @@ export const api = {
       });
     },
     
-    // Firebase Analytics
-    getFirebaseAnalytics: async () => {
-      return apiRequest('/admin/analytics/firebase', {
+    // Firebase Analytics (range: 'week' | 'month' | 'year' for daily activity chart)
+    getFirebaseAnalytics: async (params = {}) => {
+      const query = new URLSearchParams(params).toString();
+      return apiRequest(`/admin/analytics/firebase${query ? `?${query}` : ''}`, {
         method: 'GET',
       });
     },
@@ -1334,6 +1335,12 @@ export const api = {
     getActive: async () => {
       return apiRequest('/student/time-tracking/active', {
         method: 'GET',
+      });
+    },
+
+    heartbeat: async () => {
+      return apiRequest('/student/time-tracking/heartbeat', {
+        method: 'POST',
       });
     },
 
