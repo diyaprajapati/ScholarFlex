@@ -57,6 +57,54 @@ const authenticate = async (req, res, next) => {
       });
     }
 
+    // Normalize role - check all possible property names (MySQL/Prisma may return different cases)
+    // Try: role_code, roleCode, role, ROLE_CODE, Role_Code, etc.
+    let roleCode = null;
+    const roleKeys = Object.keys(user).filter(key => 
+      key.toLowerCase() === 'role_code' || 
+      key.toLowerCase() === 'rolecode' || 
+      key.toLowerCase() === 'role'
+    );
+    
+    if (roleKeys.length > 0) {
+      roleCode = user[roleKeys[0]];
+    } else {
+      // Fallback to explicit checks
+      roleCode = user.role_code ?? user.roleCode ?? user.role ?? 
+                 user.ROLE_CODE ?? user.Role_Code ?? user.ROLE;
+    }
+    
+    // If still not found, try JWT token's role (fallback)
+    if (!roleCode && decoded.role) {
+      roleCode = decoded.role;
+    }
+    
+    // Always set role_code in uppercase for consistency
+    if (roleCode) {
+      user.role_code = String(roleCode).toUpperCase().trim();
+    } else {
+      // Log error if role cannot be determined
+      console.error('[AUTHENTICATE] ERROR: Could not determine user role', {
+        userId: user.id,
+        email: user.email,
+        userKeys: Object.keys(user),
+        decodedRole: decoded.role,
+        userObject: user
+      });
+      // Set a default or reject - but let's try to continue and see what happens
+      // The authorize middleware will catch this
+    }
+    
+    // Always log user authentication (for debugging)
+    console.log('[AUTHENTICATE] User loaded:', {
+      id: user.id,
+      email: user.email,
+      role_code: user.role_code,
+      allRoleKeys: roleKeys,
+      userKeys: Object.keys(user).filter(k => k.toLowerCase().includes('role')),
+      source: user.source
+    });
+
     // For students: Check if internship has ended
     if (user.role_code === 'STUDENT' && user.internship_end_date) {
       const today = new Date();
@@ -144,8 +192,12 @@ const authenticate = async (req, res, next) => {
 
 /**
  * Check if user has required role
+ * Supports role_code (DB snake_case), roleCode (camelCase), or role (token payload)
  */
 const authorize = (...roles) => {
+  // Log what roles were passed to authorize
+  console.log('[AUTHORIZE] Middleware created with roles:', roles);
+  
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({
@@ -154,11 +206,47 @@ const authorize = (...roles) => {
       });
     }
 
+    // Get role from normalized role_code (should be set by authenticate middleware)
     const userRole = req.user.role_code;
-    if (!roles.includes(userRole)) {
+    const normalizedRole = userRole ? String(userRole).toUpperCase().trim() : null;
+    const allowedRoles = roles.map((r) => String(r).toUpperCase().trim());
+    
+    // Log the roles array to see what we're working with
+    console.log('[AUTHORIZE] Roles array:', roles, 'Mapped to:', allowedRoles);
+
+    // Always log authorization attempts (for debugging)
+    console.log('[AUTHORIZE]', {
+      path: req.path,
+      method: req.method,
+      userRole: userRole,
+      normalizedRole: normalizedRole,
+      allowedRoles: allowedRoles,
+      userObject: {
+        role_code: req.user.role_code,
+        email: req.user.email,
+        id: req.user.id,
+        allKeys: Object.keys(req.user).filter(k => k.toLowerCase().includes('role'))
+      },
+      match: allowedRoles.includes(normalizedRole)
+    });
+
+    if (!normalizedRole || !allowedRoles.includes(normalizedRole)) {
+      console.error('[AUTHORIZE] ACCESS DENIED:', {
+        path: req.path,
+        userRole: userRole,
+        normalizedRole: normalizedRole,
+        allowedRoles: allowedRoles,
+        userEmail: req.user.email
+      });
       return res.status(403).json({
         success: false,
         message: 'Access denied. Insufficient permissions.',
+        debug: {
+          userRole: userRole,
+          normalizedRole: normalizedRole,
+          allowedRoles: allowedRoles,
+          userEmail: req.user.email
+        }
       });
     }
 

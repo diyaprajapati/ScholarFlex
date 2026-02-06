@@ -8,13 +8,18 @@ class User {
   static async findByEmail(email) {
     try {
       const result = await prisma.$queryRaw`
-        SELECT u.*, r.role_name, r.role_code 
+        SELECT u.*, r.role_name, r.role_code AS role_code
         FROM users u 
         JOIN roles r ON u.role_id = r.id 
         WHERE u.email = ${email} AND u.is_active = TRUE
       `;
       if (result.length > 0) {
-        return { ...result[0], source: 'users' };
+        const user = { ...result[0], source: 'users' };
+        // Ensure role_code is always set and uppercase
+        if (user.role_code) {
+          user.role_code = String(user.role_code).toUpperCase().trim();
+        }
+        return user;
       }
 
       const studentResult = await prisma.$queryRaw`
@@ -48,13 +53,18 @@ class User {
   static async findById(id) {
     try {
       const result = await prisma.$queryRaw`
-        SELECT u.*, r.role_name, r.role_code 
+        SELECT u.*, r.role_name, r.role_code AS role_code
         FROM users u 
         JOIN roles r ON u.role_id = r.id 
         WHERE u.id = ${id} AND u.is_active = TRUE
       `;
       if (result.length > 0) {
-        return { ...result[0], source: 'users' };
+        const user = { ...result[0], source: 'users' };
+        // Ensure role_code is always set and uppercase
+        if (user.role_code) {
+          user.role_code = String(user.role_code).toUpperCase().trim();
+        }
+        return user;
       }
 
       const studentResult = await prisma.$queryRaw`

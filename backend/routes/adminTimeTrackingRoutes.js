@@ -5,7 +5,43 @@ const timeTrackingController = require('../controllers/timeTrackingController');
 
 // All routes require authentication and admin role
 router.use(authenticate);
-router.use(authorize('ADMIN', 'SUPER_ADMIN'));
+// IMPORTANT: Both ADMIN and SUPER_ADMIN should be allowed
+// Create custom authorize middleware that explicitly checks for both roles
+router.use((req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required',
+    });
+  }
+
+  const userRole = req.user.role_code;
+  const normalizedRole = userRole ? String(userRole).toUpperCase().trim() : null;
+  const allowedRoles = ['ADMIN', 'SUPER_ADMIN']; // Explicitly set both roles here
+
+  console.log('[AUTHORIZE adminTimeTracking]', {
+    path: req.path,
+    userRole: userRole,
+    normalizedRole: normalizedRole,
+    allowedRoles: allowedRoles,
+    match: allowedRoles.includes(normalizedRole)
+  });
+
+  if (!normalizedRole || !allowedRoles.includes(normalizedRole)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Insufficient permissions.',
+      debug: {
+        userRole: userRole,
+        normalizedRole: normalizedRole,
+        allowedRoles: allowedRoles,
+        userEmail: req.user.email
+      }
+    });
+  }
+
+  next();
+});
 
 /**
  * @route   GET /api/admin/time-tracking/students

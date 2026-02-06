@@ -102,6 +102,9 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+// IMPORTANT: Mount specific admin routes BEFORE the catch-all /api/admin route
+// This ensures /api/admin/time-tracking/* matches before /api/admin/:id
+app.use('/api/admin/time-tracking', adminTimeTrackingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/interns', internRoutes);
@@ -109,7 +112,6 @@ app.use('/api/question-papers', questionPaperRoutes);
 app.use('/api/student', studentTestRoutes);
 app.use('/api/student/profile', studentProfileRoutes);
 app.use('/api/student/time-tracking', timeTrackingRoutes);
-app.use('/api/admin/time-tracking', adminTimeTrackingRoutes);
 app.use('/api/domains', domainRoutes);
 app.use('/api/test-attempts', testAttemptRoutes);
 app.use('/api/candidates', candidateRoutes);
