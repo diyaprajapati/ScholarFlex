@@ -5,7 +5,7 @@ import { X, ChevronDown, ChevronRight, LayoutDashboard, Users, FileText, Music, 
 import { useSidebar } from '../../contexts/SidebarContext'
 
 // Navigation menu configuration
-// Routes that ADMIN users can access (all others will be disabled)
+// Routes that ADMIN users can access (all others will be disabled). All analytics tabs: ADMIN + SUPER_ADMIN.
 const ADMIN_ALLOWED_ROUTES = [
   ROUTES.PROJECT_MANAGEMENT,
   ROUTES.EVALUATION_MANAGEMENT,

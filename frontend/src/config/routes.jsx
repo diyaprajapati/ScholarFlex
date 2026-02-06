@@ -159,7 +159,7 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Student Analytics Route - Admin and Super Admin */}
+      {/* Analytics: all tabs accessible by both ADMIN and SUPER_ADMIN */}
       <Route
         path={ROUTES.STUDENT_ANALYTICS}
         element={
@@ -168,8 +168,6 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
-      {/* Open Student Analytics Route - Admin and Super Admin */}
       <Route
         path={ROUTES.OPEN_STUDENT_ANALYTICS}
         element={
@@ -178,8 +176,6 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
-      {/* Firebase Analytics Route - Admin and Super Admin */}
       <Route
         path={ROUTES.FIREBASE_ANALYTICS}
         element={
@@ -188,8 +184,6 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
-      {/* Timer Logs Route - Admin and Super Admin */}
       <Route
         path={ROUTES.TIMER_LOGS}
         element={
