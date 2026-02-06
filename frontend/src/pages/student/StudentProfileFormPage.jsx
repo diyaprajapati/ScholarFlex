@@ -865,6 +865,7 @@ export default function StudentProfileFormPage() {
                           onLoad={() => {
                             // console.log('Image loaded successfully:', formData.imageUrl)
                           }}
+                          required
                           onError={(e) => {
                             console.error('Failed to load image:', formData.imageUrl, e)
                             // Show error state but keep the element visible
