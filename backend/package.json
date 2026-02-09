@@ -6,6 +6,11 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
+    "start:cluster": "cross-env ENABLE_CLUSTER=true node server.js",
+    "start:pm2": "pm2 start ecosystem.config.js",
+    "start:pm2:prod": "pm2 start ecosystem.config.js --env production",
+    "stop:pm2": "pm2 stop ecosystem.config.js",
+    "restart:pm2": "pm2 restart ecosystem.config.js",
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prisma:generate": "dotenv -e ../.env -- prisma generate",

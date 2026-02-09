@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const cluster = require('cluster');
+const os = require('os');
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -40,7 +42,7 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps, curl, Postman)
     // or any origin in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`🌐 CORS: Allowing request from origin: ${origin || 'no origin'}`);
+      // console.log(`🌐 CORS: Allowing request from origin: ${origin || 'no origin'}`);
     }
     callback(null, true); // Allow all origins
   },
@@ -82,10 +84,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
     const start = Date.now();
-    console.log(`📨 ${req.method} ${req.path} from ${req.get('origin') || 'no origin'}`);
+    // console.log(`📨 ${req.method} ${req.path} from ${req.get('origin') || 'no origin'}`);
     res.on('finish', () => {
       const duration = Date.now() - start;
-      console.log(`✅ ${req.method} ${req.path} - ${res.statusCode} - ${duration}ms`);
+      // console.log(`✅ ${req.method} ${req.path} - ${res.statusCode} - ${duration}ms`);
     });
     next();
   });
@@ -140,84 +142,143 @@ app.use((req, res) => {
 // Error handler (must be last)
 app.use(errorHandler);
 
-// Start server
-const timeTrackingController = require('./controllers/timeTrackingController');
-const HEARTBEAT_CRON_MS = 5 * 60 * 1000; // 5 minutes
+// Function to start the server (used by both cluster and single mode)
+function startServer() {
+  const timeTrackingController = require('./controllers/timeTrackingController');
+  const HEARTBEAT_CRON_MS = 5 * 60 * 1000; // 5 minutes
 
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
-  console.log(`🌍 Server accessible on: http://0.0.0.0:${PORT} and http://localhost:${PORT}`);
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    const workerId = cluster.isWorker ? ` [Worker ${cluster.worker.id}]` : '';
+    console.log(`🚀 Server running on port ${PORT}${workerId}`);
+    console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+    console.log(`🌍 Server accessible on: http://0.0.0.0:${PORT} and http://localhost:${PORT}`);
 
-  // Auto-finish time tracking sessions with no heartbeat (e.g. laptop shutdown, closed tab)
-  setInterval(() => {
-    timeTrackingController.autoFinishStaleSessions().catch((err) => {
-      console.error('Time tracking cron error:', err);
-    });
-  }, HEARTBEAT_CRON_MS);
-});
-
-// Keep server reference to prevent garbage collection
-server.on('error', (error) => {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-  console.error('❌ Server error:', error);
-});
-
-// Graceful shutdown
-let isShuttingDown = false;
-
-const gracefulShutdown = async (signal) => {
-  if (isShuttingDown) {
-    return;
-  }
-  isShuttingDown = true;
-  
-  console.log(`${signal} signal received: closing HTTP server`);
-  
-  return new Promise((resolve) => {
-    server.close(async () => {
-      console.log('HTTP server closed');
-      try {
-        await prisma.$disconnect();
-        console.log('✅ Prisma disconnected');
-        resolve();
-        process.exit(0);
-      } catch (error) {
-        console.error('Error during shutdown:', error);
-        resolve();
-        process.exit(1);
-      }
-    });
+    // Only run cron job once - in single mode or in the first worker in cluster mode
+    // This prevents duplicate cron jobs when running multiple workers
+    if (!cluster.isWorker || (cluster.isWorker && cluster.worker.id === 1)) {
+      // Auto-finish time tracking sessions with no heartbeat (e.g. laptop shutdown, closed tab)
+      setInterval(() => {
+        timeTrackingController.autoFinishStaleSessions().catch((err) => {
+          console.error('Time tracking cron error:', err);
+        });
+      }, HEARTBEAT_CRON_MS);
+      console.log('⏰ Time tracking cron job started');
+    }
   });
-};
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+  // Keep server reference to prevent garbage collection
+  server.on('error', (error) => {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+    console.error('❌ Server error:', error);
+  });
 
-process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
-  console.error('Stack:', error.stack);
-  if (process.env.NODE_ENV === 'production') {
-    gracefulShutdown('UNCAUGHT_EXCEPTION').then(() => {
-      process.exit(1);
+  // Graceful shutdown
+  let isShuttingDown = false;
+
+  const gracefulShutdown = async (signal) => {
+    if (isShuttingDown) {
+      return;
+    }
+    isShuttingDown = true;
+    
+    const workerId = cluster.isWorker ? ` [Worker ${cluster.worker.id}]` : '';
+    console.log(`${signal} signal received: closing HTTP server${workerId}`);
+    
+    return new Promise((resolve) => {
+      server.close(async () => {
+        console.log(`HTTP server closed${workerId}`);
+        try {
+          await prisma.$disconnect();
+          console.log(`✅ Prisma disconnected${workerId}`);
+          resolve();
+          process.exit(0);
+        } catch (error) {
+          console.error('Error during shutdown:', error);
+          resolve();
+          process.exit(1);
+        }
+      });
     });
-  }
-});
+  };
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise);
-  console.error('Reason:', reason);
-  if (reason instanceof Error) {
-    console.error('Stack:', reason.stack);
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  process.on('uncaughtException', (error) => {
+    console.error('❌ Uncaught Exception:', error);
+    console.error('Stack:', error.stack);
+    if (process.env.NODE_ENV === 'production') {
+      gracefulShutdown('UNCAUGHT_EXCEPTION').then(() => {
+        process.exit(1);
+      });
+    }
+  });
+
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled Rejection at:', promise);
+    console.error('Reason:', reason);
+    if (reason instanceof Error) {
+      console.error('Stack:', reason.stack);
+    }
+    if (process.env.NODE_ENV === 'production') {
+      gracefulShutdown('UNHANDLED_REJECTION').then(() => {
+        process.exit(1);
+      });
+    }
+  });
+
+  return server;
+}
+
+// Cluster mode configuration
+const ENABLE_CLUSTER = process.env.ENABLE_CLUSTER === 'true' || 
+                       (process.env.NODE_ENV === 'production' && process.env.ENABLE_CLUSTER !== 'false');
+const NUM_WORKERS = parseInt(process.env.NUM_WORKERS || '0', 10) || os.cpus().length;
+
+if (ENABLE_CLUSTER && cluster.isPrimary) {
+  // Primary process - spawn workers
+  console.log(`🔄 Starting cluster mode with ${NUM_WORKERS} workers`);
+  console.log(`💻 CPU cores available: ${os.cpus().length}`);
+  
+  // Spawn workers
+  for (let i = 0; i < NUM_WORKERS; i++) {
+    cluster.fork();
   }
-  if (process.env.NODE_ENV === 'production') {
-    gracefulShutdown('UNHANDLED_REJECTION').then(() => {
-      process.exit(1);
-    });
-  }
-});
+
+  // Handle worker exit - restart if crashed
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`⚠️  Worker ${worker.id} died (${signal || code}). Restarting...`);
+    cluster.fork();
+  });
+
+  // Handle worker online
+  cluster.on('online', (worker) => {
+    console.log(`✅ Worker ${worker.id} is online`);
+  });
+
+  // Graceful shutdown for cluster
+  const shutdownCluster = async (signal) => {
+    console.log(`${signal} received. Shutting down cluster...`);
+    
+    // Disconnect all workers
+    for (const id in cluster.workers) {
+      cluster.workers[id].kill();
+    }
+    
+    // Wait a bit for workers to finish
+    setTimeout(() => {
+      process.exit(0);
+    }, 5000);
+  };
+
+  process.on('SIGTERM', () => shutdownCluster('SIGTERM'));
+  process.on('SIGINT', () => shutdownCluster('SIGINT'));
+} else {
+  // Single process mode (development or when cluster is disabled)
+  startServer();
+}
 
 module.exports = app;

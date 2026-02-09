@@ -84,26 +84,26 @@ const authenticate = async (req, res, next) => {
       user.role_code = String(roleCode).toUpperCase().trim();
     } else {
       // Log error if role cannot be determined
-      console.error('[AUTHENTICATE] ERROR: Could not determine user role', {
-        userId: user.id,
-        email: user.email,
-        userKeys: Object.keys(user),
-        decodedRole: decoded.role,
-        userObject: user
-      });
+      // console.error('[AUTHENTICATE] ERROR: Could not determine user role', {
+      //   userId: user.id,
+      //   email: user.email,
+      //   userKeys: Object.keys(user),
+      //   decodedRole: decoded.role,
+      //   userObject: user
+      // });
       // Set a default or reject - but let's try to continue and see what happens
       // The authorize middleware will catch this
     }
     
     // Always log user authentication (for debugging)
-    console.log('[AUTHENTICATE] User loaded:', {
-      id: user.id,
-      email: user.email,
-      role_code: user.role_code,
-      allRoleKeys: roleKeys,
-      userKeys: Object.keys(user).filter(k => k.toLowerCase().includes('role')),
-      source: user.source
-    });
+    // console.log('[AUTHENTICATE] User loaded:', {
+    //   id: user.id,
+    //   email: user.email,
+    //   role_code: user.role_code,
+    //   allRoleKeys: roleKeys,
+    //   userKeys: Object.keys(user).filter(k => k.toLowerCase().includes('role')),
+    //   source: user.source
+    // });
 
     // For students: Check if internship has ended
     if (user.role_code === 'STUDENT' && user.internship_end_date) {
@@ -196,7 +196,7 @@ const authenticate = async (req, res, next) => {
  */
 const authorize = (...roles) => {
   // Log what roles were passed to authorize
-  console.log('[AUTHORIZE] Middleware created with roles:', roles);
+  // console.log('[AUTHORIZE] Middleware created with roles:', roles);
   
   return (req, res, next) => {
     if (!req.user) {
@@ -212,32 +212,32 @@ const authorize = (...roles) => {
     const allowedRoles = roles.map((r) => String(r).toUpperCase().trim());
     
     // Log the roles array to see what we're working with
-    console.log('[AUTHORIZE] Roles array:', roles, 'Mapped to:', allowedRoles);
+    // console.log('[AUTHORIZE] Roles array:', roles, 'Mapped to:', allowedRoles);
 
     // Always log authorization attempts (for debugging)
-    console.log('[AUTHORIZE]', {
-      path: req.path,
-      method: req.method,
-      userRole: userRole,
-      normalizedRole: normalizedRole,
-      allowedRoles: allowedRoles,
-      userObject: {
-        role_code: req.user.role_code,
-        email: req.user.email,
-        id: req.user.id,
-        allKeys: Object.keys(req.user).filter(k => k.toLowerCase().includes('role'))
-      },
-      match: allowedRoles.includes(normalizedRole)
-    });
+    // console.log('[AUTHORIZE]', {
+    //   path: req.path,
+    //   method: req.method,
+    //   userRole: userRole,
+    //   normalizedRole: normalizedRole,
+    //   allowedRoles: allowedRoles,
+    //   userObject: {
+    //     role_code: req.user.role_code,
+    //     email: req.user.email,
+    //     id: req.user.id,
+    //     allKeys: Object.keys(req.user).filter(k => k.toLowerCase().includes('role'))
+    //   },
+    //   match: allowedRoles.includes(normalizedRole)
+    // });
 
     if (!normalizedRole || !allowedRoles.includes(normalizedRole)) {
-      console.error('[AUTHORIZE] ACCESS DENIED:', {
-        path: req.path,
-        userRole: userRole,
-        normalizedRole: normalizedRole,
-        allowedRoles: allowedRoles,
-        userEmail: req.user.email
-      });
+      // console.error('[AUTHORIZE] ACCESS DENIED:', {
+      //   path: req.path,
+      //   userRole: userRole,
+      //   normalizedRole: normalizedRole,
+      //   allowedRoles: allowedRoles,
+      //   userEmail: req.user.email
+      // });
       return res.status(403).json({
         success: false,
         message: 'Access denied. Insufficient permissions.',

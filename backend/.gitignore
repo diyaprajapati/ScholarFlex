@@ -8,6 +8,8 @@ build/
 uploads/
 uploads/**
 !uploads/.gitkeep
+# PM2 logs directory
+logs/
 
 
 /generated/prisma

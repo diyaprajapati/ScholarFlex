@@ -21,10 +21,27 @@ if (!dbUrl) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Initialize Prisma Client
-// Prisma Client will use DATABASE_URL from environment
+// Configure connection pool settings
+// Default: 20 connections (increased from Prisma default of 10)
+// Can be overridden via DATABASE_CONNECTION_LIMIT env variable
+const connectionLimit = parseInt(process.env.DATABASE_CONNECTION_LIMIT || '20', 10);
+const poolTimeout = parseInt(process.env.DATABASE_POOL_TIMEOUT || '20', 10);
+
+// Parse DATABASE_URL and append connection pool parameters if not already present
+let enhancedDbUrl = dbUrl;
+if (!enhancedDbUrl.includes('connection_limit') && !enhancedDbUrl.includes('pool_timeout')) {
+  const separator = enhancedDbUrl.includes('?') ? '&' : '?';
+  enhancedDbUrl = `${enhancedDbUrl}${separator}connection_limit=${connectionLimit}&pool_timeout=${poolTimeout}`;
+}
+
+// Initialize Prisma Client with enhanced connection pool
 const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  datasources: {
+    db: {
+      url: enhancedDbUrl,
+    },
+  },
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 });
 
 // Test Prisma connection with retry logic (only in server context, not during CLI commands)
