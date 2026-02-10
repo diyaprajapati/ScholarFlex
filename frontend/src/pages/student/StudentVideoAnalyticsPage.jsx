@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../utils/auth';
 import { ROUTES } from '../../config/paths';
 import api from '../../services/api';
-import StudentSidebar from '../../components/student/StudentSidebar';
+import { useStudentLayout } from '../../contexts/StudentLayoutContext';
 import { ArrowLeft, Clock, Play, CheckCircle, TrendingUp, Calendar, Video, Menu } from 'lucide-react';
 
 const StudentVideoAnalyticsPage = () => {
   const navigate = useNavigate();
+  const { setSidebarOpen } = useStudentLayout();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [analytics, setAnalytics] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -87,15 +87,7 @@ const StudentVideoAnalyticsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <StudentSidebar
-        activeTab="video-analytics"
-        setActiveTab={() => {}}
-        isOpen={sidebarOpen}
-        setIsOpen={setSidebarOpen}
-      />
-
-      <div className="flex-1 flex flex-col w-full lg:ml-64">
+    <div className="flex-1 flex flex-col w-full lg:ml-64">
         {/* Top Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30 lg:static">
           <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4">
@@ -103,7 +95,7 @@ const StudentVideoAnalyticsPage = () => {
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
                 {/* Mobile Menu Button */}
                 <button
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  onClick={() => setSidebarOpen((prev) => !prev)}
                   className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600 shrink-0 cursor-pointer"
                   aria-label="Toggle menu"
                 >
@@ -301,7 +293,6 @@ const StudentVideoAnalyticsPage = () => {
           )}
         </main>
       </div>
-    </div>
   );
 };
 

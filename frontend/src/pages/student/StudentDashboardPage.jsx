@@ -1,40 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import { authService } from '../../utils/auth';
 import { ROUTES } from '../../config/paths';
 import api from '../../services/api';
-import StudentSidebar from '../../components/student/StudentSidebar';
+import { useStudentLayout } from '../../contexts/StudentLayoutContext';
 import DashboardTab from '../../components/student/DashboardTab';
 import PlaylistsTab from '../../components/student/PlaylistsTab';
 import ActivityTab from '../../components/student/ActivityTab';
 import NOCTab from '../../components/student/NOCTab';
 import InternshipTab from '../../components/student/InternshipTab';
 import PlaylistModal from '../../components/student/PlaylistModal';
-import LockedFeatureModal from '../../components/student/LockedFeatureModal';
 import TimeTracking from '../../components/student/TimeTracking';
 import { Menu } from 'lucide-react';
 
+const DASHBOARD_TAB_IDS = ['dashboard', 'playlists', 'activity', 'internship', 'noc'];
+
 const StudentDashboardPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { tab } = useParams();
+  const { setSidebarOpen } = useStudentLayout();
   const [user, setUser] = useState(null);
   const isOpenStudent = authService.isOpenStudent();
-  
-  // Determine active tab from URL
-  const getActiveTabFromPath = () => {
-    const path = location.pathname;
-    if (path === ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS) return 'playlists';
-    if (path === ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY) return 'activity';
-    if (path === ROUTES.STUDENT.DASHBOARD_TABS.NOC) return 'noc';
-    if (path === ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP) return 'internship';
-    return 'dashboard'; // Default to dashboard
-  };
-  
-  const [activeTab, setActiveTab] = useState(getActiveTabFromPath());
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const activeTab = DASHBOARD_TAB_IDS.includes(tab) ? tab : 'dashboard';
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showLockedModal, setShowLockedModal] = useState(false);
   
   // Dashboard Tab State
   const [continueWatching, setContinueWatching] = useState([]);
@@ -66,7 +57,6 @@ const StudentDashboardPage = () => {
       }
       fetchCurrentStudent();
       fetchInitialData();
-      setActiveTab(getActiveTabFromPath());
       return;
     }
     
@@ -90,14 +80,9 @@ const StudentDashboardPage = () => {
       return;
     }
 
-    // Refresh dashboard data when returning to dashboard (e.g., from video page)
-    // This ensures progress updates are reflected
     fetchInitialData();
-    
-    // Set active tab based on current URL
-    setActiveTab(getActiveTabFromPath());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, isOpenStudent]); // Update tab when URL changes and refresh data
+  }, [tab, isOpenStudent]);
 
   // Fetch current student for open students
   const fetchCurrentStudent = async () => {
@@ -456,7 +441,7 @@ const StudentDashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="flex-1 flex w-full lg:ml-64 bg-white items-center justify-center px-4">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-green-600 border-t-transparent mb-3 sm:mb-4"></div>
           <p className="text-sm sm:text-base text-gray-600">Loading...</p>
@@ -465,17 +450,12 @@ const StudentDashboardPage = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <StudentSidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isOpen={sidebarOpen}
-        setIsOpen={setSidebarOpen}
-        onLockedTabClick={isOpenStudent ? () => setShowLockedModal(true) : undefined}
-      />
+  if (tab && !DASHBOARD_TAB_IDS.includes(tab)) {
+    return <Navigate to={ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD} replace />;
+  }
 
+  return (
+    <>
       {/* Main Content */}
       <div className="flex-1 flex flex-col w-full lg:ml-64">
         {/* Top Header */}
@@ -485,7 +465,7 @@ const StudentDashboardPage = () => {
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
                 {/* Mobile Menu Button */}
                 <button
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  onClick={() => setSidebarOpen((prev) => !prev)}
                   className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600 shrink-0"
                   aria-label="Toggle menu"
                 >
@@ -582,15 +562,7 @@ const StudentDashboardPage = () => {
         getThumbnailUrl={getThumbnailUrl}
         handleVideoClick={handleVideoClick}
       />
-
-      {/* Locked Feature Modal - only for open students */}
-      {isOpenStudent && (
-        <LockedFeatureModal
-          isOpen={showLockedModal}
-          onClose={() => setShowLockedModal(false)}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

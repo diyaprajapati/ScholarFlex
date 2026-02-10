@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, BookOpen, BarChart3, FileText, X, Video, Briefcase, User, Lock } from 'lucide-react';
 import { ROUTES } from '../../config/paths';
 import { authService } from '../../utils/auth';
@@ -10,12 +10,28 @@ const OPEN_STUDENT_ALLOWED_ROUTES = [
   ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS,
 ];
 
-export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsOpen, onLockedTabClick }) {
+// Derive active tab id from pathname so parent re-renders don't change this prop
+function getActiveTabFromPathname(pathname) {
+  if (pathname === ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD) return 'dashboard';
+  if (pathname === ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS) return 'playlists';
+  if (pathname === ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY) return 'activity';
+  if (pathname === ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP) return 'internship';
+  if (pathname === ROUTES.STUDENT.DASHBOARD_TABS.NOC) return 'noc';
+  if (pathname === ROUTES.STUDENT.VIDEO_ANALYTICS) return 'video-analytics';
+  if (pathname === ROUTES.STUDENT.FORM) return 'profile';
+  if (pathname.startsWith('/student/video/')) return null; // video player page
+  return 'dashboard';
+}
+
+const StudentSidebar = React.memo(function StudentSidebar({ isOpen, setIsOpen, onLockedTabClick }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const userRole = authService.getUserRole();
   const isOpenStudent = userRole === 'OPEN_STUDENT';
-  
-  const menuItems = [
+
+  const activeTab = useMemo(() => getActiveTabFromPathname(pathname), [pathname]);
+
+  const menuItems = useMemo(() => [
     { 
       id: 'dashboard', 
       label: 'Dashboard', 
@@ -65,7 +81,7 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
       path: ROUTES.STUDENT.DASHBOARD_TABS.NOC, 
       accessible: !isOpenStudent 
     },
-  ];
+  ], [isOpenStudent]);
 
   const handleItemClick = (item) => {
     // Check if item is disabled for open students
@@ -79,7 +95,6 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
       return;
     }
 
-    setActiveTab(item.id);
     navigate(item.path);
     // Close sidebar on mobile after selection
     if (window.innerWidth < 1024) {
@@ -171,9 +186,13 @@ export default function StudentSidebar({ activeTab, setActiveTab, isOpen, setIsO
               <p>© 2025 ScholarFlex</p>
             </div>
           </div>
-        </div>
-      </aside>
+    </div>
+  </aside>
     </>
   );
-}
+});
+
+StudentSidebar.displayName = 'StudentSidebar';
+
+export default StudentSidebar;
 

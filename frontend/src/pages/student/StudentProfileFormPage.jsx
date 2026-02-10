@@ -5,11 +5,12 @@ import { ROUTES } from '../../config/paths'
 import api from '../../services/api'
 import { Plus, X, Upload, CheckCircle, AlertCircle, Edit2, Save, XCircle, Menu } from 'lucide-react'
 import ProfileViewMode from '../../components/student/ProfileViewMode'
-import StudentSidebar from '../../components/student/StudentSidebar'
+import { useStudentLayout } from '../../contexts/StudentLayoutContext'
 
 export default function StudentProfileFormPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { setSidebarOpen } = useStudentLayout()
   const [loading, setLoading] = useState(true)
   const [checking, setChecking] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -19,8 +20,6 @@ export default function StudentProfileFormPage() {
   const [success, setSuccess] = useState('')
   const [domains, setDomains] = useState([])
   const [isEditMode, setIsEditMode] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState('profile')
   const [user, setUser] = useState(null)
   const lastPathnameRef = useRef(location.pathname)
   const isPageVisibleRef = useRef(true)
@@ -700,17 +699,7 @@ export default function StudentProfileFormPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <StudentSidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isOpen={sidebarOpen}
-        setIsOpen={setSidebarOpen}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col w-full lg:ml-64">
+    <div className="flex-1 flex flex-col w-full lg:ml-64">
         {/* Top Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30 lg:static">
           <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4">
@@ -718,7 +707,7 @@ export default function StudentProfileFormPage() {
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
                 {/* Mobile Menu Button */}
                 <button
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  onClick={() => setSidebarOpen((prev) => !prev)}
                   className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600 shrink-0"
                   aria-label="Toggle menu"
                 >
@@ -1422,7 +1411,6 @@ export default function StudentProfileFormPage() {
           </div>
         </main>
       </div>
-    </div>
   )
 }
 

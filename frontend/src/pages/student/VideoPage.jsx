@@ -3,7 +3,6 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { authService } from '../../utils/auth';
 import { ROUTES } from '../../config/paths';
 import api from '../../services/api';
-import StudentSidebar from '../../components/student/StudentSidebar';
 import YouTubeVideoPlayer from '../../components/video/YouTubeVideoPlayer';
 import { ArrowLeft, Play } from 'lucide-react';
 
@@ -19,7 +18,6 @@ const VideoPage = () => {
   const [playlist, setPlaylist] = useState(null);
   const [playlistVideos, setPlaylistVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [startTime, setStartTime] = useState(0);
 
   // Get video info from URL params
@@ -439,17 +437,7 @@ const VideoPage = () => {
     : (videoId || extractVideoId(videoUrl || ''));
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <StudentSidebar
-        activeTab=""
-        setActiveTab={() => { }}
-        isOpen={sidebarOpen}
-        setIsOpen={setSidebarOpen}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:ml-64">
+    <div className="flex-1 flex flex-col w-full lg:ml-64">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
           <div className="flex items-center gap-4">
@@ -601,7 +589,6 @@ const VideoPage = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

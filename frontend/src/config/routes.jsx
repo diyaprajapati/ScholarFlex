@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute, LandingPageGuard } from '../components'
 import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, OpenStudentAnalyticsPage, FirebaseAnalyticsPage, TimerLogsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage } from '../pages'
 import OpenStudentRegistration from '../components/student/OpenStudentRegistration'
+import { StudentLayoutProvider } from '../contexts/StudentLayoutContext'
+import StudentLayout from '../components/student/StudentLayout'
 import { ROUTES } from './paths'
 
 /**
@@ -232,47 +234,7 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Student Routes - Consolidated for both regular students and open students */}
-      <Route
-        path={ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD}
-        element={
-          <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']} requireSelected={true}>
-            <StudentDashboardPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={ROUTES.STUDENT.DASHBOARD_TABS.PLAYLISTS}
-        element={
-          <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']} requireSelected={true}>
-            <StudentDashboardPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={ROUTES.STUDENT.DASHBOARD_TABS.ACTIVITY}
-        element={
-          <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']} requireSelected={true}>
-            <StudentDashboardPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={ROUTES.STUDENT.DASHBOARD_TABS.INTERNSHIP}
-        element={
-          <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']} requireSelected={true}>
-            <StudentDashboardPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={ROUTES.STUDENT.DASHBOARD_TABS.NOC}
-        element={
-          <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']} requireSelected={true}>
-            <StudentDashboardPage />
-          </ProtectedRoute>
-        }
-      />
+      {/* Student routes without layout (no sidebar) - must be more specific than /student/:tab */}
       <Route
         path={ROUTES.STUDENT.INSTRUCTIONS}
         element={
@@ -297,26 +259,8 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/student/video/:videoId"
-        element={
-          <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']}>
-            <VideoPage />
-          </ProtectedRoute>
-        }
-      />
 
-      {/* Student Video Analytics Route */}
-      <Route
-        path={ROUTES.STUDENT.VIDEO_ANALYTICS}
-        element={
-          <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']} requireSelected={true}>
-            <StudentVideoAnalyticsPage />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Student Feedback Route */}
+      {/* Student Feedback Route - no layout */}
       <Route
         path={ROUTES.STUDENT.FEEDBACK}
         element={
@@ -326,15 +270,23 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Student Form Route */}
+      {/* Student routes with layout (sidebar stays mounted when switching tabs/pages) */}
       <Route
-        path={ROUTES.STUDENT.FORM}
+        path={ROUTES.STUDENT.BASE}
         element={
           <ProtectedRoute allowedRoles={['STUDENT', 'OPEN_STUDENT']}>
-            <StudentFormPage />
+            <StudentLayoutProvider>
+              <StudentLayout />
+            </StudentLayoutProvider>
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<Navigate to={ROUTES.STUDENT.DASHBOARD_TABS.DASHBOARD} replace />} />
+        <Route path="video/:videoId" element={<VideoPage />} />
+        <Route path="video-analytics" element={<StudentVideoAnalyticsPage />} />
+        <Route path="form" element={<StudentFormPage />} />
+        <Route path=":tab" element={<StudentDashboardPage />} />
+      </Route>
 
       {/* Open Student Registration (Public - no auth required) */}
       <Route
