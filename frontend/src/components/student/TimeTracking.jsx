@@ -32,6 +32,7 @@ const TimeTracking = () => {
   const currentQuestionRef = useRef(null);
   const pauseStartTimeRef = useRef(null);
   const pausedElapsedTimeRef = useRef(0);
+  const autoStopInProgressRef = useRef(false);
 
   // Format time as HH:MM:SS
   const formatTime = (seconds) => {
@@ -62,15 +63,18 @@ const TimeTracking = () => {
 
   // Helper to clear session state locally
   const stopSessionLocally = () => {
+    if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
+    questionTimeoutRef.current = null;
+
     // Clear intervals
     if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
     if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
-    if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
 
     // Clear question and session state
     setSession(null);
     sessionRef.current = null;
+    autoStopInProgressRef.current = false;
     setElapsedTime(0);
     setShowQuestion(false);
     showQuestionRef.current = false;
@@ -83,69 +87,74 @@ const TimeTracking = () => {
     loadTodayHours();
   };
 
-  // Handle auto-stop session when question is not answered
+  // Handle auto-stop session when question is not answered (2 min timeout)
   const handleAutoStopSession = async () => {
-    // console.log('Auto-stopping session due to unanswered question...');
+    if (autoStopInProgressRef.current) return;
+    autoStopInProgressRef.current = true;
 
-    // 1. Attempt to show notification (non-blocking)
     try {
-      showBackgroundNotification(() => {
-        window.focus();
-      }).catch(err => console.error('Background notification failed:', err));
-    } catch (error) {
-      console.error('Error initiating notification:', error);
-    }
+      // Show notification only once
+      try {
+        showBackgroundNotification(() => {
+          window.focus();
+        }).catch(err => console.error('Background notification failed:', err));
+      } catch (error) {
+        console.error('Error initiating notification:', error);
+      }
 
-    // 2. Stop the session on the backend
-    try {
-      const response = await api.timeTracking.finish();
-      if (response.success) {
+      try {
+        const response = await api.timeTracking.finish();
+        if (response.success) {
+          stopSessionLocally();
+        }
+      } catch (error) {
+        console.error('Error auto-stopping session API:', error);
         stopSessionLocally();
       }
-    } catch (error) {
-      console.error('Error auto-stopping session API:', error);
-      // Fallback: stop locally anyway so the user sees the timer stop
-      stopSessionLocally();
+    } finally {
+      autoStopInProgressRef.current = false;
     }
   };
 
-  // Check for pending questions stored in localStorage
+  // Check for pending questions stored in localStorage (e.g. after tab was closed/refreshed)
   const checkForPendingQuestion = async () => {
     try {
       const pendingQuestion = localStorage.getItem('pendingAttendanceQuestion');
-      if (pendingQuestion) {
-        const questionData = JSON.parse(pendingQuestion);
-        const questionTime = new Date(questionData.askedAt);
-        const now = new Date();
-        const elapsedMs = now - questionTime;
-        const TIMEOUT_MS = 120000; // 2 minutes
+      if (!pendingQuestion) return;
 
-        // If question was asked less than 2 minutes ago (plus minimal grace), show it and pause timer
-        if (elapsedMs < TIMEOUT_MS) {
-          // PAUSE TIMER: Store current elapsed time and pause start time
-          if (sessionRef.current) {
-            const startTime = new Date(sessionRef.current.startTime);
-            const currentElapsed = Math.floor((now - startTime) / 1000);
-            pausedElapsedTimeRef.current = currentElapsed;
-            pauseStartTimeRef.current = questionTime; // Use question time as pause start
-          }
+      const questionData = JSON.parse(pendingQuestion);
+      const questionTime = new Date(questionData.askedAt);
+      const now = new Date();
+      const elapsedMs = now - questionTime;
+      const TIMEOUT_MS = 120000; // 2 minutes
 
-          setCurrentQuestion(questionData);
-          setShowQuestion(true);
-          setAnswer('');
-          setQuestionError('');
+      // If we already have this exact question showing, only refresh timeout once (don't re-set state every 30s)
+      if (showQuestionRef.current && currentQuestionRef.current?.id === questionData.id) {
+        // Already showing this question - do not re-set state or re-set timeout (avoids repeated triggers)
+        return;
+      }
 
-          // Restore timeout for remaining time
-          const remainingTime = TIMEOUT_MS - elapsedMs;
-          if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
-          questionTimeoutRef.current = setTimeout(handleAutoStopSession, remainingTime);
-
-          // Focus window to bring attention
-          window.focus();
-        } else {
-          // Time expired while away/refreshed - stop session
-          handleAutoStopSession();
+      if (elapsedMs < TIMEOUT_MS) {
+        // PAUSE TIMER: Store current elapsed time and pause start time
+        if (sessionRef.current) {
+          const startTime = new Date(sessionRef.current.startTime);
+          const currentElapsed = Math.floor((now - startTime) / 1000);
+          pausedElapsedTimeRef.current = currentElapsed;
+          pauseStartTimeRef.current = questionTime;
         }
+
+        setCurrentQuestion(questionData);
+        setShowQuestion(true);
+        setAnswer('');
+        setQuestionError('');
+
+        const remainingTime = TIMEOUT_MS - elapsedMs;
+        if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
+        questionTimeoutRef.current = setTimeout(handleAutoStopSession, remainingTime);
+
+        if (!document.hidden) window.focus();
+      } else {
+        handleAutoStopSession();
       }
     } catch (error) {
       console.error('Error checking pending question:', error);
@@ -192,12 +201,12 @@ const TimeTracking = () => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Also check periodically for pending questions (in case tab was closed)
+    // Check periodically for pending questions only when tab was closed (avoid re-triggering when modal already open)
     const pendingCheckInterval = setInterval(() => {
       if (!document.hidden) {
         checkForPendingQuestion();
       }
-    }, 30000); // Check every 30 seconds
+    }, 60000); // Check every 60 seconds (was 30s - reduced to avoid repeated triggers)
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -291,19 +300,19 @@ const TimeTracking = () => {
       }
     }, 1000);
 
-    // Check for questions every minute (always, regardless of tab focus)
+    // Check for questions every minute (so we ask soon after 10 min mark)
     questionIntervalRef.current = setInterval(() => {
       if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
         checkForQuestion();
       }
-    }, 60000); // Check every minute
+    }, 60000);
 
-    // Initial check after a short delay to ensure session is set
+    // Initial check after delay so session ref is set
     setTimeout(() => {
       if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
         checkForQuestion();
       }
-    }, 2000);
+    }, 5000);
   };
 
   // Check if it's time to ask a question (every 10 minutes)
@@ -336,15 +345,28 @@ const TimeTracking = () => {
       setLoading(true);
       const response = await api.timeTracking.askQuestion();
       if (response.success) {
+        const now = new Date();
         const questionData = {
           ...response.question,
-          askedAt: new Date().toISOString(),
+          askedAt: now.toISOString(),
         };
+
+        // Update session ref immediately so the next checkForQuestion (every 1 min) sees this question
+        // and does not ask again for 10 minutes (avoids repeated questions/notifications)
+        if (sessionRef.current) {
+          const updatedSession = {
+            ...sessionRef.current,
+            attendanceQuestions: [
+              { ...response.question, askedAt: questionData.askedAt },
+              ...(sessionRef.current.attendanceQuestions || []),
+            ],
+          };
+          sessionRef.current = updatedSession;
+        }
 
         // PAUSE TIMER: Store current elapsed time and pause start time
         if (sessionRef.current) {
           const startTime = new Date(sessionRef.current.startTime);
-          const now = new Date();
           const currentElapsed = Math.floor((now - startTime) / 1000);
           pausedElapsedTimeRef.current = currentElapsed;
           pauseStartTimeRef.current = now;
