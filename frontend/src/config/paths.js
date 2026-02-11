@@ -23,6 +23,7 @@ export const ROUTES = {
   INTERNSHIP_STATUS: '/internship-status',
   PROJECT_MANAGEMENT: '/project-management',
   EVALUATION_MANAGEMENT: '/evaluation-management',
+  DOMAIN_MANAGEMENT: '/domain-management',
 
   // Question Papers Routes
   QUESTION_PAPERS: {

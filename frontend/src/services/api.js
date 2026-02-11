@@ -444,6 +444,26 @@ export const api = {
         method: 'GET',
       });
     },
+    create: async (data) => {
+      return apiRequest('/admin/domains', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    getStats: async () => {
+      return apiRequest('/admin/domains/stats', {
+        method: 'GET',
+      });
+    },
+    delete: async (id, data = {}) => {
+      const options = {
+        method: 'DELETE',
+      };
+      if (data && Object.keys(data).length > 0) {
+        options.body = JSON.stringify(data);
+      }
+      return apiRequest(`/admin/domains/${id}`, options);
+    },
   },
 
   studentTests: {

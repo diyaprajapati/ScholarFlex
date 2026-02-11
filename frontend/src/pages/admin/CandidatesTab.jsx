@@ -531,7 +531,6 @@ const CandidatesTab = () => {
 
   const {
     register,
-    handleSubmit,
     reset,
     formState: { errors },
   } = useForm({
@@ -589,35 +588,47 @@ const CandidatesTab = () => {
     reset();
   }, [reset]);
 
-  const handleFormSubmit = useCallback(async (data) => {
+  const handleFormSubmit = useCallback(async (event) => {
+    event.preventDefault();
     setError('');
     setSuccess('');
     setIsSubmittingForm(true);
 
     try {
+      const form = event.currentTarget;
+      const formData = new FormData(form);
+
+      const getValue = (name) => {
+        const value = formData.get(name);
+        if (value === null || value === undefined) return null;
+        const str = value.toString().trim();
+        return str === '' ? null : str;
+      };
+
       const studentData = {
-        full_name: data.full_name.trim(),
-        email: data.email.trim().toLowerCase(),
-        phone: data.phone.trim(),
-        domain_id: data.domain_id || null,
-        institute_name: data.institute_name || null,
-        course_taken: data.course_taken || null,
-        internship_start_date: data.internship_start_date || null,
-        internship_end_date: data.internship_end_date || null,
-        internship_duration: data.internship_duration || null,
-        reference_information: data.reference_information || null,
-        internal_faculty_name: data.internal_faculty_name || null,
-        faculty_contact: data.faculty_contact || null,
-        faculty_email: data.faculty_email ? data.faculty_email.trim().toLowerCase() : null,
-        image_url: data.image_url || null,
+        full_name: (getValue('full_name') || '').trim(),
+        email: (getValue('email') || '').toLowerCase(),
+        phone: getValue('phone') || '',
+        domain_id: getValue('domain_id') || null,
+        institute_name: getValue('institute_name'),
+        course_taken: getValue('course_taken'),
+        internship_start_date: getValue('internship_start_date'),
+        internship_end_date: getValue('internship_end_date'),
+        internship_duration: getValue('internship_duration'),
+        reference_information: getValue('reference_information'),
+        internal_faculty_name: getValue('internal_faculty_name'),
+        faculty_contact: getValue('faculty_contact'),
+        faculty_email: (() => {
+          const v = getValue('faculty_email');
+          return v ? v.toLowerCase() : null;
+        })(),
+        image_url: getValue('image_url'),
       };
 
       if (editingStudent) {
-        // Update existing student
         await api.candidates.update(editingStudent.id, studentData);
         setSuccess('Student updated successfully!');
       } else {
-        // Create new student
         await api.candidates.create(studentData);
         setSuccess('Student added successfully!');
       }
@@ -2203,7 +2214,7 @@ const CandidatesTab = () => {
               </div>
 
               {/* Modal Form */}
-              <form onSubmit={handleSubmit(handleFormSubmit)} className="px-6 py-5">
+              <form onSubmit={handleFormSubmit} className="px-6 py-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Full Name */}
                   <div>
@@ -2390,7 +2401,7 @@ const CandidatesTab = () => {
                       Image URL
                     </label>
                     <input
-                      type="url"
+                      // type="url"
                       id="image_url"
                       name="image_url"
                       defaultValue={editingStudent?.image_url || ''}

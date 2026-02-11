@@ -13,6 +13,7 @@ const ADMIN_ALLOWED_ROUTES = [
   ROUTES.OPEN_STUDENT_ANALYTICS,
   ROUTES.FIREBASE_ANALYTICS,
   ROUTES.TIMER_LOGS,
+  ROUTES.DOMAIN_MANAGEMENT,
 ]
 
 const NAVIGATION_MENU = {
@@ -36,10 +37,11 @@ const NAVIGATION_MENU = {
     {
       id: 'contentManagement',
       label: 'Content Management',
-      routes: [ROUTES.QUESTION_PAPERS.BASE, ROUTES.PLAYLISTS.BASE],
+      routes: [ROUTES.QUESTION_PAPERS.BASE, ROUTES.PLAYLISTS.BASE, ROUTES.DOMAIN_MANAGEMENT],
       items: [
         { label: 'Question Papers', path: ROUTES.QUESTION_PAPERS.LIST, icon: FileText, matchPattern: ROUTES.QUESTION_PAPERS.BASE },
         { label: 'Playlists', path: ROUTES.PLAYLISTS.MANAGEMENT, icon: Music, matchPattern: ROUTES.PLAYLISTS.BASE },
+        { label: 'Domains', path: ROUTES.DOMAIN_MANAGEMENT, icon: FolderKanban },
       ],
     },
     {

@@ -2,6 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const adminController = require('../controllers/adminController');
 const playlistController = require('../controllers/playlistController');
+const domainController = require('../controllers/domainController');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -97,7 +98,7 @@ superAdminRouter.put(
  */
 superAdminRouter.delete('/:id', adminController.deleteAdmin);
 
-// Admin/Super Admin routes for playlists
+// Admin/Super Admin routes for playlists and domains
 /**
  * @route   POST /api/admin/playlists
  * @desc    Create a new playlist (Admin/Super Admin)
@@ -121,6 +122,27 @@ adminRouter.post(
   ],
   playlistController.createPlaylist
 );
+
+/**
+ * @route   POST /api/admin/domains
+ * @desc    Create a new domain (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.post('/domains', domainController.createDomain);
+
+/**
+ * @route   GET /api/admin/domains/stats
+ * @desc    Get domains with student counts (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/domains/stats', domainController.getDomainStats);
+
+/**
+ * @route   DELETE /api/admin/domains/:id
+ * @desc    Soft delete a domain and optionally reassign students (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.delete('/domains/:id', domainController.deleteDomain);
 
 /**
  * @route   POST /api/admin/playlists/:id/videos
