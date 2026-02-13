@@ -19,13 +19,13 @@ router.use((req, res, next) => {
   const normalizedRole = userRole ? String(userRole).toUpperCase().trim() : null;
   const allowedRoles = ['ADMIN', 'SUPER_ADMIN']; // Explicitly set both roles here
 
-  console.log('[AUTHORIZE adminTimeTracking]', {
-    path: req.path,
-    userRole: userRole,
-    normalizedRole: normalizedRole,
-    allowedRoles: allowedRoles,
-    match: allowedRoles.includes(normalizedRole)
-  });
+  // console.log('[AUTHORIZE adminTimeTracking]', {
+  //   path: req.path,
+  //   userRole: userRole,
+  //   normalizedRole: normalizedRole,
+  //   allowedRoles: allowedRoles,
+  //   match: allowedRoles.includes(normalizedRole)
+  // });
 
   if (!normalizedRole || !allowedRoles.includes(normalizedRole)) {
     return res.status(403).json({

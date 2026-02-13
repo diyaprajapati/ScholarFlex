@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ROUTES } from '../../config/paths'
-import { X, ChevronDown, ChevronRight, LayoutDashboard, Users, FileText, Music, FolderKanban, ClipboardCheck, BarChart3, Settings, Shield, Lock, Clock } from 'lucide-react'
+import { X, ChevronDown, ChevronRight, LayoutDashboard, Users, FileText, Music, FolderKanban, ClipboardCheck, BarChart3, Settings, Shield, Lock, Clock, Building2 } from 'lucide-react'
 import { useSidebar } from '../../contexts/SidebarContext'
 
 // Navigation menu configuration
@@ -14,6 +14,7 @@ const ADMIN_ALLOWED_ROUTES = [
   ROUTES.FIREBASE_ANALYTICS,
   ROUTES.TIMER_LOGS,
   ROUTES.DOMAIN_MANAGEMENT,
+  ROUTES.INSTITUTE_MANAGEMENT,
 ]
 
 const NAVIGATION_MENU = {
@@ -37,11 +38,12 @@ const NAVIGATION_MENU = {
     {
       id: 'contentManagement',
       label: 'Content Management',
-      routes: [ROUTES.QUESTION_PAPERS.BASE, ROUTES.PLAYLISTS.BASE, ROUTES.DOMAIN_MANAGEMENT],
+      routes: [ROUTES.QUESTION_PAPERS.BASE, ROUTES.PLAYLISTS.BASE, ROUTES.DOMAIN_MANAGEMENT, ROUTES.INSTITUTE_MANAGEMENT],
       items: [
         { label: 'Question Papers', path: ROUTES.QUESTION_PAPERS.LIST, icon: FileText, matchPattern: ROUTES.QUESTION_PAPERS.BASE },
         { label: 'Playlists', path: ROUTES.PLAYLISTS.MANAGEMENT, icon: Music, matchPattern: ROUTES.PLAYLISTS.BASE },
         { label: 'Domains', path: ROUTES.DOMAIN_MANAGEMENT, icon: FolderKanban },
+        { label: 'Institutes', path: ROUTES.INSTITUTE_MANAGEMENT, icon: Building2 },
       ],
     },
     {

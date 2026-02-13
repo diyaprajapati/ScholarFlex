@@ -466,6 +466,20 @@ export const api = {
     },
   },
 
+  institutes: {
+    getStats: async () => {
+      return apiRequest('/admin/institutes/stats', {
+        method: 'GET',
+      });
+    },
+    merge: async (data) => {
+      return apiRequest('/admin/institutes/merge', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+  },
+
   studentTests: {
     getAvailable: async () => {
       return apiRequest('/student/tests', {

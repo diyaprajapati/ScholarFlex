@@ -25,6 +25,8 @@ const CandidatesTab = () => {
   const [editingStudent, setEditingStudent] = useState(null);
   const [domains, setDomains] = useState([]);
   const [isLoadingDomains, setIsLoadingDomains] = useState(false);
+  const [institutes, setInstitutes] = useState([]);
+  const [isLoadingInstitutes, setIsLoadingInstitutes] = useState(false);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [googleSheetsUrl, setGoogleSheetsUrl] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,11 +65,6 @@ const CandidatesTab = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchStudents();
-    fetchDomains();
-  }, [fetchStudents]);
-
   const fetchDomains = useCallback(async () => {
     try {
       setIsLoadingDomains(true);
@@ -80,6 +77,24 @@ const CandidatesTab = () => {
       setIsLoadingDomains(false);
     }
   }, []);
+
+  const fetchInstitutes = useCallback(async () => {
+    try {
+      setIsLoadingInstitutes(true);
+      const response = await api.institutes.getStats();
+      setInstitutes(response.institutes || response.data || []);
+    } catch (err) {
+      console.error('Error fetching institutes:', err);
+    } finally {
+      setIsLoadingInstitutes(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStudents();
+    fetchDomains();
+    fetchInstitutes();
+  }, [fetchStudents, fetchDomains, fetchInstitutes]);
 
   const fetchStudentDetails = useCallback(async (id) => {
     try {
@@ -553,6 +568,8 @@ const CandidatesTab = () => {
     },
   });
 
+  const [instituteSelectValue, setInstituteSelectValue] = useState('');
+
   const handleOpenFormModal = useCallback((student = null) => {
     setEditingStudent(student);
     if (student) {
@@ -576,11 +593,17 @@ const CandidatesTab = () => {
         faculty_email: student.faculty_email || '',
         image_url: student.image_url || '',
       });
+      const normalized = (student.institute_name || '').trim().toLowerCase();
+      const match = institutes.find(
+        (i) => (i.institute_name || '').trim().toLowerCase() === normalized
+      );
+      setInstituteSelectValue(match ? match.institute_name : '__other__');
     } else {
       reset();
+      setInstituteSelectValue('');
     }
     setShowFormModal(true);
-  }, [reset]);
+  }, [reset, institutes]);
 
   const handleCloseFormModal = useCallback(() => {
     setShowFormModal(false);
@@ -605,12 +628,32 @@ const CandidatesTab = () => {
         return str === '' ? null : str;
       };
 
+      const instituteNameValue = getValue('institute_name');
+
+      const normalizedInstitute =
+        (instituteNameValue || '').trim().toLowerCase();
+      if (
+        instituteSelectValue === '__other__' &&
+        normalizedInstitute &&
+        institutes.some(
+          (i) =>
+            (i.institute_name || '').trim().toLowerCase() ===
+            normalizedInstitute
+        )
+      ) {
+        setError(
+          'This institute already exists. Please select it from the dropdown instead of adding as new.'
+        );
+        setIsSubmittingForm(false);
+        return;
+      }
+
       const studentData = {
         full_name: (getValue('full_name') || '').trim(),
         email: (getValue('email') || '').toLowerCase(),
         phone: getValue('phone') || '',
         domain_id: getValue('domain_id') || null,
-        institute_name: getValue('institute_name'),
+        institute_name: instituteNameValue,
         course_taken: getValue('course_taken'),
         internship_start_date: getValue('internship_start_date'),
         internship_end_date: getValue('internship_end_date'),
@@ -643,7 +686,7 @@ const CandidatesTab = () => {
     } finally {
       setIsSubmittingForm(false);
     }
-  }, [editingStudent, fetchStudents, handleCloseFormModal]);
+  }, [editingStudent, fetchStudents, handleCloseFormModal, institutes, instituteSelectValue]);
 
   const handleOpenImportModal = useCallback(() => {
     setShowImportModal(true);
@@ -2305,6 +2348,29 @@ const CandidatesTab = () => {
                     <label htmlFor="institute_name" className="block text-sm font-medium text-gray-700 mb-1">
                       Institute Name <span className="text-red-500">*</span>
                     </label>
+                    <select
+                      value={instituteSelectValue}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setInstituteSelectValue(value);
+                        const inputEl = document.getElementById('institute_name');
+                        if (inputEl) {
+                          inputEl.value = value === '__other__' ? '' : value;
+                        }
+                      }}
+                      disabled={isLoadingInstitutes}
+                      className="mb-2 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {isLoadingInstitutes ? 'Loading institutes...' : 'Select Institute'}
+                      </option>
+                      {institutes.map((inst) => (
+                        <option key={inst.institute_name} value={inst.institute_name}>
+                          {inst.institute_name} ({inst.student_count ?? 0} students)
+                        </option>
+                      ))}
+                      <option value="__other__">Other (add new institute)</option>
+                    </select>
                     <input
                       type="text"
                       id="institute_name"
@@ -2312,6 +2378,7 @@ const CandidatesTab = () => {
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm ${
                         errors.institute_name ? 'border-red-500 bg-red-50' : 'border-gray-300'
                       }`}
+                      placeholder="Type institute name"
                       required
                     />
                     {errors.institute_name && (

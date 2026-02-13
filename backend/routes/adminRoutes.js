@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const adminController = require('../controllers/adminController');
 const playlistController = require('../controllers/playlistController');
 const domainController = require('../controllers/domainController');
+const instituteController = require('../controllers/instituteController');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -98,7 +99,7 @@ superAdminRouter.put(
  */
 superAdminRouter.delete('/:id', adminController.deleteAdmin);
 
-// Admin/Super Admin routes for playlists and domains
+// Admin/Super Admin routes for playlists, domains, and institutes
 /**
  * @route   POST /api/admin/playlists
  * @desc    Create a new playlist (Admin/Super Admin)
@@ -129,6 +130,20 @@ adminRouter.post(
  * @access  Private (Admin, Super Admin)
  */
 adminRouter.post('/domains', domainController.createDomain);
+
+/**
+ * @route   GET /api/admin/institutes/stats
+ * @desc    Get institutes with student counts (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.get('/institutes/stats', instituteController.getInstituteStats);
+
+/**
+ * @route   POST /api/admin/institutes/merge
+ * @desc    Merge/rename institutes by updating students' institute_name (Admin/Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+adminRouter.post('/institutes/merge', instituteController.mergeInstitutes);
 
 /**
  * @route   GET /api/admin/domains/stats

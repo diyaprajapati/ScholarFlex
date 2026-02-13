@@ -24,6 +24,7 @@ export const ROUTES = {
   PROJECT_MANAGEMENT: '/project-management',
   EVALUATION_MANAGEMENT: '/evaluation-management',
   DOMAIN_MANAGEMENT: '/domain-management',
+  INSTITUTE_MANAGEMENT: '/institute-management',
 
   // Question Papers Routes
   QUESTION_PAPERS: {
