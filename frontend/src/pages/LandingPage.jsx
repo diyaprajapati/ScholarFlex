@@ -14,6 +14,8 @@ import {
 } from 'lucide-react'
 import { ROUTES } from '../config/paths'
 
+const LOGIN_MESSAGE_KEY = 'scholarflex_login_message'
+
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
@@ -31,6 +33,7 @@ const staggerContainer = {
 
 export default function LandingPage() {
     const [scrolled, setScrolled] = useState(false)
+    const [loginMessage, setLoginMessage] = useState('')
 
     useEffect(() => {
         const handleScroll = () => {
@@ -40,8 +43,28 @@ export default function LandingPage() {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
+    useEffect(() => {
+        try {
+            const msg = sessionStorage.getItem(LOGIN_MESSAGE_KEY)
+            if (msg) {
+                sessionStorage.removeItem(LOGIN_MESSAGE_KEY)
+                setLoginMessage(msg)
+                const t = setTimeout(() => setLoginMessage(''), 5000)
+                return () => clearTimeout(t)
+            }
+        } catch (_) {}
+    }, [])
+
     return (
         <div className="min-h-screen bg-white overflow-hidden font-sans">
+            {loginMessage && (
+                <div
+                    role="alert"
+                    className="fixed top-4 left-1/2 -translate-x-1/2 z-9999 px-4 py-3 rounded-lg shadow-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium max-w-md text-center"
+                >
+                    {loginMessage}
+                </div>
+            )}
             {/* Navbar */}
             <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">

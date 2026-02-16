@@ -1,5 +1,7 @@
 // API service for making HTTP requests to the backend
 
+import { authService } from '../utils/auth';
+
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.241.25.164:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sfapi.techelecon.in/api';
@@ -56,6 +58,25 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
+      // On 401 (e.g. token expired), show message, clear session and redirect to login
+      if (response.status === 401) {
+        const loginMessage = 'Please login again.';
+        if (isOpenEndpoint) {
+          try {
+            sessionStorage.setItem('scholarflex_login_message', loginMessage);
+          } catch (_) {}
+          localStorage.removeItem('open_student_token');
+          localStorage.removeItem('open_student_data');
+          window.location.href = '/';
+        } else {
+          try {
+            sessionStorage.setItem('scholarflex_login_message', loginMessage);
+          } catch (_) {}
+          authService.logout();
+          window.location.href = '/login';
+        }
+      }
+
       // Check if this is a 403 error for /auth/me endpoint (non-selected student access denied)
       // This is expected behavior, so we'll suppress logging for it
       const isAccessDeniedForNonSelected = response.status === 403 &&

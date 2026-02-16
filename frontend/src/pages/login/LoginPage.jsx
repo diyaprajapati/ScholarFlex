@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SplitLayout from '../../components/layouts/SplitLayout'
 import LeftPanel from '../../components/login/LeftPanel'
@@ -6,8 +6,24 @@ import LoginForm from '../../components/login/LoginForm'
 import { authService } from '../../utils/auth'
 import { ROUTES } from '../../config/paths'
 
+const LOGIN_MESSAGE_KEY = 'scholarflex_login_message'
+
 export default function LoginPage() {
   const navigate = useNavigate()
+  const [loginMessage, setLoginMessage] = useState('')
+
+  // Show "Please login again" toast when redirected after session expiry (401)
+  useEffect(() => {
+    try {
+      const msg = sessionStorage.getItem(LOGIN_MESSAGE_KEY)
+      if (msg) {
+        sessionStorage.removeItem(LOGIN_MESSAGE_KEY)
+        setLoginMessage(msg)
+        const t = setTimeout(() => setLoginMessage(''), 5000)
+        return () => clearTimeout(t)
+      }
+    } catch (_) {}
+  }, [])
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -59,7 +75,19 @@ export default function LoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return <SplitLayout left={<LeftPanel />} right={<LoginForm />} />
+  return (
+    <>
+      {loginMessage && (
+        <div
+          role="alert"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-9999 px-4 py-3 rounded-lg shadow-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium max-w-md text-center"
+        >
+          {loginMessage}
+        </div>
+      )}
+      <SplitLayout left={<LeftPanel />} right={<LoginForm />} />
+    </>
+  )
 }
 
 
