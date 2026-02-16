@@ -5,7 +5,7 @@ import { ROUTES } from '../../config/paths';
 import Sidebar from '../../components/dashboard/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import api from '../../services/api';
-import { Search, Clock, Play, Calendar, TrendingUp, List, Calendar as CalendarIcon, BarChart3, Eye, X } from 'lucide-react';
+import { Search, Calendar as CalendarIcon, BarChart3, Eye, X } from 'lucide-react';
 
 const StudentAnalyticsPage = () => {
   const navigate = useNavigate();

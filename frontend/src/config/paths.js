@@ -7,11 +7,13 @@ export const ROUTES = {
   // Public Routes
   LANDING: '/',
   LOGIN: '/login',
+  CANDIDATE_REGISTER: '/register',
 
   // Protected Routes
   DASHBOARD: '/dashboard',
   TEST_ATTEMPTS: '/test-attempts',
   ADMIN_MANAGEMENT: '/admin-management',
+  SETTINGS: '/settings',
   NOC_MANAGEMENT: '/noc-management',
   FEEDBACK_MANAGEMENT: '/feedback-management',
   STUDENT_ANALYTICS: '/student-analytics',

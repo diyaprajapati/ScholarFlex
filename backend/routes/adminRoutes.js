@@ -4,6 +4,7 @@ const adminController = require('../controllers/adminController');
 const playlistController = require('../controllers/playlistController');
 const domainController = require('../controllers/domainController');
 const instituteController = require('../controllers/instituteController');
+const settingsController = require('../controllers/settingsController');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -53,6 +54,22 @@ superAdminRouter.post(
  * @access  Private (Super Admin)
  */
 superAdminRouter.get('/all', adminController.getAllAdmins);
+
+/**
+ * @route   GET /api/admin/settings
+ * @desc    Get app settings e.g. candidate registration enabled (Super Admin only)
+ * @access  Private (Super Admin)
+ * IMPORTANT: Must be registered BEFORE /:id route to avoid conflicts
+ */
+superAdminRouter.get('/settings', settingsController.getSettings);
+
+/**
+ * @route   PUT /api/admin/settings
+ * @desc    Update app settings (Super Admin only)
+ * @access  Private (Super Admin)
+ * IMPORTANT: Must be registered BEFORE /:id route to avoid conflicts
+ */
+superAdminRouter.put('/settings', settingsController.updateSettings);
 
 /**
  * @route   GET /api/admin/:id

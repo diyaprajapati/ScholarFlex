@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute, LandingPageGuard } from '../components'
-import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, OpenStudentAnalyticsPage, FirebaseAnalyticsPage, TimerLogsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage, DomainManagementPage, InstituteManagementPage } from '../pages'
+import { LandingPage, LoginPage, DashboardPage, QuestionPapersListPage, AddQuestionPaperFormPage, ViewQuestionPaperPage, AllInternsPage, AddInternPage, StudentDashboardPage, StudentTestInstructionsPage, StudentTestPage, TestSubmissionPage, VideoPage, StudentVideoAnalyticsPage, FeedbackPage, StudentFormPage, NotFoundPage, TestAttemptsPage, AdminManagementPage, PlaylistManagementPage, AddVideosToPlaylistPage, NOCManagementPage, FeedbackManagementPage, StudentAnalyticsPage, OpenStudentAnalyticsPage, FirebaseAnalyticsPage, TimerLogsPage, RetestManagementPage, CandidatesPage, InternshipStatusPage, ProjectManagementPage, EvaluationManagementPage, DomainManagementPage, InstituteManagementPage, CandidateRegistrationPage, SettingsPage } from '../pages'
 import OpenStudentRegistration from '../components/student/OpenStudentRegistration'
 import { StudentLayoutProvider } from '../contexts/StudentLayoutContext'
 import StudentLayout from '../components/student/StudentLayout'
@@ -34,6 +34,16 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Public candidate registration (no auth) */}
+      <Route
+        path={ROUTES.CANDIDATE_REGISTER}
+        element={
+          <PublicRoute>
+            <CandidateRegistrationPage />
+          </PublicRoute>
+        }
+      />
+
       {/* Protected Routes - Super Admin only (Admin restricted) */}
       <Route
         path={ROUTES.DASHBOARD}
@@ -59,6 +69,16 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <AdminManagementPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Settings Route - Super Admin only (e.g. candidate registration on/off) */}
+      <Route
+        path={ROUTES.SETTINGS}
+        element={
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
+            <SettingsPage />
           </ProtectedRoute>
         }
       />

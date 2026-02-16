@@ -33,6 +33,8 @@ const CandidatesTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [failedImages, setFailedImages] = useState(new Set());
   const [showFilters, setShowFilters] = useState(false);
+  const [academicYears, setAcademicYears] = useState([]);
+  const [selectedAcademicYear, setSelectedAcademicYear] = useState('');
   const [filters, setFilters] = useState({
     instituteName: '',
     courseTaken: [], // Array of selected courses
@@ -54,7 +56,9 @@ const CandidatesTab = () => {
   const fetchStudents = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.candidates.getAll();
+      const response = await api.candidates.getAll(
+        selectedAcademicYear ? { academic_year: selectedAcademicYear } : {}
+      );
       setStudents(response.candidates || []);
       setError('');
     } catch (err) {
@@ -63,7 +67,7 @@ const CandidatesTab = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedAcademicYear]);
 
   const fetchDomains = useCallback(async () => {
     try {
@@ -90,11 +94,21 @@ const CandidatesTab = () => {
     }
   }, []);
 
+  const fetchAcademicYears = useCallback(async () => {
+    try {
+      const response = await api.candidates.getAcademicYears();
+      setAcademicYears(response.academic_years || []);
+    } catch (err) {
+      console.error('Error fetching academic years:', err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchStudents();
     fetchDomains();
     fetchInstitutes();
-  }, [fetchStudents, fetchDomains, fetchInstitutes]);
+    fetchAcademicYears();
+  }, [fetchStudents, fetchDomains, fetchInstitutes, fetchAcademicYears]);
 
   const fetchStudentDetails = useCallback(async (id) => {
     try {
@@ -998,6 +1012,21 @@ const CandidatesTab = () => {
         {/* Search Bar and Filters */}
         <div className="space-y-3">
           <div className="flex gap-3 items-center flex-wrap">
+            {/* Academic year filter */}
+            <div className="min-w-[140px]">
+              <label htmlFor="academic-year-filter" className="sr-only">Academic year</label>
+              <select
+                id="academic-year-filter"
+                value={selectedAcademicYear}
+                onChange={(e) => setSelectedAcademicYear(e.target.value)}
+                className="block w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">All years</option>
+                {academicYears.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
             <div className="relative flex-1 min-w-[200px]">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

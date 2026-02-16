@@ -6,6 +6,8 @@ datasource db {
   provider = "mysql"
   // provider = "postgresql"
   url      = env("DATABASE_URL")
+  // Use same database as shadow to avoid permission issues
+  // shadowDatabaseUrl = env("DATABASE_URL")
 }
 
 model Role {
@@ -139,6 +141,7 @@ model Student {
   achievements         StudentAchievement[]
   evaluations          StudentEvaluation[]
   timeTrackingSessions TimeTrackingSession[]
+  studentBatch         StudentBatch?
 
   @@index([email])
   @@index([domainId])
@@ -148,6 +151,28 @@ model Student {
   @@index([profileCompleted])
   @@index([domainId, statusId, isActive])
   @@map("students")
+}
+
+/// Academic year/batch per student (derived from internship dates). Keeps students table unchanged.
+model StudentBatch {
+  id           Int      @id @default(autoincrement())
+  studentId    Int      @unique @map("student_id")
+  academicYear String   @map("academic_year") @db.VarChar(20)
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([academicYear])
+  @@map("student_batch")
+}
+
+/// App-wide settings (e.g. candidate registration enabled). Super admin only.
+model SystemSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique @db.VarChar(100)
+  value     String   @db.VarChar(500)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
 }
 
 model StudentInternship {

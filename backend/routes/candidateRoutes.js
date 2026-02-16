@@ -43,8 +43,15 @@ router.post(
 );
 
 /**
+ * @route   GET /api/candidates/academic-years
+ * @desc    Get distinct academic years for filter (Admin, Super Admin)
+ * @access  Private (Admin, Super Admin)
+ */
+router.get('/academic-years', candidateController.getAcademicYears);
+
+/**
  * @route   GET /api/candidates
- * @desc    Get all students with marks
+ * @desc    Get all students with marks (optional query: ?academic_year=2025-26)
  * @access  Private (Admin, Super Admin)
  */
 router.get('/', candidateController.getAllCandidates);

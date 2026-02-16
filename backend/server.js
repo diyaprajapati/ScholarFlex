@@ -130,6 +130,7 @@ app.use('/api/video-analytics', videoAnalyticsRoutes);
 app.use('/api/video-analytics', require('./routes/enhancedVideoAnalyticsRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/open', openStudentRoutes);
+app.use('/api/public', require('./routes/publicRoutes'));
 
 // 404 handler
 app.use((req, res) => {

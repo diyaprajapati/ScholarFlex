@@ -139,10 +139,15 @@ export default function LandingPage() {
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
                                 <Link
-                                    to={ROUTES.LOGIN}
+                                    to={ROUTES.CANDIDATE_REGISTER}
                                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-8 py-4 rounded-full text-lg font-semibold border-2 border-[#4C763B] transition-all"
                                 >
-                                    {/* <Play className="w-5 h-5 fill-current" /> */}
+                                    Apply for Internship
+                                </Link>
+                                <Link
+                                    to={ROUTES.LOGIN}
+                                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 px-8 py-4 rounded-full text-lg font-semibold transition-all"
+                                >
                                     Intern Login
                                 </Link>
                             </motion.div>

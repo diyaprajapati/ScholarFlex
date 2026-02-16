@@ -31,16 +31,18 @@ const apiRequest = async (endpoint, options = {}) => {
   // Don't set Content-Type for FormData (let browser set it with boundary)
   const isFormData = options.body instanceof FormData;
 
-  // Determine if this is an open student endpoint
+  // Determine if this is an open student endpoint or public endpoint
   const isOpenEndpoint = endpoint.startsWith('/open/');
+  const isPublicEndpoint = endpoint.startsWith('/public/');
 
   const config = {
     ...options,
     headers: {
       ...(!isFormData && { 'Content-Type': 'application/json' }),
       // Use JWT token for regular endpoints, open session token for open endpoints
+      // Don't add auth headers for public endpoints
       ...(isOpenEndpoint && openToken && { 'X-Open-Session-Token': openToken }),
-      ...(!isOpenEndpoint && token && { Authorization: `Bearer ${token}` }),
+      ...(!isOpenEndpoint && !isPublicEndpoint && token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
   };
@@ -59,7 +61,8 @@ const apiRequest = async (endpoint, options = {}) => {
 
     if (!response.ok) {
       // On 401 (e.g. token expired), show message, clear session and redirect to login
-      if (response.status === 401) {
+      // Skip redirect for public endpoints (they shouldn't return 401, but if they do, don't redirect)
+      if (response.status === 401 && !isPublicEndpoint) {
         const loginMessage = 'Please login again.';
         if (isOpenEndpoint) {
           try {
@@ -620,6 +623,17 @@ export const api = {
         method: 'DELETE',
       });
     },
+
+    getSettings: async () => {
+      return apiRequest('/admin/settings', { method: 'GET' });
+    },
+
+    updateSettings: async (settings) => {
+      return apiRequest('/admin/settings', {
+        method: 'PUT',
+        body: JSON.stringify(settings),
+      });
+    },
   },
 
   dashboard: {
@@ -647,10 +661,17 @@ export const api = {
       });
     },
 
-    getAll: async () => {
-      return apiRequest('/candidates', {
+    getAll: async (params = {}) => {
+      const query = new URLSearchParams();
+      if (params.academic_year) query.set('academic_year', params.academic_year);
+      const qs = query.toString() ? `?${query.toString()}` : '';
+      return apiRequest(`/candidates${qs}`, {
         method: 'GET',
       });
+    },
+
+    getAcademicYears: async () => {
+      return apiRequest('/candidates/academic-years', { method: 'GET' });
     },
 
     getById: async (id) => {
@@ -1543,6 +1564,28 @@ export const api = {
       return apiRequest('/open/logout', {
         method: 'POST',
       });
+    },
+  },
+
+  // Public endpoints (no auth required)
+  public: {
+    getCandidateRegistrationEnabled: async () => {
+      return apiRequest('/public/candidate-registration-enabled', { method: 'GET' });
+    },
+
+    registerCandidate: async (data) => {
+      return apiRequest('/public/candidates/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    getDomains: async () => {
+      return apiRequest('/public/domains', { method: 'GET' });
+    },
+
+    getInstitutesStats: async () => {
+      return apiRequest('/public/institutes/stats', { method: 'GET' });
     },
   },
 };

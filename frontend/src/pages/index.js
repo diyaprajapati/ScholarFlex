@@ -31,5 +31,7 @@ export { default as ProjectManagementPage } from './admin/ProjectManagementPage'
 export { default as EvaluationManagementPage } from './admin/EvaluationManagementPage'
 export { default as DomainManagementPage } from './admin/DomainManagementPage'
 export { default as InstituteManagementPage } from './admin/InstituteManagementPage'
+export { default as CandidateRegistrationPage } from './CandidateRegistrationPage'
+export { default as SettingsPage } from './admin/SettingsPage'
 export { default as NotFoundPage } from './errors/NotFoundPage'
 

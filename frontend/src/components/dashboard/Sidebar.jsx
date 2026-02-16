@@ -69,10 +69,11 @@ const NAVIGATION_MENU = {
     {
       id: 'administration',
       label: 'Administration',
-      routes: [ROUTES.RETEST_MANAGEMENT, ROUTES.ADMIN_MANAGEMENT],
+      routes: [ROUTES.RETEST_MANAGEMENT, ROUTES.ADMIN_MANAGEMENT, ROUTES.SETTINGS],
       items: [
         { label: 'Retest Management', path: ROUTES.RETEST_MANAGEMENT, icon: Settings },
         { label: 'Admin Management', path: ROUTES.ADMIN_MANAGEMENT, icon: Shield, requiresRole: 'SUPER_ADMIN' },
+        { label: 'Settings', path: ROUTES.SETTINGS, icon: Settings, requiresRole: 'SUPER_ADMIN' },
       ],
     },
   ],

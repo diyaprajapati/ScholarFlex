@@ -1,8 +1,10 @@
 const multer = require('multer');
 const XLSX = require('xlsx');
+const { Prisma } = require('@prisma/client');
 const { logActivitySimple } = require('../middleware/activityLogger');
 const { prisma } = require('../config/database');
 const { calculateInternshipStatus } = require('../utils/internshipStatus');
+const { upsertStudentBatch } = require('../utils/studentBatch');
 
 /**
  * Ensure the manual NOC status table exists.
@@ -402,8 +404,9 @@ exports.getAllCandidates = async (req, res) => {
     // Ensure NOC status table exists
     await ensureNOCStatusTable();
 
-    // Fetch students with their marks from test attempts using Prisma
-    // MySQL version - using MAX() for boolean aggregation instead of BOOL_OR()
+    const academicYearFilter = req.query.academic_year && String(req.query.academic_year).trim() ? String(req.query.academic_year).trim() : null;
+
+    // Fetch students with their marks and academic year (student_batch). Filter by academic_year when provided.
     const result = await prisma.$queryRaw`
       SELECT 
         s.id,
@@ -431,6 +434,7 @@ exports.getAllCandidates = async (req, res) => {
         s.updated_at,
         d.domain_name,
         ist.status_name,
+        sb.academic_year,
         COALESCE(MAX(CASE WHEN sns.is_received = 1 THEN 1 ELSE 0 END), 0) as noc_received,
         COALESCE(MAX(CASE WHEN ta.status IN ('COMPLETED', 'AUTO_SUBMITTED') THEN ta.percentage_score ELSE 0 END), 0) as marks,
         MAX(CASE WHEN ta.status IN ('COMPLETED', 'AUTO_SUBMITTED') THEN ta.submitted_at ELSE NULL END) as last_test_date,
@@ -441,15 +445,17 @@ exports.getAllCandidates = async (req, res) => {
       FROM students s
       LEFT JOIN domains d ON s.domain_id = d.id
       LEFT JOIN intern_status ist ON s.status_id = ist.id
+      LEFT JOIN student_batch sb ON sb.student_id = s.id
       LEFT JOIN test_attempts ta ON ta.student_id = s.id AND ta.status IN ('COMPLETED', 'AUTO_SUBMITTED')
       LEFT JOIN test_attempts ta_in_progress ON ta_in_progress.student_id = s.id AND ta_in_progress.status = 'IN_PROGRESS'
       LEFT JOIN student_noc_status sns ON sns.student_id = s.id
       WHERE s.is_active = TRUE
+      ${academicYearFilter ? Prisma.sql`AND sb.academic_year = ${academicYearFilter}` : Prisma.empty}
       GROUP BY s.id, s.email, s.full_name, s.phone, s.image_url, 
                s.domain_id, s.status_id, s.registration_date, s.institute_name, s.course_taken, 
                s.area_of_interests, s.internship_start_date, s.internship_end_date, s.internship_duration,
                s.reference_information, s.internal_faculty_name, s.faculty_contact, s.faculty_email,
-               s.is_active, s.is_selected, s.can_retest, s.created_at, s.updated_at, d.domain_name, ist.status_name
+               s.is_active, s.is_selected, s.can_retest, s.created_at, s.updated_at, d.domain_name, ist.status_name, sb.academic_year
       ORDER BY s.created_at DESC
     `;
 
@@ -493,6 +499,7 @@ exports.getAllCandidates = async (req, res) => {
         in_progress_attempt_id: s.in_progress_attempt_id || null,
         in_progress_started_at: s.in_progress_started_at || null,
         internship_status: String(internshipStatus), // Convert enum to string: 'NOT_STARTED', 'ONGOING', or 'COMPLETED'
+        academic_year: s.academic_year || null,
       };
     });
 
@@ -511,6 +518,28 @@ exports.getAllCandidates = async (req, res) => {
     });
   } catch (error) {
     console.error('Error getting students:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Get distinct academic years for filter dropdown (Admin/Super Admin)
+ * GET /api/candidates/academic-years
+ */
+exports.getAcademicYears = async (req, res) => {
+  try {
+    const rows = await prisma.studentBatch.findMany({
+      select: { academicYear: true },
+      distinct: ['academicYear'],
+      orderBy: { academicYear: 'desc' },
+    });
+    const years = rows.map((r) => r.academicYear).filter(Boolean);
+    res.status(200).json({ success: true, academic_years: years });
+  } catch (error) {
+    console.error('Error in getAcademicYears:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',
@@ -1066,6 +1095,12 @@ exports.createStudent = async (req, res) => {
       },
     });
 
+    await upsertStudentBatch(
+      created.id,
+      created.internshipStartDate,
+      created.internshipEndDate
+    );
+
     // Check if this email exists as open student and convert if needed
     const OpenStudentConversionService = require('../services/openStudentConversionService');
     try {
@@ -1128,11 +1163,12 @@ exports.createStudent = async (req, res) => {
  * Update an existing student
  */
 exports.updateStudent = async (req, res) => {
+  let email = null; // Declare in outer scope for error handling
   try {
     const { id } = req.params;
     const {
       full_name,
-      email,
+      email: emailParam,
       phone,
       domain_id,
       status_id,
@@ -1148,6 +1184,7 @@ exports.updateStudent = async (req, res) => {
       faculty_email,
       image_url,
     } = req.body;
+    email = emailParam; // Assign to outer scope variable
 
     // Check if student exists
     const existingStudent = await prisma.student.findUnique({
@@ -1161,17 +1198,38 @@ exports.updateStudent = async (req, res) => {
       });
     }
 
-    // If email is being changed, check if new email already exists
-    if (email && email.toLowerCase().trim() !== existingStudent.email) {
-      const emailExists = await prisma.student.findUnique({
-        where: { email: email.toLowerCase().trim() },
+    // If email is being changed, check if new email already exists for an ACTIVE student
+    const normalizedNewEmail = emailParam ? emailParam.toLowerCase().trim() : null;
+    const normalizedExistingEmail = existingStudent.email ? existingStudent.email.toLowerCase().trim() : null;
+    
+    if (normalizedNewEmail && normalizedNewEmail !== normalizedExistingEmail) {
+      const studentId = parseInt(id);
+      
+      // Check if email exists for ANY student (to handle Prisma unique constraint)
+      const emailExistsAny = await prisma.student.findUnique({
+        where: { email: normalizedNewEmail },
       });
-
-      if (emailExists) {
-        return res.status(400).json({
-          success: false,
-          message: 'Email already exists for another student',
-        });
+      
+      if (emailExistsAny) {
+        // If it's the same student (shouldn't happen due to check above, but just in case)
+        if (emailExistsAny.id === studentId) {
+          // Allow - it's the same student
+        } else if (emailExistsAny.isActive) {
+          // Block if another ACTIVE student has this email
+          return res.status(400).json({
+            success: false,
+            message: 'Email already exists for another active student',
+          });
+        } else {
+          // Another INACTIVE student has this email - we need to clear their email first
+          // to avoid Prisma unique constraint violation
+          // Set inactive student's email to NULL (or a placeholder) to free it up
+          await prisma.student.update({
+            where: { id: emailExistsAny.id },
+            data: { email: `_deleted_${Date.now()}_${emailExistsAny.id}@deleted.local` },
+          });
+          // Now we can proceed with the update - the email is free
+        }
       }
     }
 
@@ -1185,7 +1243,7 @@ exports.updateStudent = async (req, res) => {
     // Prepare update data
     const updateData = {};
     if (full_name !== undefined) updateData.fullName = full_name;
-    if (email !== undefined) updateData.email = email.toLowerCase().trim();
+    if (emailParam !== undefined) updateData.email = emailParam.toLowerCase().trim();
     if (phone !== undefined) updateData.phone = phone || null;
     if (finalDomainId !== undefined) {
       updateData.domainId = finalDomainId;
@@ -1211,6 +1269,12 @@ exports.updateStudent = async (req, res) => {
         status: true,
       },
     });
+
+    await upsertStudentBatch(
+      updated.id,
+      updated.internshipStartDate,
+      updated.internshipEndDate
+    );
 
     // Log activity
     await logActivitySimple(
@@ -1240,8 +1304,37 @@ exports.updateStudent = async (req, res) => {
   } catch (error) {
     console.error('Error updating student:', error);
     
-    // Handle duplicate email error
+    // Handle duplicate email error (Prisma unique constraint violation)
     if (error.code === 'P2002' || error.message.includes('Unique constraint') || error.message.includes('duplicate')) {
+      // Check if it's an email constraint violation
+      if (error.meta?.target?.includes('email') && email) {
+        try {
+          // Check if the conflicting student is active
+          const conflictingStudent = await prisma.student.findUnique({
+            where: { email: email.toLowerCase().trim() },
+            select: { id: true, isActive: true },
+          });
+          
+          if (conflictingStudent && conflictingStudent.isActive) {
+            return res.status(400).json({
+              success: false,
+              message: 'Email already exists for another active student',
+            });
+          } else if (conflictingStudent && !conflictingStudent.isActive) {
+            // Inactive student has this email - this shouldn't happen due to our check above
+            // but handle it gracefully - allow the update by first deleting/reactivating the inactive student
+            // Actually, we can't do that here. Just return a helpful error.
+            return res.status(400).json({
+              success: false,
+              message: 'Email exists for a deleted student. Please use a different email or contact support.',
+            });
+          }
+        } catch (checkError) {
+          // If we can't check, fall through to generic error
+          console.error('Error checking conflicting student:', checkError);
+        }
+      }
+      
       return res.status(400).json({
         success: false,
         message: 'Email already exists for another student',
