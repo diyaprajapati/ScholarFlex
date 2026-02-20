@@ -3,8 +3,6 @@ services:
     image: mysql:8.0
     container_name: scholarflex-db
     environment:
-      # Use environment variables from .env file (not committed to git)
-      # Create .env file with: DB_ROOT_PASSWORD, DB_NAME, DB_USER, DB_PASSWORD
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME:-scholarflex}
       MYSQL_USER: ${DB_USER:-scholarflex}
@@ -21,28 +19,21 @@ services:
       retries: 5
 
   backend:
+    image: scholarflex-backend:latest
     build:
       context: ./backend
-    # Remove container_name when scaling - Docker Compose will auto-generate names
-    # container_name: scholarflex-backend
     ports:
       - "5000:5000"
     env_file:
       - .env
     environment:
       DATABASE_URL: mysql://${DB_USER:-scholarflex}:${DB_PASSWORD}@host.docker.internal:3306/${DB_NAME:-scholarflex}
-      # Disable cluster mode in Docker - scale via containers instead
       ENABLE_CLUSTER: "false"
-      # Database connection pool per container
       DATABASE_CONNECTION_LIMIT: "20"
       DATABASE_POOL_TIMEOUT: "20"
     depends_on:
       db:
         condition: service_healthy
     restart: always
-    # Uncomment to scale backend containers (remove container_name above first)
-    # deploy:
-    #   replicas: 3
-
 volumes:
   mysql_data:

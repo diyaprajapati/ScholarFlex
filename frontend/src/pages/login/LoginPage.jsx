@@ -12,9 +12,15 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [loginMessage, setLoginMessage] = useState('')
 
-  // Show "Please login again" toast when redirected after session expiry (401)
+  // Show "Session expired" or "Please login again" when redirected after 401 or proactive logout
   useEffect(() => {
     try {
+      const sessionExpired = authService.getAndClearSessionExpired()
+      if (sessionExpired) {
+        setLoginMessage('Session expired. Please log in again.')
+        const t = setTimeout(() => setLoginMessage(''), 5000)
+        return () => clearTimeout(t)
+      }
       const msg = sessionStorage.getItem(LOGIN_MESSAGE_KEY)
       if (msg) {
         sessionStorage.removeItem(LOGIN_MESSAGE_KEY)

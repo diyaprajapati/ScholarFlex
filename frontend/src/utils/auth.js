@@ -5,6 +5,9 @@ const USER_KEY = 'scholarflex_user'
 const OPEN_STUDENT_TOKEN_KEY = 'open_student_token'
 const OPEN_STUDENT_DATA_KEY = 'open_student_data'
 
+/** Session expired flag for login page message (sessionStorage) */
+export const SESSION_EXPIRED_KEY = 'scholarflex_session_expired'
+
 /**
  * Decode JWT token to get payload (without verification)
  * Note: This is only for reading token data on client side
@@ -36,6 +39,15 @@ const isTokenExpired = (token) => {
   }
   const currentTime = Math.floor(Date.now() / 1000)
   return decoded.exp < currentTime
+}
+
+/**
+ * Get token expiry time in seconds (Unix). Returns null if no token or no exp.
+ * Used by AuthWatcher for proactive logout.
+ */
+const getTokenExpirySeconds = (token) => {
+  const decoded = decodeToken(token)
+  return decoded?.exp ?? null
 }
 
 export const authService = {
@@ -87,8 +99,39 @@ export const authService = {
   logout: () => {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
-    // Remove history prevention on logout
     authService.removeHistoryPrevention()
+  },
+
+  /**
+   * Mark that session expired (so login page can show "Session expired").
+   * Call before logout() when doing automatic logout due to expiry.
+   */
+  setSessionExpiredMessage: () => {
+    try {
+      sessionStorage.setItem(SESSION_EXPIRED_KEY, 'true')
+    } catch (_) {}
+  },
+
+  /**
+   * Get and clear session-expired flag. Returns true if session had expired.
+   */
+  getAndClearSessionExpired: () => {
+    try {
+      const value = sessionStorage.getItem(SESSION_EXPIRED_KEY)
+      sessionStorage.removeItem(SESSION_EXPIRED_KEY)
+      return value === 'true'
+    } catch (_) {
+      return false
+    }
+  },
+
+  /**
+   * Returns token expiry (Unix seconds) or null. For proactive expiry check.
+   */
+  getTokenExpirySeconds: () => {
+    const token = authService.getToken()
+    if (!token) return null
+    return getTokenExpirySeconds(token)
   },
 
   // Check if user is authenticated (has valid token)

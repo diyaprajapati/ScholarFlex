@@ -198,6 +198,9 @@ const verifyOTP = async (req, res) => {
       });
     }
 
+    // JWT_EXPIRE or JWT_EXPIRES (e.g. '1h', '24h', '7d'). Default 24h so tokens actually expire.
+    const expiresIn = process.env.JWT_EXPIRE || process.env.JWT_EXPIRES || '1h';
+
     const token = jwt.sign(
       {
         userId: user.id,
@@ -205,9 +208,7 @@ const verifyOTP = async (req, res) => {
         role: user.role_code,
       },
       process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRE || '180d',
-      }
+      { expiresIn }
     );
 
     // Prepare user data (exclude sensitive info)

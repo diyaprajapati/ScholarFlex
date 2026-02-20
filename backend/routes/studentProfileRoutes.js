@@ -50,6 +50,12 @@ router.post(
               message: 'File too large. Maximum size is 5MB.',
             });
           }
+          if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+            return res.status(400).json({
+              success: false,
+              message: `Unexpected field "${err.field}". Please use field name "image" or "profileImage".`,
+            });
+          }
           return res.status(400).json({
             success: false,
             message: err.message,

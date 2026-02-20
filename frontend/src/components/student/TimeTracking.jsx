@@ -9,11 +9,20 @@ import {
 import { logEvent } from 'firebase/analytics';
 import { analytics } from '../../firebase';
 import { authService } from '../../utils/auth';
+import {
+  getTimerState,
+  setTimerState,
+  clearTimerState,
+  getElapsedSeconds,
+  TIMER_STORAGE_KEY,
+} from '../../utils/timerStorage';
+import { timerLog, timerLogApi, timerLogState } from '../../utils/timerLogger';
 
 const TimeTracking = () => {
   const [session, setSession] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [loading, setLoading] = useState(false);
+  /** 'start' | 'pause' | 'resume' | 'stop' | null - ensures we never get stuck on "Stopping..." / "Pausing..." */
+  const [actionPending, setActionPending] = useState(null);
   const [showQuestion, setShowQuestion] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [answer, setAnswer] = useState('');
@@ -21,11 +30,13 @@ const TimeTracking = () => {
   const [nextQuestionTime, setNextQuestionTime] = useState(null);
   const [todayHours, setTodayHours] = useState(null);
   const [loadingToday, setLoadingToday] = useState(false);
+  const [questionLoading, setQuestionLoading] = useState(false);
 
   const intervalRef = useRef(null);
   const questionIntervalRef = useRef(null);
   const heartbeatRef = useRef(null);
   const timeUpdateRef = useRef(null);
+  const sessionRefreshRef = useRef(null);
   const sessionRef = useRef(null);
   const questionTimeoutRef = useRef(null);
   const showQuestionRef = useRef(false);
@@ -33,6 +44,12 @@ const TimeTracking = () => {
   const pauseStartTimeRef = useRef(null);
   const pausedElapsedTimeRef = useRef(0);
   const autoStopInProgressRef = useRef(false);
+  const lastTimeUpdateRef = useRef(Date.now());
+  const lastHeartbeatRef = useRef(Date.now());
+  const lastQuestionCheckRef = useRef(Date.now());
+  const stopInProgressRef = useRef(false);
+  const pauseInProgressRef = useRef(false);
+  const tickIdRef = useRef(null);
 
   // Format time as HH:MM:SS
   const formatTime = (seconds) => {
@@ -61,17 +78,20 @@ const TimeTracking = () => {
     currentQuestionRef.current = currentQuestion;
   }, [currentQuestion]);
 
-  // Helper to clear session state locally
+  // Helper to clear session state locally and clear timer persistence
   const stopSessionLocally = () => {
     if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
     questionTimeoutRef.current = null;
+    if (tickIdRef.current) clearTimeout(tickIdRef.current);
+    tickIdRef.current = null;
 
-    // Clear intervals
-    if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
-    if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
-    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+    // Clear intervals and timeouts
+    if (timeUpdateRef.current) clearTimeout(timeUpdateRef.current);
+    if (questionIntervalRef.current) clearTimeout(questionIntervalRef.current);
+    if (heartbeatRef.current) clearTimeout(heartbeatRef.current);
+    if (sessionRefreshRef.current) clearTimeout(sessionRefreshRef.current);
 
-    // Clear question and session state
+    clearTimerState();
     setSession(null);
     sessionRef.current = null;
     autoStopInProgressRef.current = false;
@@ -83,8 +103,12 @@ const TimeTracking = () => {
     setNextQuestionTime(null);
     localStorage.removeItem('pendingAttendanceQuestion');
 
-    // Reload today's hours
+    lastTimeUpdateRef.current = Date.now();
+    lastHeartbeatRef.current = Date.now();
+    lastQuestionCheckRef.current = Date.now();
+
     loadTodayHours();
+    timerLogState('session', 'cleared');
   };
 
   // Handle auto-stop session when question is not answered (2 min timeout)
@@ -185,134 +209,255 @@ const TimeTracking = () => {
 
 
     loadActiveSession().then(() => {
-      // Check for pending questions after session load to ensure correct state ordering
       checkForPendingQuestion();
     });
     loadTodayHours();
 
-    // When tab becomes visible, re-check for any pending question so
-    // the modal can be restored if needed. Leaving the tab should NOT
-    // pause or stop the timer by itself.
+    // Multi-tab sync: when another tab changes timer localStorage, re-sync with server
+    const handleStorage = (e) => {
+      if (e.key === TIMER_STORAGE_KEY) {
+        timerLog('storage_event', { key: e.key });
+        loadActiveSession();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         checkForPendingQuestion();
+        if (sessionRef.current && sessionRef.current.status === 'ACTIVE') {
+          startTimeTracking();
+        }
       }
     };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Check periodically for pending questions only when tab was closed (avoid re-triggering when modal already open)
     const pendingCheckInterval = setInterval(() => {
-      if (!document.hidden) {
-        checkForPendingQuestion();
-      }
-    }, 60000); // Check every 60 seconds (was 30s - reduced to avoid repeated triggers)
+      if (!document.hidden) checkForPendingQuestion();
+    }, 60000);
 
     return () => {
+      window.removeEventListener('storage', handleStorage);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(pendingCheckInterval);
+      if (tickIdRef.current) clearTimeout(tickIdRef.current);
     };
   }, []);
 
-  // Load active session
+  // Load active session and sync with localStorage (reconcile backend vs client)
   const loadActiveSession = async () => {
     try {
       const response = await api.timeTracking.getActive();
-      if (response.success && response.session) {
-        setSession(response.session);
-        sessionRef.current = response.session;
-        const startTime = new Date(response.session.startTime);
-        const now = new Date();
-        const pausedSeconds = (sessionRef.current.pausedMinutes || 0) * 60;
-        const elapsed = Math.floor((now - startTime) / 1000) - pausedSeconds;
-        setElapsedTime(Math.max(0, elapsed));
+      timerLogApi('getActive', response.success ? response : new Error(response.message || 'no session'));
 
-        // Only start tracking if session is active (not paused)
-        if (response.session.status === 'ACTIVE') {
-          // Check if there's a pending question (timer should be paused)
+      if (response.success && response.session) {
+        const s = response.session;
+        const startTimeMs = new Date(s.startTime).getTime();
+        const pausedMinutes = s.pausedMinutes || 0;
+        const accumulatedPausedMs = pausedMinutes * 60 * 1000;
+        const isPaused = s.status === 'PAUSED';
+        setTimerState({
+          startTime: startTimeMs,
+          sessionId: String(s.id),
+          status: isPaused ? 'paused' : 'running',
+          pauseTime: isPaused && s.lastPausedAt ? new Date(s.lastPausedAt).getTime() : null,
+          accumulatedPausedMs,
+        });
+        setSession(s);
+        sessionRef.current = s;
+        setElapsedTime(Math.max(0, getElapsedSeconds(getTimerState())));
+
+        if (s.status === 'ACTIVE') {
+          const now = new Date();
           const pendingQuestion = localStorage.getItem('pendingAttendanceQuestion');
           if (pendingQuestion) {
             try {
               const questionData = JSON.parse(pendingQuestion);
               const questionTime = new Date(questionData.askedAt);
               const elapsedMs = now - questionTime;
-              const TIMEOUT_MS = 120000; // 2 minutes
-              
+              const TIMEOUT_MS = 120000;
               if (elapsedMs < TIMEOUT_MS) {
-                // Timer is paused due to pending question
-                pausedElapsedTimeRef.current = elapsed;
+                pausedElapsedTimeRef.current = Math.max(0, getElapsedSeconds(getTimerState()));
                 pauseStartTimeRef.current = questionTime;
               }
             } catch (e) {
               console.error('Error parsing pending question:', e);
             }
           }
-
-          // Calculate next question time (every 10 minutes)
-          const lastQuestionTime = response.session.attendanceQuestions?.length > 0
-            ? new Date(response.session.attendanceQuestions[0].askedAt)
-            : startTime;
+          const lastQuestionTime = s.attendanceQuestions?.length > 0
+            ? new Date(s.attendanceQuestions[0].askedAt)
+            : new Date(s.startTime);
           const minutesSinceLastQuestion = Math.floor((now - lastQuestionTime) / (1000 * 60));
           const minutesUntilNext = 10 - (minutesSinceLastQuestion % 10);
           setNextQuestionTime(minutesUntilNext);
-
           startTimeTracking();
         }
+      } else {
+        // Backend says no active session: reconcile with local state
+        const local = getTimerState();
+        if (local && (local.status === 'running' || local.status === 'paused')) {
+          timerLog('reconcile', { reason: 'backend_no_session_local_has_session', localStatus: local.status });
+          clearTimerState();
+          setSession(null);
+          sessionRef.current = null;
+          setElapsedTime(0);
+        }
       }
-
-      // Also load today's hours
       loadTodayHours();
     } catch (error) {
       console.error('Error loading active session:', error);
+      timerLogApi('getActive', error);
+      // On network failure, if we have local state we can still show timer (client-resilient)
+      const local = getTimerState();
+      if (local && (local.status === 'running' || local.status === 'paused')) {
+        setSession({ id: local.sessionId, startTime: new Date(local.startTime).toISOString(), status: local.status === 'paused' ? 'PAUSED' : 'ACTIVE' });
+        sessionRef.current = { id: local.sessionId, startTime: new Date(local.startTime).toISOString(), status: local.status === 'paused' ? 'PAUSED' : 'ACTIVE' };
+        setElapsedTime(getElapsedSeconds(local));
+        if (local.status === 'running') startTimeTracking();
+      }
     }
   };
 
-  // Start time tracking
-  const startTimeTracking = () => {
-    // Clear any existing intervals
-    if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
-    if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
-    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+  // Refresh session data from server periodically to keep it fresh
+  const refreshSessionData = async () => {
+    if (!sessionRef.current) return;
+    
+    try {
+      const response = await api.timeTracking.getActive();
+      if (response.success && response.session) {
+        // Update session ref with fresh data (especially attendanceQuestions)
+        sessionRef.current = response.session;
+        setSession(response.session);
+        
+        // Update elapsed time from fresh data
+        const startTime = new Date(response.session.startTime);
+        const now = new Date();
+        const pausedSeconds = (response.session.pausedMinutes || 0) * 60;
+        const elapsed = Math.floor((now - startTime) / 1000) - pausedSeconds;
+        if (!showQuestionRef.current) {
+          setElapsedTime(Math.max(0, elapsed));
+        }
+      } else {
+        // Session no longer exists on server - stop locally
+        stopSessionLocally();
+      }
+    } catch (error) {
+      console.error('Error refreshing session data:', error);
+      // Don't stop session on error - might be temporary network issue
+    }
+  };
 
-    // Heartbeat every 1 min so backend can auto-finish if client is gone (shutdown, closed tab)
-    const sendHeartbeat = () => {
+  // Start time tracking with improved reliability
+  const startTimeTracking = () => {
+    // Clear any existing intervals/timeouts
+    if (timeUpdateRef.current) clearTimeout(timeUpdateRef.current);
+    if (questionIntervalRef.current) clearTimeout(questionIntervalRef.current);
+    if (heartbeatRef.current) clearTimeout(heartbeatRef.current);
+    if (sessionRefreshRef.current) clearTimeout(sessionRefreshRef.current);
+
+    // Reset tracking refs
+    lastTimeUpdateRef.current = Date.now();
+    lastHeartbeatRef.current = Date.now();
+    lastQuestionCheckRef.current = Date.now();
+
+    // Heartbeat every 1 min using chained setTimeout (more reliable than setInterval)
+    const scheduleHeartbeat = () => {
       if (sessionRef.current?.status === 'ACTIVE') {
-        api.timeTracking.heartbeat().catch((err) => console.error('Heartbeat failed:', err));
+        const now = Date.now();
+        const timeSinceLastHeartbeat = now - lastHeartbeatRef.current;
+        
+        // Recovery: if heartbeat hasn't fired in >2 minutes, send immediately
+        if (timeSinceLastHeartbeat > 120000) {
+          console.warn('Heartbeat recovery: interval was throttled, sending immediate heartbeat');
+          api.timeTracking.heartbeat().catch((err) => console.error('Heartbeat failed:', err));
+          lastHeartbeatRef.current = now;
+        }
+        
+        // Schedule next heartbeat
+        heartbeatRef.current = setTimeout(() => {
+          if (sessionRef.current?.status === 'ACTIVE') {
+            api.timeTracking.heartbeat()
+              .then(() => {
+                lastHeartbeatRef.current = Date.now();
+                scheduleHeartbeat(); // Schedule next one
+              })
+              .catch((err) => {
+                console.error('Heartbeat failed:', err);
+                scheduleHeartbeat(); // Retry even on error
+              });
+          }
+        }, 60000); // 1 minute
       }
     };
-    sendHeartbeat();
-    heartbeatRef.current = setInterval(sendHeartbeat, 60000);
+    
+    // Send initial heartbeat
+    if (sessionRef.current?.status === 'ACTIVE') {
+      api.timeTracking.heartbeat().catch((err) => console.error('Heartbeat failed:', err));
+      lastHeartbeatRef.current = Date.now();
+    }
+    scheduleHeartbeat();
 
-    // Update elapsed time every second (always, regardless of tab focus)
-    // Update elapsed time by calculating difference from start time
-    // This prevents drift when the tab is inactive/throttled
-    // PAUSE when question is shown (don't update elapsedTime)
-    timeUpdateRef.current = setInterval(() => {
-      if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
-        const startTime = new Date(sessionRef.current.startTime);
-        const now = new Date();
-        const pausedSeconds = (sessionRef.current.pausedMinutes || 0) * 60;
-        const elapsed = Math.floor((now - startTime) / 1000) - pausedSeconds;
-        setElapsedTime(Math.max(0, elapsed));
-      } else if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && showQuestionRef.current) {
-        // Timer is paused - keep showing the paused elapsed time
-        setElapsedTime(pausedElapsedTimeRef.current);
+    // Update elapsed from timestamps only (Date.now() - startTime - pausedDuration), no counter drift
+    const scheduleTimeUpdate = () => {
+      if (sessionRef.current && sessionRef.current.status === 'ACTIVE') {
+        const now = Date.now();
+        const timeSinceLastUpdate = now - lastTimeUpdateRef.current;
+        if (timeSinceLastUpdate > 5000) {
+          console.warn('Time update recovery: interval was throttled');
+        }
+        if (!showQuestionRef.current) {
+          const state = getTimerState();
+          setElapsedTime(state ? getElapsedSeconds(state) : 0);
+        } else {
+          setElapsedTime(pausedElapsedTimeRef.current);
+        }
+        lastTimeUpdateRef.current = now;
+        timeUpdateRef.current = setTimeout(scheduleTimeUpdate, 1000);
       }
-    }, 1000);
+    };
+    scheduleTimeUpdate();
 
-    // Check for questions every minute (so we ask soon after 10 min mark)
-    questionIntervalRef.current = setInterval(() => {
+    // Check for questions every minute using chained setTimeout
+    const scheduleQuestionCheck = () => {
       if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
-        checkForQuestion();
+        const now = Date.now();
+        const timeSinceLastCheck = now - lastQuestionCheckRef.current;
+        
+        // Recovery: if check hasn't fired in >2 minutes, check immediately
+        if (timeSinceLastCheck > 120000) {
+          console.warn('Question check recovery: interval was throttled, checking immediately');
+          checkForQuestion();
+          lastQuestionCheckRef.current = now;
+        }
+        
+        // Schedule next check
+        questionIntervalRef.current = setTimeout(() => {
+          if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
+            checkForQuestion();
+            lastQuestionCheckRef.current = Date.now();
+            scheduleQuestionCheck(); // Schedule next one
+          }
+        }, 60000); // 1 minute
       }
-    }, 60000);
-
-    // Initial check after delay so session ref is set
+    };
+    
+    // Initial check after delay
     setTimeout(() => {
       if (sessionRef.current && sessionRef.current.status === 'ACTIVE' && !showQuestionRef.current) {
         checkForQuestion();
+        lastQuestionCheckRef.current = Date.now();
+        scheduleQuestionCheck();
       }
     }, 5000);
+
+    // Refresh session data from server every 5 minutes to keep it fresh
+    const scheduleSessionRefresh = () => {
+      if (sessionRef.current?.status === 'ACTIVE') {
+        refreshSessionData();
+        sessionRefreshRef.current = setTimeout(scheduleSessionRefresh, 5 * 60000); // 5 minutes
+      }
+    };
+    scheduleSessionRefresh();
   };
 
   // Check if it's time to ask a question (every 10 minutes)
@@ -342,7 +487,7 @@ const TimeTracking = () => {
   // Ask a question
   const askQuestion = async () => {
     try {
-      setLoading(true);
+      setQuestionLoading(true);
       const response = await api.timeTracking.askQuestion();
       if (response.success) {
         const now = new Date();
@@ -449,67 +594,60 @@ const TimeTracking = () => {
       console.error('Error asking question:', error);
       setQuestionError(error.message || 'Failed to load question');
     } finally {
-      setLoading(false);
+      setQuestionLoading(false);
     }
   };
 
   // Handle start session
   const handleStart = async () => {
+    timerLog('start_click');
+    setActionPending('start');
     try {
-      setLoading(true);
-
-      // Ensure Service Worker is registered first
       if ('serviceWorker' in navigator) {
         try {
           await registerServiceWorker();
-          // console.log('Service Worker registered for notifications');
         } catch (error) {
           console.error('Service Worker registration error:', error);
         }
       }
-
-      // Request notification permission when Start is clicked
       const hasPermission = await requestNotificationPermission();
       if (!hasPermission) {
         const userChoice = confirm('Notifications are required for attendance check reminders. Without notifications, you may miss important alerts. Do you want to continue without notifications?');
         if (!userChoice) {
-          setLoading(false);
+          setActionPending(null);
           return;
         }
-        // Continue anyway - they can still track time, but notifications won't work
         console.warn('User declined notification permission');
-      } else {
-        // console.log('Notification permission granted');
       }
 
       const response = await api.timeTracking.start();
-      if (response.success) {
-        setSession(response.session);
-        sessionRef.current = response.session;
+      timerLogApi('start', response.success ? response : new Error(response?.message));
 
-        // Calculate initial elapsed time based on server response
-        const startTime = new Date(response.session.startTime);
-        const now = new Date();
-        const pausedSeconds = (sessionRef.current.pausedMinutes || 0) * 60;
-        const elapsed = Math.floor((now - startTime) / 1000) - pausedSeconds;
-        setElapsedTime(Math.max(0, elapsed));
-
+      if (response.success && response.session) {
+        const s = response.session;
+        const startTimeMs = new Date(s.startTime).getTime();
+        setTimerState({
+          startTime: startTimeMs,
+          sessionId: String(s.id),
+          status: 'running',
+          accumulatedPausedMs: 0,
+        });
+        setSession(s);
+        sessionRef.current = s;
+        setElapsedTime(0);
         setNextQuestionTime(10);
         startTimeTracking();
+        timerLogState('idle', 'running', { sessionId: s.id });
 
-        // Track timer start event
         if (analytics) {
           try {
             const user = authService.getUser();
             logEvent(analytics, 'timer_start', {
               user_id: user ? `user_${user.id}` : 'anonymous',
-              session_id: response.session.id,
-              start_time: response.session.startTime,
+              session_id: s.id,
+              start_time: s.startTime,
               timestamp: new Date().toISOString()
             });
-            if (import.meta.env.DEV) {
-              // console.log('Timer started - Analytics logged');
-            }
           } catch (error) {
             console.error('Error logging timer start:', error);
           }
@@ -517,9 +655,10 @@ const TimeTracking = () => {
       }
     } catch (error) {
       console.error('Error starting session:', error);
+      timerLogApi('start', error);
       alert(error.message || 'Failed to start time tracking');
     } finally {
-      setLoading(false);
+      setActionPending(null);
     }
   };
 
@@ -538,26 +677,38 @@ const TimeTracking = () => {
     }
   };
 
-  // Handle pause session
+  // Handle pause session (race-safe: single pause at a time, always clear loading in finally)
   const handlePause = async () => {
     if (!session || session.status === 'PAUSED') return;
+    if (pauseInProgressRef.current) return;
+    const local = getTimerState();
+    if (!local || local.status !== 'running' || !local.sessionId) {
+      timerLog('pause_click', { skipped: 'no_valid_local_state', local: !!local });
+      return;
+    }
+
+    pauseInProgressRef.current = true;
+    const pauseTimeMs = Date.now();
+    setTimerState({ ...local, status: 'paused', pauseTime: pauseTimeMs });
+    setActionPending('pause');
+    timerLog('pause_click', { sessionId: local.sessionId });
 
     try {
-      setLoading(true);
       const response = await api.timeTracking.pause();
+      timerLogApi('pause', response.success ? response : new Error(response?.message));
       if (response.success) {
         setSession(response.session);
         sessionRef.current = response.session;
-        // Clear intervals when paused
-        if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
-        if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
-        if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+        if (timeUpdateRef.current) clearTimeout(timeUpdateRef.current);
+        if (questionIntervalRef.current) clearTimeout(questionIntervalRef.current);
+        if (heartbeatRef.current) clearTimeout(heartbeatRef.current);
+        if (sessionRefreshRef.current) clearTimeout(sessionRefreshRef.current);
+        timerLogState('running', 'paused', { sessionId: response.session.id });
 
-        // Track timer pause event
         if (analytics) {
           try {
             const user = authService.getUser();
-            const elapsedSeconds = Math.floor(elapsedTime);
+            const elapsedSeconds = getElapsedSeconds(getTimerState());
             logEvent(analytics, 'timer_pause', {
               user_id: user ? `user_${user.id}` : 'anonymous',
               session_id: response.session.id,
@@ -566,9 +717,6 @@ const TimeTracking = () => {
               pause_time: new Date().toISOString(),
               timestamp: new Date().toISOString()
             });
-            if (import.meta.env.DEV) {
-              // console.log('Timer paused - Analytics logged, elapsed:', elapsedSeconds, 'seconds');
-            }
           } catch (error) {
             console.error('Error logging timer pause:', error);
           }
@@ -576,30 +724,45 @@ const TimeTracking = () => {
       }
     } catch (error) {
       console.error('Error pausing session:', error);
+      timerLogApi('pause', error);
       alert(error.message || 'Failed to pause time tracking');
+      setTimerState({ ...getTimerState(), status: 'running', pauseTime: null });
     } finally {
-      setLoading(false);
+      setActionPending(null);
+      pauseInProgressRef.current = false;
     }
   };
 
-  // Handle resume session
+  // Handle resume session (always clear loading in finally)
   const handleResume = async () => {
     if (!session || session.status !== 'PAUSED') return;
+    const local = getTimerState();
+    if (!local || local.status !== 'paused' || local.pauseTime == null) return;
+
+    const now = Date.now();
+    const additionalPausedMs = now - local.pauseTime;
+    setTimerState({
+      ...local,
+      status: 'running',
+      pauseTime: null,
+      accumulatedPausedMs: (local.accumulatedPausedMs || 0) + additionalPausedMs,
+    });
+    setActionPending('resume');
+    timerLog('resume_click', { sessionId: local.sessionId });
 
     try {
-      setLoading(true);
       const response = await api.timeTracking.resume();
+      timerLogApi('resume', response.success ? response : new Error(response?.message));
       if (response.success) {
         setSession(response.session);
         sessionRef.current = response.session;
-        // Restart time tracking
         startTimeTracking();
+        timerLogState('paused', 'running', { sessionId: response.session.id });
 
-        // Track timer resume event
         if (analytics) {
           try {
             const user = authService.getUser();
-            const elapsedSeconds = Math.floor(elapsedTime);
+            const elapsedSeconds = getElapsedSeconds(getTimerState());
             logEvent(analytics, 'timer_resume', {
               user_id: user ? `user_${user.id}` : 'anonymous',
               session_id: response.session.id,
@@ -608,9 +771,6 @@ const TimeTracking = () => {
               resume_time: new Date().toISOString(),
               timestamp: new Date().toISOString()
             });
-            if (import.meta.env.DEV) {
-              // console.log('Timer resumed - Analytics logged, elapsed:', elapsedSeconds, 'seconds');
-            }
           } catch (error) {
             console.error('Error logging timer resume:', error);
           }
@@ -618,36 +778,47 @@ const TimeTracking = () => {
       }
     } catch (error) {
       console.error('Error resuming session:', error);
+      timerLogApi('resume', error);
       alert(error.message || 'Failed to resume time tracking');
+      setTimerState({ ...getTimerState(), status: 'paused', pauseTime: now });
     } finally {
-      setLoading(false);
+      setActionPending(null);
     }
   };
 
-  // Handle stop session
+  // Handle stop session (race-safe: single stop at a time, reconcile "No active session")
   const handleStop = async () => {
-    if (!session) return;
-
-    // Check if there's an unanswered question
     if (showQuestion && currentQuestion) {
       alert('Please answer the current question before stopping the session.');
       return;
     }
-
     if (!window.confirm('Are you sure you want to stop the time tracking session? This will save today\'s working hours.')) {
       return;
     }
 
+    const local = getTimerState();
+    const hasValidLocal = local && local.sessionId && (local.status === 'running' || local.status === 'paused');
+    if (!hasValidLocal && !session) {
+      timerLog('stop_click', { skipped: 'no_session_no_local' });
+      return;
+    }
+    if (stopInProgressRef.current) return;
+
+    stopInProgressRef.current = true;
+    setActionPending('stop');
+    timerLog('stop_click', { sessionId: local?.sessionId || session?.id });
+
     try {
-      setLoading(true);
       const response = await api.timeTracking.finish();
+      timerLogApi('finish', response.success ? response : new Error(response?.message));
+
       if (response.success) {
         stopSessionLocally();
         const totalMinutes = response.session.totalMinutes || 0;
         const totalSeconds = totalMinutes * 60;
         alert(`Session stopped! Total time: ${formatTimeReadable(totalSeconds)}`);
+        timerLogState('session', 'stopped', { sessionId: response.session.id });
 
-        // Track timer stop event
         if (analytics) {
           try {
             const user = authService.getUser();
@@ -660,9 +831,6 @@ const TimeTracking = () => {
               stop_time: new Date().toISOString(),
               timestamp: new Date().toISOString()
             });
-            if (import.meta.env.DEV) {
-              // console.log('Timer stopped - Analytics logged, total time:', totalMinutes, 'minutes');
-            }
           } catch (error) {
             console.error('Error logging timer stop:', error);
           }
@@ -670,9 +838,19 @@ const TimeTracking = () => {
       }
     } catch (error) {
       console.error('Error stopping session:', error);
-      alert(error.message || 'Failed to stop time tracking');
+      timerLogApi('finish', error);
+      const isNoSession = error?.message?.toLowerCase().includes('no active') ||
+        error?.status === 404;
+      if (isNoSession) {
+        timerLog('reconcile', { reason: 'stop_failed_no_active_session' });
+        stopSessionLocally();
+        alert('Session was already ended. Timer has been reset.');
+      } else {
+        alert(error.message || 'Failed to stop time tracking');
+      }
     } finally {
-      setLoading(false);
+      setActionPending(null);
+      stopInProgressRef.current = false;
     }
   };
 
@@ -686,21 +864,27 @@ const TimeTracking = () => {
     }
 
     try {
-      setLoading(true);
+      setQuestionLoading(true);
       setQuestionError('');
       const response = await api.timeTracking.answerQuestion(currentQuestion.id, answer.trim());
 
       if (response.success) {
         const isCorrect = response.question.isCorrect;
         
-        // RESUME TIMER: Adjust session startTime to account for paused duration
+        // RESUME TIMER: Add question-pause duration to localStorage so elapsed stays correct
         if (sessionRef.current && pauseStartTimeRef.current) {
-          const pauseDuration = Math.floor((Date.now() - pauseStartTimeRef.current) / 1000);
+          const pauseDurationMs = Date.now() - pauseStartTimeRef.current;
+          const local = getTimerState();
+          if (local) {
+            setTimerState({
+              ...local,
+              accumulatedPausedMs: (local.accumulatedPausedMs || 0) + pauseDurationMs,
+            });
+          }
+          const pauseDuration = Math.floor(pauseDurationMs / 1000);
           const originalStartTime = new Date(sessionRef.current.startTime);
-          // Adjust startTime forward by pause duration to resume from where we paused
-          const adjustedStartTime = new Date(originalStartTime.getTime() + (pauseDuration * 1000));
-          
-          // Update session with adjusted startTime
+          const adjustedStartTime = new Date(originalStartTime.getTime() + pauseDurationMs);
+
           setSession((prevSession) => {
             if (!prevSession) return prevSession;
             const updatedSession = {
@@ -714,8 +898,6 @@ const TimeTracking = () => {
             sessionRef.current = updatedSession;
             return updatedSession;
           });
-          
-          // Clear pause tracking
           pauseStartTimeRef.current = null;
         }
 
@@ -764,17 +946,19 @@ const TimeTracking = () => {
       console.error('Error answering question:', error);
       setQuestionError(error.message || 'Failed to submit answer');
     } finally {
-      setLoading(false);
+      setQuestionLoading(false);
     }
   };
 
-  // Cleanup on unmount
+  // Cleanup on unmount (prevent duplicate intervals and leaks)
   useEffect(() => {
     return () => {
-      if (timeUpdateRef.current) clearInterval(timeUpdateRef.current);
-      if (questionIntervalRef.current) clearInterval(questionIntervalRef.current);
-      if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+      if (timeUpdateRef.current) clearTimeout(timeUpdateRef.current);
+      if (questionIntervalRef.current) clearTimeout(questionIntervalRef.current);
+      if (heartbeatRef.current) clearTimeout(heartbeatRef.current);
+      if (sessionRefreshRef.current) clearTimeout(sessionRefreshRef.current);
       if (questionTimeoutRef.current) clearTimeout(questionTimeoutRef.current);
+      if (tickIdRef.current) clearTimeout(tickIdRef.current);
     };
   }, []);
 
@@ -858,11 +1042,11 @@ const TimeTracking = () => {
           <p className="text-gray-600 mb-4">Click Start to begin tracking your time</p>
           <button
             onClick={handleStart}
-            disabled={loading}
+            disabled={actionPending !== null}
             className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Play className="w-4 h-4 mr-2" />
-            {loading ? 'Starting...' : 'Start'}
+            {actionPending === 'start' ? 'Starting...' : 'Start'}
           </button>
         </div>
       ) : (
@@ -871,29 +1055,29 @@ const TimeTracking = () => {
             {session.status === 'PAUSED' ? (
               <button
                 onClick={handleResume}
-                disabled={loading}
+                disabled={actionPending !== null}
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Play className="w-4 h-4 mr-2" />
-                {loading ? 'Resuming...' : 'Resume'}
+                {actionPending === 'resume' ? 'Resuming...' : 'Resume'}
               </button>
             ) : (
               <button
                 onClick={handlePause}
-                disabled={loading}
+                disabled={actionPending !== null}
                 className="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Pause className="w-4 h-4 mr-2" />
-                {loading ? 'Pausing...' : 'Pause'}
+                {actionPending === 'pause' ? 'Pausing...' : 'Pause'}
               </button>
             )}
             <button
               onClick={handleStop}
-              disabled={loading}
+              disabled={actionPending !== null}
               className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Square className="w-4 h-4 mr-2" />
-              {loading ? 'Stopping...' : 'Stop'}
+              {actionPending === 'stop' ? 'Stopping...' : 'Stop'}
             </button>
           </div>
 
@@ -965,10 +1149,10 @@ const TimeTracking = () => {
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  disabled={loading || !answer.trim()}
+                  disabled={questionLoading || !answer.trim()}
                   className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                 >
-                  {loading ? 'Submitting...' : 'Submit'}
+                  {questionLoading ? 'Submitting...' : 'Submit'}
                 </button>
               </div>
             </form>

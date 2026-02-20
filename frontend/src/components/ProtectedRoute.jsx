@@ -48,40 +48,41 @@ export default function ProtectedRoute({ children, allowedRoles = null, requireS
   }, [location.pathname])
 
 
-  // Listen for authentication changes (token stored in other tabs)
+  // Listen for authentication changes (token stored in other tabs, or token expiry)
   useEffect(() => {
     const checkAuth = () => {
       setIsAuthenticated(authService.isAuthenticated())
       setIsOpenStudent(authService.isOpenStudent())
     }
 
-    // Check auth immediately
     checkAuth()
 
-    // Listen for storage events (token stored in another tab)
     const handleStorageChange = (e) => {
       if (e.key === 'scholarflex_token' || e.key === 'open_student_token') {
         checkAuth()
       }
     }
 
-    // Listen for visibility changes (tab becomes visible)
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         checkAuth()
       }
     }
 
-    // Listen for focus (window gets focus)
     const handleFocus = () => {
       checkAuth()
     }
+
+    // Periodic check so expired JWT updates auth state (AuthWatcher will redirect; this keeps UI in sync)
+    const AUTH_CHECK_INTERVAL_MS = 60 * 1000
+    const intervalId = setInterval(checkAuth, AUTH_CHECK_INTERVAL_MS)
 
     window.addEventListener('storage', handleStorageChange)
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('focus', handleFocus)
 
     return () => {
+      clearInterval(intervalId)
       window.removeEventListener('storage', handleStorageChange)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('focus', handleFocus)

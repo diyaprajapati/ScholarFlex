@@ -833,7 +833,15 @@ const uploadResumeHandler = async (req, res) => {
         oldResumePath = path.join(__dirname, '../uploads/resumes', path.basename(student.resumeUrl));
       }
       
-      if (fs.existsSync(oldResumePath)) {
+      // Multer already saved the new file before this handler runs. If the previous
+      // resume path matches the just-uploaded path (same filename like 'resume.pdf'),
+      // don't delete it.
+      const currentUploadPath = req.file?.path ? path.resolve(req.file.path) : null;
+      const previousPath = oldResumePath ? path.resolve(oldResumePath) : null;
+
+      if (previousPath && currentUploadPath && previousPath === currentUploadPath) {
+        // skip delete
+      } else if (fs.existsSync(oldResumePath)) {
         try {
           fs.unlinkSync(oldResumePath);
         } catch (unlinkError) {

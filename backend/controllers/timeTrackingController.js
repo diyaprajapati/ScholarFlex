@@ -1300,7 +1300,7 @@ const autoFinishStaleSessions = async () => {
       try {
         await finishSessionRecord(session);
         if (process.env.NODE_ENV === 'development') {
-          console.log(`[TimeTracking] Auto-finished stale session ${session.id} (studentId: ${session.studentId})`);
+          // console.log(`[TimeTracking] Auto-finished stale session ${session.id} (studentId: ${session.studentId})`);
         }
       } catch (err) {
         console.error(`[TimeTracking] Error auto-finishing session ${session.id}:`, err);

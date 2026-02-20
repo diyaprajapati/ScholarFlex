@@ -1,11 +1,14 @@
 // API service for making HTTP requests to the backend
 
-import { authService } from '../utils/auth';
+import { authService, SESSION_EXPIRED_KEY } from '../utils/auth';
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.241.25.164:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sfapi.techelecon.in/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+/** Guard to prevent multiple 401 redirects (e.g. several in-flight requests) */
+let _authRedirectInProgress = false;
 
 /**
  * Get JWT token from localStorage
@@ -19,6 +22,29 @@ const getToken = () => {
  */
 const getOpenSessionToken = () => {
   return localStorage.getItem('open_student_token');
+};
+
+/** Timeout for time-tracking API calls (stop/pause/resume) to prevent stuck loading state */
+const TIMER_API_TIMEOUT_MS = 15000;
+
+/**
+ * Run an API request with a timeout. Aborts fetch after ms to prevent stuck loading.
+ */
+const apiRequestWithTimeout = async (ms, endpoint, options = {}) => {
+  const ac = new AbortController();
+  const timeoutId = setTimeout(() => ac.abort(), ms);
+  try {
+    return await apiRequest(endpoint, { ...options, signal: ac.signal });
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      const err = new Error('Request timed out. Please try again.');
+      err.isTimeout = true;
+      throw err;
+    }
+    throw e;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 };
 
 /**
@@ -60,23 +86,28 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
-      // On 401 (e.g. token expired), show message, clear session and redirect to login
-      // Skip redirect for public endpoints (they shouldn't return 401, but if they do, don't redirect)
+      // On 401 (token expired or invalid): reset auth, set message, redirect to login once
       if (response.status === 401 && !isPublicEndpoint) {
-        const loginMessage = 'Please login again.';
         if (isOpenEndpoint) {
           try {
-            sessionStorage.setItem('scholarflex_login_message', loginMessage);
+            sessionStorage.setItem('scholarflex_login_message', 'Please login again.');
           } catch (_) {}
           localStorage.removeItem('open_student_token');
           localStorage.removeItem('open_student_data');
           window.location.href = '/';
         } else {
-          try {
-            sessionStorage.setItem('scholarflex_login_message', loginMessage);
-          } catch (_) {}
-          authService.logout();
-          window.location.href = '/login';
+          if (!_authRedirectInProgress) {
+            _authRedirectInProgress = true;
+            try {
+              sessionStorage.setItem(SESSION_EXPIRED_KEY, 'true');
+              sessionStorage.setItem('scholarflex_login_message', 'Please login again.');
+            } catch (_) {}
+            authService.logout();
+            window.location.href = '/login';
+          }
+          const err = new Error('Session expired. Please log in again.');
+          err.status = 401;
+          throw err;
         }
       }
 
@@ -1394,16 +1425,16 @@ export const api = {
     },
   },
 
-  // Time Tracking endpoints
+  // Time Tracking endpoints (start/finish/pause/resume use timeout to avoid stuck loading)
   timeTracking: {
     start: async () => {
-      return apiRequest('/student/time-tracking/start', {
+      return apiRequestWithTimeout(TIMER_API_TIMEOUT_MS, '/student/time-tracking/start', {
         method: 'POST',
       });
     },
 
     finish: async () => {
-      return apiRequest('/student/time-tracking/finish', {
+      return apiRequestWithTimeout(TIMER_API_TIMEOUT_MS, '/student/time-tracking/finish', {
         method: 'POST',
       });
     },
@@ -1434,13 +1465,13 @@ export const api = {
     },
 
     pause: async () => {
-      return apiRequest('/student/time-tracking/pause', {
+      return apiRequestWithTimeout(TIMER_API_TIMEOUT_MS, '/student/time-tracking/pause', {
         method: 'POST',
       });
     },
 
     resume: async () => {
-      return apiRequest('/student/time-tracking/resume', {
+      return apiRequestWithTimeout(TIMER_API_TIMEOUT_MS, '/student/time-tracking/resume', {
         method: 'POST',
       });
     },
