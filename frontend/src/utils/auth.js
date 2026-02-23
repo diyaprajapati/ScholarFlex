@@ -134,53 +134,32 @@ export const authService = {
     return getTokenExpirySeconds(token)
   },
 
-  // Check if user is authenticated (has valid token)
+  // Check if user is authenticated (has access token; may be expired — refresh flow will extend session)
   isAuthenticated: () => {
     const token = authService.getToken()
-    if (!token) {
-      return false
-    }
-    // Check if token is expired
-    if (isTokenExpired(token)) {
-      authService.logout()
-      return false
-    }
-    return true
+    return !!token
   },
 
-  // Get user data from stored user object or token
+  // Get user data from stored user object or token.
+  // Does NOT logout when access token is expired; API layer will 401 → refresh → retry or logout on refresh failure.
   getUser: () => {
-    // First try to get from stored user object
     const storedUser = localStorage.getItem(USER_KEY)
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser)
-        // Verify token is still valid
         const token = authService.getToken()
-        if (token && !isTokenExpired(token)) {
-          return user
-        }
+        // Prefer stored user when we have a token (expired or not; refresh flow handles expiry)
+        if (token) return user
       } catch (e) {
-        // Invalid stored user, fall through to token decode
+        // Invalid stored user, fall through
       }
     }
 
-    // Fallback to token decode
     const token = authService.getToken()
-    if (!token) {
-      return null
-    }
-    
-    // Check if token is expired
-    if (isTokenExpired(token)) {
-      authService.logout()
-      return null
-    }
+    if (!token) return null
 
     const decoded = decodeToken(token)
-    if (!decoded) {
-      return null
-    }
+    if (!decoded) return null
 
     return {
       id: decoded.userId,

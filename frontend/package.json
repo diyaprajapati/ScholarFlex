@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.1.17",
+    "axios": "^1.13.5",
     "firebase": "^12.8.0",
     "framer-motion": "^12.25.0",
     "lottie-react": "^2.4.1",

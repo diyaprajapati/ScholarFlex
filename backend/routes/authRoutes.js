@@ -41,6 +41,13 @@ router.post(
 );
 
 /**
+ * @route   POST /api/auth/refresh
+ * @desc    Issue new access token using refresh token from HttpOnly cookie
+ * @access  Public (requires refresh cookie)
+ */
+router.post('/refresh', authController.refreshAccessToken);
+
+/**
  * @route   POST /api/auth/logout
  * @desc    Logout user
  * @access  Private

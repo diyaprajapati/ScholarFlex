@@ -16,8 +16,9 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    // Get token from header or cookie
-    const token = req.headers.authorization?.split(' ')[1] || req.cookies?.token;
+    // Access token must be sent via Authorization: Bearer <token> (refresh token is HttpOnly cookie only)
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
     if (!token) {
       return res.status(401).json({
@@ -26,7 +27,7 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    // Verify token
+    // Verify access token with JWT_SECRET (refresh tokens use REFRESH_SECRET and are not accepted here)
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);

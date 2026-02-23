@@ -1,20 +1,24 @@
 // API service for making HTTP requests to the backend
+// Uses Axios with 401 interceptor: expired access token → refresh (HttpOnly cookie) → retry; on refresh failure → logout & redirect.
 
+import axios from 'axios';
 import { authService, SESSION_EXPIRED_KEY } from '../utils/auth';
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.5:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.241.25.164:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.241.25.164:5000/api';
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sfapi.techelecon.in/api';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
-/** Guard to prevent multiple 401 redirects (e.g. several in-flight requests) */
+const REFRESH_ENDPOINT = '/auth/refresh';
+
+/** Guard to prevent multiple redirects when refresh fails (e.g. several in-flight 401s) */
 let _authRedirectInProgress = false;
 
 /**
- * Get JWT token from localStorage
+ * Get access token from storage (used for Authorization header).
  */
 const getToken = () => {
-  return localStorage.getItem('scholarflex_token');
+  return authService.getToken();
 };
 
 /**
@@ -24,11 +28,130 @@ const getOpenSessionToken = () => {
   return localStorage.getItem('open_student_token');
 };
 
+/**
+ * Force logout and redirect to login (used when refresh fails or request was already retried).
+ */
+function forceLogoutAndRedirect(isOpenEndpoint = false) {
+  if (_authRedirectInProgress) return;
+  _authRedirectInProgress = true;
+  try {
+    sessionStorage.setItem(SESSION_EXPIRED_KEY, 'true');
+    sessionStorage.setItem('scholarflex_login_message', 'Please login again.');
+  } catch (_) {}
+  authService.logout();
+  if (isOpenEndpoint) {
+    localStorage.removeItem('open_student_token');
+    localStorage.removeItem('open_student_data');
+    window.location.href = '/';
+  } else {
+    window.location.href = '/login';
+  }
+}
+
+/**
+ * Call POST /auth/refresh with credentials (sends HttpOnly cookie).
+ * Returns a promise that resolves with the new access token, or rejects on failure.
+ */
+async function refreshAccessToken() {
+  const res = await apiClient.request({
+    method: 'POST',
+    url: REFRESH_ENDPOINT,
+  });
+  const data = res?.data;
+  if (data?.token) return data.token;
+  throw new Error('Refresh response missing token');
+}
+
+// Axios instance: send cookies for same-origin and configured CORS (refresh cookie).
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
+  validateStatus: () => true, // we handle status in interceptor to support refresh flow
+});
+
+// Request interceptor: attach access token or open-session token
+apiClient.interceptors.request.use((config) => {
+  const endpoint = typeof config.url === 'string' ? config.url : config.baseURL + (config.url || '');
+  const isOpenEndpoint = endpoint.startsWith('/open/');
+  const isPublicEndpoint = endpoint.startsWith('/public/');
+
+  if (isOpenEndpoint) {
+    const openToken = getOpenSessionToken();
+    if (openToken) config.headers['X-Open-Session-Token'] = openToken;
+  } else if (!isPublicEndpoint) {
+    const token = getToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+  }
+  // FormData: let browser set Content-Type with boundary
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  return config;
+});
+
+// Response interceptor: on 401, try refresh then retry once; on refresh failure or already retried, force logout.
+// 401 must be handled in the success handler so we can return the refresh/retry promise; the error handler
+// only runs for request failures (e.g. network), not when success handler returns a rejected promise.
+function handle401(config, response) {
+  const endpoint = (typeof config?.url === 'string' ? config.url : '') || '';
+  const isOpenEndpoint = endpoint.startsWith('/open/');
+  const isPublicEndpoint = endpoint.startsWith('/public/');
+
+  if (isPublicEndpoint) return null;
+
+  if (isOpenEndpoint) {
+    forceLogoutAndRedirect(true);
+    return Promise.reject(new Error('Session expired. Please log in again.'));
+  }
+  if (endpoint.includes(REFRESH_ENDPOINT) || config._retried) {
+    forceLogoutAndRedirect(false);
+    const err = new Error('Session expired. Please log in again.');
+    err.status = 401;
+    return Promise.reject(err);
+  }
+  return refreshAccessToken()
+    .then((newToken) => {
+      authService.setToken(newToken);
+      config._retried = true;
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${newToken}`;
+      return apiClient.request(config);
+    })
+    .catch(() => {
+      forceLogoutAndRedirect(false);
+      const err = new Error('Session expired. Please log in again.');
+      err.status = 401;
+      return Promise.reject(err);
+    });
+}
+
+apiClient.interceptors.response.use(
+  (response) => {
+    if (response.status >= 200 && response.status < 300) return response;
+    if (response.status === 401) {
+      const result = handle401(response.config, response);
+      if (result !== null) return result;
+    }
+    return Promise.reject(Object.assign(new Error(response?.data?.message || 'Non-2xx response'), { response }));
+  },
+  (error) => {
+    const response = error.response;
+    const status = response?.status;
+    const config = response?.config ?? error.config;
+    if (status === 401) {
+      const result = handle401(config, response);
+      if (result !== null) return result;
+    }
+    return Promise.reject(error);
+  }
+);
+
 /** Timeout for time-tracking API calls (stop/pause/resume) to prevent stuck loading state */
 const TIMER_API_TIMEOUT_MS = 15000;
 
 /**
- * Run an API request with a timeout. Aborts fetch after ms to prevent stuck loading.
+ * Run an API request with a timeout.
  */
 const apiRequestWithTimeout = async (ms, endpoint, options = {}) => {
   const ac = new AbortController();
@@ -36,7 +159,7 @@ const apiRequestWithTimeout = async (ms, endpoint, options = {}) => {
   try {
     return await apiRequest(endpoint, { ...options, signal: ac.signal });
   } catch (e) {
-    if (e.name === 'AbortError') {
+    if (e.name === 'AbortError' || e.code === 'ERR_CANCELED') {
       const err = new Error('Request timed out. Please try again.');
       err.isTimeout = true;
       throw err;
@@ -48,130 +171,89 @@ const apiRequestWithTimeout = async (ms, endpoint, options = {}) => {
 };
 
 /**
- * Make an API request with authentication
+ * Build and throw a structured error from API error response (non-401).
+ */
+function throwApiError(endpoint, status, data) {
+  const isAccessDeniedForNonSelected = status === 403 &&
+    endpoint === '/auth/me' &&
+    data?.message &&
+    data.message.includes('Access denied') &&
+    (data.message.includes('not selected') || data.message.includes('evaluated'));
+
+  if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+    const errorDetails = data.errors
+      .map((err, idx) => {
+        if (typeof err === 'string') return err;
+        if (typeof err === 'object' && err !== null) {
+          if (err.reason) {
+            return `Row ${err.row || idx + 1}: ${err.reason}${err.email ? ` (${err.email})` : ''}`;
+          }
+          return JSON.stringify(err);
+        }
+        return String(err);
+      })
+      .slice(0, 10)
+      .join('\n');
+    const errorMessage = data.message || 'Validation errors';
+    const moreErrors = data.errors.length > 10 ? `\n... and ${data.errors.length - 10} more errors.` : '';
+    const error = new Error(`${errorMessage}\n\n${errorDetails}${moreErrors}`);
+    error.status = status;
+    if (!isAccessDeniedForNonSelected) console.error('API request error:', error);
+    throw error;
+  }
+  const error = new Error(data?.message || 'An error occurred');
+  error.status = status;
+  if (!isAccessDeniedForNonSelected) console.error('API request error:', error);
+  throw error;
+}
+
+/**
+ * Make an API request with authentication.
+ * Uses Axios; 401 is handled by interceptor (refresh then retry, or logout on refresh failure).
  */
 const apiRequest = async (endpoint, options = {}) => {
-  const token = getToken();
-  const openToken = getOpenSessionToken();
-
-  // Don't set Content-Type for FormData (let browser set it with boundary)
   const isFormData = options.body instanceof FormData;
-
-  // Determine if this is an open student endpoint or public endpoint
-  const isOpenEndpoint = endpoint.startsWith('/open/');
-  const isPublicEndpoint = endpoint.startsWith('/public/');
-
   const config = {
-    ...options,
-    headers: {
-      ...(!isFormData && { 'Content-Type': 'application/json' }),
-      // Use JWT token for regular endpoints, open session token for open endpoints
-      // Don't add auth headers for public endpoints
-      ...(isOpenEndpoint && openToken && { 'X-Open-Session-Token': openToken }),
-      ...(!isOpenEndpoint && !isPublicEndpoint && token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
+    url: endpoint,
+    method: (options.method || 'GET').toUpperCase(),
+    data: options.body,
+    signal: options.signal,
+    headers: { ...options.headers },
   };
+  if (isFormData) delete config.headers['Content-Type'];
+  else if (config.data && typeof config.data === 'string') {
+    try {
+      config.data = JSON.parse(config.data);
+    } catch (_) {
+      // leave as string if not JSON
+    }
+  }
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const response = await apiClient.request(config);
+    const status = response.status;
+    const data = response.data;
 
-    // Handle non-JSON responses
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      throw new Error(text || 'An error occurred');
+    if (status >= 200 && status < 300) return data;
+
+    // Non-2xx: throw so caller sees same error shape (interceptor already handled 401 retry/logout)
+    if (status === 401) {
+      const err = new Error(data?.message || 'Session expired. Please log in again.');
+      err.status = 401;
+      throw err;
     }
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      // On 401 (token expired or invalid): reset auth, set message, redirect to login once
-      if (response.status === 401 && !isPublicEndpoint) {
-        if (isOpenEndpoint) {
-          try {
-            sessionStorage.setItem('scholarflex_login_message', 'Please login again.');
-          } catch (_) {}
-          localStorage.removeItem('open_student_token');
-          localStorage.removeItem('open_student_data');
-          window.location.href = '/';
-        } else {
-          if (!_authRedirectInProgress) {
-            _authRedirectInProgress = true;
-            try {
-              sessionStorage.setItem(SESSION_EXPIRED_KEY, 'true');
-              sessionStorage.setItem('scholarflex_login_message', 'Please login again.');
-            } catch (_) {}
-            authService.logout();
-            window.location.href = '/login';
-          }
-          const err = new Error('Session expired. Please log in again.');
-          err.status = 401;
-          throw err;
-        }
-      }
-
-      // Check if this is a 403 error for /auth/me endpoint (non-selected student access denied)
-      // This is expected behavior, so we'll suppress logging for it
-      const isAccessDeniedForNonSelected = response.status === 403 &&
-        endpoint === '/auth/me' &&
-        data.message &&
-        data.message.includes('Access denied') &&
-        (data.message.includes('not selected') || data.message.includes('evaluated'));
-
-      // If there are detailed validation errors, include them in the error message
-      if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
-        const errorDetails = data.errors
-          .map((err, idx) => {
-            if (typeof err === 'string') return err;
-            if (typeof err === 'object' && err !== null) {
-              // Format error object
-              if (err.reason) {
-                return `Row ${err.row || idx + 1}: ${err.reason}${err.email ? ` (${err.email})` : ''}`;
-              }
-              return JSON.stringify(err);
-            }
-            return String(err);
-          })
-          .slice(0, 10) // Limit to first 10 errors
-          .join('\n');
-
-        const errorMessage = data.message || 'Validation errors';
-        const moreErrors = data.errors.length > 10 ? `\n... and ${data.errors.length - 10} more errors.` : '';
-        const error = new Error(`${errorMessage}\n\n${errorDetails}${moreErrors}`);
-        error.status = response.status; // Include status code
-        // Suppress logging for access denied errors
-        if (!isAccessDeniedForNonSelected) {
-          console.error('API request error:', error);
-        }
-        throw error;
-      }
-      const error = new Error(data.message || 'An error occurred');
-      error.status = response.status; // Include status code
-      // Suppress logging for access denied errors
-      if (!isAccessDeniedForNonSelected) {
-        console.error('API request error:', error);
-      }
-      throw error;
-    }
-
-    return data;
+    throwApiError(endpoint, status, data);
   } catch (error) {
-    // Check if this is an access denied error that we should suppress
     const errorMessage = error.message || error.toString() || '';
     const isAccessDeniedForNonSelected = endpoint === '/auth/me' &&
       errorMessage.includes('Access denied') &&
       (errorMessage.includes('not selected') || errorMessage.includes('evaluated'));
 
-    // Mark network errors (fetch failed before getting response)
-    if (error.name === 'TypeError' && (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError'))) {
+    if (error.response?.data && !error.status) error.status = error.response.status;
+    if (error.message?.includes('Network Error') || error.code === 'ERR_NETWORK') {
       error.isNetworkError = true;
     }
-
-    // Only log if it's not an access denied error for non-selected students
-    if (!isAccessDeniedForNonSelected) {
-      console.error('API request error:', error);
-    }
+    if (!isAccessDeniedForNonSelected) console.error('API request error:', error);
     throw error;
   }
 };

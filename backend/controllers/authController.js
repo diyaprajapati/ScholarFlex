@@ -5,6 +5,11 @@ const OTPService = require('../services/otpService');
 const { logActivitySimple } = require('../middleware/activityLogger');
 const { prisma } = require('../config/database');
 
+// Token configuration: access (1h) and refresh (30d, HttpOnly cookie only)
+const ACCESS_TOKEN_EXPIRY = '1h';
+const REFRESH_TOKEN_EXPIRY = '30d';
+const REFRESH_COOKIE_NAME = 'refreshToken';
+
 /**
  * Send OTP to email
  */
@@ -189,26 +194,29 @@ const verifyOTP = async (req, res) => {
       req.user = originalUser;
     }
 
-    // Generate JWT token
-    if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET is not set in environment variables');
+    // Require both secrets for dual-token architecture
+    if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
+      console.error('JWT_SECRET or REFRESH_SECRET is not set in environment variables');
       return res.status(500).json({
         success: false,
         message: 'Server configuration error',
       });
     }
 
-    // JWT_EXPIRE or JWT_EXPIRES (e.g. '1h', '24h', '7d'). Default 24h so tokens actually expire.
-    const expiresIn = process.env.JWT_EXPIRE || process.env.JWT_EXPIRES || '1h';
-
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       {
         userId: user.id,
         email: user.email,
         role: user.role_code,
       },
       process.env.JWT_SECRET,
-      { expiresIn }
+      { expiresIn: ACCESS_TOKEN_EXPIRY }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId: user.id, type: 'refresh' },
+      process.env.REFRESH_SECRET,
+      { expiresIn: REFRESH_TOKEN_EXPIRY }
     );
 
     // Prepare user data (exclude sensitive info)
@@ -233,18 +241,21 @@ const verifyOTP = async (req, res) => {
       }
     }
 
-    // Set cookie
-    res.cookie('token', token, {
+    // Set refresh token in HttpOnly cookie only (never in response body)
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 1000, // 1 hour
+      secure: isProduction,
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      path: '/',
     });
 
+    // Send access token in JSON only; frontend sends it via Authorization header
     res.status(200).json({
       success: true,
       message: 'Login successful',
-      token,
+      token: accessToken,
       user: userData,
     });
   } catch (error) {
@@ -264,11 +275,11 @@ const verifyOTP = async (req, res) => {
 };
 
 /**
- * Logout (clear token)
+ * Logout: clear refresh token cookie (and legacy token cookie if present)
  */
 const logout = async (req, res) => {
   try {
-    // Log logout activity
+    // Log logout activity when user was authenticated
     if (req.user) {
       await logActivitySimple(
         req,
@@ -279,13 +290,92 @@ const logout = async (req, res) => {
       );
     }
 
-    res.clearCookie('token');
+    const cookieOptions = {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    };
+    res.clearCookie(REFRESH_COOKIE_NAME, cookieOptions);
+    res.clearCookie('token', cookieOptions); // legacy
     res.status(200).json({
       success: true,
       message: 'Logged out successfully',
     });
   } catch (error) {
     console.error('Error in logout:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+/**
+ * Refresh access token using refresh token from HttpOnly cookie.
+ * Does NOT issue a new refresh token (no rotation in this implementation).
+ */
+const refreshAccessToken = async (req, res) => {
+  try {
+    if (!process.env.REFRESH_SECRET || !process.env.JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: 'Server configuration error',
+      });
+    }
+
+    const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME];
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token required',
+      });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    } catch (jwtError) {
+      if (jwtError.name === 'TokenExpiredError' || jwtError.name === 'JsonWebTokenError') {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid or expired refresh token',
+        });
+      }
+      throw jwtError;
+    }
+
+    if (decoded.type !== 'refresh' || !decoded.userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid refresh token',
+      });
+    }
+
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    const accessToken = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role_code,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: ACCESS_TOKEN_EXPIRY }
+    );
+
+    res.status(200).json({
+      success: true,
+      token: accessToken,
+    });
+  } catch (error) {
+    console.error('Error in refreshAccessToken:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
@@ -330,5 +420,6 @@ module.exports = {
   verifyOTP,
   logout,
   getCurrentUser,
+  refreshAccessToken,
 };
 
