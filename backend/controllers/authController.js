@@ -5,10 +5,25 @@ const OTPService = require('../services/otpService');
 const { logActivitySimple } = require('../middleware/activityLogger');
 const { prisma } = require('../config/database');
 
-// Token configuration: access (1h) and refresh (30d, HttpOnly cookie only)
-const ACCESS_TOKEN_EXPIRY = '1h';
+// Token configuration: access (configurable via JWT_EXPIRE, default 1h) and refresh (30d, HttpOnly cookie only)
+const ACCESS_TOKEN_EXPIRY = process.env.JWT_EXPIRE || '1h';
 const REFRESH_TOKEN_EXPIRY = '30d';
 const REFRESH_COOKIE_NAME = 'refreshToken';
+
+// Treat "production" and "deployment" as production for cookie/CORS (secure, cross-site).
+// Development: secure=false, sameSite=lax. Production/Deployment: secure=true, sameSite=none (cross-domain).
+const isProductionEnv = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'deployment';
+
+/** Cookie options for refresh token: cross-domain in production requires sameSite=none + secure=true */
+function getRefreshCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: isProductionEnv,
+    sameSite: isProductionEnv ? 'none' : 'lax',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    path: '/',
+  };
+}
 
 /**
  * Send OTP to email
@@ -242,14 +257,7 @@ const verifyOTP = async (req, res) => {
     }
 
     // Set refresh token in HttpOnly cookie only (never in response body)
-    const isProduction = process.env.NODE_ENV === 'production';
-    res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      path: '/',
-    });
+    res.cookie(REFRESH_COOKIE_NAME, refreshToken, getRefreshCookieOptions());
 
     // Send access token in JSON only; frontend sends it via Authorization header
     res.status(200).json({
@@ -290,12 +298,8 @@ const logout = async (req, res) => {
       );
     }
 
-    const cookieOptions = {
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    };
+    const cookieOptions = { ...getRefreshCookieOptions() };
+    delete cookieOptions.maxAge;
     res.clearCookie(REFRESH_COOKIE_NAME, cookieOptions);
     res.clearCookie('token', cookieOptions); // legacy
     res.status(200).json({

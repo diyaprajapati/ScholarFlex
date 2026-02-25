@@ -62,7 +62,7 @@ async function refreshAccessToken() {
   throw new Error('Refresh response missing token');
 }
 
-// Axios instance: send cookies for same-origin and configured CORS (refresh cookie).
+// Axios instance: withCredentials: true so browser sends HttpOnly refresh cookie on every request (required for cross-domain refresh).
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,

@@ -37,14 +37,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // CORS configuration - THIS MUST BE FIRST
+// When credentials: true, browser requires a concrete Access-Control-Allow-Origin (not *).
+// Development: reflect request origin. Production/Deployment: only allow FRONTEND_URL (cross-domain + cookies).
+const isDev = process.env.NODE_ENV === 'development';
+const allowedOrigins = (process.env.FRONTEND_URL || (isDev ? 'http://localhost:5173' : 'https://scholar-flex-seven.vercel.app')).split(',').map(s => s.trim()).filter(Boolean);
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, Postman)
-    // or any origin in development
-    if (process.env.NODE_ENV === 'development') {
-      // console.log(`🌐 CORS: Allowing request from origin: ${origin || 'no origin'}`);
-    }
-    callback(null, true); // Allow all origins
+    if (!origin) return callback(null, allowedOrigins[0] || true);
+    if (isDev) return callback(null, origin);
+    if (allowedOrigins.includes(origin)) return callback(null, origin);
+    callback(null, allowedOrigins[0] || true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
