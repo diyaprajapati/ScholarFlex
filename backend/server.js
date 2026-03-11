@@ -51,10 +51,10 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
   allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With', 
-    'Accept', 
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
     'Origin',
     'Access-Control-Request-Method',
     'Access-Control-Request-Headers',
@@ -186,10 +186,10 @@ function startServer() {
       return;
     }
     isShuttingDown = true;
-    
+
     const workerId = cluster.isWorker ? ` [Worker ${cluster.worker.id}]` : '';
     console.log(`${signal} signal received: closing HTTP server${workerId}`);
-    
+
     return new Promise((resolve) => {
       server.close(async () => {
         console.log(`HTTP server closed${workerId}`);
@@ -237,15 +237,15 @@ function startServer() {
 }
 
 // Cluster mode configuration
-const ENABLE_CLUSTER = process.env.ENABLE_CLUSTER === 'true' || 
-                       (process.env.NODE_ENV === 'production' && process.env.ENABLE_CLUSTER !== 'false');
+const ENABLE_CLUSTER = process.env.ENABLE_CLUSTER === 'true' ||
+  (process.env.NODE_ENV === 'production' && process.env.ENABLE_CLUSTER !== 'false');
 const NUM_WORKERS = parseInt(process.env.NUM_WORKERS || '0', 10) || os.cpus().length;
 
 if (ENABLE_CLUSTER && cluster.isPrimary) {
   // Primary process - spawn workers
   console.log(`🔄 Starting cluster mode with ${NUM_WORKERS} workers`);
   console.log(`💻 CPU cores available: ${os.cpus().length}`);
-  
+
   // Spawn workers
   for (let i = 0; i < NUM_WORKERS; i++) {
     cluster.fork();
@@ -265,12 +265,12 @@ if (ENABLE_CLUSTER && cluster.isPrimary) {
   // Graceful shutdown for cluster
   const shutdownCluster = async (signal) => {
     console.log(`${signal} received. Shutting down cluster...`);
-    
+
     // Disconnect all workers
     for (const id in cluster.workers) {
       cluster.workers[id].kill();
     }
-    
+
     // Wait a bit for workers to finish
     setTimeout(() => {
       process.exit(0);

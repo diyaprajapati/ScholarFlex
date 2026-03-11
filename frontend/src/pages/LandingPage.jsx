@@ -144,12 +144,12 @@ export default function LandingPage() {
                                 >
                                     Apply for Internship
                                 </Link>
-                                <Link
+                                {/* <Link
                                     to={ROUTES.LOGIN}
                                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 px-8 py-4 rounded-full text-lg font-semibold transition-all"
                                 >
                                     Intern Login
-                                </Link>
+                                </Link> */}
                             </motion.div>
                             <motion.p variants={fadeInUp} className="text-sm text-gray-500 mt-4 text-center">
                                 Learning access is open. Login is only required for enrolled interns.
