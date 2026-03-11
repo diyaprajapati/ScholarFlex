@@ -36,7 +36,9 @@ router.post(
   '/candidates/register',
   [
     body('full_name').trim().notEmpty().withMessage('Full name is required').isLength({ max: 255 }),
-    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+    // Do NOT normalize email in a Gmail-specific way (which removes dots),
+    // just validate format and trim; case/whitespace are handled in the controller.
+    body('email').trim().isEmail().withMessage('Valid email is required'),
     body('phone').optional().trim().isLength({ max: 20 }),
     body('institute_name').optional().trim().isLength({ max: 255 }),
     body('course_taken').optional().trim().isLength({ max: 255 }),
