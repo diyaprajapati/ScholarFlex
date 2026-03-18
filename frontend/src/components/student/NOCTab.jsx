@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, FileText, CheckCircle, XCircle, Clock, AlertCircle, Trash2 } from 'lucide-react';
 import api from '../../services/api';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 const NOCTab = () => {
   const [nocData, setNocData] = useState(null);
@@ -91,7 +92,6 @@ const NOCTab = () => {
       if (response.success) {
         setSuccess('NOC letter deleted successfully!');
         setNocData(null);
-        setShowDeleteConfirm(false);
       }
     } catch (err) {
       setError(err.message || 'Failed to delete NOC letter');
@@ -204,36 +204,19 @@ const NOCTab = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete NOC Letter?</h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to delete this NOC letter? This action cannot be undone.
-            </p>
-            <div className="flex items-center gap-3 justify-end">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${
-                  deleting
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-red-600 hover:bg-red-700'
-                }`}
-              >
-                {deleting ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete NOC Letter"
+        message="Are you sure you want to delete this NOC letter? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={async () => {
+          await handleDelete();
+          setShowDeleteConfirm(false);
+        }}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isProcessing={deleting}
+      />
 
       {/* Upload Section */}
       {(!nocData || nocData.status === 'REJECTED') && (

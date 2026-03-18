@@ -74,11 +74,11 @@ export default function LandingPage() {
                         </div>
                         <span className={`text-xl font-bold tracking-tight ${scrolled ? 'text-gray-900' : 'text-gray-900'}`}>ScholarFlex</span>
                     </div>
-                    <div className="hidden md:flex items-center gap-8">
+                    {/* <div className="hidden md:flex items-center gap-8">
                         <a href="#features" className="text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors">Features</a>
                         <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors">How it Works</a>
                         <a href="#testimonials" className="text-sm font-medium text-gray-600 hover:text-[#4C763B] transition-colors">Success Stories</a>
-                    </div>
+                    </div> */}
                     <div className="flex items-center gap-4">
                         <Link
                             to={ROUTES.LOGIN}
@@ -155,26 +155,6 @@ export default function LandingPage() {
                                 Learning access is open. Login is only required for enrolled interns.
                             </motion.p>
                         </motion.div>
-
-                        {/* Stats */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.6, duration: 0.8 }}
-                            className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 border-t border-gray-100 pt-10"
-                        >
-                            {[
-                                { number: "10k+", label: "Active Students" },
-                                { number: "500+", label: "Expert Mentors" },
-                                { number: "95%", label: "Placement Rate" },
-                                { number: "4.9/5", label: "Student Rating" }
-                            ].map((stat, i) => (
-                                <div key={i} className="text-center">
-                                    <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">{stat.number}</div>
-                                    <div className="text-sm text-gray-500 font-medium uppercase tracking-wide">{stat.label}</div>
-                                </div>
-                            ))}
-                        </motion.div>
                     </div>
                 </div>
             </section>
@@ -224,9 +204,9 @@ export default function LandingPage() {
                                 <p className="text-gray-500 leading-relaxed mb-6">
                                     {feature.desc}
                                 </p>
-                                <a href="#" className="inline-flex items-center text-[#4C763B] font-semibold hover:gap-2 transition-all">
+                                {/* <a href="#" className="inline-flex items-center text-[#4C763B] font-semibold hover:gap-2 transition-all">
                                     Learn more <ChevronRight className="w-4 h-4 ml-1" />
-                                </a>
+                                </a> */}
                             </motion.div>
                         ))}
                     </div>
@@ -252,12 +232,12 @@ export default function LandingPage() {
                         >
                             Get Started for Free
                         </Link>
-                        <Link
+                        {/* <Link
                             to={ROUTES.LOGIN}
                             className="bg-transparent border-2 border-green-400/50 text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-white/10 transition-colors"
                         >
                             Contact Sales
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </section>

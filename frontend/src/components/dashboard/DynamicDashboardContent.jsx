@@ -226,7 +226,7 @@ export default function DynamicDashboardContent({ selectedCard }) {
       )}
 
       {/* Tables */}
-      {tables && tables.length > 0 && (
+      {/* {tables && tables.length > 0 && (
         <div className={`grid grid-cols-1 ${tables.length > 1 ? 'lg:grid-cols-2' : ''} gap-4 sm:gap-5 lg:gap-6`}>
           {tables.map((table, index) => (
             <DetailTable
@@ -237,7 +237,7 @@ export default function DynamicDashboardContent({ selectedCard }) {
             />
           ))}
         </div>
-      )}
+      )} */}
     </div>
   )
 }

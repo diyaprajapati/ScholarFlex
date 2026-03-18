@@ -6,6 +6,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import api from '../../services/api';
 import { Plus, Edit, Trash2, Calendar, FileText, Search, X, User, Mail, Building2, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const ProjectManagementPage = () => {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ const ProjectManagementPage = () => {
   const [submittingForms, setSubmittingForms] = useState(new Set()); // Track which student's form is submitting
   const [deletingProjects, setDeletingProjects] = useState(new Set()); // Track which projects are being deleted
   const [failedImages, setFailedImages] = useState(new Set());
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    projectId: null,
+  });
 
   // Helper function to get image URL
   const getImageUrl = (url) => {
@@ -221,12 +226,16 @@ const ProjectManagementPage = () => {
     }
   };
 
-  const handleDeleteProject = async (projectId) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) {
-      return;
-    }
+  const handleDeleteProject = (projectId) => {
+    setDeleteDialog({
+      isOpen: true,
+      projectId,
+    });
+  };
 
-    if (deletingProjects.has(projectId)) return; // Prevent double deletion
+  const handleConfirmDeleteProject = async () => {
+    const projectId = deleteDialog.projectId;
+    if (!projectId || deletingProjects.has(projectId)) return;
 
     try {
       setDeletingProjects(prev => new Set([...prev, projectId]));
@@ -240,7 +249,18 @@ const ProjectManagementPage = () => {
         newSet.delete(projectId);
         return newSet;
       });
+      setDeleteDialog({
+        isOpen: false,
+        projectId: null,
+      });
     }
+  };
+
+  const handleCancelDeleteProject = () => {
+    setDeleteDialog({
+      isOpen: false,
+      projectId: null,
+    });
   };
 
   const formatDate = (dateString) => {
@@ -621,6 +641,17 @@ const ProjectManagementPage = () => {
           )}
         </div>
       </main>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete Project"
+        message="Are you sure you want to delete this project? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmDeleteProject}
+        onCancel={handleCancelDeleteProject}
+        isProcessing={deleteDialog.projectId ? deletingProjects.has(deleteDialog.projectId) : false}
+      />
     </div>
   );
 };

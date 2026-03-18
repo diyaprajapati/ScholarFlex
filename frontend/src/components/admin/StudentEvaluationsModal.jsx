@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X, Calendar, FileText, Edit, Trash2, Save, User, Star } from 'lucide-react';
 import api from '../../services/api';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
   const [evaluations, setEvaluations] = useState([]);
@@ -10,6 +11,10 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
   const [editFormData, setEditFormData] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [savingId, setSavingId] = useState(null); // Track which evaluation is being saved
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    evaluationId: null,
+  });
 
   useEffect(() => {
     if (isOpen && student) {
@@ -85,10 +90,16 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
     }
   };
 
-  const handleDelete = async (evaluationId) => {
-    if (!window.confirm('Are you sure you want to delete this evaluation? This action cannot be undone.')) {
-      return;
-    }
+  const handleDelete = (evaluationId) => {
+    setDeleteDialog({
+      isOpen: true,
+      evaluationId,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const evaluationId = deleteDialog.evaluationId;
+    if (!evaluationId) return;
 
     try {
       setDeletingId(evaluationId);
@@ -101,7 +112,18 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
       setError(err.message || 'Failed to delete evaluation');
     } finally {
       setDeletingId(null);
+      setDeleteDialog({
+        isOpen: false,
+        evaluationId: null,
+      });
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialog({
+      isOpen: false,
+      evaluationId: null,
+    });
   };
 
   const formatDate = (dateString) => {
@@ -506,6 +528,17 @@ const StudentEvaluationsModal = ({ student, isOpen, onClose, onRefresh }) => {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete Evaluation"
+        message="Are you sure you want to delete this evaluation? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isProcessing={deleteDialog.evaluationId ? deletingId === deleteDialog.evaluationId : false}
+      />
     </div>
   );
 };

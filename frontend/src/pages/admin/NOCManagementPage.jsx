@@ -6,6 +6,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import api from '../../services/api';
 import { FileText, Download, CheckCircle, XCircle, Clock, Eye, AlertCircle, Archive } from 'lucide-react';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const NOCManagementPage = () => {
   const navigate = useNavigate();
@@ -25,6 +26,12 @@ const NOCManagementPage = () => {
     limit: 20,
     total: 0,
     totalPages: 0,
+  });
+  const [statusConfirm, setStatusConfirm] = useState({
+    isOpen: false,
+    nocId: null,
+    newStatus: null,
+    message: '',
   });
 
   useEffect(() => {
@@ -105,6 +112,19 @@ const NOCManagementPage = () => {
       setUpdating(false);
       setUpdatingId(null);
     }
+  };
+
+  const handleConfirmStatusChange = async () => {
+    if (!statusConfirm.nocId || !statusConfirm.newStatus) {
+      return;
+    }
+    await handleStatusUpdate(statusConfirm.nocId, statusConfirm.newStatus);
+    setStatusConfirm({
+      isOpen: false,
+      nocId: null,
+      newStatus: null,
+      message: '',
+    });
   };
 
   const handleDownloadAll = async () => {
@@ -341,7 +361,15 @@ const NOCManagementPage = () => {
                               )}
                               {noc.status === 'APPROVED' && (
                                 <button
-                                  onClick={() => handleStatusUpdate(noc.id, 'REJECTED')}
+                                  onClick={() =>
+                                    setStatusConfirm({
+                                      isOpen: true,
+                                      nocId: noc.id,
+                                      newStatus: 'REJECTED',
+                                      message:
+                                        'Rejecting an approved NOC will delete it from the database.\n\nAre you sure you want to continue?',
+                                    })
+                                  }
                                   disabled={updatingId === noc.id || updating}
                                   className="text-red-600 hover:text-red-900 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                   title="Rejecting an approved NOC will delete it from the database"
@@ -400,7 +428,7 @@ const NOCManagementPage = () => {
       {/* PDF Viewer Modal */}
       {viewerOpen && selectedNOC && (
         <div
-          className="fixed inset-0 backdrop-blur-md bg-opacity-75 z-[70] flex items-center justify-center p-4"
+          className="fixed inset-0 backdrop-blur-md bg-opacity-75 z-70 flex items-center justify-center p-4"
           onClick={() => {
             setViewerOpen(false);
             setSelectedNOC(null);
@@ -494,6 +522,24 @@ const NOCManagementPage = () => {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={statusConfirm.isOpen}
+        title="Reject & Delete NOC"
+        message={statusConfirm.message}
+        confirmLabel="Yes, reject & delete"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmStatusChange}
+        onCancel={() =>
+          setStatusConfirm({
+            isOpen: false,
+            nocId: null,
+            newStatus: null,
+            message: '',
+          })
+        }
+        isProcessing={updating && updatingId === statusConfirm.nocId}
+      />
     </div>
   );
 };

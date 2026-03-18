@@ -60,7 +60,7 @@ const NAVIGATION_MENU = {
       label: 'Analytics',
       routes: [ROUTES.STUDENT_ANALYTICS, ROUTES.OPEN_STUDENT_ANALYTICS, ROUTES.FIREBASE_ANALYTICS, ROUTES.TIMER_LOGS],
       items: [
-        { label: 'User Analytics', path: ROUTES.FIREBASE_ANALYTICS, icon: BarChart3 },
+        // { label: 'User Analytics', path: ROUTES.FIREBASE_ANALYTICS, icon: BarChart3 },
         { label: 'Timer Logs', path: ROUTES.TIMER_LOGS, icon: Clock },
         { label: 'Student Analytics', path: ROUTES.STUDENT_ANALYTICS, icon: BarChart3 },
         { label: 'Open Student Analytics', path: ROUTES.OPEN_STUDENT_ANALYTICS, icon: BarChart3 },

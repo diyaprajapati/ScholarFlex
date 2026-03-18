@@ -9,6 +9,7 @@ import {
   Award, Briefcase, FileText, Link as LinkIcon, CheckCircle, 
   XCircle, Clock, Star, Code, Wrench, Users, Trophy, ExternalLink
 } from 'lucide-react';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const CandidatesTab = () => {
   const [students, setStudents] = useState([]);
@@ -52,6 +53,12 @@ const CandidatesTab = () => {
   });
   const itemsPerPage = 10;
   const fileInputRef = useRef(null);
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    studentId: null,
+    studentName: '',
+    isDeleting: false,
+  });
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -738,36 +745,50 @@ const CandidatesTab = () => {
     []
   );
 
-  const handleDeleteStudent = useCallback(
-    async (studentId, studentName) => {
-      // Confirm deletion
-      const confirmed = window.confirm(
-        `Are you sure you want to delete "${studentName}"? This action cannot be undone.`
+  const handleDeleteStudent = useCallback((studentId, studentName) => {
+    setDeleteDialog({
+      isOpen: true,
+      studentId,
+      studentName,
+      isDeleting: false,
+    });
+  }, []);
+
+  const handleConfirmDeleteStudent = useCallback(async () => {
+    if (!deleteDialog.studentId) return;
+
+    try {
+      setDeleteDialog(prev => ({ ...prev, isDeleting: true }));
+      await api.candidates.delete(deleteDialog.studentId);
+
+      setStudents(prevStudents =>
+        prevStudents.filter(student => student.id !== deleteDialog.studentId)
       );
 
-      if (!confirmed) {
-        return;
-      }
+      setSuccess(`Student "${deleteDialog.studentName}" deleted successfully`);
+      setTimeout(() => setSuccess(''), 3000);
+      setDeleteDialog({
+        isOpen: false,
+        studentId: null,
+        studentName: '',
+        isDeleting: false,
+      });
+    } catch (err) {
+      console.error('Error deleting student:', err);
+      setError(err.message || 'Failed to delete student');
+      setTimeout(() => setError(''), 3000);
+      setDeleteDialog(prev => ({ ...prev, isDeleting: false }));
+    }
+  }, [deleteDialog.studentId, deleteDialog.studentName, api, setStudents]);
 
-      try {
-        // Delete student
-        await api.candidates.delete(studentId);
-
-        // Remove from local state
-        setStudents(prevStudents =>
-          prevStudents.filter(student => student.id !== studentId)
-        );
-
-        setSuccess(`Student "${studentName}" deleted successfully`);
-        setTimeout(() => setSuccess(''), 3000);
-      } catch (err) {
-        console.error('Error deleting student:', err);
-        setError(err.message || 'Failed to delete student');
-        setTimeout(() => setError(''), 3000);
-      }
-    },
-    []
-  );
+  const handleCancelDeleteStudent = useCallback(() => {
+    setDeleteDialog({
+      isOpen: false,
+      studentId: null,
+      studentName: '',
+      isDeleting: false,
+    });
+  }, []);
 
   const handleNOCStatusChange = useCallback(
     async (studentId, nocReceived) => {
@@ -2586,6 +2607,21 @@ const CandidatesTab = () => {
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete Student"
+        message={
+          deleteDialog.studentName
+            ? `Are you sure you want to delete "${deleteDialog.studentName}"?\nThis action cannot be undone.`
+            : 'Are you sure you want to delete this student? This action cannot be undone.'
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmDeleteStudent}
+        onCancel={handleCancelDeleteStudent}
+        isProcessing={deleteDialog.isDeleting}
+      />
     </div>
   );
 };

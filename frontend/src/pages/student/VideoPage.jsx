@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { authService } from '../../utils/auth';
 import { ROUTES } from '../../config/paths';
@@ -19,6 +19,7 @@ const VideoPage = () => {
   const [playlistVideos, setPlaylistVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [startTime, setStartTime] = useState(0);
+  const currentVideoItemRef = useRef(null);
 
   // Get video info from URL params
   const videoUrl = searchParams.get('url');
@@ -397,6 +398,13 @@ const VideoPage = () => {
     navigate(`/student/video/${selectedYoutubeId}?url=${encodeURIComponent(selectedVideo.youtubeUrl)}&playlistId=${playlistId}&title=${encodeURIComponent(selectedVideo.title)}`);
   };
 
+  // Auto-scroll playlist so current playing video is at top when it changes
+  useEffect(() => {
+    if (currentVideoItemRef.current) {
+      currentVideoItemRef.current.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+  }, [currentVideoIndex, video?.id]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -549,6 +557,7 @@ const VideoPage = () => {
                       {playlistVideos.map((playlistVideo, index) => (
                         <div
                           key={playlistVideo.id}
+                          ref={index === currentVideoIndex ? currentVideoItemRef : null}
                           onClick={() => handleVideoSelect(playlistVideo, index)}
                           className={`p-3 rounded-lg cursor-pointer transition-all ${playlistVideo.id === video.id
                               ? 'bg-green-50 border-2 border-green-500'

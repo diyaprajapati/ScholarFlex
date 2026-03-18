@@ -19,7 +19,7 @@ function getActiveTabFromPathname(pathname) {
   if (pathname === ROUTES.STUDENT.DASHBOARD_TABS.NOC) return 'noc';
   if (pathname === ROUTES.STUDENT.VIDEO_ANALYTICS) return 'video-analytics';
   if (pathname === ROUTES.STUDENT.FORM) return 'profile';
-  if (pathname.startsWith('/student/video/')) return null; // video player page
+  if (pathname.startsWith('/student/video/')) return 'playlists'; // video player page - show Playlists as active
   return 'dashboard';
 }
 
